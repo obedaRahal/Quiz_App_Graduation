@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CustomButtonWidget extends StatelessWidget {
   final double? height;
   final double? width;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final double borderRadius;
   final double childHorizontalPad;
   final double childVerticalPad;
@@ -14,7 +14,7 @@ class CustomButtonWidget extends StatelessWidget {
     super.key,
     this.height,
     this.width,
-    required this.backgroundColor,
+    this.backgroundColor,
     this.borderRadius = 0,
     this.childHorizontalPad = 0,
     this.childVerticalPad = 0,

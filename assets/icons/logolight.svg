@@ -25,17 +25,17 @@
   </defs>
   <g id="Group_6819" data-name="Group 6819" transform="translate(251.338 -75.67)">
     <g data-type="innerShadowGroup">
-      <rect id="Rectangle_60-2" data-name="Rectangle 60" width="37" height="37" rx="6" transform="translate(-250 75.67)" fill="#4275ff"/>
+      <rect id="Rectangle_60-2" data-name="Rectangle 60" width="37" height="37" rx="6" transform="translate(-250 75.67)" fill="#fff"/>
       <g transform="matrix(1, 0, 0, 1, -251.34, 75.67)" filter="url(#Rectangle_60)">
         <rect id="Rectangle_60-3" data-name="Rectangle 60" width="37" height="37" rx="6" transform="translate(1.34)" fill="#fff"/>
       </g>
     </g>
     <g id="Group_6577" data-name="Group 6577" transform="translate(-242.338 85.428)">
       <g transform="matrix(1, 0, 0, 1, -9, -9.76)" filter="url(#Path_1379)">
-        <path id="Path_1379-2" data-name="Path 1379" d="M-202.865,111.614s-8.521,8-12.353,8.224-6.752-3.7-6.752-3.7l-3.194,3.7s3.878,5.11,9.946,4.106,12.353-7.7,12.353-7.8C-202.82,116.143-202.865,111.614-202.865,111.614Z" transform="translate(234.16 -97.39)" fill="#fff"/>
+        <path id="Path_1379-2" data-name="Path 1379" d="M-202.865,111.614s-8.521,8-12.353,8.224-6.752-3.7-6.752-3.7l-3.194,3.7s3.878,5.11,9.946,4.106,12.353-7.7,12.353-7.8C-202.82,116.143-202.865,111.614-202.865,111.614Z" transform="translate(234.16 -97.39)" fill="#4275ff"/>
       </g>
       <g transform="matrix(1, 0, 0, 1, -9, -9.76)" filter="url(#Rectangle_61)">
-        <rect id="Rectangle_61-2" data-name="Rectangle 61" width="4.256" height="4.256" transform="translate(19.73 9.76) rotate(45)" fill="#fff"/>
+        <rect id="Rectangle_61-2" data-name="Rectangle 61" width="4.256" height="4.256" transform="translate(19.73 9.76) rotate(45)" fill="#4275ff"/>
       </g>
     </g>
   </g>

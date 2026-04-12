@@ -26,7 +26,7 @@ class IntroTitle extends StatelessWidget {
               style: TextStyle(
                 fontSize: SizeConfig.text(.075),
                 fontFamily: AppFont.elMessiriBold,
-                color: AppColor.black,
+                color: AppPalette.black,
                 height: 1.5,
               ),
             ),
@@ -35,7 +35,7 @@ class IntroTitle extends StatelessWidget {
               style: TextStyle(
                 fontSize: SizeConfig.text(.06),
                 fontFamily: AppFont.elMessiriMedium,
-                color: AppColor.primary,
+                color: AppPalette.primary,
               ),
             ),
           ],

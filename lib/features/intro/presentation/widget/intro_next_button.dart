@@ -17,7 +17,7 @@ class IntroNextButton extends StatelessWidget {
       borderRadius: 30,
       childHorizontalPad: SizeConfig.w(.03),
       childVerticalPad: SizeConfig.w(.03),
-      backgroundColor: AppColor.primary,
+      backgroundColor: AppPalette.primary,
       onTap: onTap,
       child: const Icon(
         Icons.arrow_forward_rounded,

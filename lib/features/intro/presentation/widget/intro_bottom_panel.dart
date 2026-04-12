@@ -31,7 +31,7 @@ class IntroBottomPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return PhysicalShape(
       clipper: IntroTopArcClipper(),
-      color: AppColor.white,
+      color: AppPalette.white,
       elevation: 30,
       shadowColor: Colors.black,
       clipBehavior: Clip.antiAlias,
@@ -55,7 +55,7 @@ class IntroBottomPanel extends StatelessWidget {
                     SizedBox(height: SizeConfig.h(.035)),
                     CustomTextWidget(
                       pageData.description,
-                      color: AppColor.greyToDark,
+                      color: AppPalette.greyMedium,
                       fontSize: SizeConfig.text(.034),
                     ),
                     const Spacer(),

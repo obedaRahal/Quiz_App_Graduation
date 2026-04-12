@@ -25,7 +25,7 @@ class IntroPreviousButton extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
               border: Border.all(
-                color: AppColor.greyToDark,
+                color: AppPalette.greyMedium,
                 width: 2,
               ),
             ),
@@ -33,7 +33,7 @@ class IntroPreviousButton extends StatelessWidget {
               padding: EdgeInsets.all(SizeConfig.w(.023)),
               child: Icon(
                 Icons.arrow_back,
-                color: AppColor.greyToDark,
+                color: AppPalette.greyMedium,
                 size: 20,
               ),
             ),

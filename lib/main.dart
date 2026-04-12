@@ -1,32 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/config/app_router.dart';
 import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/core/theme/settimgs/presentation/manager/theme_cubit/theme_state.dart';
+import 'package:quiz_app_grad/core/theme/theme/app_theme.dart';
 
 void main() async {
-  runApp(const QuizApp());
   WidgetsFlutterBinding.ensureInitialized();
 
   await CacheHelper.init();
-  await CacheHelper.clearData();
+  //await CacheHelper.clearData();
   await initSl();
-    AppRouter.init();
+  AppRouter.init();
+
+  runApp(const QuizApp());
 }
 
 class QuizApp extends StatelessWidget {
   const QuizApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData().copyWith(scaffoldBackgroundColor: AppColor.white),
-    routerConfig: AppRouter.router,
-    
+    return BlocProvider(
+      create: (_) => sl<ThemeCubit>()..loadTheme(),
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
+            themeMode: state.themeMode,
+            themeAnimationDuration: const Duration(milliseconds: 900),
+            themeAnimationCurve: Curves.easeInOutCubic,
+            routerConfig: AppRouter.router,
+          );
+        },
+      ),
     );
-  
-  
   }
 }

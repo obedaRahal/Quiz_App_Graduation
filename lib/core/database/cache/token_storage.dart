@@ -18,29 +18,17 @@ class TokenStorage {
         .add(Duration(seconds: expiresInSeconds))
         .toIso8601String();
 
-    await _secureStorage.write(
-      key: _accessTokenKey,
-      value: token,
-    );
+    await _secureStorage.write(key: _accessTokenKey, value: token);
 
-    await _secureStorage.write(
-      key: _accessTokenExpiryAtKey,
-      value: expiryAt,
-    );
+    await _secureStorage.write(key: _accessTokenExpiryAtKey, value: expiryAt);
 
     if (refreshToken != null && refreshToken.trim().isNotEmpty) {
-      await _secureStorage.write(
-        key: _refreshTokenKey,
-        value: refreshToken,
-      );
+      await _secureStorage.write(key: _refreshTokenKey, value: refreshToken);
     }
   }
 
   static Future<void> saveRefreshToken(String refreshToken) async {
-    await _secureStorage.write(
-      key: _refreshTokenKey,
-      value: refreshToken,
-    );
+    await _secureStorage.write(key: _refreshTokenKey, value: refreshToken);
   }
 
   static Future<String?> getAccessToken() async {

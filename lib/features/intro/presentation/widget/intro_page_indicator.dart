@@ -26,7 +26,7 @@ class IntroPageIndicator extends StatelessWidget {
       },
       effect: CustomizableEffect(
         spacing: 8,
-        inActiveColorOverride: (_) => AppColor.grey,
+        inActiveColorOverride: (_) => AppPalette.greyLight,
         dotDecoration: DotDecoration(
           width: 8,
           height: 8,
@@ -36,7 +36,7 @@ class IntroPageIndicator extends StatelessWidget {
         activeDotDecoration: DotDecoration(
           width: 10,
           height: 10,
-          color: AppColor.greyToDark,
+          color: AppPalette.greyMedium,
           borderRadius: BorderRadius.circular(12),
         ),
       ),

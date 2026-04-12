@@ -464,9 +464,9 @@ class _SplashViewBodyState extends State<SplashViewBody>
                   colors: [
                     //  AppColor.white2,
                     // AppColor.primary,
-                    AppColor.primaryToWhiht,
+                    AppPalette.primarySoft,
 
-                    AppColor.white2,
+                    AppPalette.whiteSoft,
                   ],
                 ),
               ),
@@ -477,7 +477,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
                     right: -SizeConfig.w(0.1),
                     child: _BlurCircle(
                       size: SizeConfig.w(0.52),
-                      color: AppColor.primary.withOpacity(
+                      color: AppPalette.primary.withOpacity(
                         0.10 * _backgroundGlow.value,
                       ),
                     ),
@@ -487,7 +487,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
                     left: -SizeConfig.w(0.09),
                     child: _BlurCircle(
                       size: SizeConfig.w(0.44),
-                      color: AppColor.primary.withOpacity(
+                      color: AppPalette.primary.withOpacity(
                         0.06 * _backgroundGlow.value,
                       ),
                     ),
@@ -523,7 +523,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColor.primary.withOpacity(.2),
+                                      color: AppPalette.primary.withOpacity(.2),
                                       blurRadius: 30,
                                       spreadRadius: 8,
                                     ),
@@ -554,7 +554,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
                         style: TextStyle(
                           fontSize: titleSize,
                           fontFamily: AppFont.elMessiriBold,
-                          color: AppColor.black,
+                          color: AppPalette.black,
                           height: 1.1,
                           letterSpacing: 0.2,
                         ),
@@ -572,10 +572,10 @@ class _SplashViewBodyState extends State<SplashViewBody>
                         vertical: SizeConfig.h(0.009),
                       ),
                       decoration: BoxDecoration(
-                        color: AppColor.white.withOpacity(.65),
+                        color: AppPalette.white.withOpacity(.65),
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(
-                          color: AppColor.primary.withOpacity(.08),
+                          color: AppPalette.primary.withOpacity(.08),
                         ),
                       ),
                       child: Text(
@@ -584,7 +584,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
                         style: TextStyle(
                           fontSize: subtitleSize,
                           fontFamily: AppFont.elMessiriMedium,
-                          color: AppColor.greyToDark,
+                          color: AppPalette.greyMedium,
                           height: 1.4,
                         ),
                       ),

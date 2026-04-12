@@ -117,7 +117,7 @@ class _IntroViewBodyState extends State<_IntroViewBody> {
           final isLastPage = currentPage == _pages.length - 1;
 
           return Scaffold(
-            backgroundColor: AppColor.white2,
+            backgroundColor: AppPalette.whiteSoft,
             body: SafeArea(
               child: Column(
                 children: [

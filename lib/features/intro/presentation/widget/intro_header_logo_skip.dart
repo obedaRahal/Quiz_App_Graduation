@@ -30,13 +30,13 @@ class IntroHeaderLogoSkip extends StatelessWidget {
                 CustomTextWidget(
                   "تخطي",
                   fontSize: SizeConfig.text(0.055),
-                  color: AppColor.black,
+                  color: AppPalette.black,
                 ),
                 const SizedBox(width: 5),
                 Icon(
                   Icons.arrow_forward_ios,
                   size: SizeConfig.h(0.025),
-                  color: AppColor.black,
+                  color: AppPalette.black,
                 ),
               ],
             ),
