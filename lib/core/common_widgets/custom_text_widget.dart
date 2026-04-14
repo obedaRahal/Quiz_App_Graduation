@@ -20,8 +20,8 @@ class CustomTextWidget extends StatelessWidget {
     this.fontWeight,
     this.color,
     this.textAlign = TextAlign.center,
-    this.fontFamily=AppFont.elMessiriRegular,
-    this.textDirection =TextDirection.rtl,
+    this.fontFamily = AppFont.elMessiriRegular,
+    this.textDirection = TextDirection.rtl,
     this.maxLines,
     this.overflow,
   });

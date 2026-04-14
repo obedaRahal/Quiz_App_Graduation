@@ -8,14 +8,14 @@ import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit
 import 'package:quiz_app_grad/core/theme/theme/app_theme.dart';
 
 void main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
 
   await CacheHelper.init();
   //await CacheHelper.clearData();
   await initSl();
-  AppRouter.init();
-
-  runApp(const QuizApp());
+    AppRouter.init();
+    runApp(const QuizApp());
 }
 
 class QuizApp extends StatelessWidget {

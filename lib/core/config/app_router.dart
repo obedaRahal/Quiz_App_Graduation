@@ -4,6 +4,16 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
+import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
+import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
+import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
+import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
+import 'package:quiz_app_grad/features/auth/presentation/view/forgot_password_email_page.dart';
+import 'package:quiz_app_grad/features/auth/presentation/view/forgot_password_new_password_page.dart';
+import 'package:quiz_app_grad/features/auth/presentation/view/forgot_password_otp_code_page.dart';
+import 'package:quiz_app_grad/features/auth/presentation/view/login_page.dart';
+import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart';
+import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
@@ -54,6 +64,80 @@ class AppRouter {
             ),
           ),
         ),
+
+        GoRoute(
+          path: AppRouterPath.login,
+          name: AppRouterName.login,
+          // pageBuilder: (context, state) =>
+          //       _slidePage(state: state, child: const LoginPage()),
+          //  builder: (context, state) => const LoginPage(),
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => LoginCubit(),
+              child: const LoginPage(),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRouterPath.register,
+          name: AppRouterName.register,
+          // pageBuilder: (context, state) =>
+          //       _slidePage(state: state, child: const LoginPage()),
+          //  builder: (context, state) => const LoginPage(),
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => RegisterCubit(),
+              child: const RegisterPage(),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRouterPath.verifyEmail,
+          name: AppRouterName.verifyEmail,
+          // pageBuilder: (context, state) =>
+          //     _slidePage(state: state, child: const VerifyEmailPage()),
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => VerifyRegisterCubit(),
+              child: const VerifyEmailPage(),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRouterPath.forgotPasswordEmail,
+          name: AppRouterName.forgotPasswordEmail,
+          pageBuilder: (context, state) =>
+              _slidePage(state: state, child: const ForgotPasswordEmailPage()),
+          // builder: (context, state) => const VerifyEmailPage(),
+        ),
+        GoRoute(
+          path: AppRouterPath.forgotPasswordOtpCode,
+          name: AppRouterName.forgotPasswordOtpCode,
+          // pageBuilder: (context, state) => _slidePage(
+          //   state: state,
+          //   child: const ForgotPasswordOtpCodePage(),
+          // ),
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => ForgetPasswordCubit(),
+              child: const ForgotPasswordOtpCodePage(),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRouterPath.forgotPasswordNewPassword,
+          name: AppRouterName.forgotPasswordNewPassword,
+          // pageBuilder: (context, state) => _slidePage(
+          //   state: state,
+          //   child: const ForgotPasswordNewPasswordPage(),
+          // ),
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => ForgetPasswordCubit(),
+              child: const ForgotPasswordNewPasswordPage(),
+            );
+          },
+        ),
       ],
     );
   }
@@ -90,12 +174,19 @@ class AppRouter {
     AppRouterPath.splash,
     AppRouterPath.welcome,
     AppRouterPath.intro,
+    AppRouterPath.login,
+    AppRouterPath.register,
+    AppRouterPath.verifyEmail,
+    AppRouterPath.forgotPasswordEmail,
+    AppRouterPath.forgotPasswordOtpCode,
+    AppRouterPath.forgotPasswordNewPassword,
   };
 
   static const Set<String> _needsOnboardingAllowedRoutes = {
     AppRouterPath.onboarding,
     AppRouterPath.welcome,
   };
+
 
   static CustomTransitionPage<void> _slidePage({
     required GoRouterState state,
