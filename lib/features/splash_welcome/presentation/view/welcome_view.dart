@@ -8,11 +8,8 @@ import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart'
     show AppRouterName;
-import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
-import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -119,9 +116,9 @@ class DownPartWelcome extends StatelessWidget {
                     borderRadius: 30,
                     onTap: () {
                       debugPrint(" loginnnnn");
-                      context.pushNamed(AppRouterName.onboarding);
+                      //context.pushNamed(AppRouterName.onboarding);
                       //   sl<AuthSession>().markNeedsOnboarding();
-                      // context.pushNamed(AppRouterName.login);
+                      context.pushNamed(AppRouterName.login);
                     },
                     child: CustomTextWidget(
                       "تسجيل الدخول",

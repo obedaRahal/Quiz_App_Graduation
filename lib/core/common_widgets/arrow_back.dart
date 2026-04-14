@@ -37,7 +37,7 @@ class ArrowBack extends StatelessWidget {
     return Align(
       alignment: resolvedAlignment,
       child: Material(
-        //color: Colors.transparent,
+        color: Colors.transparent,
         child: Ink(
           decoration: BoxDecoration(
             color: Colors.transparent,
