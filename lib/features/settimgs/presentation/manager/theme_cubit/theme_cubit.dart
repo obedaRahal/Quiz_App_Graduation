@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/domain/use_cases/get_theme_mode_use_case.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/domain/use_cases/set_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settimgs/domain/use_cases/get_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settimgs/domain/use_cases/set_theme_mode_use_case.dart';
 
 import 'theme_state.dart';
 

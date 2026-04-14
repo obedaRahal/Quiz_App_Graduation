@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/config/app_router.dart';
 import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/presentation/manager/theme_cubit/theme_state.dart';
+import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_state.dart';
 import 'package:quiz_app_grad/core/theme/theme/app_theme.dart';
 
 void main() async {

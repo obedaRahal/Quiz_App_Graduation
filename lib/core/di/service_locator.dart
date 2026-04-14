@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/data/data_source/theme_local_data_source.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/data/repository_impl/theme_repository_impl.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/domain/repositories/theme_repository.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/domain/use_cases/get_theme_mode_use_case.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/domain/use_cases/set_theme_mode_use_case.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
+import 'package:quiz_app_grad/features/settimgs/data/data_source/theme_local_data_source.dart';
+import 'package:quiz_app_grad/features/settimgs/data/repository_impl/theme_repository_impl.dart';
+import 'package:quiz_app_grad/features/settimgs/domain/repositories/theme_repository.dart';
+import 'package:quiz_app_grad/features/settimgs/domain/use_cases/get_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settimgs/domain/use_cases/set_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
 
 import '../database/api/api_consumer.dart';
 import '../database/api/dio_consumer.dart';
@@ -18,6 +19,7 @@ final sl = GetIt.instance;
 Future<void> initSl() async {
   await _registerCore();
   _registerThemeFeature();
+  _registerOnboardingFeature();
 }
 
 Future<void> _registerCore() async {
@@ -84,6 +86,15 @@ void _registerThemeFeature() {
         getThemeModeUseCase: sl<GetThemeModeUseCase>(),
         setThemeModeUseCase: sl<SetThemeModeUseCase>(),
       ),
+    );
+  }
+}
+
+
+void _registerOnboardingFeature() {
+  if (!sl.isRegistered<OnboardingCubit>()) {
+    sl.registerFactory<OnboardingCubit>(
+      () => OnboardingCubit(),
     );
   }
 }

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/core/utils/auth_session.dart';
+import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
@@ -113,7 +117,8 @@ class DownPartWelcome extends StatelessWidget {
                     borderRadius: 30,
                     onTap: () {
                       debugPrint(" loginnnnn");
-                      //context.pushNamed(AppRouteRName.registerView);
+                      context.pushNamed(AppRouterName.onboarding);
+                        sl<AuthSession>().markNeedsOnboarding();
                     },
                     child: CustomTextWidget(
                       "تسجيل الدخول",

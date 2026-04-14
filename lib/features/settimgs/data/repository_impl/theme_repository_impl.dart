@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app_grad/core/theme/settimgs/data/data_source/theme_local_data_source.dart';
+import 'package:quiz_app_grad/features/settimgs/data/data_source/theme_local_data_source.dart';
 
 import '../../domain/repositories/theme_repository.dart';
 

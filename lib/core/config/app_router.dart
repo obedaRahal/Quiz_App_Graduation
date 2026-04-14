@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
 
@@ -39,6 +42,18 @@ class AppRouter {
           pageBuilder: (context, state) =>
               _slidePage(state: state, child: const IntroView()),
         ),
+
+        GoRoute(
+          path: AppRouterPath.onboarding,
+          name: AppRouterName.onboarding,
+          pageBuilder: (context, state) => _slidePage(
+            state: state,
+            child: BlocProvider(
+              create: (_) => sl<OnboardingCubit>(),
+              child: const OnboardingView(),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -59,7 +74,13 @@ class AppRouter {
             : AppRouterPath.welcome;
 
       case AuthSessionStatus.needsEmailVerification:
+        return null;
+
       case AuthSessionStatus.needsOnboarding:
+        return _needsOnboardingAllowedRoutes.contains(currentLocation)
+            ? null
+            : AppRouterPath.onboarding;
+
       case AuthSessionStatus.authenticated:
         return null;
     }
@@ -69,6 +90,11 @@ class AppRouter {
     AppRouterPath.splash,
     AppRouterPath.welcome,
     AppRouterPath.intro,
+  };
+
+  static const Set<String> _needsOnboardingAllowedRoutes = {
+    AppRouterPath.onboarding,
+    AppRouterPath.welcome,
   };
 
   static CustomTransitionPage<void> _slidePage({

@@ -22,6 +22,12 @@ class AppImage {
   static String get intro2 => '$_baseImageLight/intro2light.png';
   static String get intro3 => '$_baseImageLight/intro3light.svg';
 
+  /////////// onboardoing ////////////
+    static String get number1Onboarding => '$_baseIcon/number1.svg';
+    static String get number2Onboarding => '$_baseIcon/number2.svg';
+    static String get number3Onboarding => '$_baseIcon/number3.svg';
+
+
   ////////////////////// darkkkk image ////////////////////////////
   //////////////////////////////////////////////////////////////
   static String get welcomeDark => '$_baseImageDark/welcomeDark.png';
