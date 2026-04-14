@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart'
+    show AppRouterName;
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -90,6 +92,7 @@ class DownPartWelcome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
+    final colorScheme = context.colorScheme;
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: SizeConfig.w(.04),
@@ -114,11 +117,12 @@ class DownPartWelcome extends StatelessWidget {
                     onTap: () {
                       debugPrint(" loginnnnn");
                       //context.pushNamed(AppRouteRName.registerView);
+                      context.pushNamed(AppRouterName.login);
                     },
                     child: CustomTextWidget(
                       "تسجيل الدخول",
                       fontSize: SizeConfig.text(.038),
-                      color: AppPalette.white,
+                      color: colorScheme.onPrimary,
                     ),
                   ),
                   CustomButtonWidget(
@@ -127,7 +131,7 @@ class DownPartWelcome extends StatelessWidget {
                     childVerticalPad: SizeConfig.h(.01),
                     borderRadius: 30,
                     onTap: () {
-                      //context.pushNamed(AppRouteRName.loginView);
+                      context.pushNamed(AppRouterName.register);
 
                       debugPrint(" regester ");
                     },

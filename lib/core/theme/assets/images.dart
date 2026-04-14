@@ -25,4 +25,12 @@ class AppImage {
   ////////////////////// darkkkk image ////////////////////////////
   //////////////////////////////////////////////////////////////
   static String get welcomeDark => '$_baseImageDark/welcomeDark.png';
+  /////// register /////////////////
+  static String get female => '$_baseImageLight/user-long-hair.svg';
+  static String get male => '$_baseImageLight/user-short-hair.svg';
+  /////// Forget Password /////////////////
+  static String get forgetPassword1 => '$_baseImageLight/forgetpassword1.svg';
+  static String get forgetPassword2 => '$_baseImageLight/forgetpassword2.svg';
+  static String get forgetPassword3 => '$_baseImageLight/forgetpassword3.svg';
+  
 }
