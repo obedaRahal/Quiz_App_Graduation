@@ -13,31 +13,25 @@ class SchoolStageStep extends StatelessWidget {
 
   static final List<_SchoolStageOption> _options = [
     _SchoolStageOption(
-      value: 'primary',
       title: 'ابتدائي',
       description: 'يشمل الصفوف من\nالصف الأول إلى الصف\nالسادس',
-      number: '1',
-      icon: AppImage.number1Onboarding
+      imagePath: AppImage.number1Onboarding
     ),
     _SchoolStageOption(
-      value: 'middle',
       title: 'اعدادي',
       description: 'يشمل الصفوف من\nالصف السابع إلى الصف\nالتاسع',
-      number: '2',
-      icon: AppImage.number2Onboarding
+      imagePath: AppImage.number2Onboarding
     ),
     _SchoolStageOption(
-      value: 'secondary',
       title: 'ثانوي',
       description: 'يشمل الصفوف من\nالصف العاشر إلى صف\nالبكالوريا',
-      number: '3',
-      icon: AppImage.number3Onboarding
+      imagePath: AppImage.number3Onboarding
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig.init(context);
+    //SizeConfig.init(context);
 
     return BlocBuilder<OnboardingCubit, OnboardingState>(
       buildWhen: (previous, current) =>
@@ -49,12 +43,12 @@ class SchoolStageStep extends StatelessWidget {
               children: [
                 Expanded(
                   child: _SchoolStageCard(
-                    imagePath: _options[1].icon,
+                    imagePath: _options[1].imagePath,
                     option: _options[1],
-                    isSelected: state.schoolStage == _options[1].value,
+                    isSelected: state.schoolStage == _options[1].title,
                     onTap: () {
                       context.read<OnboardingCubit>().schoolStageChanged(
-                        _options[1].value,
+                        _options[1].title,
                       );
                       //debugPrint(state.schoolStage);
                     },
@@ -63,15 +57,13 @@ class SchoolStageStep extends StatelessWidget {
                 SizedBox(width: SizeConfig.w(0.04)),
                 Expanded(
                   child: _SchoolStageCard(
-                    imagePath:_options[0].icon,
+                    imagePath:_options[0].imagePath,
                     option: _options[0],
-                    isSelected: state.schoolStage == _options[0].value,
+                    isSelected: state.schoolStage == _options[0].title,
                     onTap: () {
                       context.read<OnboardingCubit>().schoolStageChanged(
-                        _options[0].value,
-                      );
-                      debugPrint(state.schoolStage);
-                    },
+                        _options[0].title,
+                      );                    },
                   ),
                 ),
               ],
@@ -81,14 +73,13 @@ class SchoolStageStep extends StatelessWidget {
               child: SizedBox(
                 width: SizeConfig.w(0.42),
                 child: _SchoolStageCard(
-                  imagePath: _options[2].icon,
+                  imagePath: _options[2].imagePath,
                   option: _options[2],
-                  isSelected: state.schoolStage == _options[2].value,
+                  isSelected: state.schoolStage == _options[2].title,
                   onTap: () {
                     context.read<OnboardingCubit>().schoolStageChanged(
-                      _options[2].value,
+                      _options[2].title,
                     );
-                    debugPrint(state.schoolStage);
                   },
                 ),
               ),
@@ -170,17 +161,13 @@ class _SchoolStageCard extends StatelessWidget {
 }
 
 class _SchoolStageOption {
-  final String value;
   final String title;
   final String description;
-  final String number;
-  final String icon;
+  final String imagePath;
 
   const _SchoolStageOption({
-    required this.value,
     required this.title,
     required this.description,
-    required this.number,
-    required this.icon
+    required this.imagePath
   });
 }

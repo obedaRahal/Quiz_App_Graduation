@@ -1,48 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_state.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/current_university_step.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/done_step.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/education_level_step.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/graduated_university_step.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/heard_about_step.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests_step.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/school_stage_step.dart';
 import '../manager/onboarding_step_type.dart';
 import '../widgets/onboarding_scaffold.dart';
 
 class OnboardingView extends StatelessWidget {
   const OnboardingView({super.key});
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingCubit, OnboardingState>(
       builder: (context, state) {
         final currentStep = state.currentStep;
+        final isDoneStep = currentStep == OnboardingStepType.done;
 
         return OnboardingScaffold(
-          currentStep: state.currentStepIndex,
+          currentStep: state.currentStepIndex + 1,
           totalSteps: state.visibleSteps.length,
-          title: _getStepTitle(currentStep),
-          description: _getStepDescription(currentStep),
+          title: !isDoneStep ? _getStepTitle(currentStep) : null,
+          description: isDoneStep ? null : _getStepDescription(currentStep),
+          nextButtonText: isDoneStep ? 'العودة لتسجيل الدخول' : 'التالي',
           isNextEnabled: state.canGoNext,
           isSubmitting: state.isSubmitting,
           onNext: () {
-            debugPrint("im at ${_getStepTitle(currentStep)}");
-            debugPrint("and  ${state.heardAbout}");
+            if (isDoneStep) {
+              context.goNamed(AppRouterName.welcome);
+
+              return;
+            }
+
             context.read<OnboardingCubit>().nextStep();
           },
-          // onBack: () {
-          //   final cubit = context.read<OnboardingCubit>();
-
-          //   if (state.isFirstStep) {
-          //     //context.pop();
-          //     return;
-          //   }
-
-          //   cubit.previousStep();
-          // },
           onBack: () {
             final cubit = context.read<OnboardingCubit>();
 
@@ -52,8 +49,6 @@ class OnboardingView extends StatelessWidget {
             }
 
             cubit.previousStep();
-
-            // أول خطوة: لا نخرج لأن الـ onboarding إجباري
           },
           child: _buildStepContent(context, state),
         );
@@ -82,7 +77,7 @@ class OnboardingView extends StatelessWidget {
         return 'من أي جامعة تخرجت؟';
 
       case OnboardingStepType.done:
-        return 'أهلًا بك معنا';
+        return '';
     }
   }
 
@@ -107,7 +102,7 @@ class OnboardingView extends StatelessWidget {
         return 'اكتب اسم الجامعة التي تخرجت منها.';
 
       case OnboardingStepType.done:
-        return 'تم تجهيز معلوماتك الأساسية بنجاح، ونحن جاهزون للانطلاق معك.';
+        return '';
     }
   }
 
@@ -121,35 +116,27 @@ class OnboardingView extends StatelessWidget {
 
       case OnboardingStepType.currentUniversity:
         return const CurrentUniversityStep();
-        
+
       case OnboardingStepType.schoolStage:
         return const SchoolStageStep();
 
       case OnboardingStepType.interests:
-        return _StepPlaceholder(text: 'محتوى خطوة: الاهتمامات العلمية');
+        final cubit = context.read<OnboardingCubit>();
+        if (state.interestGroups.isEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            cubit.loadMockInterests();
+          });
+        }
+        return const InterestsStep();
+
+      // case OnboardingStepType.interests:
+      //   return const InterestsStep();
 
       case OnboardingStepType.graduatedUniversity:
-        return _StepPlaceholder(text: 'محتوى خطوة: جامعة التخرج');
+        return const GraduatedUniversityStep();
 
       case OnboardingStepType.done:
-        return _StepPlaceholder(text: 'محتوى خطوة: الواجهة الختامية');
+        return const OnboardingDoneStep();
     }
-  }
-}
-
-class _StepPlaceholder extends StatelessWidget {
-  final String text;
-
-  const _StepPlaceholder({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 34),
-        child: CustomTextWidget(text, textAlign: TextAlign.center),
-      ),
-    );
   }
 }

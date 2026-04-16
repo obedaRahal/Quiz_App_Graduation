@@ -1,10 +1,9 @@
 import 'current_university_models.dart';
 
-DepartmentOption buildDepartmentOption(String id, String name) {
+DepartmentOption buildDepartmentOption( String title) {
   return DepartmentOption(
-    id: id,
-    name: name,
-    yearsCount: yearsForDepartment(name),
+    title: title,
+    yearsCount: yearsForDepartment(title),
   );
 }
 
@@ -23,12 +22,12 @@ int yearsForDepartment(String departmentName) {
 
 UniversityOption? findSelectedUniversity({
   required List<UniversityOption> universities,
-  required String? universityId,
+  required String? university,
 }) {
-  if (universityId == null) return null;
+  if (university == null) return null;
 
   try {
-    return universities.firstWhere((item) => item.id == universityId);
+    return universities.firstWhere((item) => item.title == university);
   } catch (_) {
     return null;
   }
@@ -36,12 +35,12 @@ UniversityOption? findSelectedUniversity({
 
 DepartmentOption? findSelectedDepartment({
   required List<DepartmentOption> departments,
-  required String? departmentId,
+  required String? department,
 }) {
-  if (departmentId == null) return null;
+  if (department == null) return null;
 
   try {
-    return departments.firstWhere((item) => item.id == departmentId);
+    return departments.firstWhere((item) => item.title == department);
   } catch (_) {
     return null;
   }

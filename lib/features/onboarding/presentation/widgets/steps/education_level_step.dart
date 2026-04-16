@@ -9,54 +9,48 @@ import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboardin
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/onboarding_dropdown_field.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/onboarding_option_selected_card.dart';
 
-
 class EducationLevelStep extends StatelessWidget {
   const EducationLevelStep({super.key});
 
-  static const List<_GovernorateOption> _governorates = [
-    _GovernorateOption(value: 'damascus', label: 'دمشق'),
-    _GovernorateOption(value: 'damascus_countryside', label: 'ريف دمشق'),
-    _GovernorateOption(value: 'aleppo', label: 'حلب'),
-    _GovernorateOption(value: 'homs', label: 'حمص'),
-    _GovernorateOption(value: 'hama', label: 'حماة'),
-    _GovernorateOption(value: 'latakia', label: 'اللاذقية'),
-    _GovernorateOption(value: 'tartus', label: 'طرطوس'),
-    _GovernorateOption(value: 'idlib', label: 'إدلب'),
-    _GovernorateOption(value: 'daraa', label: 'درعا'),
-    _GovernorateOption(value: 'sweida', label: 'السويداء'),
-    _GovernorateOption(value: 'quneitra', label: 'القنيطرة'),
-    _GovernorateOption(value: 'deir_ez_zor', label: 'دير الزور'),
-    _GovernorateOption(value: 'raqqa', label: 'الرقة'),
-    _GovernorateOption(value: 'hasakah', label: 'الحسكة'),
+  static const List<String> _governorates = [
+    'دمشق',
+    'ريف دمشق',
+    'حلب',
+    'حمص',
+    'حماة',
+    'اللاذقية',
+    'طرطوس',
+    'إدلب',
+    'درعا',
+    'السويداء',
+    'القنيطرة',
+    'دير الزور',
+    'الرقة',
+    'الحسكة',
   ];
 
   static const List<_EducationLevelOption> _studentOptions = [
     _EducationLevelOption(
-      value: OnboardingCubit.schoolLevel,
-      label: 'مدرسة',
+      title: EducationLevelValues.schoolLevel,
       icon: FontAwesomeIcons.school,
     ),
     _EducationLevelOption(
-      value: OnboardingCubit.universityLevel,
-      label: 'جامعة',
+      title: EducationLevelValues.universityLevel,
       icon: FontAwesomeIcons.buildingColumns,
     ),
   ];
 
   static const List<_EducationLevelOption> _knowledgeOwnerOptions = [
     _EducationLevelOption(
-      value: OnboardingCubit.mastersLevel,
-      label: 'ماجستير',
+      title: EducationLevelValues.mastersLevel,
       icon: FontAwesomeIcons.userGraduate,
     ),
     _EducationLevelOption(
-      value: OnboardingCubit.doctorateLevel,
-      label: 'دكتوراه',
+      title: EducationLevelValues.doctorateLevel,
       icon: FontAwesomeIcons.bookOpenReader,
     ),
     _EducationLevelOption(
-      value: OnboardingCubit.graduatedLevel,
-      label: 'خريج',
+      title: EducationLevelValues.graduatedLevel,
       icon: FontAwesomeIcons.graduationCap,
     ),
   ];
@@ -78,17 +72,17 @@ class EducationLevelStep extends StatelessWidget {
           options: _knowledgeOwnerOptions,
         );
 
-        _GovernorateOption? selectedGovernorate;
+        //_GovernorateOption? selectedGovernorate;
 
-        if (state.governorate != null) {
-          try {
-            selectedGovernorate = _governorates.firstWhere(
-              (item) => item.value == state.governorate,
-            );
-          } catch (_) {
-            selectedGovernorate = null;
-          }
-        }
+        // if (state.governorate != null) {
+        //   try {
+        //     selectedGovernorate = _governorates.firstWhere(
+        //       (item) => item.value == state.governorate,
+        //     );
+        //   } catch (_) {
+        //     selectedGovernorate = null;
+        //   }
+        // }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -102,14 +96,14 @@ class EducationLevelStep extends StatelessWidget {
             //     //debugPrint(value);
             //   },
             // ),
-            OnboardingDropdownField<_GovernorateOption>(
-              value: selectedGovernorate,
+            OnboardingDropdownField<String>(
+              value: state.governorate,
               items: _governorates,
               hintText: 'اختر المحافظة التي تسكن فيها',
-              labelBuilder: (item) => item.label,
+              labelBuilder: (item) => item,
               onChanged: (value) {
                 if (value == null) return;
-                context.read<OnboardingCubit>().governorateChanged(value.value);
+                context.read<OnboardingCubit>().governorateChanged(value);
               },
             ),
             SizedBox(height: SizeConfig.h(0.02)),
@@ -146,7 +140,7 @@ class EducationLevelStep extends StatelessWidget {
     required String? selectedValue,
     required List<_EducationLevelOption> options,
   }) {
-    return options.any((option) => option.value == selectedValue);
+    return options.any((option) => option.title == selectedValue);
   }
 
   static List<Widget> _buildEducationOptionCards({
@@ -155,109 +149,35 @@ class EducationLevelStep extends StatelessWidget {
     required List<_EducationLevelOption> options,
   }) {
     return options.map((option) {
-      final isSelected = state.educationLevel == option.value;
+      final isSelected = state.educationLevel == option.title;
 
       return OnboardingOptionSelectedCard(
-        label: option.label,
+        label: option.title,
         icon: option.icon,
         isSelected: isSelected,
         onTap: () {
-          context.read<OnboardingCubit>().educationLevelChanged(option.value);
+          context.read<OnboardingCubit>().educationLevelChanged(option.title);
         },
-        backgroundColor: isSelected ? AppPalette.primarySoft : AppPalette.grey,
-        borderColor: isSelected ? AppPalette.primary : AppPalette.greyLight,
-        textColor: isSelected ? AppPalette.primary : AppPalette.black,
+        // backgroundColor: isSelected ? AppPalette.primarySoft : AppPalette.grey,
+        // borderColor: isSelected ? AppPalette.primary : AppPalette.greyLight,
+        // textColor: isSelected ? AppPalette.primary : AppPalette.black,
       );
     }).toList();
   }
 }
 
-// class _GovernorateDropdown extends StatelessWidget {
-//   final String? value;
-//   final List<_GovernorateOption> items;
-//   final ValueChanged<String?> onChanged;
+// class _GovernorateOption {
+//   final String value;
+//   final String label;
 
-//   const _GovernorateDropdown({
-//     required this.value,
-//     required this.items,
-//     required this.onChanged,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Directionality(
-//       textDirection: TextDirection.rtl,
-//       child: DropdownButtonFormField<String>(
-//         value: value,
-//         isExpanded: true,
-//         icon: const Icon(Icons.keyboard_arrow_down_rounded),
-//         hint: CustomTextWidget(
-//           'اختر المحافظة التي تسكن فيها',
-//           fontSize: 13,
-//           color: AppPalette.greyMedium,
-//           textAlign: TextAlign.right,
-//         ),
-//         decoration: _buildDropdownDecoration(),
-//         items: items.map((item) {
-//           return DropdownMenuItem<String>(
-//             alignment: Alignment.centerRight,
-//             value: item.value,
-//             child: CustomTextWidget(
-//               item.label,
-//               textAlign: TextAlign.right,
-//               fontSize: SizeConfig.text(0.036),
-//             ),
-//           );
-//         }).toList(),
-//         onChanged: onChanged,
-//       ),
-//     );
-//   }
-
-//   InputDecoration _buildDropdownDecoration() {
-//     return InputDecoration(
-//       filled: true,
-//       fillColor: AppPalette.grey,
-//       contentPadding: EdgeInsets.symmetric(
-//         horizontal: SizeConfig.w(0.04),
-//         vertical: SizeConfig.h(0.01),
-//       ),
-//       border: _outlineBorder(),
-//       enabledBorder: _outlineBorder(width: 2),
-//       focusedBorder: _outlineBorder(width: 1.4),
-//       errorBorder: _outlineBorder(color: Colors.red, width: 1.4),
-//       focusedErrorBorder: _outlineBorder(color: Colors.red, width: 1.6),
-//     );
-//   }
-
-//   OutlineInputBorder _outlineBorder({Color? color, double width = 1.4}) {
-//     return OutlineInputBorder(
-//       borderRadius: BorderRadius.circular(10),
-//       borderSide: BorderSide(
-//         color: color ?? AppPalette.greyLight,
-//         width: width,
-//       ),
-//     );
-//   }
+//   const _GovernorateOption({required this.value, required this.label});
 // }
 
-class _GovernorateOption {
-  final String value;
-  final String label;
-
-  const _GovernorateOption({required this.value, required this.label});
-}
-
 class _EducationLevelOption {
-  final String value;
-  final String label;
+  final String title;
   final FaIconData icon;
 
-  const _EducationLevelOption({
-    required this.value,
-    required this.label,
-    required this.icon,
-  });
+  const _EducationLevelOption({required this.title, required this.icon});
 }
 
 class _EducationGroupContainer extends StatelessWidget {

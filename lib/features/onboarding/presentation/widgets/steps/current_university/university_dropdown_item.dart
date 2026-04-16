@@ -20,7 +20,7 @@ class UniversityDropdownItem extends StatelessWidget {
       
       textDirection: TextDirection.rtl,
       children: [
-        UniversityLogo(logoPath: item.logoPath),
+        UniversityLogo(logoPath: null),
         SizedBox(width: SizeConfig.w(0.02)),
         Expanded(
           child: SingleChildScrollView(
@@ -28,9 +28,9 @@ class UniversityDropdownItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomTextWidget(
-                  item.name,
+                  item.title,
                   textAlign: TextAlign.right,
-                  fontSize: SizeConfig.text(0.03),
+                  fontSize: SizeConfig.text(0.027),
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(
@@ -44,7 +44,7 @@ class UniversityDropdownItem extends StatelessWidget {
                   ),
                   child: CustomTextWidget(
                     item.isPrivate ? 'خاصة' : 'عامة',
-                    fontSize: SizeConfig.text(0.022),
+                    fontSize: SizeConfig.text(0.02),
                     color: item.isPrivate
                         ? AppPalette.primary
                         : AppPalette.greyMedium,

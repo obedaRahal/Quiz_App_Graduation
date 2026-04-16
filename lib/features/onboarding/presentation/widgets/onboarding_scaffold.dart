@@ -11,8 +11,8 @@ class OnboardingScaffold extends StatelessWidget {
   final int currentStep;
   final int totalSteps;
 
-  final String title;
-  final String description;
+  final String? title;
+  final String? description;
 
   final Widget child;
 
@@ -27,8 +27,8 @@ class OnboardingScaffold extends StatelessWidget {
     super.key,
     required this.currentStep,
     required this.totalSteps,
-    required this.title,
-    required this.description,
+    this.title,
+    this.description,
     required this.child,
     required this.onNext,
     this.nextButtonText = 'التالي',
@@ -40,6 +40,10 @@ class OnboardingScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+
+    final hasTitle = title != null && title!.trim().isNotEmpty;
+    final hasDescription =
+        description != null && description!.trim().isNotEmpty;
 
     return Scaffold(
       body: SafeArea(
@@ -57,26 +61,28 @@ class OnboardingScaffold extends StatelessWidget {
                 currentStep: currentStep,
                 totalSteps: 5,
               ),
-              SizedBox(height: SizeConfig.h(0.025)),
-              CustomTextWidget(
-                title,
-                textAlign: TextAlign.right,
-                fontSize: SizeConfig.text(0.05),
-                fontWeight: FontWeight.bold,
-              ),
-              SizedBox(height: SizeConfig.h(0.01)),
-              CustomTextWidget(
-                description,
-                textAlign: TextAlign.right,
-                color: AppPalette.greyMedium,
-                fontSize: 13,
-              ),
-              SizedBox(height: SizeConfig.h(0.015)),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: child,
+              //SizedBox(height: SizeConfig.h(0.025)),
+              if (hasTitle) ...[
+                SizedBox(height: SizeConfig.h(0.02)),
+                CustomTextWidget(
+                  title!,
+                  textAlign: TextAlign.right,
+                  fontSize: SizeConfig.text(0.045),
+                  fontWeight: FontWeight.bold,
                 ),
-              ),
+              ],
+
+              if (hasDescription) ...[
+                SizedBox(height: SizeConfig.h(0.01)),
+                CustomTextWidget(
+                  description!,
+                  textAlign: TextAlign.right,
+                  color: AppPalette.greyMedium,
+                  fontSize: SizeConfig.text(0.035),
+                ),
+              ],
+              SizedBox(height: SizeConfig.h(0.03)),
+              Expanded(child: SingleChildScrollView(child: child)),
               SizedBox(height: SizeConfig.h(0.015)),
               CustomButtonWidget(
                 childVerticalPad: SizeConfig.h(0.01),
@@ -87,9 +93,9 @@ class OnboardingScaffold extends StatelessWidget {
                     : AppPalette.greyLight,
                 onTap: isNextEnabled && !isSubmitting ? onNext : () {},
                 child: isSubmitting
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
+                    ? SizedBox(
+                        width: SizeConfig.w(0.1),
+                        height: SizeConfig.h(0.049),
                         child: CircularProgressIndicator(
                           strokeWidth: 2.5,
                           color: Colors.white,
@@ -97,9 +103,9 @@ class OnboardingScaffold extends StatelessWidget {
                       )
                     : CustomTextWidget(
                         nextButtonText,
-                        color:isNextEnabled 
-                        ? AppPalette.white
-                        : AppPalette.greyMedium
+                        color: isNextEnabled
+                            ? AppPalette.white
+                            : AppPalette.greyMedium,
                       ),
               ),
             ],

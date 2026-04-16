@@ -1,7 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class AnimatedOnboardingProgressBar extends StatelessWidget {
@@ -20,6 +21,8 @@ class AnimatedOnboardingProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     final progress = currentStep / totalSteps;
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -28,8 +31,9 @@ class AnimatedOnboardingProgressBar extends StatelessWidget {
           children: [
             CustomTextWidget(
               '${(progress * 100).toInt()}% مكتمل',
-              fontSize: SizeConfig.text(0.05),
-              fontWeight: FontWeight.bold,
+              fontSize: SizeConfig.text(0.045),
+              color: appColors.primaryToPrimaryDark,
+              fontFamily: AppFont.elMessiriMedium,
             ),
             const SizedBox(height: 5),
             ClipRRect(
@@ -79,10 +83,10 @@ class AnimatedOnboardingProgressBar extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 5),
             CustomTextWidget(
               'خطوة : $currentStep من $totalSteps',
-              fontSize: 14,
+              fontSize: SizeConfig.text(0.03),
               color: AppPalette.greyMedium,
             ),
           ],

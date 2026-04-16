@@ -36,19 +36,20 @@ class OnboardingDropdownField<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig.init(context);
+    //SizeConfig.init(context);
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: SizedBox(
-        height: SizeConfig.h(0.075),
+        //height: SizeConfig.h(0.075),
         child: DropdownButtonFormField<T>(
           value: value,
           isExpanded: true,
+          menuMaxHeight: SizeConfig.h(0.5),
           icon: const Icon(Icons.keyboard_arrow_down_rounded),
           hint: CustomTextWidget(
             hintText,
-            fontSize: 13,
+            fontSize: 12,
             color: AppPalette.greyMedium,
             textAlign: TextAlign.right,
           ),
@@ -62,7 +63,7 @@ class OnboardingDropdownField<T> extends StatelessWidget {
                   : CustomTextWidget(
                       labelBuilder(item),
                       textAlign: TextAlign.right,
-                      fontSize: SizeConfig.text(0.036),
+                      fontSize: SizeConfig.text(0.035),
                     ),
             );
           }).toList(),
@@ -85,7 +86,7 @@ class OnboardingDropdownField<T> extends StatelessWidget {
       fillColor: isEnabled ? AppPalette.grey : AppPalette.greyLight,
       contentPadding: EdgeInsets.symmetric(
         horizontal: SizeConfig.w(0.04),
-        vertical: SizeConfig.h(0.01),
+        //vertical: SizeConfig.h(0.01),
       ),
       border: _outlineBorder(),
       enabledBorder: _outlineBorder(width: 2),

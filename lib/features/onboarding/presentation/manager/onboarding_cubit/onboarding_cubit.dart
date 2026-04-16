@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_step_type.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interests_mock_data.dart';
 
 import 'onboarding_state.dart';
 
+class EducationLevelValues {
+  static const String schoolLevel = 'مدرسة';
+  static const String universityLevel = 'جامعة';
+  static const String mastersLevel = 'ماجستير';
+  static const String doctorateLevel = 'دكتوراه';
+  static const String graduatedLevel = 'خريج';
+}
+
 class OnboardingCubit extends Cubit<OnboardingState> {
   OnboardingCubit() : super(const OnboardingState());
-
-  // مهم جدًا:
-  // خزّن القيم كـ codes ثابتة، وليس كنصوص UI المعروضة للمستخدم.
-  // مثال:
-  // school / university / masters / doctorate / graduated
-  static const String schoolLevel = 'school';
-  static const String universityLevel = 'university';
-  static const String mastersLevel = 'masters';
-  static const String doctorateLevel = 'doctorate';
-  static const String graduatedLevel = 'graduated';
 
   void heardAboutChanged(String value) {
     emit(state.copyWith(heardAbout: value, clearErrorMessage: true));
@@ -29,6 +28,11 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
   void educationLevelChanged(String value) {
     final updatedSteps = _buildVisibleSteps(value);
+
+    final shouldKeepCurrentUniversity = _shouldKeepCurrentUniversity(value);
+    final shouldKeepSchoolStage = _shouldKeepSchoolStage(value);
+    final shouldKeepGraduatedUniversity = _shouldKeepGraduatedUniversity(value);
+
     emit(
       state.copyWith(
         educationLevel: value,
@@ -37,55 +41,78 @@ class OnboardingCubit extends Cubit<OnboardingState> {
           currentIndex: state.currentStepIndex,
           visibleSteps: updatedSteps,
         ),
-        currentUniversity: _shouldKeepCurrentUniversity(value)
-            ? state.currentUniversity
-            : null,
-        schoolStage: _shouldKeepSchoolStage(value) ? state.schoolStage : null,
-        graduatedUniversity: _shouldKeepGraduatedUniversity(value)
-            ? state.graduatedUniversity
-            : null,
+
+        clearCurrentUniversity: !shouldKeepCurrentUniversity,
+        clearCurrentDepartmentAtUniversity: !shouldKeepCurrentUniversity,
+        clearCurrentStudyYearAtUniversity: !shouldKeepCurrentUniversity,
+
+        clearSchoolStage: !shouldKeepSchoolStage,
+
+        clearGraduatedUniversity: !shouldKeepGraduatedUniversity,
+        clearGraduatedDepartment: !shouldKeepGraduatedUniversity,
+        clearGraduationCertificateImagePath: !shouldKeepGraduatedUniversity,
+        clearPersonalIdentityImagePath: !shouldKeepGraduatedUniversity,
+
         clearErrorMessage: true,
       ),
     );
+
     debugPrint('new education level value is: ${state.educationLevel}');
   }
+  // void educationLevelChanged(String value) {
+  //   final updatedSteps = _buildVisibleSteps(value);
+  //   emit(
+  //     state.copyWith(
+  //       educationLevel: value,
+  //       visibleSteps: updatedSteps,
+  //       currentStepIndex: _safeStepIndex(
+  //         currentIndex: state.currentStepIndex,
+  //         visibleSteps: updatedSteps,
+  //       ),
+  //       currentUniversity: _shouldKeepCurrentUniversity(value)
+  //           ? state.currentUniversity
+  //           : null,
+  //       schoolStage: _shouldKeepSchoolStage(value) ? state.schoolStage : null,
+  //       graduatedUniversity: _shouldKeepGraduatedUniversity(value)
+  //           ? state.graduatedUniversity
+  //           : null,
+  //       clearErrorMessage: true,
+  //     ),
+  //   );
+  //   debugPrint('new education level value is: ${state.educationLevel}');
+  // }
 
   void currentUniversityChanged(String value) {
     emit(
       state.copyWith(
         currentUniversity: value,
-        currentDepartmentAtUnivercity: null,
-        currentStudyYearAtUnivercity: null,
+        clearCurrentDepartmentAtUniversity: true,
+        clearCurrentStudyYearAtUniversity: true,
         clearErrorMessage: true,
       ),
     );
-    debugPrint(
-      'new cuttent university level value is: ${state.currentUniversity}',
-    );
+    debugPrint('new current university value is: $value');
   }
 
-  void currentDepartmentAtUnivercityChanged(String value) {
+  void currentDepartmentAtUniversityChanged(String value) {
     emit(
       state.copyWith(
-        currentDepartmentAtUnivercity: value,
-        currentStudyYearAtUnivercity: null,
+        currentDepartmentAtUniversity: value,
+        clearCurrentStudyYearAtUniversity: true,
         clearErrorMessage: true,
       ),
     );
-    debugPrint(      'new currentDepartment level value is: ${state.currentDepartmentAtUnivercity}',
-    );
+    debugPrint('new current department value is: $value');
   }
 
-  void currentStudyYearAtUnivercityChanged(int value) {
+  void currentStudyYearAtUniversityChanged(int value) {
     emit(
       state.copyWith(
-        currentStudyYearAtUnivercity: value,
+        currentStudyYearAtUniversity: value,
         clearErrorMessage: true,
       ),
     );
-    debugPrint(
-      'new cuttent university level value is: ${state.currentStudyYearAtUnivercity}',
-    );
+    debugPrint('new current study year value is: $value');
   }
 
   void schoolStageChanged(String value) {
@@ -94,8 +121,46 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   void graduatedUniversityChanged(String value) {
-    emit(state.copyWith(graduatedUniversity: value, clearErrorMessage: true));
+    emit(
+      state.copyWith(
+        graduatedUniversity: value,
+        graduatedDepartment: null,
+        clearErrorMessage: true,
+      ),
+    );
+    debugPrint(
+      'new graduated university value is: ${state.graduatedUniversity}',
+    );
   }
+
+  void graduatedDepartmentChanged(String value) {
+    emit(state.copyWith(graduatedDepartment: value, clearErrorMessage: true));
+    debugPrint(
+      'new graduated department value is: ${state.graduatedDepartment}',
+    );
+  }
+
+  void graduationCertificateImageChanged(String value) {
+    emit(
+      state.copyWith(
+        graduationCertificateImagePath: value,
+        clearErrorMessage: true,
+      ),
+    );
+    debugPrint(
+      'new graduated certificate value is: ${state.graduationCertificateImagePath}',
+    );
+  }
+
+  void personalIdentityImageChanged(String value) {
+    emit(
+      state.copyWith(personalIdentityImagePath: value, clearErrorMessage: true),
+    );
+    debugPrint(
+      'new graduated Idintity value is: ${state.personalIdentityImagePath}',
+    );
+  }
+
 
   void toggleInterest(int interestId) {
     final currentIds = List<int>.from(state.selectedInterestIds);
@@ -112,6 +177,15 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
     emit(
       state.copyWith(selectedInterestIds: currentIds, clearErrorMessage: true),
+    );
+  }
+
+  void loadMockInterests() {
+    emit(
+      state.copyWith(
+        interestGroups: mockInterestGroups,
+        clearErrorMessage: true,
+      ),
     );
   }
 
@@ -170,7 +244,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     }
 
     switch (educationLevel) {
-      case schoolLevel:
+      case EducationLevelValues.schoolLevel:
         return const [
           OnboardingStepType.heardAbout,
           OnboardingStepType.educationLevel,
@@ -179,7 +253,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
           OnboardingStepType.done,
         ];
 
-      case universityLevel:
+      case EducationLevelValues.universityLevel:
         return const [
           OnboardingStepType.heardAbout,
           OnboardingStepType.educationLevel,
@@ -188,9 +262,9 @@ class OnboardingCubit extends Cubit<OnboardingState> {
           OnboardingStepType.done,
         ];
 
-      case mastersLevel:
-      case doctorateLevel:
-      case graduatedLevel:
+      case EducationLevelValues.mastersLevel:
+      case EducationLevelValues.doctorateLevel:
+      case EducationLevelValues.graduatedLevel:
         return const [
           OnboardingStepType.heardAbout,
           OnboardingStepType.educationLevel,
@@ -218,22 +292,23 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   bool _shouldKeepCurrentUniversity(String educationLevel) {
-    return educationLevel == universityLevel;
+    return educationLevel == EducationLevelValues.universityLevel;
   }
 
   bool _shouldKeepSchoolStage(String educationLevel) {
-    return educationLevel == schoolLevel;
+    return educationLevel == EducationLevelValues.schoolLevel;
   }
 
   bool _shouldKeepGraduatedUniversity(String educationLevel) {
-    return educationLevel == mastersLevel ||
-        educationLevel == doctorateLevel ||
-        educationLevel == graduatedLevel;
+    return educationLevel == EducationLevelValues.mastersLevel ||
+        educationLevel == EducationLevelValues.doctorateLevel ||
+        educationLevel == EducationLevelValues.graduatedLevel;
   }
 
   Future<void> _submitCurrentStep() async {
     // هذه دالة مؤقتة حاليًا.
     // لاحقًا سنربطها مع API / UseCase حسب الخطوة الحالية.
+    debugPrint("im at _submitCurrentStep to call API later");
     await Future<void>.delayed(Duration.zero);
   }
 }

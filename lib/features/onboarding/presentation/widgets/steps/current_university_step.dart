@@ -13,7 +13,6 @@ import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/cur
 
 import '../onboarding_dropdown_field.dart';
 
-
 class CurrentUniversityStep extends StatelessWidget {
   const CurrentUniversityStep({super.key});
 
@@ -22,14 +21,14 @@ class CurrentUniversityStep extends StatelessWidget {
     return BlocBuilder<OnboardingCubit, OnboardingState>(
       buildWhen: (previous, current) =>
           previous.currentUniversity != current.currentUniversity ||
-          previous.currentDepartmentAtUnivercity !=
-              current.currentDepartmentAtUnivercity ||
-          previous.currentStudyYearAtUnivercity !=
-              current.currentStudyYearAtUnivercity,
+          previous.currentDepartmentAtUniversity !=
+              current.currentDepartmentAtUniversity ||
+          previous.currentStudyYearAtUniversity !=
+              current.currentStudyYearAtUniversity,
       builder: (context, state) {
         final selectedUniversity = findSelectedUniversity(
           universities: currentUniversityOptions,
-          universityId: state.currentUniversity,
+          university: state.currentUniversity,
         );
 
         final availableDepartments =
@@ -37,12 +36,15 @@ class CurrentUniversityStep extends StatelessWidget {
 
         final selectedDepartment = findSelectedDepartment(
           departments: availableDepartments,
-          departmentId: state.currentDepartmentAtUnivercity,
+          department: state.currentDepartmentAtUniversity,
         );
 
         final availableStudyYears = selectedDepartment == null
             ? const <int>[]
-            : List.generate(selectedDepartment.yearsCount, (index) => index + 1);
+            : List.generate(
+                selectedDepartment.yearsCount,
+                (index) => index + 1,
+              );
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -53,14 +55,14 @@ class CurrentUniversityStep extends StatelessWidget {
               value: selectedUniversity,
               items: currentUniversityOptions,
               hintText: 'اختر الجامعة التي تدرس فيها',
-              labelBuilder: (item) => item.name,
+              labelBuilder: (item) => item.title,
               itemBuilder: (item) => UniversityDropdownItem(item: item),
               selectedItemBuilder: (item) => UniversityDropdownItem(item: item),
               onChanged: (value) {
                 if (value == null) return;
                 context.read<OnboardingCubit>().currentUniversityChanged(
-                      value.id,
-                    );
+                  value.title,
+                );
               },
             ),
 
@@ -72,13 +74,13 @@ class CurrentUniversityStep extends StatelessWidget {
               value: selectedDepartment,
               items: availableDepartments,
               hintText: 'اختر القسم',
-              labelBuilder: (item) => item.name,
+              labelBuilder: (item) => item.title,
               isEnabled: selectedUniversity != null,
               onChanged: (value) {
                 if (value == null) return;
                 context
                     .read<OnboardingCubit>()
-                    .currentDepartmentAtUnivercityChanged(value.id);
+                    .currentDepartmentAtUniversityChanged(value.title);
               },
             ),
 
@@ -87,7 +89,7 @@ class CurrentUniversityStep extends StatelessWidget {
             _SectionLabel(title: 'السنة الدراسية'),
             SizedBox(height: SizeConfig.h(0.005)),
             OnboardingDropdownField<int>(
-              value: state.currentStudyYearAtUnivercity,
+              value: state.currentStudyYearAtUniversity,
               items: availableStudyYears,
               hintText: 'اختر السنة الدراسية',
               labelBuilder: yearLabel,
@@ -96,7 +98,7 @@ class CurrentUniversityStep extends StatelessWidget {
                 if (value == null) return;
                 context
                     .read<OnboardingCubit>()
-                    .currentStudyYearAtUnivercityChanged(value);
+                    .currentStudyYearAtUniversityChanged(value);
               },
             ),
 
@@ -122,9 +124,7 @@ class CurrentUniversityStep extends StatelessWidget {
 class _SectionLabel extends StatelessWidget {
   final String title;
 
-  const _SectionLabel({
-    required this.title,
-  });
+  const _SectionLabel({required this.title});
 
   @override
   Widget build(BuildContext context) {

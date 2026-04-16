@@ -26,7 +26,8 @@ class AppImage {
     static String get number1Onboarding => '$_baseIcon/number1.svg';
     static String get number2Onboarding => '$_baseIcon/number2.svg';
     static String get number3Onboarding => '$_baseIcon/number3.svg';
-
+    static String get onbardingupcheck => '$_baseImageLight/onboardingupcheck.png';
+    static String get onbardingdowncheck => '$_baseImageLight/onboardingdowncheck.png';
 
   ////////////////////// darkkkk image ////////////////////////////
   //////////////////////////////////////////////////////////////

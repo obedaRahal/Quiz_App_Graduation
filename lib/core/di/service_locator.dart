@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:quiz_app_grad/core/services/file_picker/core/services/core/services/file_picker_service_impl.dart';
+import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picker_service.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/settimgs/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settimgs/data/repository_impl/theme_repository_impl.dart';
@@ -20,6 +22,7 @@ Future<void> initSl() async {
   await _registerCore();
   _registerThemeFeature();
   _registerOnboardingFeature();
+  _registerFilePickerFeature();
 }
 
 Future<void> _registerCore() async {
@@ -90,11 +93,14 @@ void _registerThemeFeature() {
   }
 }
 
-
 void _registerOnboardingFeature() {
   if (!sl.isRegistered<OnboardingCubit>()) {
-    sl.registerFactory<OnboardingCubit>(
-      () => OnboardingCubit(),
-    );
+    sl.registerFactory<OnboardingCubit>(() => OnboardingCubit());
+  }
+}
+
+void _registerFilePickerFeature() {
+  if (!sl.isRegistered<FilePickerService>()) {
+    sl.registerLazySingleton<FilePickerService>(() => FilePickerServiceImpl());
   }
 }
