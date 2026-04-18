@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_state.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/current_university_step.dart';
@@ -33,8 +35,8 @@ class OnboardingView extends StatelessWidget {
           isSubmitting: state.isSubmitting,
           onNext: () {
             if (isDoneStep) {
+              sl<AuthSession>().markUnauthenticated();
               context.goNamed(AppRouterName.welcome);
-
               return;
             }
 
@@ -42,7 +44,7 @@ class OnboardingView extends StatelessWidget {
           },
           onBack: () {
             final cubit = context.read<OnboardingCubit>();
-
+                sl<AuthSession>().markUnauthenticated();
             if (state.isFirstStep) {
               context.goNamed(AppRouterName.welcome);
               return;

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 
 import '../../../../../../core/theme/assets/fonts.dart';
-import '../../../../../../core/theme/color/app_colors.dart';
 import '../../../../../../core/utils/media_query_config.dart';
 import 'interest_chip_item.dart';
 import 'interests_models.dart';
@@ -19,6 +20,17 @@ class SelectedInterestsWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final containerColor = isDark
+        ? AppPalette.greyMediumDark
+        : AppPalette.white;
+
+    final shadowColor = isDark
+        ? AppPalette.greyLightDark.withOpacity(0.48)
+        : Colors.black.withOpacity(0.09);
+
     if (selectedItems.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -28,7 +40,7 @@ class SelectedInterestsWrap extends StatelessWidget {
       children: [
         CustomTextWidget(
           'الاهتمامات المختارة',
-          color: AppPalette.black,
+          color: appColors.blackTogreyMedium,
           fontSize: SizeConfig.text(0.04),
           fontFamily: AppFont.elMessiriSemiBold,
         ),
@@ -40,13 +52,13 @@ class SelectedInterestsWrap extends StatelessWidget {
             vertical: SizeConfig.h(0.012),
           ),
           decoration: BoxDecoration(
-            color: AppPalette.white,
+            color: containerColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.09),
-                blurRadius: 10,
-                offset: const Offset(2, 2),
+                color: shadowColor,
+                blurRadius:  10,
+                //offset: const Offset(2, 2),
               ),
             ],
           ),

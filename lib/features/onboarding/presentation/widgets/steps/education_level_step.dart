@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_state.dart';
@@ -195,9 +195,11 @@ class _EducationGroupContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+        final appColors = context.appColors;
+
     final currentBorderColor = isGroupSelected
-        ? AppPalette.primary
-        : AppPalette.greyLight;
+        ? appColors.primaryToPrimaryDark
+        : appColors.borderFieldColorNLightToborderFieldColorNDark;
 
     return Padding(
       padding: EdgeInsets.only(top: SizeConfig.h(0.018)),
@@ -242,7 +244,7 @@ class _EducationGroupContainer extends StatelessWidget {
                 vertical: SizeConfig.h(0.004),
               ),
               decoration: BoxDecoration(
-                color: AppPalette.grey,
+                color: appColors.whiteToblack,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: currentBorderColor, width: 1.4),
               ),

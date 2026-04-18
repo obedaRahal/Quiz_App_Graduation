@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 
 class ArrowBack extends StatelessWidget {
   final VoidCallback? onTap;
@@ -29,6 +30,8 @@ class ArrowBack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final appColors = context.appColors;
+
     final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     final resolvedAlignment =
@@ -57,9 +60,9 @@ class ArrowBack extends StatelessWidget {
                     if (showLabel)
                       CustomTextWidget(
                         label ?? 'رجوع',
-                        color: AppPalette.black,
+                        color: AppPalette.primary,
                         fontSize: fontSize,
-                        fontWeight: FontWeight.w500,
+                        //fontWeight: FontWeight.w500,
                       ),
                     if (showLabel) SizedBox(width: spacing),
                     Icon(
@@ -77,7 +80,7 @@ class ArrowBack extends StatelessWidget {
                     if (showLabel)
                       CustomTextWidget(
                         "رجوع",
-                        color: AppPalette.black,
+                        color: theme.colorScheme.secondary,
                         fontFamily: AppFont.elMessiriBold,
                       ),
                   ],

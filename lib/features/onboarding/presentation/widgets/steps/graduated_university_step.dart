@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picker_service.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_state.dart';
 import '../../../../../core/theme/assets/fonts.dart';
@@ -136,16 +137,16 @@ class GraduatedUniversityStep extends StatelessWidget {
     );
   }
 
-  static Future<String?> _pickImagePath() async {
-    final result = await FilePicker.pickFiles(
-      type: FileType.image,
-      allowMultiple: false,
-    );
+  // static Future<String?> _pickImagePath() async {
+  //   final result = await FilePicker.pickFiles(
+  //     type: FileType.image,
+  //     allowMultiple: false,
+  //   );
 
-    if (result == null || result.files.isEmpty) return null;
+  //   if (result == null || result.files.isEmpty) return null;
 
-    return result.files.single.path;
-  }
+  //   return result.files.single.path;
+  // }
 
   Future<void> _pickAndSubmitImage(
     BuildContext context, {
@@ -166,9 +167,11 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return CustomTextWidget(
       title,
-      color: AppPalette.black,
+      color: appColors.blackTogreyMedium,
       fontSize: SizeConfig.text(0.045),
       fontFamily: AppFont.elMessiriSemiBold,
     );

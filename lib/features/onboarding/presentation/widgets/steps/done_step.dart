@@ -3,6 +3,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import '../../../../../core/theme/assets/images.dart';
 import '../../../../../core/utils/media_query_config.dart';
 
@@ -11,6 +12,7 @@ class OnboardingDoneStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
     return Stack(
       clipBehavior: Clip.none,
       //crossAxisAlignment: CrossAxisAlignment.end,
@@ -33,6 +35,7 @@ class OnboardingDoneStep extends StatelessWidget {
                     path: AppImage.onbardingupcheck,
                     fit: BoxFit.cover,
                     scale: 1.2,
+                    color: appColors.primaryToPrimaryDark,
                   ),
                 ),
               ),
@@ -47,7 +50,7 @@ class OnboardingDoneStep extends StatelessWidget {
               child: CustomTextWidget(
                 'مستعد للانطلاق\nفي تجربة جديدة\nومميزة؟',
                 textAlign: TextAlign.center,
-                color: AppPalette.black,
+                color: appColors.blackTogreyMedium,
                 fontSize: SizeConfig.text(0.065),
                 fontFamily: AppFont.elMessiriBold,
                 fontWeight: FontWeight.w700,
@@ -83,6 +86,7 @@ class OnboardingDoneStep extends StatelessWidget {
                     path: AppImage.onbardingdowncheck,
                     fit: BoxFit.cover,
                     scale: 1.2,
+                    color: appColors.primaryToPrimaryDark,
                   ),
                 ),
               ),

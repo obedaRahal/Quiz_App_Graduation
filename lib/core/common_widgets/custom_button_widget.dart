@@ -9,6 +9,7 @@ class CustomButtonWidget extends StatelessWidget {
   final double childVerticalPad;
   final VoidCallback onTap;
   final Widget child;
+    final List<BoxShadow>? boxShadow;
 
   const CustomButtonWidget({
     super.key,
@@ -20,6 +21,7 @@ class CustomButtonWidget extends StatelessWidget {
     this.childVerticalPad = 0,
     required this.onTap,
     required this.child,
+    this.boxShadow
   });
 
   @override
@@ -30,6 +32,7 @@ class CustomButtonWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(borderRadius),
+        boxShadow: boxShadow
       ),
       padding: EdgeInsetsDirectional.symmetric(
         horizontal: childHorizontalPad,

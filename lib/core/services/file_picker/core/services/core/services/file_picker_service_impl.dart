@@ -4,7 +4,7 @@ import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picke
 class FilePickerServiceImpl implements FilePickerService {
   @override
   Future<String?> pickSingleImagePath() async {
-    final result = await FilePicker.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       type: FileType.image,
       allowMultiple: false,
     );
@@ -16,7 +16,7 @@ class FilePickerServiceImpl implements FilePickerService {
 
   @override
   Future<List<String>> pickMultipleImagePaths() async {
-    final result = await FilePicker.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       type: FileType.image,
       allowMultiple: true,
     );
@@ -34,7 +34,7 @@ class FilePickerServiceImpl implements FilePickerService {
     FileType type = FileType.any,
     List<String>? allowedExtensions,
   }) async {
-    final result = await FilePicker.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       type: type,
       allowMultiple: false,
       allowedExtensions: allowedExtensions,

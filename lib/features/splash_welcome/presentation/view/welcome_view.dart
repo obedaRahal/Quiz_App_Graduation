@@ -39,9 +39,9 @@ class WelcomeViewBody extends StatelessWidget {
           Stack(
             children: [
               SizedBox(
-                height: SizeConfig.h(0.7),
+                //height: SizeConfig.h(0.7),
                 child: ThemedAppImage(
-                  height: SizeConfig.h(0.7),
+                  height: SizeConfig.h(0.6),
                   //width: SizeConfig.w(10),
                   fit: BoxFit.cover,
                   lightPath: AppImage.welcomeLight,
@@ -78,7 +78,7 @@ class WelcomeViewBody extends StatelessWidget {
           CustomTextWidget(
             "الدراسة صارت أسهل ! \n كل ما تحتاجه للنجاح الأكاديمي \n أصبح في مكان واحد",
             fontSize: SizeConfig.text(0.04),
-            color: appColors.blackToGreyMedium,
+            color: appColors.blackTogreyMedium,
           ),
           CustomButtonWidget(
             backgroundColor: appColors.blackToGreyLightDark,
@@ -89,7 +89,7 @@ class WelcomeViewBody extends StatelessWidget {
               debugPrint(" onboardingggggg");
               context.pushNamed(AppRouterName.onboarding);
                 sl<AuthSession>().markNeedsOnboarding();
-              context.pushNamed(AppRouterName.login);
+              context.pushNamed(AppRouterName.onboarding);
             },
             child: CustomTextWidget(
               "onboarding",

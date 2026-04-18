@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 
 import '../../../../../../core/theme/assets/fonts.dart';
-import '../../../../../../core/theme/color/app_colors.dart';
 import '../../../../../../core/utils/media_query_config.dart';
 import 'interest_chip_item.dart';
 import 'interests_models.dart';
@@ -21,6 +21,7 @@ class InterestGroupSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
     if (group.items.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -30,7 +31,7 @@ class InterestGroupSection extends StatelessWidget {
       children: [
         CustomTextWidget(
           group.title,
-          color: AppPalette.black,
+          color: appColors.blackTogreyMedium,
           fontSize: SizeConfig.text(0.045),
           fontFamily: AppFont.elMessiriSemiBold,
         ),

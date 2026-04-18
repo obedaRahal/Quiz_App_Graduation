@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 
 import '../../../../core/theme/assets/fonts.dart';
 import '../../../../core/theme/color/app_colors.dart';
 import '../../../../core/utils/media_query_config.dart';
-
 
 class OnboardingImagePickerField extends StatelessWidget {
   final String title;
@@ -25,18 +25,27 @@ class OnboardingImagePickerField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasImage = imagePath != null && imagePath!.isNotEmpty;
+    final appColors = context.appColors;
 
-    final borderColor = hasImage ? AppPalette.primary : AppPalette.greyLight;
-    final backgroundColor = hasImage ? AppPalette.primarySoft : AppPalette.grey;
-    final iconColor = hasImage ? AppPalette.primary : AppPalette.greyMedium;
-    final textColor = hasImage ? AppPalette.primary : AppPalette.greyMedium;
+    final borderColor = hasImage
+        ? appColors.primaryToPrimaryDark
+        : appColors.borderFieldColorNLightToborderFieldColorNDark;
+    final backgroundColor = hasImage
+        ? appColors.primarySoftTogreyLightDark
+        : appColors.greyToGreyMediumDark;
+    final iconColor = hasImage
+        ? appColors.primaryToPrimaryDark
+        : AppPalette.greyMedium;
+    final textColor = hasImage
+        ? appColors.primaryToPrimaryDark
+        : AppPalette.greyMedium;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         CustomTextWidget(
           title,
-          color: AppPalette.black,
+          color: appColors.blackTogreyMedium,
           fontSize: SizeConfig.text(0.045),
           fontFamily: AppFont.elMessiriSemiBold,
         ),
@@ -60,11 +69,7 @@ class OnboardingImagePickerField extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.camera_alt_outlined,
-                  color: iconColor,
-                  size: 20,
-                ),
+                Icon(Icons.camera_alt_outlined, color: iconColor, size: 20),
                 SizedBox(width: SizeConfig.w(0.03)),
                 Expanded(
                   child: CustomTextWidget(
@@ -82,16 +87,16 @@ class OnboardingImagePickerField extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.all(SizeConfig.w(0.015)),
                       decoration: BoxDecoration(
-                        color: AppPalette.white,
+                        color: Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppPalette.primary,
+                          color: appColors.primaryToPrimaryDark,
                           width: 1,
                         ),
                       ),
                       child: Icon(
                         Icons.remove_red_eye_outlined,
-                        color: AppPalette.primary,
+                        color: appColors.primaryToPrimaryDark,
                         size: 18,
                       ),
                     ),

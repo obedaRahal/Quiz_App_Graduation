@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/arrow_back.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/theme/assets/images.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
 
 import '../../../../core/theme/color/app_colors.dart';
 import '../../../../core/utils/media_query_config.dart';
@@ -40,6 +45,8 @@ class OnboardingScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+    final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final hasTitle = title != null && title!.trim().isNotEmpty;
     final hasDescription =
@@ -56,7 +63,22 @@ class OnboardingScaffold extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              ArrowBack(onTap: onBack),
+              Row(
+                children: [
+                  ArrowBack(onTap: onBack),
+                  CustomButtonWidget(
+                    onTap: () {
+                      debugPrint("change mode ");
+                      context.read<ThemeCubit>().toggleTheme();
+                    },
+                    child: ThemedAppImage(
+                      darkPath: AppImage.logoDark,
+                      lightPath: AppImage.logoLight,
+                      scale: 5,
+                    ),
+                  ),
+                ],
+              ),
               AnimatedOnboardingProgressBar(
                 currentStep: currentStep,
                 totalSteps: 5,
@@ -67,6 +89,7 @@ class OnboardingScaffold extends StatelessWidget {
                 CustomTextWidget(
                   title!,
                   textAlign: TextAlign.right,
+                  color: appColors.primaryToPrimaryDark,
                   fontSize: SizeConfig.text(0.045),
                   fontWeight: FontWeight.bold,
                 ),
@@ -89,8 +112,20 @@ class OnboardingScaffold extends StatelessWidget {
                 width: double.infinity,
                 borderRadius: 10,
                 backgroundColor: isNextEnabled
-                    ? AppPalette.primary
+                    ? appColors.primaryToPrimaryDark
+                    : isDark
+                    ? AppPalette.greyLightDark
                     : AppPalette.greyLight,
+                //appColors.greyToGreyMediumDark,
+                boxShadow: [
+                  BoxShadow(
+                    color: isNextEnabled
+                        ? appColors.primaryToPrimaryDark
+                        : appColors.greyToGreyMediumDark,
+                    blurRadius: isDark ? 6 : 10,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
                 onTap: isNextEnabled && !isSubmitting ? onNext : () {},
                 child: isSubmitting
                     ? SizedBox(
@@ -104,8 +139,10 @@ class OnboardingScaffold extends StatelessWidget {
                     : CustomTextWidget(
                         nextButtonText,
                         color: isNextEnabled
-                            ? AppPalette.white
-                            : AppPalette.greyMedium,
+                            ? appColors.whiteToblack
+                            : appColors.greyMediumTogrey,
+                        //AppPalette.grey
+                        //AppPalette.greyMedium,
                       ),
               ),
             ],

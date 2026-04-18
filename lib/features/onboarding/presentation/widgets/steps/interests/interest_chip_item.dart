@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 
 import '../../../../../../core/theme/color/app_colors.dart';
 import '../../../../../../core/utils/media_query_config.dart';
@@ -20,10 +21,12 @@ class InterestChipItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = isSelected ? AppPalette.primary : AppPalette.greyLight;
+    final appColors = context.appColors;
+
+    final borderColor = isSelected ? appColors.primaryToPrimaryDark : appColors.borderFieldColorNLightToborderFieldColorNDark;
     final backgroundColor =
-        isSelected ? AppPalette.primarySoft : AppPalette.grey;
-    final textColor = isSelected ? AppPalette.primary : AppPalette.greyMedium;
+        isSelected ? appColors.primarySoftTogreyLightDark :appColors.greyToGreyMediumDark;
+    final textColor = isSelected ? appColors.primaryToPrimaryDark : AppPalette.greyMedium;
 
     return Material(
       color: Colors.transparent,

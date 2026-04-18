@@ -6,14 +6,24 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   final Color primaryToGreyMediumDark;
   final Color whiteToPrimaryDark;
   final Color blackToGreyLightDark;
-  final Color blackToGreyMedium;
+  final Color blackTogreyMedium;
+  final Color greyToGreyMediumDark;
+  final Color whiteToblack;
+  final Color greyMediumTogrey;
+  final Color borderFieldColorNLightToborderFieldColorNDark;
+  final Color primarySoftTogreyLightDark;
 
   const AppThemeColors({
     required this.primaryToPrimaryDark,
     required this.primaryToGreyMediumDark,
     required this.whiteToPrimaryDark,
     required this.blackToGreyLightDark,
-    required this.blackToGreyMedium,
+    required this.blackTogreyMedium,
+    required this.greyToGreyMediumDark,
+    required this.whiteToblack,
+    required this.greyMediumTogrey,
+    required this.borderFieldColorNLightToborderFieldColorNDark,
+    required this.primarySoftTogreyLightDark,
   });
 
   @override
@@ -23,6 +33,11 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     Color? whiteToPrimaryDark,
     Color? blackToGreyLightDark,
     Color? blackToGreyMedium,
+    Color? greyLightToGreyMediumDark,
+    Color? whiteToblack,
+    Color? greyMediumTogrey,
+    Color? borderFieldColorNLightToborderFieldColorNDark,
+    Color? primarySoftTogreyLightDark,
   }) {
     return AppThemeColors(
       primaryToPrimaryDark: primaryToPrimaryDark ?? this.primaryToPrimaryDark,
@@ -31,7 +46,19 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       whiteToPrimaryDark: whiteToPrimaryDark ?? this.whiteToPrimaryDark,
       blackToGreyLightDark: blackToGreyLightDark ?? this.blackToGreyLightDark,
 
-      blackToGreyMedium: blackToGreyMedium ?? this.blackToGreyMedium,
+      blackTogreyMedium: blackToGreyMedium ?? this.blackTogreyMedium,
+
+      greyToGreyMediumDark:
+          greyLightToGreyMediumDark ?? this.greyToGreyMediumDark,
+      whiteToblack: whiteToblack ?? this.whiteToblack,
+      greyMediumTogrey: greyMediumTogrey ?? this.greyMediumTogrey,
+      borderFieldColorNLightToborderFieldColorNDark:
+          borderFieldColorNLightToborderFieldColorNDark ??
+          this.borderFieldColorNLightToborderFieldColorNDark,
+
+      primarySoftTogreyLightDark:
+          primarySoftTogreyLightDark ??
+          this.primarySoftTogreyLightDark,
     );
   }
 
@@ -61,9 +88,35 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
         t,
       )!,
 
-      blackToGreyMedium: Color.lerp(
-        blackToGreyMedium,
-        other.blackToGreyMedium,
+      blackTogreyMedium: Color.lerp(
+        blackTogreyMedium,
+        other.blackTogreyMedium,
+        t,
+      )!,
+
+      greyToGreyMediumDark: Color.lerp(
+        greyToGreyMediumDark,
+        other.greyToGreyMediumDark,
+        t,
+      )!,
+
+      whiteToblack: Color.lerp(whiteToblack, other.whiteToblack, t)!,
+
+      greyMediumTogrey: Color.lerp(
+        greyMediumTogrey,
+        other.greyMediumTogrey,
+        t,
+      )!,
+      
+      borderFieldColorNLightToborderFieldColorNDark: Color.lerp(
+        borderFieldColorNLightToborderFieldColorNDark,
+        other.borderFieldColorNLightToborderFieldColorNDark,
+        t,
+      )!,
+
+      primarySoftTogreyLightDark: Color.lerp(
+        primarySoftTogreyLightDark,
+        other.primarySoftTogreyLightDark,
         t,
       )!,
     );
@@ -74,7 +127,14 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     primaryToGreyMediumDark: AppPalette.primary,
     whiteToPrimaryDark: AppPalette.white,
     blackToGreyLightDark: AppPalette.black,
-    blackToGreyMedium: AppPalette.black
+    blackTogreyMedium: AppPalette.black,
+    greyToGreyMediumDark: AppPalette.grey,
+    whiteToblack: AppPalette.white,
+    greyMediumTogrey: AppPalette.greyMedium,
+    borderFieldColorNLightToborderFieldColorNDark:
+        AppPalette.borderFieldColorNLight,
+    primarySoftTogreyLightDark:
+        AppPalette.primarySoft,
   );
 
   static const dark = AppThemeColors(
@@ -82,6 +142,13 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     primaryToGreyMediumDark: AppPalette.greyMediumDark,
     whiteToPrimaryDark: AppPalette.primaryDark,
     blackToGreyLightDark: AppPalette.greyLightDark,
-    blackToGreyMedium: AppPalette.greyMedium
+    blackTogreyMedium: AppPalette.greyMedium,
+    greyToGreyMediumDark: AppPalette.greyMediumDark,
+    whiteToblack: AppPalette.black,
+    greyMediumTogrey: AppPalette.grey,
+    borderFieldColorNLightToborderFieldColorNDark:
+        AppPalette.borderFieldColorNDark,
+    primarySoftTogreyLightDark:
+        AppPalette.greyLightDark,
   );
 }

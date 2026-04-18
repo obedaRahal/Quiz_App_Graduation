@@ -32,8 +32,8 @@ class QuizApp extends StatelessWidget {
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
             themeMode: state.themeMode,
-            themeAnimationDuration: const Duration(milliseconds: 900),
-            themeAnimationCurve: Curves.easeInOutCubic,
+            //themeAnimationDuration: const Duration(milliseconds: 900),
+            //themeAnimationCurve: Curves.easeInOutCubic,
             routerConfig: AppRouter.router,
           );
         },

@@ -15,8 +15,20 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
+
+    configurations.all {
+        resolutionStrategy {
+            force(
+                "androidx.lifecycle:lifecycle-common:2.7.0",
+                "androidx.lifecycle:lifecycle-common-java8:2.7.0",
+                "androidx.collection:collection:1.3.0",
+                "androidx.collection:collection-ktx:1.3.0"
+            )
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
