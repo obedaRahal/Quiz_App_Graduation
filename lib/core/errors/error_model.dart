@@ -1,8 +1,13 @@
 class ErrorModel {
   final int status;
   final String errorMessage;
+  final String errorTitle;
 
-  const ErrorModel({required this.status, required this.errorMessage});
+  const ErrorModel({
+    required this.status,
+    required this.errorMessage,
+    required this.errorTitle,
+  });
 
   factory ErrorModel.fromJson(
     Map<String, dynamic> json, {
@@ -12,12 +17,25 @@ class ErrorModel {
     return ErrorModel(
       status: _extractStatus(json, fallbackStatusCode),
       errorMessage: _extractMessage(json, fallbackMessage),
+      errorTitle: _extractTitle(json),
     );
   }
 
   static int _extractStatus(Map<String, dynamic> json, int fallbackStatusCode) {
     return _parseStatus(json['status'] ?? json['statusCode'] ?? json['code']) ??
         fallbackStatusCode;
+  }
+
+  static String _extractTitle(Map<String, dynamic> json) {
+    final value = json['title'] ?? json['errorTitle'] ?? json['error'];
+
+    final title = value?.toString().trim();
+
+    if (title != null && title.isNotEmpty) {
+      return title;
+    }
+
+    return 'حدث خطأ';
   }
 
   static String _extractMessage(
@@ -27,8 +45,8 @@ class ErrorModel {
     final value =
         json['errorMessage'] ??
         json['message'] ??
-        json['error'] ??
-        json['detail'];
+        json['detail'] ??
+        json['error'];
 
     final message = value?.toString().trim();
 

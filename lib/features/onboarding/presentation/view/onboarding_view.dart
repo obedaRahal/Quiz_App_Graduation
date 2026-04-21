@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
-import 'package:quiz_app_grad/core/di/service_locator.dart';
-import 'package:quiz_app_grad/core/utils/auth_session.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_state.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/current_university_step.dart';
@@ -18,43 +17,60 @@ import '../widgets/onboarding_scaffold.dart';
 
 class OnboardingView extends StatelessWidget {
   const OnboardingView({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OnboardingCubit, OnboardingState>(
-      builder: (context, state) {
-        final currentStep = state.currentStep;
-        final isDoneStep = currentStep == OnboardingStepType.done;
+    return BlocListener<OnboardingCubit, OnboardingState>(
+      listenWhen: (previous, current) =>
+          previous.errorMessage != current.errorMessage,
+      listener: (context, state) {
+        final message = state.errorMessage?.trim();
 
-        return OnboardingScaffold(
-          currentStep: state.currentStepIndex + 1,
-          totalSteps: state.visibleSteps.length,
-          title: !isDoneStep ? _getStepTitle(currentStep) : null,
-          description: isDoneStep ? null : _getStepDescription(currentStep),
-          nextButtonText: isDoneStep ? 'العودة لتسجيل الدخول' : 'التالي',
-          isNextEnabled: state.canGoNext,
-          isSubmitting: state.isSubmitting,
-          onNext: () {
-            if (isDoneStep) {
-              sl<AuthSession>().markUnauthenticated();
-              context.goNamed(AppRouterName.welcome);
-              return;
-            }
-
-            context.read<OnboardingCubit>().nextStep();
-          },
-          onBack: () {
-            final cubit = context.read<OnboardingCubit>();
-                sl<AuthSession>().markUnauthenticated();
-            if (state.isFirstStep) {
-              context.goNamed(AppRouterName.welcome);
-              return;
-            }
-
-            cubit.previousStep();
-          },
-          child: _buildStepContent(context, state),
-        );
+        if (message != null && message.isNotEmpty) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? 'خطأ تحقق !',
+            message: state.errorMessage ?? 'حدث خطا',
+            type: AppValidationSnackBarType.error,
+            //assetPath: AppImage.errorSnackIcon,
+          );
+        }
       },
+      child: BlocBuilder<OnboardingCubit, OnboardingState>(
+        builder: (context, state) {
+          final currentStep = state.currentStep;
+          final isDoneStep = currentStep == OnboardingStepType.done;
+
+          return OnboardingScaffold(
+            currentStep: state.currentStepIndex + 1,
+            totalSteps: state.visibleSteps.length,
+            title: isDoneStep ? null : _getStepTitle(currentStep),
+            description: isDoneStep ? null : _getStepDescription(currentStep),
+            nextButtonText: isDoneStep ? 'العودة لتسجيل الدخول' : 'التالي',
+            isNextEnabled: state.canGoNext,
+            isSubmitting: state.isSubmitting,
+            onNext: () {
+              if (isDoneStep) {
+                context.goNamed(AppRouterName.login);
+                return;
+              }
+
+              context.read<OnboardingCubit>().nextStep();
+            },
+            onBack: () {
+              final cubit = context.read<OnboardingCubit>();
+
+              if (state.isFirstStep) {
+                context.goNamed(AppRouterName.welcome);
+                return;
+              }
+
+              cubit.previousStep();
+            },
+            child: _buildStepContent(context, state),
+          );
+        },
+      ),
     );
   }
 

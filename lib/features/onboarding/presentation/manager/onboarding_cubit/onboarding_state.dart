@@ -35,6 +35,7 @@ class OnboardingState {
   final bool isCompleted;
 
   final String? errorMessage;
+  final String? errorTitle;
 
   const OnboardingState({
     this.visibleSteps = const [
@@ -59,6 +60,7 @@ class OnboardingState {
     this.isSubmitting = false,
     this.isCompleted = false,
     this.errorMessage,
+    this.errorTitle,
   });
 
   OnboardingStepType get currentStep {
@@ -183,6 +185,7 @@ class OnboardingState {
     bool? isSubmitting,
     bool? isCompleted,
     String? errorMessage,
+    String? errorTitle,
     bool clearErrorMessage = false,
 
     bool clearCurrentUniversity = false,
@@ -241,6 +244,8 @@ class OnboardingState {
       errorMessage: clearErrorMessage
           ? null
           : (errorMessage ?? this.errorMessage),
+
+      errorTitle: clearErrorMessage ? null : (errorTitle ?? this.errorTitle),
     );
   }
 }

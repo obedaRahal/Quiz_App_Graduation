@@ -11,9 +11,9 @@ class HeardAboutStep extends StatelessWidget {
 
   static const List<_HeardAboutOption> _options = [
     _HeardAboutOption(title: 'لينكد إن', icon: FontAwesomeIcons.linkedin),
-    _HeardAboutOption(title: 'انستاغرام', icon: FontAwesomeIcons.instagram),
+    _HeardAboutOption(title: 'إنستاغرام', icon: FontAwesomeIcons.instagram),
     _HeardAboutOption(title: 'فيسبوك', icon: FontAwesomeIcons.facebook),
-    _HeardAboutOption(title: 'الأصدقاء', icon: FontAwesomeIcons.userGroup),
+    _HeardAboutOption(title: 'الإصدقاء ', icon: FontAwesomeIcons.userGroup),
     _HeardAboutOption(title: 'العائلة', icon: FontAwesomeIcons.peopleRoof),
     _HeardAboutOption(title: 'غير ذلك', icon: FontAwesomeIcons.ellipsis),
   ];
@@ -40,13 +40,6 @@ class HeardAboutStep extends StatelessWidget {
                     option.title,
                   );
                 },
-                // backgroundColor: isSelected
-                //     ? AppPalette.primarySoft
-                //     : AppPalette.grey,
-                // borderColor: isSelected
-                //     ? AppPalette.primary
-                //     : AppPalette.greyLight,
-                // textColor: isSelected ? AppPalette.primary : AppPalette.black,
               ),
             );
           }).toList(),

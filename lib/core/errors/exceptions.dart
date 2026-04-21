@@ -104,6 +104,7 @@ ErrorModel _buildErrorModel(DioException e) {
   return ErrorModel(
     status: statusCode,
     errorMessage: data?.toString() ?? e.message ?? 'Unexpected error occurred',
+    errorTitle: data?.toString() ?? e.message ?? 'Unexpected error occurred',
   );
 }
 
@@ -163,6 +164,7 @@ Never handleDioException(DioException e) {
         ErrorModel(
           status: 0,
           errorMessage: e.message ?? 'Request was cancelled',
+          errorTitle: e.message ?? 'Request was cancelled',
         ),
       );
 
@@ -171,6 +173,7 @@ Never handleDioException(DioException e) {
         ErrorModel(
           status: 0,
           errorMessage: e.message ?? 'Unknown error occurred',
+          errorTitle: e.message ?? 'Unknown error occurred',
         ),
       );
   }

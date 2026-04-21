@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_discovery_source_params.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_step_type.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interests_mock_data.dart';
 
@@ -14,7 +16,16 @@ class EducationLevelValues {
 }
 
 class OnboardingCubit extends Cubit<OnboardingState> {
-  OnboardingCubit() : super(const OnboardingState());
+  final SubmitDiscoverySourceUseCase submitDiscoverySourceUseCase;
+  final String onboardingEmail;
+
+  OnboardingCubit({
+    required this.submitDiscoverySourceUseCase,
+    required this.onboardingEmail,
+  }) : super(const OnboardingState()) {
+    debugPrint("============ OnboardingCubit INIT ============");
+    debugPrint("→ onboardingEmail: $onboardingEmail");
+  }
 
   void heardAboutChanged(String value) {
     emit(state.copyWith(heardAbout: value, clearErrorMessage: true));
@@ -59,28 +70,6 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
     debugPrint('new education level value is: ${state.educationLevel}');
   }
-  // void educationLevelChanged(String value) {
-  //   final updatedSteps = _buildVisibleSteps(value);
-  //   emit(
-  //     state.copyWith(
-  //       educationLevel: value,
-  //       visibleSteps: updatedSteps,
-  //       currentStepIndex: _safeStepIndex(
-  //         currentIndex: state.currentStepIndex,
-  //         visibleSteps: updatedSteps,
-  //       ),
-  //       currentUniversity: _shouldKeepCurrentUniversity(value)
-  //           ? state.currentUniversity
-  //           : null,
-  //       schoolStage: _shouldKeepSchoolStage(value) ? state.schoolStage : null,
-  //       graduatedUniversity: _shouldKeepGraduatedUniversity(value)
-  //           ? state.graduatedUniversity
-  //           : null,
-  //       clearErrorMessage: true,
-  //     ),
-  //   );
-  //   debugPrint('new education level value is: ${state.educationLevel}');
-  // }
 
   void currentUniversityChanged(String value) {
     emit(
@@ -161,7 +150,6 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     );
   }
 
-
   void toggleInterest(int interestId) {
     final currentIds = List<int>.from(state.selectedInterestIds);
 
@@ -190,32 +178,111 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   Future<void> nextStep() async {
-    if (!state.canGoNext || state.isSubmitting) return;
+    debugPrint("============ OnboardingCubit.nextStep ============");
+    debugPrint("→ currentStep: ${state.currentStep}");
+    debugPrint("→ currentStepIndex: ${state.currentStepIndex}");
+
+    if (!state.canGoNext) {
+      debugPrint("✗ nextStep ignored: canGoNext = false");
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (state.isSubmitting) {
+      debugPrint("✗ nextStep ignored: already submitting");
+      debugPrint("=================================================");
+      return;
+    }
+
+    switch (state.currentStep) {
+      case OnboardingStepType.heardAbout:
+        await _submitDiscoverySourceStep();
+        return;
+
+      case OnboardingStepType.done:
+        debugPrint("✓ onboarding finished");
+        emit(state.copyWith(isCompleted: true, clearErrorMessage: true));
+        debugPrint("=================================================");
+        return;
+
+      default:
+        _moveToNextStepLocally();
+        return;
+    }
+  }
+
+  Future<void> _submitDiscoverySourceStep() async {
+    debugPrint(
+      "============ OnboardingCubit._submitDiscoverySourceStep ============",
+    );
+
+    final selectedSource = state.heardAbout?.trim();
+
+    if (selectedSource == null || selectedSource.isEmpty) {
+      debugPrint("✗ discovery source is empty");
+      emit(
+        state.copyWith(
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار طريقة معرفتك بالتطبيق',
+          isSubmitting: false,
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
 
     emit(state.copyWith(isSubmitting: true, clearErrorMessage: true));
 
-    try {
-      await _submitCurrentStep();
+    final result = await submitDiscoverySourceUseCase(
+      SubmitDiscoverySourceParams(
+        email: onboardingEmail,
+        discoverySource: selectedSource,
+      ),
+    );
 
-      if (state.currentStep == OnboardingStepType.done || state.isLastStep) {
-        emit(state.copyWith(isSubmitting: false, isCompleted: true));
-        return;
-      }
+    result.fold(
+      (failure) {
+        debugPrint("✗ submitDiscoverySource failure: ${failure.message}");
 
-      emit(
-        state.copyWith(
-          isSubmitting: false,
-          currentStepIndex: state.currentStepIndex + 1,
-        ),
-      );
-    } catch (_) {
-      emit(
-        state.copyWith(
-          isSubmitting: false,
-          errorMessage: 'حدث خطأ أثناء حفظ بيانات الخطوة الحالية',
-        ),
-      );
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ submitDiscoverySource success: ${response.title}");
+        debugPrint("✓ saved discovery source: ${response.discoverySource}");
+
+        emit(state.copyWith(isSubmitting: false, clearErrorMessage: true));
+
+        _moveToNextStepLocally();
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void _moveToNextStepLocally() {
+    debugPrint(
+      "============ OnboardingCubit._moveToNextStepLocally ============",
+    );
+
+    if (state.currentStepIndex >= state.visibleSteps.length - 1) {
+      debugPrint("✓ reached last visible step");
+      emit(state.copyWith(isCompleted: true, clearErrorMessage: true));
+      debugPrint("=================================================");
+      return;
     }
+
+    final newIndex = state.currentStepIndex + 1;
+
+    emit(state.copyWith(currentStepIndex: newIndex, clearErrorMessage: true));
+
+    debugPrint("→ moved to index: $newIndex");
+    debugPrint("=================================================");
   }
 
   void previousStep() {
@@ -305,10 +372,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         educationLevel == EducationLevelValues.graduatedLevel;
   }
 
-  Future<void> _submitCurrentStep() async {
-    // هذه دالة مؤقتة حاليًا.
-    // لاحقًا سنربطها مع API / UseCase حسب الخطوة الحالية.
-    debugPrint("im at _submitCurrentStep to call API later");
-    await Future<void>.delayed(Duration.zero);
-  }
+  // Future<void> _submitCurrentStep() async {
+  //   // هذه دالة مؤقتة حاليًا.
+  //   // لاحقًا سنربطها مع API / UseCase حسب الخطوة الحالية.
+  //   debugPrint("im at _submitCurrentStep to call API later");
+  //   await Future<void>.delayed(Duration.zero);
+  // }
 }

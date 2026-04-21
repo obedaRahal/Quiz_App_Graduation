@@ -6,5 +6,9 @@ class EndPoints {
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
 
+  // onboarding ////////////////
+  static const String onboardingDiscoverySource =     'http://localhost/api/v1/user-mobile/auth/onboarding/discovery-source';
+
+
 
 }

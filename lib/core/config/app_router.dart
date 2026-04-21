@@ -15,6 +15,7 @@ import 'package:quiz_app_grad/features/auth/presentation/view/login_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
@@ -59,7 +60,18 @@ class AppRouter {
           pageBuilder: (context, state) => _slidePage(
             state: state,
             child: BlocProvider(
-              create: (_) => sl<OnboardingCubit>(),
+              create: (_) {
+                final email =
+                    (state.extra as String?)?.trim().isNotEmpty == true
+                    ? (state.extra as String).trim()
+                    : 'obdrhl@gmail.com';
+
+                return OnboardingCubit(
+                  onboardingEmail: email,
+                  submitDiscoverySourceUseCase:
+                      sl<SubmitDiscoverySourceUseCase>(),
+                );
+              },
               child: const OnboardingView(),
             ),
           ),
@@ -186,7 +198,6 @@ class AppRouter {
     AppRouterPath.onboarding,
     AppRouterPath.welcome,
   };
-
 
   static CustomTransitionPage<void> _slidePage({
     required GoRouterState state,

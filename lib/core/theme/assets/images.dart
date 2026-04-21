@@ -13,6 +13,9 @@ class AppImage {
   static String get logo => '$_baseIcon/logo.png';
   static String get logoLight => '$_baseIcon/logolight.svg';
 
+  static String get truecheck => '$_baseIcon/truecheck.svg';
+  static String get falsecheck => '$_baseIcon/falsecheck.svg';
+
   static String get logoDark => '$_baseIcon/logodark.svg';
 
   static String get welcomeLight => '$_baseImageLight/welcomeLight.png';
