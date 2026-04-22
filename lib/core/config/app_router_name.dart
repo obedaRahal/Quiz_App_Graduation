@@ -11,6 +11,10 @@ abstract class AppRouterName {
   static const forgotPasswordOtpCode = 'forgotPasswordOtpCodePage';
   static const forgotPasswordNewPassword = 'forgotPasswordNewPasswordPage';
   static const onboarding = 'onboarding';
+
+  static const home = 'homePage';
+  static const mainLayout = 'mainLayout';
+
 }
 
 abstract class AppRouterPath {
@@ -27,4 +31,8 @@ abstract class AppRouterPath {
 
   //static const intro = '/intro';
   static const onboarding = '/onboarding';
+
+  static const home = '/homePage';
+  static const mainLayout = '/mainLayout';
+
 }

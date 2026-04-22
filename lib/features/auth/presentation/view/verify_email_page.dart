@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -17,7 +19,6 @@ class VerifyEmailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    final colorScheme = context.colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: Padding(
@@ -55,6 +56,9 @@ class VerifyEmailPage extends StatelessWidget {
                     // onOtpChanged: (value) =>
                     //     context.read<VerifyRegisterCubit>().otpChanged(value),
                     onSubmit: () {
+                      context.pushNamed(
+                        AppRouterName.mainLayout,
+                      );
                       // context.read<VerifyRegisterCubit>().submitOtp();
                       // debugPrint("verifyy confirmmmm");
                     },

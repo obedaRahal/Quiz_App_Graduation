@@ -14,8 +14,12 @@ import 'package:quiz_app_grad/features/auth/presentation/view/forgot_password_ot
 import 'package:quiz_app_grad/features/auth/presentation/view/login_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
+import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
+import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
+import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
+import 'package:quiz_app_grad/features/main_layout/presentation/view/main_layout.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
@@ -152,6 +156,26 @@ class AppRouter {
             );
           },
         ),
+        GoRoute(
+          path: AppRouterPath.mainLayout,
+          name: AppRouterName.mainLayout,
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => BottomNavCubit(),
+              child: const MainLayoutBody(),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRouterPath.home,
+          name: AppRouterName.home,
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => HomeCubit(),
+              child: const HomePage(),
+            );
+          },
+        ),
       ],
     );
   }
@@ -194,6 +218,8 @@ class AppRouter {
     AppRouterPath.forgotPasswordEmail,
     AppRouterPath.forgotPasswordOtpCode,
     AppRouterPath.forgotPasswordNewPassword,
+    AppRouterPath.home,
+    AppRouterPath.mainLayout,
   };
 
   static const Set<String> _needsOnboardingAllowedRoutes = {

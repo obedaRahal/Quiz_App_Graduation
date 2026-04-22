@@ -42,5 +42,19 @@ class AppImage {
   static String get forgetPassword1 => '$_baseImageLight/forgetpassword1.svg';
   static String get forgetPassword2 => '$_baseImageLight/forgetpassword2.svg';
   static String get forgetPassword3 => '$_baseImageLight/forgetpassword3.svg';
-  
+
+  /////////// Home /////////////
+  static String get homeProfilePhoto => '$_baseImageLight/homeprofilephoto.svg';
+
+  static String get mind1 => '$_baseImageLight/brain1.svg';
+  static String get mind2 => '$_baseImageLight/_x31__17_.svg';
+  static String get mind3 => '$_baseImageLight/_x31__8_.svg';
+  static String get carmen => '$_baseImageLight/caremalsh.jpg';
+  static String get feather => '$_baseImageLight/feather.svg';
+  static String get handshake => '$_baseImageLight/handshake.svg';
+  static String get chemical => '$_baseImageLight/chemical-lab-svgrepo-com.svg';
+  static String get home => '$_baseImageLight/home-3 (1).svg';
+  static String get library => '$_baseImageLight/library-svgrepo-com.svg';
+  static String get bookmark => '$_baseImageLight/book-bookmark-minimalistic-svgrepo-com.svg';
+
 }
