@@ -20,7 +20,7 @@ class EducationLevelStep extends StatelessWidget {
     'حماة',
     'اللاذقية',
     'طرطوس',
-    'إدلب',
+    'ادلب',
     'درعا',
     'السويداء',
     'القنيطرة',

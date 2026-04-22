@@ -16,6 +16,7 @@ import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
@@ -70,6 +71,7 @@ class AppRouter {
                   onboardingEmail: email,
                   submitDiscoverySourceUseCase:
                       sl<SubmitDiscoverySourceUseCase>(),
+                      submitEducationLevelUseCase: sl<SubmitEducationLevelUseCase>()
                 );
               },
               child: const OnboardingView(),

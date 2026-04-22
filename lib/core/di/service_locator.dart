@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_r
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/settimgs/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settimgs/data/repository_impl/theme_repository_impl.dart';
@@ -100,9 +101,7 @@ void _registerThemeFeature() {
 void _registerOnboardingFeature() {
   if (!sl.isRegistered<OnboardingRemoteDataSource>()) {
     sl.registerLazySingleton<OnboardingRemoteDataSource>(
-      () => OnboardingRemoteDataSourceImpl(
-        apiConsumer: sl<ApiConsumer>(),
-      ),
+      () => OnboardingRemoteDataSourceImpl(apiConsumer: sl<ApiConsumer>()),
     );
   }
 
@@ -116,9 +115,13 @@ void _registerOnboardingFeature() {
 
   if (!sl.isRegistered<SubmitDiscoverySourceUseCase>()) {
     sl.registerLazySingleton<SubmitDiscoverySourceUseCase>(
-      () => SubmitDiscoverySourceUseCase(
-        sl<OnboardingRepository>(),
-      ),
+      () => SubmitDiscoverySourceUseCase(sl<OnboardingRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<SubmitEducationLevelUseCase>()) {
+    sl.registerLazySingleton<SubmitEducationLevelUseCase>(
+      () => SubmitEducationLevelUseCase(sl<OnboardingRepository>()),
     );
   }
 }

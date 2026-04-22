@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_discovery_source_params.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_education_level_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_step_type.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interests_mock_data.dart';
 
@@ -17,10 +19,13 @@ class EducationLevelValues {
 
 class OnboardingCubit extends Cubit<OnboardingState> {
   final SubmitDiscoverySourceUseCase submitDiscoverySourceUseCase;
+  final SubmitEducationLevelUseCase submitEducationLevelUseCase;
+
   final String onboardingEmail;
 
   OnboardingCubit({
     required this.submitDiscoverySourceUseCase,
+    required this.submitEducationLevelUseCase,
     required this.onboardingEmail,
   }) : super(const OnboardingState()) {
     debugPrint("============ OnboardingCubit INIT ============");
@@ -199,6 +204,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         await _submitDiscoverySourceStep();
         return;
 
+      case OnboardingStepType.educationLevel:
+        await _submitEducationLevelStep();
+        return;
+
       case OnboardingStepType.done:
         debugPrint("✓ onboarding finished");
         emit(state.copyWith(isCompleted: true, clearErrorMessage: true));
@@ -264,6 +273,81 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
     debugPrint("=================================================");
   }
+
+  Future<void> _submitEducationLevelStep() async {
+    debugPrint(
+      "============ OnboardingCubit._submitEducationLevelStep ============",
+    );
+
+    final selectedGovernorate = state.governorate?.trim();
+    final selectedEducationLevel = state.educationLevel?.trim();
+
+    if (selectedGovernorate == null || selectedGovernorate.isEmpty) {
+      debugPrint("✗ governorate is empty");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار المحافظة',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (selectedEducationLevel == null || selectedEducationLevel.isEmpty) {
+      debugPrint("✗ education level is empty");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار المستوى الدراسي',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(state.copyWith(isSubmitting: true, clearErrorMessage: true));
+
+    final result = await submitEducationLevelUseCase(
+      SubmitEducationLevelParams(
+        email: onboardingEmail,
+        governorate: selectedGovernorate,
+        educationLevel: selectedEducationLevel,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ submitEducationLevel failure title: ${failure.title}");
+        debugPrint(
+          "✗ submitEducationLevel failure message: ${failure.message}",
+        );
+
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ submitEducationLevel success: ${response.title}");
+        debugPrint("✓ saved governorate: ${response.governorate}");
+        debugPrint("✓ saved educationLevel: ${response.educationLevel}");
+
+        emit(state.copyWith(isSubmitting: false, clearErrorMessage: true));
+
+        _moveToNextStepLocally();
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  
 
   void _moveToNextStepLocally() {
     debugPrint(
