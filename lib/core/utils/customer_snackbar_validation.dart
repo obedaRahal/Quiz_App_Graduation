@@ -190,6 +190,7 @@ class _ValidationSnackBarOverlayState extends State<_ValidationSnackBarOverlay>
                                           CrossAxisAlignment.end,
                                       children: [
                                         CustomTextWidget(
+                                          textDirection: TextDirection.ltr,
                                           widget.title,
                                           textAlign: TextAlign.right,
                                           color: style.mainColor,

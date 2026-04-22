@@ -17,10 +17,15 @@ import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_current_university_profile_params.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_school_stage_params.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/view/main_layout.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_graduate_academic_profile_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_school_stage_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
@@ -75,7 +80,13 @@ class AppRouter {
                   onboardingEmail: email,
                   submitDiscoverySourceUseCase:
                       sl<SubmitDiscoverySourceUseCase>(),
-                      submitEducationLevelUseCase: sl<SubmitEducationLevelUseCase>()
+                  submitEducationLevelUseCase:
+                      sl<SubmitEducationLevelUseCase>(),
+                  submitSchoolStageUseCase: sl<SubmitSchoolStageUseCase>(),
+                  submitCurrentUniversityProfileUseCase:
+                      sl<SubmitCurrentUniversityProfileUseCase>(),
+                  submitGraduateAcademicProfileUseCase:
+                      sl<SubmitGraduateAcademicProfileUseCase>(),
                 );
               },
               child: const OnboardingView(),

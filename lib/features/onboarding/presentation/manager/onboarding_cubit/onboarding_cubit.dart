@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_current_university_profile_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_discovery_source_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_education_level_params.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_graduate_academic_profile_params.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_school_stage_params.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_graduate_academic_profile_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_school_stage_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_step_type.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interests_mock_data.dart';
 
@@ -20,6 +26,11 @@ class EducationLevelValues {
 class OnboardingCubit extends Cubit<OnboardingState> {
   final SubmitDiscoverySourceUseCase submitDiscoverySourceUseCase;
   final SubmitEducationLevelUseCase submitEducationLevelUseCase;
+  final SubmitSchoolStageUseCase submitSchoolStageUseCase;
+  final SubmitCurrentUniversityProfileUseCase
+  submitCurrentUniversityProfileUseCase;
+  final SubmitGraduateAcademicProfileUseCase
+  submitGraduateAcademicProfileUseCase;
 
   final String onboardingEmail;
 
@@ -27,6 +38,9 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     required this.submitDiscoverySourceUseCase,
     required this.submitEducationLevelUseCase,
     required this.onboardingEmail,
+    required this.submitSchoolStageUseCase,
+    required this.submitCurrentUniversityProfileUseCase,
+    required this.submitGraduateAcademicProfileUseCase,
   }) : super(const OnboardingState()) {
     debugPrint("============ OnboardingCubit INIT ============");
     debugPrint("→ onboardingEmail: $onboardingEmail");
@@ -208,6 +222,18 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         await _submitEducationLevelStep();
         return;
 
+      case OnboardingStepType.schoolStage:
+        await _submitSchoolStageStep();
+        return;
+
+      case OnboardingStepType.graduatedUniversity:
+        await _submitGraduateAcademicProfileStep();
+        return;
+
+      case OnboardingStepType.currentUniversity:
+        await _submitCurrentUniversityProfileStep();
+        return;
+
       case OnboardingStepType.done:
         debugPrint("✓ onboarding finished");
         emit(state.copyWith(isCompleted: true, clearErrorMessage: true));
@@ -347,7 +373,240 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     debugPrint("=================================================");
   }
 
-  
+  Future<void> _submitSchoolStageStep() async {
+    debugPrint(
+      "============ OnboardingCubit._submitSchoolStageStep ============",
+    );
+
+    final selectedSchoolStage = state.schoolStage?.trim();
+
+    if (selectedSchoolStage == null || selectedSchoolStage.isEmpty) {
+      debugPrint("✗ school stage is empty");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار المرحلة الدراسية',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(state.copyWith(isSubmitting: true, clearErrorMessage: true));
+
+    final result = await submitSchoolStageUseCase(
+      SubmitSchoolStageParams(
+        email: onboardingEmail,
+        schoolStage: selectedSchoolStage,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ submitSchoolStage failure title: ${failure.title}");
+        debugPrint("✗ submitSchoolStage failure message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ submitSchoolStage success: ${response.title}");
+        debugPrint("✓ saved schoolStage: ${response.schoolStage}");
+
+        emit(state.copyWith(isSubmitting: false, clearErrorMessage: true));
+
+        _moveToNextStepLocally();
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> _submitCurrentUniversityProfileStep() async {
+    debugPrint(
+      "============ OnboardingCubit._submitCurrentUniversityProfileStep ============",
+    );
+
+    final selectedUniversityName = state.currentUniversity?.trim();
+    final selectedDepartmentName = state.currentDepartmentAtUniversity?.trim();
+    final selectedUniversityYear = state.currentStudyYearAtUniversity;
+
+    if (selectedUniversityName == null || selectedUniversityName.isEmpty) {
+      debugPrint("✗ current university is empty");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار الجامعة',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (selectedDepartmentName == null || selectedDepartmentName.isEmpty) {
+      debugPrint("✗ current department is empty");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار القسم',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (selectedUniversityYear == null) {
+      debugPrint("✗ current university year is empty");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار السنة الدراسية',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(state.copyWith(isSubmitting: true, clearErrorMessage: true));
+
+    final result = await submitCurrentUniversityProfileUseCase(
+      SubmitCurrentUniversityProfileParams(
+        email: onboardingEmail,
+        universityName: selectedUniversityName,
+        department: selectedDepartmentName,
+        universityYear: selectedUniversityYear,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint(
+          "✗ submitCurrentUniversityProfile failure title: ${failure.title}",
+        );
+        debugPrint(
+          "✗ submitCurrentUniversityProfile failure message: ${failure.message}",
+        );
+
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint(
+          "✓ submitCurrentUniversityProfile success: ${response.title}",
+        );
+        debugPrint("✓ saved universityName: ${response.universityName}");
+        debugPrint("✓ saved department: ${response.department}");
+        debugPrint("✓ saved universityYear: ${response.universityYear}");
+
+        emit(state.copyWith(isSubmitting: false, clearErrorMessage: true));
+
+        _moveToNextStepLocally();
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> _submitGraduateAcademicProfileStep() async {
+    debugPrint(
+      "============ OnboardingCubit._submitGraduateAcademicProfileStep ============",
+    );
+
+    final selectedUniversityName = state.graduatedUniversity?.trim();
+    final selectedDepartmentName = state.graduatedDepartment?.trim();
+    final certificateImagePath = state.graduationCertificateImagePath?.trim();
+    final identityImagePath = state.personalIdentityImagePath?.trim();
+
+    if (selectedUniversityName == null || selectedUniversityName.isEmpty) {
+      debugPrint("✗ graduated university is empty");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار الجامعة',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (selectedDepartmentName == null || selectedDepartmentName.isEmpty) {
+      debugPrint("✗ graduated department is empty");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار القسم',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(state.copyWith(isSubmitting: true, clearErrorMessage: true));
+
+    final result = await submitGraduateAcademicProfileUseCase(
+      SubmitGraduateAcademicProfileParams(
+        email: onboardingEmail,
+        universityName: selectedUniversityName,
+        department: selectedDepartmentName,
+        certificateImagePath:
+            (certificateImagePath != null && certificateImagePath.isNotEmpty)
+            ? certificateImagePath
+            : null,
+        identityImagePath:
+            (identityImagePath != null && identityImagePath.isNotEmpty)
+            ? identityImagePath
+            : null,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint(
+          "✗ submitGraduateAcademicProfile failure title: ${failure.title}",
+        );
+        debugPrint(
+          "✗ submitGraduateAcademicProfile failure message: ${failure.message}",
+        );
+
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint(
+          "✓ submitGraduateAcademicProfile success: ${response.title}",
+        );
+        debugPrint("✓ saved universityName: ${response.universityName}");
+        debugPrint("✓ saved department: ${response.department}");
+
+        emit(state.copyWith(isSubmitting: false, clearErrorMessage: true));
+
+        _moveToNextStepLocally();
+      },
+    );
+
+    debugPrint("=================================================");
+  }
 
   void _moveToNextStepLocally() {
     debugPrint(

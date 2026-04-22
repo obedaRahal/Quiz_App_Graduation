@@ -10,4 +10,10 @@ class EndPoints {
       'http://localhost/api/v1/user-mobile/auth/onboarding/discovery-source';
   static const String onboardingEducationLevel =
       'http://localhost/api/v1/user-mobile/auth/onboarding/education-level';
+  static const String onboardingSchoolStage =
+      'http://localhost/api/v1/user-mobile/auth/onboarding/school-stage';
+  static const String onboardingCurrentUniversityProfile =
+      'http://localhost/api/v1/user-mobile/auth/onboarding/university-profile';
+  static const String onboardingGraduateAcademicProfile =
+      'http://localhost/api/v1/user-mobile/auth/onboarding/graduate-academic-profile';
 }

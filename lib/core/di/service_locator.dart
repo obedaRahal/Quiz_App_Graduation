@@ -5,8 +5,11 @@ import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picke
 import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_remote_data_source.dart';
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/repositories/onboarding_repository.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_graduate_academic_profile_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_school_stage_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/settimgs/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settimgs/data/repository_impl/theme_repository_impl.dart';
@@ -122,6 +125,24 @@ void _registerOnboardingFeature() {
   if (!sl.isRegistered<SubmitEducationLevelUseCase>()) {
     sl.registerLazySingleton<SubmitEducationLevelUseCase>(
       () => SubmitEducationLevelUseCase(sl<OnboardingRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<SubmitSchoolStageUseCase>()) {
+    sl.registerLazySingleton<SubmitSchoolStageUseCase>(
+      () => SubmitSchoolStageUseCase(sl<OnboardingRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<SubmitCurrentUniversityProfileUseCase>()) {
+    sl.registerLazySingleton<SubmitCurrentUniversityProfileUseCase>(
+      () => SubmitCurrentUniversityProfileUseCase(sl<OnboardingRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<SubmitGraduateAcademicProfileUseCase>()) {
+    sl.registerLazySingleton<SubmitGraduateAcademicProfileUseCase>(
+      () => SubmitGraduateAcademicProfileUseCase(sl<OnboardingRepository>()),
     );
   }
 }

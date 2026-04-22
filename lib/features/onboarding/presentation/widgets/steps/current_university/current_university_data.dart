@@ -27,6 +27,7 @@ final List<UniversityOption> currentUniversityOptions = [
       buildDepartmentOption('الفنون الجميلة'),
       buildDepartmentOption('العلوم السياسية'),
       buildDepartmentOption('السياحة'),
+      buildDepartmentOption('علوم الحاسوب'),
     ],
   ),
 
