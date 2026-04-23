@@ -38,6 +38,7 @@ class SchoolStageStep extends StatelessWidget {
           previous.schoolStage != current.schoolStage,
       builder: (context, state) {
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Row(
               children: [
@@ -69,19 +70,17 @@ class SchoolStageStep extends StatelessWidget {
               ],
             ),
             SizedBox(height: SizeConfig.h(0.03)),
-            Center(
-              child: SizedBox(
-                width: SizeConfig.w(0.42),
-                child: _SchoolStageCard(
-                  imagePath: _options[2].imagePath,
-                  option: _options[2],
-                  isSelected: state.schoolStage == _options[2].title,
-                  onTap: () {
-                    context.read<OnboardingCubit>().schoolStageChanged(
-                      _options[2].title,
-                    );
-                  },
-                ),
+            SizedBox(
+              width: SizeConfig.w(0.42),
+              child: _SchoolStageCard(
+                imagePath: _options[2].imagePath,
+                option: _options[2],
+                isSelected: state.schoolStage == _options[2].title,
+                onTap: () {
+                  context.read<OnboardingCubit>().schoolStageChanged(
+                    _options[2].title,
+                  );
+                },
               ),
             ),
           ],

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_interest_group.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_current_university_profile_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_discovery_source_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_education_level_params.dart';
@@ -12,6 +14,7 @@ import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_gradua
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_school_stage_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_step_type.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interests_mock_data.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interests_models.dart';
 
 import 'onboarding_state.dart';
 
@@ -31,6 +34,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   submitCurrentUniversityProfileUseCase;
   final SubmitGraduateAcademicProfileUseCase
   submitGraduateAcademicProfileUseCase;
+  final GetOnboardingInterestsUseCase getOnboardingInterestsUseCase;
 
   final String onboardingEmail;
 
@@ -41,6 +45,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     required this.submitSchoolStageUseCase,
     required this.submitCurrentUniversityProfileUseCase,
     required this.submitGraduateAcademicProfileUseCase,
+    required this.getOnboardingInterestsUseCase,
   }) : super(const OnboardingState()) {
     debugPrint("============ OnboardingCubit INIT ============");
     debugPrint("→ onboardingEmail: $onboardingEmail");
@@ -176,8 +181,9 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       currentIds.remove(interestId);
     } else {
       if (currentIds.length >= 5) {
-        emit(state.copyWith(errorMessage: 'يمكن اختيار 5 اهتمامات كحد أقصى'));
-        return;
+        //emit(state.copyWith(errorMessage: 'يمكن اختيار 5 اهتمامات كحد أقصى' ,));
+        //return;
+        currentIds.removeAt(0);
       }
       currentIds.add(interestId);
     }
@@ -185,15 +191,70 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(
       state.copyWith(selectedInterestIds: currentIds, clearErrorMessage: true),
     );
+    debugPrint('new list of interest is: ${state.selectedInterestIds}');
   }
 
-  void loadMockInterests() {
+  Future<void> loadInterests() async {
+    debugPrint("============ OnboardingCubit.loadInterests ============");
+
+    if (state.isLoading) {
+      debugPrint("✗ loadInterests ignored: already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
     emit(
       state.copyWith(
-        interestGroups: mockInterestGroups,
+        isLoading: true,
+        hasAttemptedLoadingInterests: true,
         clearErrorMessage: true,
       ),
     );
+
+    final result = await getOnboardingInterestsUseCase();
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ loadInterests failure title: ${failure.title}");
+        debugPrint("✗ loadInterests failure message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            isLoading: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ loadInterests success: ${response.title}");
+        debugPrint("✓ groups count: ${response.groups.length}");
+
+        emit(
+          state.copyWith(
+            isLoading: false,
+            interestGroups: _mapInterestGroupsToPresentation(response.groups),
+            clearErrorMessage: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  List<InterestGroupOption> _mapInterestGroupsToPresentation(
+    List<OnboardingInterestGroup> groups,
+  ) {
+    return groups.map((group) {
+      return InterestGroupOption(
+        id: 0,
+        title: group.title,
+        items: group.interests.map((interest) {
+          return InterestOption(id: interest.id, name: interest.name);
+        }).toList(),
+      );
+    }).toList();
   }
 
   Future<void> nextStep() async {

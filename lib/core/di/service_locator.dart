@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picke
 import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_remote_data_source.dart';
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/repositories/onboarding_repository.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
@@ -143,6 +144,12 @@ void _registerOnboardingFeature() {
   if (!sl.isRegistered<SubmitGraduateAcademicProfileUseCase>()) {
     sl.registerLazySingleton<SubmitGraduateAcademicProfileUseCase>(
       () => SubmitGraduateAcademicProfileUseCase(sl<OnboardingRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetOnboardingInterestsUseCase>()) {
+    sl.registerLazySingleton<GetOnboardingInterestsUseCase>(
+      () => GetOnboardingInterestsUseCase(sl<OnboardingRepository>()),
     );
   }
 }

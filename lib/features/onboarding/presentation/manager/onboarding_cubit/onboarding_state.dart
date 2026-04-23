@@ -29,6 +29,7 @@ class OnboardingState {
   // at interests step
   final List<int> selectedInterestIds;
   final List<InterestGroupOption> interestGroups;
+  final bool hasAttemptedLoadingInterests;
 
   final bool isLoading;
   final bool isSubmitting;
@@ -61,6 +62,7 @@ class OnboardingState {
     this.isCompleted = false,
     this.errorMessage,
     this.errorTitle,
+    this.hasAttemptedLoadingInterests = false,
   });
 
   OnboardingStepType get currentStep {
@@ -187,6 +189,7 @@ class OnboardingState {
     String? errorMessage,
     String? errorTitle,
     bool clearErrorMessage = false,
+    bool? hasAttemptedLoadingInterests,
 
     bool clearCurrentUniversity = false,
     bool clearCurrentDepartmentAtUniversity = false,
@@ -246,6 +249,8 @@ class OnboardingState {
           : (errorMessage ?? this.errorMessage),
 
       errorTitle: clearErrorMessage ? null : (errorTitle ?? this.errorTitle),
+      hasAttemptedLoadingInterests:
+    hasAttemptedLoadingInterests ?? this.hasAttemptedLoadingInterests,
     );
   }
 }

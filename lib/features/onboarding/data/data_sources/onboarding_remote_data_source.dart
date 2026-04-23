@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/database/api/end_point.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_current_university_profile_response_model.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_education_level_response_model.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_graduate_academic_profile_response_model.dart';
+import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_interests_response_model.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_school_stage_response_model.dart';
 
 import '../../../../core/database/api/api_consumer.dart';
@@ -42,6 +43,8 @@ abstract class OnboardingRemoteDataSource {
     String? certificateImagePath,
     String? identityImagePath,
   });
+
+  Future<OnboardingInterestsResponseModel> getOnboardingInterests();
 }
 
 class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
@@ -216,4 +219,25 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
     final normalizedPath = path.replaceAll('\\', '/');
     return normalizedPath.split('/').last;
   }
+
+  @override
+Future<OnboardingInterestsResponseModel> getOnboardingInterests() async {
+  debugPrint(
+    "============ OnboardingRemoteDataSourceImpl.getOnboardingInterests ============",
+  );
+  debugPrint(
+    "→ endpoint: ${EndPoints.onboardingInterests}",
+  );
+
+  final response = await apiConsumer.get(
+    EndPoints.onboardingInterests,
+  );
+
+  debugPrint("← response (getOnboardingInterests): $response");
+  debugPrint("=================================================");
+
+  return OnboardingInterestsResponseModel.fromJson(
+    response as Map<String, dynamic>,
+  );
+}
 }

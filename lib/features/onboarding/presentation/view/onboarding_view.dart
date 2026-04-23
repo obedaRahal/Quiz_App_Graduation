@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_state.dart';
@@ -62,6 +64,8 @@ class OnboardingView extends StatelessWidget {
 
               if (state.isFirstStep) {
                 context.goNamed(AppRouterName.welcome);
+                sl<AuthSession>().markUnauthenticated();
+
                 return;
               }
 
@@ -140,9 +144,11 @@ class OnboardingView extends StatelessWidget {
 
       case OnboardingStepType.interests:
         final cubit = context.read<OnboardingCubit>();
-        if (state.interestGroups.isEmpty) {
+        if (state.interestGroups.isEmpty &&
+            !state.isLoading &&
+            !state.hasAttemptedLoadingInterests) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            cubit.loadMockInterests();
+            cubit.loadInterests();
           });
         }
         return const InterestsStep();

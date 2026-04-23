@@ -17,6 +17,7 @@ import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_current_university_profile_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_school_stage_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
@@ -87,6 +88,8 @@ class AppRouter {
                       sl<SubmitCurrentUniversityProfileUseCase>(),
                   submitGraduateAcademicProfileUseCase:
                       sl<SubmitGraduateAcademicProfileUseCase>(),
+                        getOnboardingInterestsUseCase: sl<GetOnboardingInterestsUseCase>(),
+
                 );
               },
               child: const OnboardingView(),

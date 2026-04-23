@@ -46,6 +46,7 @@ class SelectedInterestsWrap extends StatelessWidget {
         ),
         SizedBox(height: SizeConfig.h(0.012)),
         Container(
+          
           width: double.infinity,
           padding: EdgeInsets.symmetric(
             horizontal: SizeConfig.w(0.03),
@@ -53,17 +54,18 @@ class SelectedInterestsWrap extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: containerColor,
-            borderRadius: BorderRadius.circular(12),
+            //borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
                 color: shadowColor,
-                blurRadius:  10,
-                //offset: const Offset(2, 2),
+                blurRadius: 5,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Wrap(
-            alignment: WrapAlignment.end,
+            textDirection: TextDirection.rtl,
+            alignment: WrapAlignment.start,
             runAlignment: WrapAlignment.end,
             crossAxisAlignment: WrapCrossAlignment.center,
             spacing: SizeConfig.w(0.02),

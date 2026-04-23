@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_cur
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_discovery_source_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_education_level_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_graduate_academic_profile_response.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_interests_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_school_stage_response.dart';
 
 abstract class OnboardingRepository {
@@ -41,4 +42,6 @@ abstract class OnboardingRepository {
     String? certificateImagePath,
     String? identityImagePath,
   });
+
+  Future<Either<Failure, OnboardingInterestsResponse>> getOnboardingInterests();
 }

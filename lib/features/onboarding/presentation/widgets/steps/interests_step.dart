@@ -10,7 +10,6 @@ import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/int
 import '../../../../../../core/theme/color/app_colors.dart';
 import '../../../../../../core/utils/media_query_config.dart';
 
-
 class InterestsStep extends StatelessWidget {
   const InterestsStep({super.key});
 
@@ -50,8 +49,7 @@ class InterestsStep extends StatelessWidget {
               },
             ),
 
-            if (selectedItems.isNotEmpty)
-              SizedBox(height: SizeConfig.h(0.025)),
+            if (selectedItems.isNotEmpty) SizedBox(height: SizeConfig.h(0.025)),
 
             ...state.interestGroups.map((group) {
               return Padding(
@@ -61,6 +59,8 @@ class InterestsStep extends StatelessWidget {
                   selectedInterestIds: state.selectedInterestIds,
                   onToggle: (item) {
                     context.read<OnboardingCubit>().toggleInterest(item.id);
+                    debugPrint("item name : ${item.name}");
+                    debugPrint("item id : ${item.id}");
                   },
                 ),
               );
@@ -96,18 +96,19 @@ class InterestsStep extends StatelessWidget {
 
     final allItems = _flattenInterests(groups);
 
-    return selectedIds.map((id) {
-      try {
-        return allItems.firstWhere((item) => item.id == id);
-      } catch (_) {
-        return null;
-      }
-    }).whereType<InterestOption>().toList();
+    return selectedIds
+        .map((id) {
+          try {
+            return allItems.firstWhere((item) => item.id == id);
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<InterestOption>()
+        .toList();
   }
 
   List<InterestOption> _flattenInterests(List<InterestGroupOption> groups) {
     return groups.expand((group) => group.items).toList();
   }
 }
-
-
