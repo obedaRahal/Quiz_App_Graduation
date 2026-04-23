@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_edu
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_graduate_academic_profile_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_interests_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_school_stage_response.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_user_interests_response.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failure.dart';
@@ -290,53 +291,96 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
   }
 
   @override
-Future<Either<Failure, OnboardingInterestsResponse>> getOnboardingInterests() async {
-  debugPrint(
-    "============ OnboardingRepositoryImpl.getOnboardingInterests ============",
-  );
-
-  try {
-    debugPrint("→ calling remoteDataSource.getOnboardingInterests");
-
-    final model = await remoteDataSource.getOnboardingInterests();
-
-    debugPrint("← remoteDataSource.getOnboardingInterests success");
-    debugPrint("=================================================");
-
-    return Right(model.toEntity());
-  } on ServerException catch (e) {
+  Future<Either<Failure, OnboardingInterestsResponse>>
+  getOnboardingInterests() async {
     debugPrint(
-      "✗ OnboardingRepositoryImpl.getOnboardingInterests ServerException: ${e.errorModel.errorMessage}",
+      "============ OnboardingRepositoryImpl.getOnboardingInterests ============",
     );
-    debugPrint("=================================================");
-    return Left(
-      ServerFailure(
-        title: e.errorModel.errorTitle,
-        message: e.errorModel.errorMessage,
-      ),
-    );
-  } on CacheException catch (e) {
-    debugPrint(
-      "✗ OnboardingRepositoryImpl.getOnboardingInterests CacheException: ${e.errorMessage}",
-    );
-    debugPrint("=================================================");
-    return Left(
-      CacheFailure(
-        title: 'خطأ محلي',
-        message: e.errorMessage,
-      ),
-    );
-  } catch (e) {
-    debugPrint(
-      "✗ OnboardingRepositoryImpl.getOnboardingInterests Unexpected error: $e",
-    );
-    debugPrint("=================================================");
-    return Left(
-      ServerFailure(
-        title: 'حدث خطأ',
-        message: 'حدث خطأ غير متوقع',
-      ),
-    );
+
+    try {
+      debugPrint("→ calling remoteDataSource.getOnboardingInterests");
+
+      final model = await remoteDataSource.getOnboardingInterests();
+
+      debugPrint("← remoteDataSource.getOnboardingInterests success");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ OnboardingRepositoryImpl.getOnboardingInterests ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ OnboardingRepositoryImpl.getOnboardingInterests CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ OnboardingRepositoryImpl.getOnboardingInterests Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'حدث خطأ غير متوقع'),
+      );
+    }
   }
-}
+
+  @override
+  Future<Either<Failure, OnboardingUserInterestsResponse>> submitUserInterests({
+    required String email,
+    required List<int> interestIds,
+  }) async {
+    debugPrint(
+      "============ OnboardingRepositoryImpl.submitUserInterests ============",
+    );
+    debugPrint("→ params: {email: $email, interest_ids: $interestIds}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.submitUserInterests");
+
+      final model = await remoteDataSource.submitUserInterests(
+        email: email,
+        interestIds: interestIds,
+      );
+
+      debugPrint("← remoteDataSource.submitUserInterests success");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ OnboardingRepositoryImpl.submitUserInterests ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ OnboardingRepositoryImpl.submitUserInterests CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ OnboardingRepositoryImpl.submitUserInterests Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'حدث خطأ غير متوقع'),
+      );
+    }
+  }
 }

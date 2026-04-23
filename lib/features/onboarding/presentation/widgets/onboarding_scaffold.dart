@@ -28,6 +28,8 @@ class OnboardingScaffold extends StatelessWidget {
 
   final VoidCallback? onBack;
 
+  final bool showBackButton;
+
   const OnboardingScaffold({
     super.key,
     required this.currentStep,
@@ -40,6 +42,7 @@ class OnboardingScaffold extends StatelessWidget {
     this.isNextEnabled = true,
     this.isSubmitting = false,
     this.onBack,
+    this.showBackButton = true,
   });
 
   @override
@@ -65,7 +68,7 @@ class OnboardingScaffold extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  ArrowBack(onTap: onBack),
+                  if (showBackButton) ArrowBack(onTap: onBack),
                   CustomButtonWidget(
                     onTap: () {
                       debugPrint("change mode ");

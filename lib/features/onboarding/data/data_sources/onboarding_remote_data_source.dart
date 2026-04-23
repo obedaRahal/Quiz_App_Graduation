@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_educati
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_graduate_academic_profile_response_model.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_interests_response_model.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_school_stage_response_model.dart';
+import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_user_interests_response_model.dart';
 
 import '../../../../core/database/api/api_consumer.dart';
 import '../models/onboarding_discovery_source_response_model.dart';
@@ -45,6 +46,11 @@ abstract class OnboardingRemoteDataSource {
   });
 
   Future<OnboardingInterestsResponseModel> getOnboardingInterests();
+
+  Future<OnboardingUserInterestsResponseModel> submitUserInterests({
+    required String email,
+    required List<int> interestIds,
+  });
 }
 
 class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
@@ -221,23 +227,44 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
   }
 
   @override
-Future<OnboardingInterestsResponseModel> getOnboardingInterests() async {
-  debugPrint(
-    "============ OnboardingRemoteDataSourceImpl.getOnboardingInterests ============",
-  );
-  debugPrint(
-    "→ endpoint: ${EndPoints.onboardingInterests}",
-  );
+  Future<OnboardingInterestsResponseModel> getOnboardingInterests() async {
+    debugPrint(
+      "============ OnboardingRemoteDataSourceImpl.getOnboardingInterests ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.onboardingInterests}");
 
-  final response = await apiConsumer.get(
-    EndPoints.onboardingInterests,
-  );
+    final response = await apiConsumer.get(EndPoints.onboardingInterests);
 
-  debugPrint("← response (getOnboardingInterests): $response");
-  debugPrint("=================================================");
+    debugPrint("← response (getOnboardingInterests): $response");
+    debugPrint("=================================================");
 
-  return OnboardingInterestsResponseModel.fromJson(
-    response as Map<String, dynamic>,
-  );
-}
+    return OnboardingInterestsResponseModel.fromJson(
+      response as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<OnboardingUserInterestsResponseModel> submitUserInterests({
+    required String email,
+    required List<int> interestIds,
+  }) async {
+    debugPrint(
+      "============ OnboardingRemoteDataSourceImpl.submitUserInterests ============",
+    );
+    debugPrint(
+      "→ endpoint: ${EndPoints.onboardingUserInterests} | data: {email: $email, interest_ids: $interestIds}",
+    );
+
+    final response = await apiConsumer.post(
+      EndPoints.onboardingUserInterests,
+      data: {'email': email, 'interest_ids': interestIds},
+    );
+
+    debugPrint("← response (submitUserInterests): $response");
+    debugPrint("=================================================");
+
+    return OnboardingUserInterestsResponseModel.fromJson(
+      response as Map<String, dynamic>,
+    );
+  }
 }

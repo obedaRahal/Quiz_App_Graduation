@@ -18,4 +18,6 @@ class EndPoints {
       'http://localhost/api/v1/user-mobile/auth/onboarding/graduate-academic-profile';
   static const String onboardingInterests =
       'http://localhost/api/v1/user-mobile/auth/onboarding/interests';
+  static const String onboardingUserInterests =
+    'http://localhost/api/v1/user-mobile/auth/onboarding/user-interests';
 }

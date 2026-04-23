@@ -37,7 +37,8 @@ class InterestGroupSection extends StatelessWidget {
         ),
         SizedBox(height: SizeConfig.h(0.012)),
         Wrap(
-          alignment: WrapAlignment.end,
+          textDirection: TextDirection.rtl,
+          alignment: WrapAlignment.start,
           runAlignment: WrapAlignment.end,
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: SizeConfig.w(0.02),

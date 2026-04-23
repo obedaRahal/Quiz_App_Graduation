@@ -7,11 +7,13 @@ import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_education_level_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_graduate_academic_profile_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_school_stage_params.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_user_interests_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_graduate_academic_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_school_stage_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_user_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_step_type.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interests_mock_data.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interests_models.dart';
@@ -35,6 +37,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   final SubmitGraduateAcademicProfileUseCase
   submitGraduateAcademicProfileUseCase;
   final GetOnboardingInterestsUseCase getOnboardingInterestsUseCase;
+  final SubmitUserInterestsUseCase submitUserInterestsUseCase;
 
   final String onboardingEmail;
 
@@ -46,6 +49,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     required this.submitCurrentUniversityProfileUseCase,
     required this.submitGraduateAcademicProfileUseCase,
     required this.getOnboardingInterestsUseCase,
+    required this.submitUserInterestsUseCase,
   }) : super(const OnboardingState()) {
     debugPrint("============ OnboardingCubit INIT ============");
     debugPrint("→ onboardingEmail: $onboardingEmail");
@@ -293,6 +297,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
       case OnboardingStepType.currentUniversity:
         await _submitCurrentUniversityProfileStep();
+        return;
+
+      case OnboardingStepType.interests:
+        await _submitUserInterestsStep();
         return;
 
       case OnboardingStepType.done:
@@ -659,6 +667,75 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         );
         debugPrint("✓ saved universityName: ${response.universityName}");
         debugPrint("✓ saved department: ${response.department}");
+
+        emit(state.copyWith(isSubmitting: false, clearErrorMessage: true));
+
+        _moveToNextStepLocally();
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> _submitUserInterestsStep() async {
+    debugPrint(
+      "============ OnboardingCubit._submitUserInterestsStep ============",
+    );
+
+    final selectedIds = List<int>.from(state.selectedInterestIds);
+
+    if (selectedIds.isEmpty) {
+      debugPrint("✗ interests list is empty");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يرجى اختيار اهتمام واحد على الأقل',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (selectedIds.length > 5) {
+      debugPrint("✗ interests list exceeds max count");
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          errorTitle: 'خطأ تحقق !',
+          errorMessage: 'يمكن اختيار 5 اهتمامات كحد أقصى',
+        ),
+      );
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(state.copyWith(isSubmitting: true, clearErrorMessage: true));
+
+    final result = await submitUserInterestsUseCase(
+      SubmitUserInterestsParams(
+        email: onboardingEmail,
+        interestIds: selectedIds,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ submitUserInterests failure title: ${failure.title}");
+        debugPrint("✗ submitUserInterests failure message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ submitUserInterests success: ${response.title}");
+        debugPrint("✓ saved interestIds: ${response.interestIds}");
+        debugPrint("✓ saved interestsCount: ${response.interestsCount}");
 
         emit(state.copyWith(isSubmitting: false, clearErrorMessage: true));
 

@@ -43,7 +43,14 @@ class OnboardingView extends StatelessWidget {
           final currentStep = state.currentStep;
           final isDoneStep = currentStep == OnboardingStepType.done;
 
+          final interestsIndex = state.visibleSteps.indexOf(
+            OnboardingStepType.interests,
+          );
+          final shouldHideBackButton =
+              interestsIndex != -1 && state.currentStepIndex >= interestsIndex;
+
           return OnboardingScaffold(
+            showBackButton: !shouldHideBackButton,
             currentStep: state.currentStepIndex + 1,
             totalSteps: state.visibleSteps.length,
             title: isDoneStep ? null : _getStepTitle(currentStep),
@@ -53,24 +60,34 @@ class OnboardingView extends StatelessWidget {
             isSubmitting: state.isSubmitting,
             onNext: () {
               if (isDoneStep) {
-                context.goNamed(AppRouterName.login);
-                return;
-              }
-
-              context.read<OnboardingCubit>().nextStep();
-            },
-            onBack: () {
-              final cubit = context.read<OnboardingCubit>();
-
-              if (state.isFirstStep) {
                 context.goNamed(AppRouterName.welcome);
                 sl<AuthSession>().markUnauthenticated();
-
                 return;
               }
-
-              cubit.previousStep();
+              context.read<OnboardingCubit>().nextStep();
             },
+            // onBack: () {
+            //   final cubit = context.read<OnboardingCubit>();
+            //   if (state.isFirstStep) {
+            //     context.goNamed(AppRouterName.welcome);
+            //     sl<AuthSession>().markUnauthenticated();
+            //     return;
+            //   }
+            //   cubit.previousStep();
+            // },
+            onBack: shouldHideBackButton
+                ? null
+                : () {
+                    final cubit = context.read<OnboardingCubit>();
+
+                    if (state.isFirstStep) {
+                      context.goNamed(AppRouterName.welcome);
+                      sl<AuthSession>().markUnauthenticated();
+                      return;
+                    }
+
+                    cubit.previousStep();
+                  },
             child: _buildStepContent(context, state),
           );
         },

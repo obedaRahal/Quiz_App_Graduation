@@ -46,7 +46,6 @@ class SelectedInterestsWrap extends StatelessWidget {
         ),
         SizedBox(height: SizeConfig.h(0.012)),
         Container(
-          
           width: double.infinity,
           padding: EdgeInsets.symmetric(
             horizontal: SizeConfig.w(0.03),

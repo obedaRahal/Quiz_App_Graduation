@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_edu
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_graduate_academic_profile_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_interests_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_school_stage_response.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_user_interests_response.dart';
 
 abstract class OnboardingRepository {
   Future<Either<Failure, OnboardingDiscoverySourceResponse>>
@@ -44,4 +45,9 @@ abstract class OnboardingRepository {
   });
 
   Future<Either<Failure, OnboardingInterestsResponse>> getOnboardingInterests();
+
+  Future<Either<Failure, OnboardingUserInterestsResponse>> submitUserInterests({
+    required String email,
+    required List<int> interestIds,
+  });
 }

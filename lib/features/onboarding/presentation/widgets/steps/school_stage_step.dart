@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_state.dart';
@@ -15,17 +16,17 @@ class SchoolStageStep extends StatelessWidget {
     _SchoolStageOption(
       title: 'ابتدائي',
       description: 'يشمل الصفوف من\nالصف الأول إلى الصف\nالسادس',
-      imagePath: AppImage.number1Onboarding
+      imagePath: AppImage.number1Onboarding,
     ),
     _SchoolStageOption(
       title: 'اعدادي',
       description: 'يشمل الصفوف من\nالصف السابع إلى الصف\nالتاسع',
-      imagePath: AppImage.number2Onboarding
+      imagePath: AppImage.number2Onboarding,
     ),
     _SchoolStageOption(
       title: 'ثانوي',
       description: 'يشمل الصفوف من\nالصف العاشر إلى صف\nالبكالوريا',
-      imagePath: AppImage.number3Onboarding
+      imagePath: AppImage.number3Onboarding,
     ),
   ];
 
@@ -58,13 +59,14 @@ class SchoolStageStep extends StatelessWidget {
                 SizedBox(width: SizeConfig.w(0.04)),
                 Expanded(
                   child: _SchoolStageCard(
-                    imagePath:_options[0].imagePath,
+                    imagePath: _options[0].imagePath,
                     option: _options[0],
                     isSelected: state.schoolStage == _options[0].title,
                     onTap: () {
                       context.read<OnboardingCubit>().schoolStageChanged(
                         _options[0].title,
-                      );                    },
+                      );
+                    },
                   ),
                 ),
               ],
@@ -105,13 +107,15 @@ class _SchoolStageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = isSelected ? AppPalette.primary : AppPalette.greyLight;
+    final appColors = context.appColors;
+
+    final borderColor = isSelected ? appColors.primaryToPrimaryDark :appColors.borderFieldColorNLightToborderFieldColorNDark;
     final backgroundColor = isSelected
-        ? AppPalette.primarySoft
-        : AppPalette.grey;
-    final titleColor = isSelected ? AppPalette.primary : AppPalette.black;
+        ? appColors.primarySoftTogreyLightDark
+        : appColors.greyToGreyMediumDark;
+    final titleColor = isSelected ? appColors.primaryToPrimaryDark : appColors.blackTogreyMedium;
     final descriptionColor = AppPalette.greyMedium;
-    final iconColor = isSelected ? AppPalette.primary : AppPalette.black;
+    final iconColor = isSelected ? appColors.primaryToPrimaryDark : appColors.blackTogreyMedium;
 
     return Material(
       color: Colors.transparent,
@@ -167,6 +171,6 @@ class _SchoolStageOption {
   const _SchoolStageOption({
     required this.title,
     required this.description,
-    required this.imagePath
+    required this.imagePath,
   });
 }
