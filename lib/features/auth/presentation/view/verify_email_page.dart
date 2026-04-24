@@ -7,6 +7,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_state.dart';
@@ -26,33 +27,31 @@ class VerifyEmailPage extends StatelessWidget {
       listener: (context, state) {
         if (state.verifyStatus == VerifyRegisterStatus.failure &&
             state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errorMessage!),
-              backgroundColor: Colors.red,
-            ),
+          showValidationTopSnackBar(
+            context,
+            title: 'خطأ',
+            message: state.errorMessage ?? 'حدث خطأ ما.',
+            type: AppValidationSnackBarType.error,
           );
         }
 
         if (state.verifyStatus == VerifyRegisterStatus.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.successMessage ?? 'تم تأكيد البريد الإلكتروني بنجاح.',
-              ),
-              backgroundColor: Colors.green,
-            ),
+          showValidationTopSnackBar(
+            context,
+            title: 'نجاح', 
+            message: state.successMessage ?? 'تمت العملية بنجاح.',
+            type: AppValidationSnackBarType.success,
           );
 
           context.goNamed(AppRouterName.mainLayout);
         }
         if (state.resendStatus == VerifyResendStatus.success &&
             state.resendSuccessMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.resendSuccessMessage!),
-              backgroundColor: Colors.green,
-            ),
+          showValidationTopSnackBar(
+            context,
+            title: 'نجاح',
+            message: state.resendSuccessMessage ?? 'تمت العملية بنجاح.',
+            type: AppValidationSnackBarType.success,
           );
         }
       },

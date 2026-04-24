@@ -105,6 +105,7 @@ ErrorModel _buildErrorModel(DioException e) {
     status: statusCode,
     errorMessage: data?.toString() ?? e.message ?? 'Unexpected error occurred',
     errorTitle: data?.toString() ?? e.message ?? 'Unexpected error occurred',
+    meta: const {},
   );
 }
 

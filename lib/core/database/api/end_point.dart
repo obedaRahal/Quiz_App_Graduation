@@ -1,7 +1,7 @@
 class EndPoints {
   //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
-  static const String baseUrl = 'http://192.168.1.102/api/v1/user-mobile';
-  static const String refreshToken = 'http://192.168.137.88/api/refresh';
+  static const String baseUrl = 'http://10.237.223.187/api/v1/user-mobile';
+  static const String refreshToken = 'http://10.237.223.187/api/refresh';
 
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
@@ -22,16 +22,16 @@ class EndPoints {
   static const String onboardingUserInterests =
       '$baseUrl/auth/onboarding/user-interests';
       // Auth ///////////////////
-  static const String register = 'user-mobile/auth/register';
-  static const String verifyEmail = 'user-mobile/auth/verify-email';
-  static const String login = 'user-mobile/auth/login';
-  static const String resendOtp = 'user-mobile/auth/reset-send-otp';
+  static const String register = '/auth/register';
+  static const String verifyEmail = '/auth/verify-email';
+  static const String login = '/auth/login';
+  static const String resendOtp = '/auth/reset-send-otp';
   static const String forgotPasswordRequestOtp =
-      'user-mobile/auth/forgot-password/request-otp';
+      '/auth/forgot-password/request-otp';
   static const String forgotPasswordVerifyOtp =
-      'user-mobile/auth/forgot-password/verify-otp';
+      '/auth/forgot-password/verify-otp';
   static const String forgotPasswordResendOtp =
-      'user-mobile/auth/forgot-password/resend-otp';
+      '/auth/forgot-password/resend-otp';
   static const String forgotPasswordReset =
-      'user-mobile/auth/forgot-password/reset';
+      '/auth/forgot-password/reset';
 }

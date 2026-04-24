@@ -333,4 +333,9 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       );
     }
   }
+  @override
+Future<void> close() {
+  _timer?.cancel();
+  return super.close();
+}
 }

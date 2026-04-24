@@ -71,6 +71,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_state.dart';
@@ -87,28 +88,26 @@ class ForgotPasswordEmailPage extends StatelessWidget {
     final cubit = context.read<ForgetPasswordCubit>();
 
     return BlocConsumer<ForgetPasswordCubit, ForgetPasswordState>(
-       listenWhen: (previous, current) {
-    return previous.requestOtpStatus != current.requestOtpStatus;
-  },
+      listenWhen: (previous, current) {
+        return previous.requestOtpStatus != current.requestOtpStatus;
+      },
       listener: (context, state) {
         if (state.requestOtpStatus == ForgotPasswordRequestOtpStatus.failure &&
             state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errorMessage!),
-              backgroundColor: Colors.red,
-            ),
+          showValidationTopSnackBar(
+            context,
+            title: 'خطأ',
+            message: state.errorMessage ?? 'حدث خطأ ما.',
+            type: AppValidationSnackBarType.error,
           );
         }
 
         if (state.requestOtpStatus == ForgotPasswordRequestOtpStatus.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.successMessage ?? 'تم إرسال رمز التحقق بنجاح.',
-              ),
-              backgroundColor: Colors.green,
-            ),
+          showValidationTopSnackBar(
+            context,
+            title: 'نجاح',
+            message: state.successMessage ?? 'تمت العملية بنجاح.',
+            type: AppValidationSnackBarType.success,
           );
 
           context.pushNamed(

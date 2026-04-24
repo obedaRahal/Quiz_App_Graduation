@@ -233,8 +233,13 @@ void _registerAuthFeature() {
     );
   }
   if (!sl.isRegistered<LoginCubit>()) {
-    sl.registerFactory<LoginCubit>(() => LoginCubit(sl<LoginUseCase>()));
-  }
+  sl.registerFactory<LoginCubit>(
+    () => LoginCubit(
+      loginUseCase: sl<LoginUseCase>(),
+      resendOtpUseCase: sl<ResendOtpUseCase>(),
+    ),
+  );
+}
   if (!sl.isRegistered<ResendOtpUseCase>()) {
     sl.registerLazySingleton<ResendOtpUseCase>(
       () => ResendOtpUseCase(sl<AuthRepository>()),

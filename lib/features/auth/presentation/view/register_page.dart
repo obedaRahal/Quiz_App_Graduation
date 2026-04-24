@@ -8,6 +8,7 @@ import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_state.dart';
@@ -28,20 +29,20 @@ class RegisterPage extends StatelessWidget {
       listener: (context, state) {
         if (state.registerStatus == RegisterStatus.failure &&
             state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errorMessage!),
-              backgroundColor: Colors.red,
-            ),
+          showValidationTopSnackBar(
+            context,
+            title: 'خطأ',
+            message: state.errorMessage ?? 'حدث خطأ ما.',
+            type: AppValidationSnackBarType.error,
           );
         }
 
         if (state.registerStatus == RegisterStatus.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.successMessage ?? 'تم إنشاء الحساب بنجاح.'),
-              backgroundColor: Colors.green,
-            ),
+          showValidationTopSnackBar(
+            context,
+            title: 'نجاح',
+            message: state.successMessage ?? 'تمت العملية بنجاح.',
+            type: AppValidationSnackBarType.success,
           );
 
           context.pushNamed(
