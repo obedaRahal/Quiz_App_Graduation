@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_state.dart';
@@ -19,29 +20,124 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final colorScheme = context.colorScheme;
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TopContainerAuth(
-                title: 'تسجيل الدخول',
-                body:
-                    'مرحبا بك مجددا !\nسجل دخولك لمتابعة خطتك الدراسية\nوتحويل المحتوى الدراسي الى تجربة\nتفاعلية ممتعة',
-              ),
-              SizedBox(height: 50),
-              AuthFieldLabel(
-                label: 'البريد الالكتروني',
-                hint: 'ادخل بريدك الالكتروني...',
-                keyboardType: TextInputType.emailAddress,
-                suffixIcon: Icons.email_outlined,
-              ),
-              SizedBox(height: 25),
-              BlocBuilder<LoginCubit, LoginState>(
-                builder: (context, state) {
-                  return AuthFieldLabel(
+    final cubit = context.read<LoginCubit>();
+
+    return BlocConsumer<LoginCubit, LoginState>(
+      listener: (context, state) {
+        if (state.loginStatus == LoginStatus.failure &&
+            state.errorMessage != null) {
+          final title = state.errorTitle ?? 'خطأ';
+
+          switch (state.failureType) {
+            case LoginFailureType.permanentBan:
+              showValidationTopSnackBar(
+                context,
+                title: title,
+                message: state.errorMessage!,
+                type: AppValidationSnackBarType.error,
+                reason: state.reason,
+                startsAt: state.startsAt,
+                displayDuration: const Duration(seconds: 6),
+              );
+              break;
+
+            case LoginFailureType.temporaryBan:
+              showValidationTopSnackBar(
+                context,
+                title: title,
+                message: state.errorMessage!,
+                type: AppValidationSnackBarType.error,
+                reason: state.reason,
+                startsAt: state.startsAt,
+                endsAt: state.endsAt,
+                displayDuration: const Duration(seconds: 6),
+              );
+              break;
+
+            case LoginFailureType.emailNotVerified:
+              showValidationTopSnackBar(
+                context,
+                title: title,
+                message: state.errorMessage!,
+                type: AppValidationSnackBarType.error,
+                actionText: 'الذهاب إلى صفحة التحقق من البريد',
+                onActionTap: () {
+                  context.read<LoginCubit>().resendVerifyEmailOtp();
+
+                  context.pushNamed(
+                    AppRouterName.verifyEmail,
+                    extra: {'email': cubit.emailController.text.trim()},
+                  );
+                },
+                displayDuration: const Duration(seconds: 6),
+              );
+              break;
+
+            case LoginFailureType.onboardingNotCompleted:
+              showValidationTopSnackBar(
+                context,
+                title: title,
+                message: state.errorMessage!,
+                type: AppValidationSnackBarType.error,
+                actionText: 'الذهاب لاستكمال المعلومات',
+                onActionTap: () {
+                  debugPrint(
+                    'Go to onboarding step: ${state.lastCompletedStep}',
+                  );
+                },
+                displayDuration: const Duration(seconds: 6),
+              );
+              break;
+
+            case LoginFailureType.general:
+            case LoginFailureType.none:
+              showValidationTopSnackBar(
+                context,
+                title: title,
+                message: state.errorMessage!,
+                type: AppValidationSnackBarType.error,
+              );
+              break;
+          }
+        }
+        if (state.loginStatus == LoginStatus.success) {
+          showValidationTopSnackBar(
+            context,
+            title: 'نجاح',
+            message: state.successMessage ?? 'تمت العملية بنجاح.',
+            type: AppValidationSnackBarType.success,
+          );
+
+          context.goNamed(AppRouterName.mainLayout);
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TopContainerAuth(
+                    title: 'تسجيل الدخول',
+                    body:
+                        'مرحبا بك مجددا !\nسجل دخولك لمتابعة خطتك الدراسية\nوتحويل المحتوى الدراسي الى تجربة\nتفاعلية ممتعة',
+                  ),
+                  const SizedBox(height: 50),
+
+                  AuthFieldLabel(
+                    label: 'البريد الالكتروني',
+                    controller: cubit.emailController,
+                    hint: 'ادخل بريدك الالكتروني...',
+                    keyboardType: TextInputType.emailAddress,
+                    suffixIcon: Icons.email_outlined,
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  AuthFieldLabel(
                     label: 'كلمة المرور',
+                    controller: cubit.passwordController,
                     hint: 'ادخل كلمة المرور الخاصة بك...',
                     suffixIcon: state.isPasswordObscure
                         ? Icons.visibility_off
@@ -50,57 +146,72 @@ class LoginPage extends StatelessWidget {
                     onSuffixTap: () {
                       context.read<LoginCubit>().togglePasswordVisibility();
                     },
-                  );
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Align(
-                  alignment: AlignmentGeometry.centerLeft,
-                  child: InkWell(
-                    onTap: () {
-                      debugPrint("forgotPasswordEmail");
-                      context.pushNamed(AppRouterName.forgotPasswordEmail);
-                    },
-                    child: CustomTextWidget(
-                      "نسيت كلمة المرور ؟",
-                      fontSize: SizeConfig.text(0.045),
-                      color: appColors.primaryToPrimaryDark,
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                      alignment: AlignmentGeometry.centerLeft,
+                      child: InkWell(
+                        onTap: () {
+                          debugPrint("forgotPasswordEmail");
+                          context.pushNamed(AppRouterName.forgotPasswordEmail);
+                        },
+                        child: CustomTextWidget(
+                          "نسيت كلمة المرور ؟",
+                          fontSize: SizeConfig.text(0.045),
+                          color: appColors.primaryToPrimaryDark,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: 40),
-              CustomButtonWidget(
-                width: double.infinity,
-                backgroundColor: appColors.primaryToPrimaryDark,
-                childHorizontalPad: SizeConfig.width * .07,
-                childVerticalPad: SizeConfig.height * .012,
-                borderRadius: 8,
-                onTap: () {
-                  context.pushNamed(AppRouterName.verifyEmail);
 
-                  debugPrint(" verify Email ");
-                },
-                child: CustomTextWidget(
-                  "تأكيد الإدخال",
-                  fontSize: SizeConfig.text(0.055),
-                  color: colorScheme.onSecondary,
-                ),
-              ),
-              SizedBox(height: SizeConfig.height * .02),
+                  const SizedBox(height: 40),
 
-              TowTextRow(
-                text: " ليس لديك حساب ؟ قم بإنشاء ",
-                actionText: "حساب جديد ",
-                onTap: () {
-                  GoRouter.of(context).replaceNamed(AppRouterName.register);
-                },
+                  CustomButtonWidget(
+                    width: double.infinity,
+                    backgroundColor: appColors.primaryToPrimaryDark,
+                    childHorizontalPad: SizeConfig.width * .07,
+                    childVerticalPad: SizeConfig.height * .012,
+                    borderRadius: 8,
+                    onTap: () {
+                      if (state.loginStatus == LoginStatus.loading) {
+                        return;
+                      }
+
+                      context.read<LoginCubit>().submitLogin();
+                    },
+                    child: state.loginStatus == LoginStatus.loading
+                        ? SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: colorScheme.onSecondary,
+                            ),
+                          )
+                        : CustomTextWidget(
+                            "تأكيد الإدخال",
+                            fontSize: SizeConfig.text(0.055),
+                            color: colorScheme.onSecondary,
+                          ),
+                  ),
+
+                  SizedBox(height: SizeConfig.height * .02),
+
+                  TowTextRow(
+                    text: " ليس لديك حساب ؟ قم بإنشاء ",
+                    actionText: "حساب جديد ",
+                    onTap: () {
+                      GoRouter.of(context).replaceNamed(AppRouterName.register);
+                    },
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

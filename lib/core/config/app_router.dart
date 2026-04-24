@@ -1,9 +1,16 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/database/api/dio_consumer.dart';
+import 'package:quiz_app_grad/core/database/api/end_point.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
+import 'package:quiz_app_grad/features/auth/data/datasource/auth_remote_data_source.dart';
+import 'package:quiz_app_grad/features/auth/data/repositories/auth_repo_impl.dart';
+import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
+import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
@@ -107,7 +114,7 @@ class AppRouter {
           //  builder: (context, state) => const LoginPage(),
           builder: (context, state) {
             return BlocProvider(
-              create: (_) => LoginCubit(),
+              create: (_) => sl<LoginCubit>(),
               child: const LoginPage(),
             );
           },
@@ -115,24 +122,80 @@ class AppRouter {
         GoRoute(
           path: AppRouterPath.register,
           name: AppRouterName.register,
-          // pageBuilder: (context, state) =>
-          //       _slidePage(state: state, child: const LoginPage()),
-          //  builder: (context, state) => const LoginPage(),
           builder: (context, state) {
+            final dio = Dio(
+              BaseOptions(
+                baseUrl: EndPoints.baseUrl,
+                receiveDataWhenStatusError: true,
+              ),
+            );
+            final apiConsumer = DioConsumer(dio: dio);
+            final authRemoteDataSource = AuthRemoteDataSourceImpl(
+              apiConsumer: apiConsumer,
+            );
+
+            final authRepository = AuthRepositoryImpl(
+              authRemoteDataSource: authRemoteDataSource,
+            );
+
+            final registerUseCase = RegisterUseCase(authRepository);
             return BlocProvider(
-              create: (_) => RegisterCubit(),
+              create: (_) => RegisterCubit(registerUseCase),
               child: const RegisterPage(),
             );
           },
         ),
         GoRoute(
+          // path: AppRouterPath.verifyEmail,
+          // name: AppRouterName.verifyEmail,
+          // // pageBuilder: (context, state) =>
+          // //     _slidePage(state: state, child: const VerifyEmailPage()),
+          // builder: (context, state) {
+          //   return BlocProvider(
+          //     create: (_) => VerifyRegisterCubit(),
+          //     child: const VerifyEmailPage(),
+          //   );
+          // },
+          //           path: AppRouterPath.verifyEmail,
+          //           name: AppRouterName.verifyEmail,
+          //           builder: (context, state) {
+          //             final extra = state.extra as Map<String, dynamic>?;
+          //             final email = extra?['email'] as String? ?? '';
+          // final dio = Dio(
+          //               BaseOptions(
+          //                 baseUrl: EndPoints.baseUrl,
+          //                 receiveDataWhenStatusError: true,
+          //               ),
+          //             );
+          //             final apiConsumer = DioConsumer(dio: dio);
+          //             final authRemoteDataSource = AuthRemoteDataSourceImpl(
+          //               apiConsumer: apiConsumer,
+          //             );
+
+          //             final authRepository = AuthRepositoryImpl(
+          //               authRemoteDataSource: authRemoteDataSource,
+          //             );
+
+          //             final verifyEmailUseCase = VerifyEmailUseCase(authRepository);
+          //             final cubit = sl<VerifyRegisterCubit>();
+          //             cubit.setEmail(email);
+
+          //             return BlocProvider(
+          //              create: (_) => VerifyRegisterCubit(verifyEmailUseCase: verifyEmailUseCase),
+          //               child: const VerifyEmailPage(),
+          //             );
+          //           },
           path: AppRouterPath.verifyEmail,
           name: AppRouterName.verifyEmail,
-          // pageBuilder: (context, state) =>
-          //     _slidePage(state: state, child: const VerifyEmailPage()),
           builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>?;
+            final email = extra?['email'] as String? ?? '';
+
+            final cubit = sl<VerifyRegisterCubit>();
+            cubit.setEmail(email);
+
             return BlocProvider(
-              create: (_) => VerifyRegisterCubit(),
+              create: (_) => cubit,
               child: const VerifyEmailPage(),
             );
           },
@@ -140,38 +203,47 @@ class AppRouter {
         GoRoute(
           path: AppRouterPath.forgotPasswordEmail,
           name: AppRouterName.forgotPasswordEmail,
-          pageBuilder: (context, state) =>
-              _slidePage(state: state, child: const ForgotPasswordEmailPage()),
-          // builder: (context, state) => const VerifyEmailPage(),
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => sl<ForgetPasswordCubit>(),
+              child: const ForgotPasswordEmailPage(),
+            );
+          },
         ),
         GoRoute(
           path: AppRouterPath.forgotPasswordOtpCode,
           name: AppRouterName.forgotPasswordOtpCode,
-          // pageBuilder: (context, state) => _slidePage(
-          //   state: state,
-          //   child: const ForgotPasswordOtpCodePage(),
-          // ),
           builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>?;
+            final email = extra?['email'] as String? ?? '';
+
+            final cubit = sl<ForgetPasswordCubit>();
+            cubit.setEmail(email);
+
             return BlocProvider(
-              create: (_) => ForgetPasswordCubit(),
+              create: (_) => cubit,
               child: const ForgotPasswordOtpCodePage(),
             );
           },
         ),
         GoRoute(
-          path: AppRouterPath.forgotPasswordNewPassword,
-          name: AppRouterName.forgotPasswordNewPassword,
-          // pageBuilder: (context, state) => _slidePage(
-          //   state: state,
-          //   child: const ForgotPasswordNewPasswordPage(),
-          // ),
-          builder: (context, state) {
-            return BlocProvider(
-              create: (_) => ForgetPasswordCubit(),
-              child: const ForgotPasswordNewPasswordPage(),
-            );
-          },
-        ),
+  path: AppRouterPath.forgotPasswordNewPassword,
+  name: AppRouterName.forgotPasswordNewPassword,
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>?;
+    final email = extra?['email'] as String? ?? '';
+    final otpCode = extra?['otpCode'] as String? ?? '';
+
+    final cubit = sl<ForgetPasswordCubit>();
+    cubit.setEmail(email);
+    cubit.setOtpCode(otpCode);
+
+    return BlocProvider(
+      create: (_) => cubit,
+      child: const ForgotPasswordNewPasswordPage(),
+    );
+  },
+),
         GoRoute(
           path: AppRouterPath.mainLayout,
           name: AppRouterName.mainLayout,

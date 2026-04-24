@@ -28,7 +28,7 @@ class HomeSliderSection extends StatelessWidget {
             height: SizeConfig.isSmallPhone
                 ? SizeConfig.h(0.42)
                 : SizeConfig.isMediumPhone
-                ? SizeConfig.h(0.43)
+                ? SizeConfig.h(0.46)
                 : SizeConfig.h(0.44),
             child: Directionality(
               textDirection: TextDirection.rtl,

@@ -19,9 +19,9 @@ class HomeSliderCardFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8.0,
-        vertical: 4,
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.w(0.03),
+        vertical: SizeConfig.h(0.010),
       ),
       child: Row(
         children: [
@@ -29,9 +29,7 @@ class HomeSliderCardFooter extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerRight,
               child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: SizeConfig.w(0.4),
-                ),
+                constraints: BoxConstraints(maxWidth: SizeConfig.w(0.3)),
                 child: CustomButtonWidget(
                   backgroundColor: appColors.primaryToPrimaryDark,
                   childHorizontalPad: 16,

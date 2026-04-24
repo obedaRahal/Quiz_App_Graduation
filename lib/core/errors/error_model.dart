@@ -2,11 +2,12 @@ class ErrorModel {
   final int status;
   final String errorMessage;
   final String errorTitle;
-
+  final Map<String, dynamic> meta;
   const ErrorModel({
     required this.status,
     required this.errorMessage,
     required this.errorTitle,
+    this.meta = const {},
   });
 
   factory ErrorModel.fromJson(
@@ -18,9 +19,45 @@ class ErrorModel {
       status: _extractStatus(json, fallbackStatusCode),
       errorMessage: _extractMessage(json, fallbackMessage),
       errorTitle: _extractTitle(json),
+      meta: json['meta'] is Map<String, dynamic>
+          ? Map<String, dynamic>.from(json['meta'])
+          : const {},
     );
   }
+  String? get reason {
+    final value = meta['reason'];
+    if (value == null) return null;
+    return value.toString();
+  }
 
+  bool get isPermanent {
+    return meta['is_permanent'] == true;
+  }
+
+  String? get startsAt {
+    final value = meta['starts_at'];
+    if (value == null) return null;
+    return value.toString();
+  }
+
+  String? get endsAt {
+    final value = meta['ends_at'];
+    if (value == null) return null;
+    return value.toString();
+  }
+
+  int? get lastCompletedStep {
+    final value = meta['last_completed_step'];
+
+    if (value == null) return null;
+
+    if (value is int) return value;
+
+    return int.tryParse(value.toString());
+  }
+
+  @override
+  String toString() => errorMessage;
   static int _extractStatus(Map<String, dynamic> json, int fallbackStatusCode) {
     return _parseStatus(json['status'] ?? json['statusCode'] ?? json['code']) ??
         fallbackStatusCode;
