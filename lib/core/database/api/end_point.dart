@@ -1,5 +1,6 @@
 class EndPoints {
-  static const String baseUrl = 'http://10.221.111.44/api/v1/';
+  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  static const String baseUrl = 'http://192.168.1.102/api/v1/user-mobile';
   static const String refreshToken = 'http://192.168.137.88/api/refresh';
 
   // authhhhhh
@@ -7,17 +8,17 @@ class EndPoints {
 
   // onboarding ////////////////
   static const String onboardingDiscoverySource =
-      'http://localhost/api/v1/user-mobile/auth/onboarding/discovery-source';
+      '$baseUrl/auth/onboarding/discovery-source';
   static const String onboardingEducationLevel =
-      'http://localhost/api/v1/user-mobile/auth/onboarding/education-level';
+      '$baseUrl/auth/onboarding/education-level';
   static const String onboardingSchoolStage =
-      'http://localhost/api/v1/user-mobile/auth/onboarding/school-stage';
+      '$baseUrl/auth/onboarding/school-stage';
   static const String onboardingCurrentUniversityProfile =
-      'http://localhost/api/v1/user-mobile/auth/onboarding/university-profile';
+      '$baseUrl/auth/onboarding/university-profile';
   static const String onboardingGraduateAcademicProfile =
-      'http://localhost/api/v1/user-mobile/auth/onboarding/graduate-academic-profile';
+      '$baseUrl/auth/onboarding/graduate-academic-profile';
   static const String onboardingInterests =
-      'http://localhost/api/v1/user-mobile/auth/onboarding/interests';
+      '$baseUrl/auth/onboarding/interests';
   static const String onboardingUserInterests =
-    'http://localhost/api/v1/user-mobile/auth/onboarding/user-interests';
+    '$baseUrl/auth/onboarding/user-interests';
 }

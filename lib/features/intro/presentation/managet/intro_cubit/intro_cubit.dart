@@ -23,6 +23,8 @@ class IntroCubit extends Cubit<IntroState> {
       );
       await CacheHelper.saveData(key: CacheHelper.hasSeenIntroKey, value: true);
 
+      await Future.delayed(const Duration(seconds: 2));
+
       emit(state.copyWith(isSaving: false, isFinished: true));
       debugPrint(
         "and value of hasSeenIntroKey at cache become : ${CacheHelper.getData(key: CacheHelper.hasSeenIntroKey)}",

@@ -12,7 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await CacheHelper.init();
-  //await CacheHelper.clearData();
+  await CacheHelper.clearData();
   await initSl();
     AppRouter.init();
     runApp(const QuizApp());

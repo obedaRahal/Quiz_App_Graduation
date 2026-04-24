@@ -16,6 +16,7 @@ class IntroBottomPanel extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onPrevious;
   final bool isPreviousEnabled;
+  final bool isSaving;
 
   const IntroBottomPanel({
     super.key,
@@ -25,6 +26,7 @@ class IntroBottomPanel extends StatelessWidget {
     required this.onNext,
     required this.onPrevious,
     required this.isPreviousEnabled,
+    required this.isSaving,
   });
 
   @override
@@ -36,12 +38,10 @@ class IntroBottomPanel extends StatelessWidget {
       shadowColor: Colors.black,
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
-        height: SizeConfig.h(.5),
+        height: SizeConfig.h(.45),
         width: double.infinity,
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: SizeConfig.h(.065),
-          ),
+          padding: EdgeInsets.symmetric(vertical: SizeConfig.h(.065)),
           child: Stack(
             children: [
               Padding(
@@ -59,10 +59,13 @@ class IntroBottomPanel extends StatelessWidget {
                       fontSize: SizeConfig.text(.034),
                     ),
                     const Spacer(),
-                    IntroPageIndicator(
-                      controller: controller,
-                      count: pagesCount,
-                    ),
+                    if (!isSaving)
+                      IntroPageIndicator(
+                        controller: controller,
+                        count: pagesCount,
+                      ),
+                    if (isSaving)
+                      CircularProgressIndicator(),
                   ],
                 ),
               ),
@@ -71,14 +74,15 @@ class IntroBottomPanel extends StatelessWidget {
                 end: 12,
                 child: IntroNextButton(onTap: onNext),
               ),
-              PositionedDirectional(
-                bottom: 0,
-                start: 12,
-                child: IntroPreviousButton(
-                  onTap: onPrevious,
-                  isEnabled: isPreviousEnabled,
+              if (isPreviousEnabled)
+                PositionedDirectional(
+                  bottom: 0,
+                  start: 12,
+                  child: IntroPreviousButton(
+                    onTap: onPrevious,
+                    isEnabled: isPreviousEnabled,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

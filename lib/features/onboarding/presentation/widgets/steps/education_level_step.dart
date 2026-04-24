@@ -195,7 +195,7 @@ class _EducationGroupContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        final appColors = context.appColors;
+    final appColors = context.appColors;
 
     final currentBorderColor = isGroupSelected
         ? appColors.primaryToPrimaryDark
