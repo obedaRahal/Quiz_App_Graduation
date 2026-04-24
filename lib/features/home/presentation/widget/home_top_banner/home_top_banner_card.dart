@@ -60,9 +60,7 @@ class HomeTopBannerCard extends StatelessWidget {
                           color: colorScheme.onSecondary,
                           fontWeight: FontWeight.bold,
                           textAlign: TextAlign.right,
-                          fontSize: SizeConfig.text(
-                            0.036,
-                          ).clamp(11.0, 16.0),
+                          fontSize: SizeConfig.text(0.032).clamp(11.0, 16.0),
                         ),
                       ),
                       Padding(

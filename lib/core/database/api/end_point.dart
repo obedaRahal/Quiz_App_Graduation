@@ -20,5 +20,18 @@ class EndPoints {
   static const String onboardingInterests =
       '$baseUrl/auth/onboarding/interests';
   static const String onboardingUserInterests =
-    '$baseUrl/auth/onboarding/user-interests';
+      '$baseUrl/auth/onboarding/user-interests';
+      // Auth ///////////////////
+  static const String register = 'user-mobile/auth/register';
+  static const String verifyEmail = 'user-mobile/auth/verify-email';
+  static const String login = 'user-mobile/auth/login';
+  static const String resendOtp = 'user-mobile/auth/reset-send-otp';
+  static const String forgotPasswordRequestOtp =
+      'user-mobile/auth/forgot-password/request-otp';
+  static const String forgotPasswordVerifyOtp =
+      'user-mobile/auth/forgot-password/verify-otp';
+  static const String forgotPasswordResendOtp =
+      'user-mobile/auth/forgot-password/resend-otp';
+  static const String forgotPasswordReset =
+      'user-mobile/auth/forgot-password/reset';
 }
