@@ -25,6 +25,7 @@ import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_progress_preview_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_current_university_profile_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_school_stage_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
@@ -36,6 +37,7 @@ import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_gradua
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_school_stage_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_user_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/models/onboarding_route_args.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
@@ -73,37 +75,100 @@ class AppRouter {
               _slidePage(state: state, child: const IntroView()),
         ),
 
+        // GoRoute(
+        //   path: AppRouterPath.onboarding,
+        //   name: AppRouterName.onboarding,
+        //   pageBuilder: (context, state) => _slidePage(
+        //     state: state,
+        //     child: BlocProvider(
+        //       create: (_) {
+        //         final args = state.extra as OnboardingRouteArgs?;
+
+        //         final rawEmail = args?.email.trim();
+        //         final email = (rawEmail != null && rawEmail.isNotEmpty)
+        //             ? rawEmail
+        //             : 'obdrhl@gmail.com';
+
+        //         final lastCompletedStep = args?.lastCompletedStep;
+
+        //         final cubit = OnboardingCubit(
+        //           onboardingEmail: email,
+        //           submitDiscoverySourceUseCase:
+        //               sl<SubmitDiscoverySourceUseCase>(),
+        //           submitEducationLevelUseCase:
+        //               sl<SubmitEducationLevelUseCase>(),
+        //           submitSchoolStageUseCase: sl<SubmitSchoolStageUseCase>(),
+        //           submitCurrentUniversityProfileUseCase:
+        //               sl<SubmitCurrentUniversityProfileUseCase>(),
+        //           submitGraduateAcademicProfileUseCase:
+        //               sl<SubmitGraduateAcademicProfileUseCase>(),
+        //           getOnboardingInterestsUseCase:
+        //               sl<GetOnboardingInterestsUseCase>(),
+        //           submitUserInterestsUseCase: sl<SubmitUserInterestsUseCase>(),
+        //           getOnboardingProgressPreviewUseCase:
+        //               sl<GetOnboardingProgressPreviewUseCase>(),
+        //         );
+
+        //         if (lastCompletedStep != null) {
+        //           cubit.initializeProgressPreviewIfNeeded(
+        //             lastCompletedStep: lastCompletedStep,
+        //           );
+        //         }
+
+        //         return cubit;
+        //       },
+        //       child: const OnboardingView(),
+        //     ),
+        //   ),
+        // ),
         GoRoute(
           path: AppRouterPath.onboarding,
           name: AppRouterName.onboarding,
-          pageBuilder: (context, state) => _slidePage(
-            state: state,
-            child: BlocProvider(
-              create: (_) {
-                final email =
-                    (state.extra as String?)?.trim().isNotEmpty == true
-                    ? (state.extra as String).trim()
-                    : 'obdrhl@gmail.com';
+          pageBuilder: (context, state) {
+            final args = state.extra as OnboardingRouteArgs?;
+            final email = args?.email.trim() ?? '';
 
-                return OnboardingCubit(
-                  onboardingEmail: email,
-                  submitDiscoverySourceUseCase:
-                      sl<SubmitDiscoverySourceUseCase>(),
-                  submitEducationLevelUseCase:
-                      sl<SubmitEducationLevelUseCase>(),
-                  submitSchoolStageUseCase: sl<SubmitSchoolStageUseCase>(),
-                  submitCurrentUniversityProfileUseCase:
-                      sl<SubmitCurrentUniversityProfileUseCase>(),
-                  submitGraduateAcademicProfileUseCase:
-                      sl<SubmitGraduateAcademicProfileUseCase>(),
-                  getOnboardingInterestsUseCase:
-                      sl<GetOnboardingInterestsUseCase>(),
-                  submitUserInterestsUseCase: sl<SubmitUserInterestsUseCase>(),
-                );
-              },
-              child: const OnboardingView(),
-            ),
-          ),
+            if (email.isEmpty) {
+              return _slidePage(state: state, child: const WelcomeView());
+            }
+
+            final lastCompletedStep = args?.lastCompletedStep;
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider(
+                create: (_) {
+                  final cubit = OnboardingCubit(
+                    onboardingEmail: email,
+                    submitDiscoverySourceUseCase:
+                        sl<SubmitDiscoverySourceUseCase>(),
+                    submitEducationLevelUseCase:
+                        sl<SubmitEducationLevelUseCase>(),
+                    submitSchoolStageUseCase: sl<SubmitSchoolStageUseCase>(),
+                    submitCurrentUniversityProfileUseCase:
+                        sl<SubmitCurrentUniversityProfileUseCase>(),
+                    submitGraduateAcademicProfileUseCase:
+                        sl<SubmitGraduateAcademicProfileUseCase>(),
+                    getOnboardingInterestsUseCase:
+                        sl<GetOnboardingInterestsUseCase>(),
+                    submitUserInterestsUseCase:
+                        sl<SubmitUserInterestsUseCase>(),
+                    getOnboardingProgressPreviewUseCase:
+                        sl<GetOnboardingProgressPreviewUseCase>(),
+                  );
+
+                  if (lastCompletedStep != null) {
+                    cubit.initializeProgressPreviewIfNeeded(
+                      lastCompletedStep: lastCompletedStep,
+                    );
+                  }
+
+                  return cubit;
+                },
+                child: const OnboardingView(),
+              ),
+            );
+          },
         ),
 
         GoRoute(
@@ -227,23 +292,23 @@ class AppRouter {
           },
         ),
         GoRoute(
-  path: AppRouterPath.forgotPasswordNewPassword,
-  name: AppRouterName.forgotPasswordNewPassword,
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>?;
-    final email = extra?['email'] as String? ?? '';
-    final otpCode = extra?['otpCode'] as String? ?? '';
+          path: AppRouterPath.forgotPasswordNewPassword,
+          name: AppRouterName.forgotPasswordNewPassword,
+          builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>?;
+            final email = extra?['email'] as String? ?? '';
+            final otpCode = extra?['otpCode'] as String? ?? '';
 
-    final cubit = sl<ForgetPasswordCubit>();
-    cubit.setEmail(email);
-    cubit.setOtpCode(otpCode);
+            final cubit = sl<ForgetPasswordCubit>();
+            cubit.setEmail(email);
+            cubit.setOtpCode(otpCode);
 
-    return BlocProvider(
-      create: (_) => cubit,
-      child: const ForgotPasswordNewPasswordPage(),
-    );
-  },
-),
+            return BlocProvider(
+              create: (_) => cubit,
+              child: const ForgotPasswordNewPasswordPage(),
+            );
+          },
+        ),
         GoRoute(
           path: AppRouterPath.mainLayout,
           name: AppRouterName.mainLayout,

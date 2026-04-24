@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_cur
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_education_level_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_graduate_academic_profile_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_interests_response.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_progress_preview_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_school_stage_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_user_interests_response.dart';
 
@@ -376,6 +377,53 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
     } catch (e) {
       debugPrint(
         "✗ OnboardingRepositoryImpl.submitUserInterests Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'حدث خطأ غير متوقع'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, OnboardingProgressPreviewResponse>>
+  getOnboardingProgressPreview({required String email}) async {
+    debugPrint(
+      "============ OnboardingRepositoryImpl.getOnboardingProgressPreview ============",
+    );
+    debugPrint("→ params: {email: $email}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.getOnboardingProgressPreview");
+
+      final model = await remoteDataSource.getOnboardingProgressPreview(
+        email: email,
+      );
+
+      debugPrint("← remoteDataSource.getOnboardingProgressPreview success");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ OnboardingRepositoryImpl.getOnboardingProgressPreview ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ OnboardingRepositoryImpl.getOnboardingProgressPreview CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ OnboardingRepositoryImpl.getOnboardingProgressPreview Unexpected error: $e",
       );
       debugPrint("=================================================");
       return Left(

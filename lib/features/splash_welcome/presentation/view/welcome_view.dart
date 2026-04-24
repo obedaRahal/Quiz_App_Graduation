@@ -10,6 +10,7 @@ import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/models/onboarding_route_args.dart';
 import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -99,10 +100,16 @@ class WelcomeViewBody extends StatelessWidget {
                 childVerticalPad: SizeConfig.h(.01),
                 borderRadius: 30,
                 onTap: () {
-                  debugPrint(" اكمال ال onboarding");
-                  context.pushNamed(AppRouterName.onboarding);
+                  debugPrint("اكمال ال onboarding");
                   sl<AuthSession>().markNeedsOnboarding();
-                  context.pushNamed(AppRouterName.onboarding);
+
+                  context.pushNamed(
+                    AppRouterName.onboarding,
+                    extra: const OnboardingRouteArgs(
+                      email: 'obdrhl@gmail.com',
+                      lastCompletedStep: 3,
+                    ),
+                  );
                 },
                 child: CustomTextWidget(
                   "اكمال",
@@ -118,9 +125,16 @@ class WelcomeViewBody extends StatelessWidget {
                 borderRadius: 30,
                 onTap: () {
                   debugPrint(" onboardingggggg");
-                  context.pushNamed(AppRouterName.onboarding);
+                  //context.pushNamed(AppRouterName.onboarding);
+                  context.pushNamed(
+                    AppRouterName.onboarding,
+                    extra: const OnboardingRouteArgs(
+                      email: 'obdrhl@gmail.com',
+                      lastCompletedStep: 0,
+                    ),
+                  );
                   sl<AuthSession>().markNeedsOnboarding();
-                  context.pushNamed(AppRouterName.onboarding);
+                  //context.pushNamed(AppRouterName.onboarding);
                 },
                 child: CustomTextWidget(
                   "onboarding",

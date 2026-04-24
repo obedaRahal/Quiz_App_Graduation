@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_current
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_education_level_response_model.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_graduate_academic_profile_response_model.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_interests_response_model.dart';
+import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_progress_preview_response_model.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_school_stage_response_model.dart';
 import 'package:quiz_app_grad/features/onboarding/data/models/onboarding_user_interests_response_model.dart';
 
@@ -50,6 +51,10 @@ abstract class OnboardingRemoteDataSource {
   Future<OnboardingUserInterestsResponseModel> submitUserInterests({
     required String email,
     required List<int> interestIds,
+  });
+
+  Future<OnboardingProgressPreviewResponseModel> getOnboardingProgressPreview({
+    required String email,
   });
 }
 
@@ -267,4 +272,31 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
       response as Map<String, dynamic>,
     );
   }
+
+
+  @override
+Future<OnboardingProgressPreviewResponseModel> getOnboardingProgressPreview({
+  required String email,
+}) async {
+  debugPrint(
+    "============ OnboardingRemoteDataSourceImpl.getOnboardingProgressPreview ============",
+  );
+  debugPrint(
+    "→ endpoint: ${EndPoints.onboardingProgressPreview} | data: {email: $email}",
+  );
+
+  final response = await apiConsumer.post(
+    EndPoints.onboardingProgressPreview,
+    data: {
+      'email': email,
+    },
+  );
+
+  debugPrint("← response (getOnboardingProgressPreview): $response");
+  debugPrint("=================================================");
+
+  return OnboardingProgressPreviewResponseModel.fromJson(
+    response as Map<String, dynamic>,
+  );
+}
 }

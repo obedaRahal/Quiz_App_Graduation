@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_dis
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_education_level_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_graduate_academic_profile_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_interests_response.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_progress_preview_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_school_stage_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_user_interests_response.dart';
 
@@ -50,4 +51,7 @@ abstract class OnboardingRepository {
     required String email,
     required List<int> interestIds,
   });
+
+  Future<Either<Failure, OnboardingProgressPreviewResponse>>
+  getOnboardingProgressPreview({required String email});
 }

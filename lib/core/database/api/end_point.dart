@@ -1,6 +1,6 @@
 class EndPoints {
-  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
-  static const String baseUrl = 'http://10.237.223.187/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  //static const String baseUrl = 'http://10.237.223.187/api/v1/user-mobile';
   static const String refreshToken = 'http://10.237.223.187/api/refresh';
 
   // authhhhhh
@@ -21,6 +21,10 @@ class EndPoints {
       '$baseUrl/auth/onboarding/interests';
   static const String onboardingUserInterests =
       '$baseUrl/auth/onboarding/user-interests';
+  static const String onboardingProgressPreview =
+    '$baseUrl/auth/onboarding/progress-preview';
+
+      
       // Auth ///////////////////
   static const String register = '/auth/register';
   static const String verifyEmail = '/auth/verify-email';

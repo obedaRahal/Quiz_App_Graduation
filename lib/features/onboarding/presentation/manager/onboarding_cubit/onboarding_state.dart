@@ -31,6 +31,9 @@ class OnboardingState {
   final List<InterestGroupOption> interestGroups;
   final bool hasAttemptedLoadingInterests;
 
+  // onboarding progress review
+  final bool hasInitializedProgressPreview;
+
   final bool isLoading;
   final bool isSubmitting;
   final bool isCompleted;
@@ -63,6 +66,7 @@ class OnboardingState {
     this.errorMessage,
     this.errorTitle,
     this.hasAttemptedLoadingInterests = false,
+    this.hasInitializedProgressPreview = false,
   });
 
   OnboardingStepType get currentStep {
@@ -190,6 +194,7 @@ class OnboardingState {
     String? errorTitle,
     bool clearErrorMessage = false,
     bool? hasAttemptedLoadingInterests,
+    bool? hasInitializedProgressPreview,
 
     bool clearCurrentUniversity = false,
     bool clearCurrentDepartmentAtUniversity = false,
@@ -250,7 +255,9 @@ class OnboardingState {
 
       errorTitle: clearErrorMessage ? null : (errorTitle ?? this.errorTitle),
       hasAttemptedLoadingInterests:
-    hasAttemptedLoadingInterests ?? this.hasAttemptedLoadingInterests,
+          hasAttemptedLoadingInterests ?? this.hasAttemptedLoadingInterests,
+      hasInitializedProgressPreview:
+          hasInitializedProgressPreview ?? this.hasInitializedProgressPreview,
     );
   }
 }

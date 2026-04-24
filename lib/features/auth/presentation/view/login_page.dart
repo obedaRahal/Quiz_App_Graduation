@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
@@ -12,6 +14,7 @@ import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/log
 import 'package:quiz_app_grad/features/auth/presentation/widget/auth_feild_lable.dart';
 import 'package:quiz_app_grad/features/auth/presentation/widget/top_container_auth.dart';
 import 'package:quiz_app_grad/features/auth/presentation/widget/tow_text_row.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/models/onboarding_route_args.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -73,6 +76,25 @@ class LoginPage extends StatelessWidget {
               );
               break;
 
+            // case LoginFailureType.onboardingNotCompleted:
+            //   showValidationTopSnackBar(
+            //     context,
+            //     title: title,
+            //     message: state.errorMessage!,
+            //     type: AppValidationSnackBarType.error,
+            //     actionText: 'الذهاب لاستكمال المعلومات',
+            //     onActionTap: () {
+            //       debugPrint(
+            //         'Go to onboarding step: ${state.lastCompletedStep}',
+            //       );
+            //       debugPrint(
+            //         'and email is : ${cubit.emailController.text}',
+            //       );
+            //     },
+            //     displayDuration: const Duration(seconds: 6),
+            //   );
+            //   break;
+
             case LoginFailureType.onboardingNotCompleted:
               showValidationTopSnackBar(
                 context,
@@ -81,8 +103,30 @@ class LoginPage extends StatelessWidget {
                 type: AppValidationSnackBarType.error,
                 actionText: 'الذهاب لاستكمال المعلومات',
                 onActionTap: () {
-                  debugPrint(
-                    'Go to onboarding step: ${state.lastCompletedStep}',
+                  final email = cubit.emailController.text.trim();
+                  final lastCompletedStep = state.lastCompletedStep;
+
+                  debugPrint('Go to onboarding step: $lastCompletedStep');
+                  debugPrint('and email is: $email');
+
+                  if (email.isEmpty) {
+                    showValidationTopSnackBar(
+                      context,
+                      title: 'خطأ',
+                      message: 'تعذر تحديد البريد الإلكتروني للمتابعة.',
+                      type: AppValidationSnackBarType.error,
+                    );
+                    return;
+                  }
+
+                  sl<AuthSession>().markNeedsOnboarding();
+
+                  context.goNamed(
+                    AppRouterName.onboarding,
+                    extra: OnboardingRouteArgs(
+                      email: email,
+                      lastCompletedStep: lastCompletedStep,
+                    ),
                   );
                 },
                 displayDuration: const Duration(seconds: 6),

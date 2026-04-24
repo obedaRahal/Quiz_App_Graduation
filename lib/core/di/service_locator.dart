@@ -18,6 +18,7 @@ import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_r
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_progress_preview_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
@@ -174,6 +175,12 @@ void _registerOnboardingFeature() {
       () => SubmitUserInterestsUseCase(sl<OnboardingRepository>()),
     );
   }
+
+  if (!sl.isRegistered<GetOnboardingProgressPreviewUseCase>()) {
+    sl.registerLazySingleton<GetOnboardingProgressPreviewUseCase>(
+      () => GetOnboardingProgressPreviewUseCase(sl<OnboardingRepository>()),
+    );
+  }
 }
 
 void _registerFilePickerFeature() {
@@ -233,13 +240,13 @@ void _registerAuthFeature() {
     );
   }
   if (!sl.isRegistered<LoginCubit>()) {
-  sl.registerFactory<LoginCubit>(
-    () => LoginCubit(
-      loginUseCase: sl<LoginUseCase>(),
-      resendOtpUseCase: sl<ResendOtpUseCase>(),
-    ),
-  );
-}
+    sl.registerFactory<LoginCubit>(
+      () => LoginCubit(
+        loginUseCase: sl<LoginUseCase>(),
+        resendOtpUseCase: sl<ResendOtpUseCase>(),
+      ),
+    );
+  }
   if (!sl.isRegistered<ResendOtpUseCase>()) {
     sl.registerLazySingleton<ResendOtpUseCase>(
       () => ResendOtpUseCase(sl<AuthRepository>()),
@@ -267,24 +274,20 @@ void _registerAuthFeature() {
     sl.registerFactory<ForgetPasswordCubit>(
       () => ForgetPasswordCubit(
         forgotPasswordRequestOtpUseCase: sl<ForgotPasswordRequestOtpUseCase>(),
-      forgotPasswordVerifyOtpUseCase: sl<ForgotPasswordVerifyOtpUseCase>(),
-      forgotPasswordResendOtpUseCase: sl<ForgotPasswordResendOtpUseCase>(),
-      forgotPasswordResetUseCase: sl<ForgotPasswordResetUseCase>(),
+        forgotPasswordVerifyOtpUseCase: sl<ForgotPasswordVerifyOtpUseCase>(),
+        forgotPasswordResendOtpUseCase: sl<ForgotPasswordResendOtpUseCase>(),
+        forgotPasswordResetUseCase: sl<ForgotPasswordResetUseCase>(),
       ),
     );
   }
   if (!sl.isRegistered<ForgotPasswordResendOtpUseCase>()) {
-  sl.registerLazySingleton<ForgotPasswordResendOtpUseCase>(
-    () => ForgotPasswordResendOtpUseCase(
-      sl<AuthRepository>(),
-    ),
-  );
-}
-if (!sl.isRegistered<ForgotPasswordResetUseCase>()) {
-  sl.registerLazySingleton<ForgotPasswordResetUseCase>(
-    () => ForgotPasswordResetUseCase(
-      sl<AuthRepository>(),
-    ),
-  );
-}
+    sl.registerLazySingleton<ForgotPasswordResendOtpUseCase>(
+      () => ForgotPasswordResendOtpUseCase(sl<AuthRepository>()),
+    );
+  }
+  if (!sl.isRegistered<ForgotPasswordResetUseCase>()) {
+    sl.registerLazySingleton<ForgotPasswordResetUseCase>(
+      () => ForgotPasswordResetUseCase(sl<AuthRepository>()),
+    );
+  }
 }

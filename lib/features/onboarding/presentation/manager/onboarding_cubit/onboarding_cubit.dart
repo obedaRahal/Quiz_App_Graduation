@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_interest_group.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_progress_preview_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_progress_preview_use_case.dart';
+import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/get_onboarding_progress_preview_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_current_university_profile_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_discovery_source_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_education_level_params.dart';
@@ -39,20 +42,26 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   final GetOnboardingInterestsUseCase getOnboardingInterestsUseCase;
   final SubmitUserInterestsUseCase submitUserInterestsUseCase;
 
+  // onboarding progress preview
+  final GetOnboardingProgressPreviewUseCase getOnboardingProgressPreviewUseCase;
+  final int? initialLastCompletedStep;
   final String onboardingEmail;
 
   OnboardingCubit({
     required this.submitDiscoverySourceUseCase,
     required this.submitEducationLevelUseCase,
-    required this.onboardingEmail,
     required this.submitSchoolStageUseCase,
     required this.submitCurrentUniversityProfileUseCase,
     required this.submitGraduateAcademicProfileUseCase,
     required this.getOnboardingInterestsUseCase,
     required this.submitUserInterestsUseCase,
+    required this.getOnboardingProgressPreviewUseCase,
+    required this.onboardingEmail,
+    this.initialLastCompletedStep,
   }) : super(const OnboardingState()) {
     debugPrint("============ OnboardingCubit INIT ============");
     debugPrint("→ onboardingEmail: $onboardingEmail");
+    debugPrint("→ initialLastCompletedStep: $initialLastCompletedStep");
   }
 
   void heardAboutChanged(String value) {
@@ -859,4 +868,146 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   //   debugPrint("im at _submitCurrentStep to call API later");
   //   await Future<void>.delayed(Duration.zero);
   // }
+
+  ////////////////////////
+  ////////////////////////
+  ////////////////////////
+  ////////////////////////
+  ////////////////////////
+  // on boarding preview progress
+  Future<void> initializeProgressPreviewIfNeeded({
+  required int lastCompletedStep,
+}) async {
+  debugPrint(
+    "============ OnboardingCubit.initializeProgressPreviewIfNeeded ============",
+  );
+  debugPrint("→ lastCompletedStep: $lastCompletedStep");
+
+  if (state.hasInitializedProgressPreview || state.isLoading) {
+    debugPrint("✗ progress preview already initialized or loading");
+    debugPrint("=================================================");
+    return;
+  }
+
+  emit(
+    state.copyWith(
+      isLoading: true,
+      hasInitializedProgressPreview: true,
+      clearErrorMessage: true,
+    ),
+  );
+
+  final result = await getOnboardingProgressPreviewUseCase(
+    GetOnboardingProgressPreviewParams(
+      email: onboardingEmail,
+    ),
+  );
+
+  result.fold(
+    (failure) {
+      debugPrint(
+        "✗ initializeProgressPreview failure title: ${failure.title}",
+      );
+      debugPrint(
+        "✗ initializeProgressPreview failure message: ${failure.message}",
+      );
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorTitle: failure.title,
+          errorMessage: failure.message,
+        ),
+      );
+    },
+    (response) {
+      _applyProgressPreviewResume(
+        response: response,
+        lastCompletedStep: lastCompletedStep,
+      );
+    },
+  );
+
+  debugPrint("=================================================");
+}
+
+void _applyProgressPreviewResume({
+  required OnboardingProgressPreviewResponse response,
+  required int lastCompletedStep,
+}) {
+  debugPrint(
+    "============ OnboardingCubit._applyProgressPreviewResume ============",
+  );
+
+  final previewDiscoverySource = response.discoverySource?.trim();
+  final previewEducationLevel = response.educationLevel?.trim();
+
+  final updatedVisibleSteps = _buildVisibleSteps(previewEducationLevel);
+
+  final targetStep = _resolveResumeTargetStep(
+    lastCompletedStep: lastCompletedStep,
+    educationLevel: previewEducationLevel,
+  );
+
+  final targetIndex = updatedVisibleSteps.indexOf(targetStep);
+  final safeTargetIndex = targetIndex == -1 ? 0 : targetIndex;
+
+  emit(
+    state.copyWith(
+      heardAbout: previewDiscoverySource,
+      educationLevel: previewEducationLevel,
+      visibleSteps: updatedVisibleSteps,
+      currentStepIndex: safeTargetIndex,
+      isLoading: false,
+      clearErrorMessage: true,
+    ),
+  );
+
+  debugPrint("→ preview discoverySource: $previewDiscoverySource");
+  debugPrint("→ preview educationLevel: $previewEducationLevel");
+  debugPrint("→ resume targetStep: $targetStep");
+  debugPrint("→ resume targetIndex: $safeTargetIndex");
+  debugPrint("=================================================");
+}
+
+OnboardingStepType _resolveResumeTargetStep({
+  required int lastCompletedStep,
+  required String? educationLevel,
+}) {
+  switch (lastCompletedStep) {
+    case 0:
+      return OnboardingStepType.heardAbout;
+
+    case 1:
+      return OnboardingStepType.educationLevel;
+
+    case 2:
+      return _resolveStepAfterEducationLevel(educationLevel);
+
+    case 3:
+    case 4:
+      return OnboardingStepType.interests;
+
+    default:
+      return OnboardingStepType.heardAbout;
+  }
+}
+
+OnboardingStepType _resolveStepAfterEducationLevel(String? educationLevel) {
+  switch (educationLevel) {
+    case EducationLevelValues.schoolLevel:
+      return OnboardingStepType.schoolStage;
+
+    case EducationLevelValues.universityLevel:
+      return OnboardingStepType.currentUniversity;
+
+    case EducationLevelValues.mastersLevel:
+    case EducationLevelValues.doctorateLevel:
+    case EducationLevelValues.graduatedLevel:
+      return OnboardingStepType.graduatedUniversity;
+
+    default:
+      return OnboardingStepType.educationLevel;
+  }
+}
 }

@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
@@ -14,6 +16,7 @@ import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register
 import 'package:quiz_app_grad/features/auth/presentation/widget/otp_input_section.dart';
 import 'package:quiz_app_grad/features/auth/presentation/widget/top_container_auth.dart';
 import 'package:quiz_app_grad/features/auth/presentation/widget/tow_text_row.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/models/onboarding_route_args.dart';
 
 class VerifyEmailPage extends StatelessWidget {
   const VerifyEmailPage({super.key});
@@ -35,16 +38,45 @@ class VerifyEmailPage extends StatelessWidget {
           );
         }
 
+        // if (state.verifyStatus == VerifyRegisterStatus.success) {
+        //   showValidationTopSnackBar(
+        //     context,
+        //     title: 'نجاح',
+        //     message: state.successMessage ?? 'تمت العملية بنجاح.',
+        //     type: AppValidationSnackBarType.success,
+        //   );
+
+        //   context.goNamed(AppRouterName.mainLayout);
+        // }
+
         if (state.verifyStatus == VerifyRegisterStatus.success) {
           showValidationTopSnackBar(
             context,
-            title: 'نجاح', 
+            title: 'نجاح',
             message: state.successMessage ?? 'تمت العملية بنجاح.',
             type: AppValidationSnackBarType.success,
           );
-
-          context.goNamed(AppRouterName.mainLayout);
+          final verifiedEmail = context
+              .read<VerifyRegisterCubit>()
+              .email
+              .trim();
+          if (verifiedEmail.isEmpty) {
+            showValidationTopSnackBar(
+              context,
+              title: 'خطأ',
+              message: 'تعذر تحديد البريد الإلكتروني للمتابعة.',
+              type: AppValidationSnackBarType.error,
+            );
+            return;
+          }
+          debugPrint("emais is : $verifiedEmail");
+          sl<AuthSession>().markNeedsOnboarding();
+          context.goNamed(
+            AppRouterName.onboarding,
+            extra: OnboardingRouteArgs(email: verifiedEmail),
+          );
         }
+
         if (state.resendStatus == VerifyResendStatus.success &&
             state.resendSuccessMessage != null) {
           showValidationTopSnackBar(
