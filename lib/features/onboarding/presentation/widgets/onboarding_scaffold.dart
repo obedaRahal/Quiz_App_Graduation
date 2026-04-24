@@ -77,7 +77,7 @@ class OnboardingScaffold extends StatelessWidget {
                     child: ThemedAppImage(
                       darkPath: AppImage.logoDark,
                       lightPath: AppImage.logoLight,
-                      scale: 5,
+                      //scale: 5,
                     ),
                   ),
                 ],

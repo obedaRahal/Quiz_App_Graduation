@@ -18,7 +18,7 @@ class AppImage {
 
   static String get logoDark => '$_baseIcon/logodark.svg';
 
-  static String get welcomeLight => '$_baseImageLight/welcomeLight.png';
+  static String get welcomeLight => '$_baseImageLight/welcomeLight.svg';
 
   //////// introoooo ////////////////
   static String get intro1 => '$_baseImageLight/intro1light.png';
@@ -34,7 +34,7 @@ class AppImage {
 
   ////////////////////// darkkkk image ////////////////////////////
   //////////////////////////////////////////////////////////////
-  static String get welcomeDark => '$_baseImageDark/welcomeDark.png';
+  static String get welcomeDark => '$_baseImageDark/welcomeDark.svg';
   /////// register /////////////////
   static String get female => '$_baseImageLight/user-long-hair.svg';
   static String get male => '$_baseImageLight/user-short-hair.svg';

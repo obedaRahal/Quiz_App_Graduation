@@ -6,8 +6,6 @@ import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
-import 'package:quiz_app_grad/core/config/app_router_name.dart'
-    show AppRouterName;
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
@@ -31,74 +29,110 @@ class WelcomeViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Stack(
-          children: [
-            SizedBox(
-              //height: SizeConfig.h(0.7),
-              child: ThemedAppImage(
-                height: SizeConfig.h(0.6),
-                //width: SizeConfig.w(10),
-                fit: BoxFit.cover,
-                lightPath: AppImage.welcomeLight,
-                darkPath: AppImage.welcomeDark,
-                alignment: Alignment.center,
-              ),
-            ),
-    
-            Positioned(
-              top: 10,
-              right: 10,
-              child: CustomButtonWidget(
-                onTap: () {
-                  debugPrint("change mode ");
-                  context.read<ThemeCubit>().toggleTheme();
-                },
-                child: ThemedAppImage(
-                  darkPath: AppImage.logoDark,
-                  lightPath: AppImage.logoLight,
-                  scale: 5,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Stack(
+            children: [
+              // ThemedAppImage(
+              //   height: SizeConfig.h(0.84),
+              //   width: double.infinity,
+              //   //scale: 1.5,
+              //   //fit: BoxFit.cover,
+              //   lightPath: AppImage.welcomeLight,
+              //   darkPath: AppImage.welcomeDark,
+              //   alignment: Alignment.center,
+              // ),
+              SizedBox(
+                width: double.infinity,
+                height: SizeConfig.h(0.75),
+                child: ClipRect(
+                  child: ThemedAppImage(
+                    width: double.infinity,
+                    height: SizeConfig.h(0.75),
+                    fit: BoxFit.cover,
+                    scale: 1,
+                    lightPath: AppImage.welcomeLight,
+                    darkPath: AppImage.welcomeDark,
+                    alignment: Alignment.center,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-    
-        CustomTextWidget(
-          "اختباراتي",
-          fontSize: SizeConfig.text(0.065),
-          fontFamily: AppFont.elMessiriBold,
-          color: appColors.primaryToPrimaryDark,
-        ),
-    
-        CustomTextWidget(
-          "الدراسة صارت أسهل ! \n كل ما تحتاجه للنجاح الأكاديمي \n أصبح في مكان واحد",
-          fontSize: SizeConfig.text(0.04),
-          color: appColors.blackTogreyMedium,
-        ),
-        CustomButtonWidget(
-          backgroundColor: appColors.blackToGreyLightDark,
-          childHorizontalPad: SizeConfig.w(.06),
-          childVerticalPad: SizeConfig.h(.01),
-          borderRadius: 30,
-          onTap: () {
-            debugPrint(" onboardingggggg");
-            context.pushNamed(AppRouterName.onboarding);
-              sl<AuthSession>().markNeedsOnboarding();
-            context.pushNamed(AppRouterName.onboarding);
-          },
-          child: CustomTextWidget(
-            "onboarding",
-            fontSize: SizeConfig.text(.038),
-            color: Colors.white,
+
+              Positioned(
+                top: 10,
+                right: 10,
+                child: CustomButtonWidget(
+                  onTap: () {
+                    debugPrint("change mode ");
+                    context.read<ThemeCubit>().toggleTheme();
+                  },
+                  child: ThemedAppImage(
+                    darkPath: AppImage.logoDark,
+                    lightPath: AppImage.logoLight,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-    
-        DownPartWelcome(),
-      ],
+
+          CustomTextWidget(
+            "اختباراتي",
+            fontSize: SizeConfig.text(0.065),
+            fontFamily: AppFont.elMessiriBold,
+            color: appColors.primaryToPrimaryDark,
+          ),
+
+          CustomTextWidget(
+            "الدراسة صارت أسهل ! \n كل ما تحتاجه للنجاح الأكاديمي \n أصبح في مكان واحد",
+            fontSize: SizeConfig.text(0.04),
+            color: appColors.blackTogreyMedium,
+          ),
+
+          Row(
+            children: [
+              CustomButtonWidget(
+                backgroundColor: appColors.blackToGreyLightDark,
+                childHorizontalPad: SizeConfig.w(.06),
+                childVerticalPad: SizeConfig.h(.01),
+                borderRadius: 30,
+                onTap: () {
+                  debugPrint(" اكمال ال onboarding");
+                  context.pushNamed(AppRouterName.onboarding);
+                  sl<AuthSession>().markNeedsOnboarding();
+                  context.pushNamed(AppRouterName.onboarding);
+                },
+                child: CustomTextWidget(
+                  "اكمال",
+                  fontSize: SizeConfig.text(.038),
+                  color: Colors.white,
+                ),
+              ),
+
+              CustomButtonWidget(
+                backgroundColor: appColors.blackToGreyLightDark,
+                childHorizontalPad: SizeConfig.w(.06),
+                childVerticalPad: SizeConfig.h(.01),
+                borderRadius: 30,
+                onTap: () {
+                  debugPrint(" onboardingggggg");
+                  context.pushNamed(AppRouterName.onboarding);
+                  sl<AuthSession>().markNeedsOnboarding();
+                  context.pushNamed(AppRouterName.onboarding);
+                },
+                child: CustomTextWidget(
+                  "onboarding",
+                  fontSize: SizeConfig.text(.038),
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          DownPartWelcome(),
+        ],
+      ),
     );
   }
 }

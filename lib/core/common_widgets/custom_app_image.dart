@@ -83,33 +83,73 @@ class CustomAppImage extends StatelessWidget {
     );
   }
 
+  // Widget _buildSvg(BuildContext context) {
+  //   return SvgPicture.asset(
+  //     path,
+  //     width: width,
+  //     height: height,
+  //     fit: fit,
+  //     alignment: alignment,
+  //     colorFilter: color == null
+  //         ? null
+  //         : ColorFilter.mode(color!, BlendMode.srcIn),
+  //     placeholderBuilder: (_) {
+  //       if (!showLoadingForSvg) {
+  //         return SizedBox(width: width, height: height);
+  //       }
+
+  //       return SizedBox(
+  //         width: width,
+  //         height: height,
+  //         child: const Center(
+  //           child: SizedBox(
+  //             width: 18,
+  //             height: 18,
+  //             child: CircularProgressIndicator(strokeWidth: 2),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
   Widget _buildSvg(BuildContext context) {
-    return SvgPicture.asset(
-      path,
+    return SizedBox(
       width: width,
       height: height,
-      fit: fit,
-      alignment: alignment,
-      colorFilter: color == null
-          ? null
-          : ColorFilter.mode(color!, BlendMode.srcIn),
-      placeholderBuilder: (_) {
-        if (!showLoadingForSvg) {
-          return SizedBox(width: width, height: height);
-        }
+      child: ClipRect(
+        child: Transform.scale(
+          scale: scale,
+          alignment: alignment,
+          child: SvgPicture.asset(
+            path,
+            width: width,
+            height: height,
+            fit: fit,
+            alignment: alignment,
+            colorFilter: color == null
+                ? null
+                : ColorFilter.mode(color!, BlendMode.srcIn),
+            placeholderBuilder: (_) {
+              if (!showLoadingForSvg) {
+                return SizedBox(width: width, height: height);
+              }
 
-        return SizedBox(
-          width: width,
-          height: height,
-          child: const Center(
-            child: SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
+              return SizedBox(
+                width: width,
+                height: height,
+                child: const Center(
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+              );
+            },
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -129,11 +169,7 @@ class CustomAppImage extends StatelessWidget {
       width: width,
       height: height,
       child: Center(
-        child: Icon(
-          fallbackIcon,
-          size: resolvedSize,
-          color: resolvedColor,
-        ),
+        child: Icon(fallbackIcon, size: resolvedSize, color: resolvedColor),
       ),
     );
   }

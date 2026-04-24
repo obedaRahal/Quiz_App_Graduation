@@ -52,23 +52,28 @@ class IntroBottomPanel extends StatelessWidget {
                       titleBlack: pageData.titleBlack,
                       titlePrimary: pageData.titlePrimary,
                     ),
-                    SizedBox(height: SizeConfig.h(.035)),
+                    SizedBox(height: SizeConfig.h(.012)),
                     CustomTextWidget(
                       pageData.description,
                       color: AppPalette.greyMedium,
                       fontSize: SizeConfig.text(.034),
                     ),
                     const Spacer(),
-                    if (!isSaving)
+                    //if (!isSaving)
                       IntroPageIndicator(
                         controller: controller,
                         count: pagesCount,
                       ),
-                    if (isSaving)
-                      CircularProgressIndicator(),
                   ],
                 ),
               ),
+              if (isSaving)
+                PositionedDirectional(
+                  bottom: 0,
+                  end: SizeConfig.w(.35),
+                  start: SizeConfig.w(.35),
+                  child: CircularProgressIndicator(),
+                ),
               PositionedDirectional(
                 bottom: 0,
                 end: 12,

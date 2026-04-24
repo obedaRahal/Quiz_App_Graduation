@@ -24,16 +24,16 @@ class IntroTitle extends StatelessWidget {
             TextSpan(
               text: "$titleBlack\n",
               style: TextStyle(
-                fontSize: SizeConfig.text(.075),
+                fontSize: SizeConfig.text(.07),
                 fontFamily: AppFont.elMessiriBold,
                 color: AppPalette.black,
-                height: 1.5,
+                height: 1,
               ),
             ),
             TextSpan(
               text: titlePrimary,
               style: TextStyle(
-                fontSize: SizeConfig.text(.06),
+                fontSize: SizeConfig.text(.055),
                 fontFamily: AppFont.elMessiriMedium,
                 color: AppPalette.primary,
               ),
