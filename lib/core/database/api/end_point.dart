@@ -1,7 +1,7 @@
 class EndPoints {
-  static const String baseUrl = 'http://10.237.223.187/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   //static const String baseUrl = 'http://10.237.223.187/api/v1/user-mobile';
-  static const String refreshToken = 'http://localhost/api/v1/v1/refresh';
+  static const String refreshToken = 'http://localhost/api/v1/refresh';
 
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';

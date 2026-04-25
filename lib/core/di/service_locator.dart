@@ -56,11 +56,11 @@ Future<void> _registerCore() async {
   if (!sl.isRegistered<AuthSession>()) {
     sl.registerLazySingleton<AuthSession>(() => AuthSession());
   }
-  if (!sl.isRegistered<TokenRefreshService>()) {
-  sl.registerLazySingleton<TokenRefreshService>(
-    () => TokenRefreshService(dio: sl<Dio>()),
-  );
-}
+//   if (!sl.isRegistered<TokenRefreshService>()) {
+//   sl.registerLazySingleton<TokenRefreshService>(
+//     () => TokenRefreshService(dio: sl<Dio>()),
+//   );
+// }
 
   if (!sl.isRegistered<Dio>()) {
     sl.registerLazySingleton<Dio>(

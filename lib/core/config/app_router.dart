@@ -136,33 +136,6 @@ class AppRouter {
           },
         ),
 
-        // GoRoute(
-        //   path: AppRouterPath.register,
-        //   name: AppRouterName.register,
-        //   builder: (context, state) {
-        //     final dio = Dio(
-        //       BaseOptions(
-        //         baseUrl: EndPoints.baseUrl,
-        //         receiveDataWhenStatusError: true,
-        //       ),
-        //     );
-        //     final apiConsumer = DioConsumer(dio: dio);
-        //     final authRemoteDataSource = AuthRemoteDataSourceImpl(
-        //       apiConsumer: apiConsumer,
-        //       refreshDio: sl<Dio>(instanceName: 'refresh_dio')
-        //     );
-
-        //     final authRepository = AuthRepositoryImpl(
-        //       authRemoteDataSource: authRemoteDataSource,
-        //     );
-
-        //     final registerUseCase = RegisterUseCase(authRepository);
-        //     return BlocProvider(
-        //       create: (_) => RegisterCubit(registerUseCase),
-        //       child: const RegisterPage(),
-        //     );
-        //   },
-        // ),
         GoRoute(
           path: AppRouterPath.register,
           name: AppRouterName.register,

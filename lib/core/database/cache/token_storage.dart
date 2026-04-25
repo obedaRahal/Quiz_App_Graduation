@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenStorage {
@@ -80,10 +81,18 @@ class TokenStorage {
   }
 
   static Future<void> clear() async {
-    await Future.wait([
-      _secureStorage.delete(key: _accessTokenKey),
-      _secureStorage.delete(key: _refreshTokenKey),
-      _secureStorage.delete(key: _accessTokenExpiryAtKey),
-    ]);
+    await _secureStorage.delete(key: _accessTokenKey);
+    await _secureStorage.delete(key: _refreshTokenKey);
+    await _secureStorage.delete(key: _accessTokenExpiryAtKey);
+
+    debugPrint("============ TokenStorage.clear ============");
+    debugPrint(
+      "after delete token => ${(await getAccessToken())?.length ?? 0}",
+    );
+    debugPrint(
+      "after delete refresh => ${(await getRefreshToken())?.length ?? 0}",
+    );
+    debugPrint("after delete expiry => ${await getAccessTokenExpiry()}");
+    debugPrint("=================================================");
   }
 }
