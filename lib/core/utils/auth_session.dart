@@ -1,31 +1,18 @@
 import 'package:flutter/foundation.dart';
 
-enum AuthSessionStatus {
-  unknown,
-  unauthenticated,
-  needsEmailVerification,
-  needsOnboarding,
-  authenticated,
-}
+enum AuthSessionStatus { unknown, unauthenticated, authenticated }
 
 class AuthSession extends ChangeNotifier {
-  AuthSession({
-    AuthSessionStatus initialStatus = AuthSessionStatus.unknown,
-  }) : _status = initialStatus;
+  AuthSession({AuthSessionStatus initialStatus = AuthSessionStatus.unknown})
+    : _status = initialStatus;
 
   AuthSessionStatus _status;
 
   AuthSessionStatus get status => _status;
 
   bool get isChecking => _status == AuthSessionStatus.unknown;
-  bool get isUnauthenticated =>
-      _status == AuthSessionStatus.unauthenticated;
-  bool get needsEmailVerification =>
-      _status == AuthSessionStatus.needsEmailVerification;
-  bool get needsOnboarding =>
-      _status == AuthSessionStatus.needsOnboarding;
-  bool get isAuthenticated =>
-      _status == AuthSessionStatus.authenticated;
+  bool get isUnauthenticated => _status == AuthSessionStatus.unauthenticated;
+  bool get isAuthenticated => _status == AuthSessionStatus.authenticated;
 
   bool get canAccessProtectedRoutes => isAuthenticated;
 
@@ -41,14 +28,6 @@ class AuthSession extends ChangeNotifier {
 
   void markUnauthenticated() {
     setStatus(AuthSessionStatus.unauthenticated);
-  }
-
-  void markNeedsEmailVerification() {
-    setStatus(AuthSessionStatus.needsEmailVerification);
-  }
-
-  void markNeedsOnboarding() {
-    setStatus(AuthSessionStatus.needsOnboarding);
   }
 
   void markAuthenticated() {

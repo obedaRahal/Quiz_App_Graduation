@@ -119,8 +119,6 @@ class LoginPage extends StatelessWidget {
                     return;
                   }
 
-                  sl<AuthSession>().markNeedsOnboarding();
-
                   context.goNamed(
                     AppRouterName.onboarding,
                     extra: OnboardingRouteArgs(

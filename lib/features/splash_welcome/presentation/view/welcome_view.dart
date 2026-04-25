@@ -101,7 +101,6 @@ class WelcomeViewBody extends StatelessWidget {
                 borderRadius: 30,
                 onTap: () {
                   debugPrint("اكمال ال onboarding");
-                  sl<AuthSession>().markNeedsOnboarding();
 
                   context.pushNamed(
                     AppRouterName.onboarding,
@@ -133,7 +132,6 @@ class WelcomeViewBody extends StatelessWidget {
                       lastCompletedStep: 0,
                     ),
                   );
-                  sl<AuthSession>().markNeedsOnboarding();
                   //context.pushNamed(AppRouterName.onboarding);
                 },
                 child: CustomTextWidget(

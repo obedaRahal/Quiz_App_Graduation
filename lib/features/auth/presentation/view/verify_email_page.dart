@@ -5,10 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
-import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
-import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
@@ -70,7 +68,6 @@ class VerifyEmailPage extends StatelessWidget {
             return;
           }
           debugPrint("emais is : $verifiedEmail");
-          sl<AuthSession>().markNeedsOnboarding();
           context.goNamed(
             AppRouterName.onboarding,
             extra: OnboardingRouteArgs(email: verifiedEmail),

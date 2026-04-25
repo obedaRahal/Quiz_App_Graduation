@@ -10,7 +10,6 @@ import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:quiz_app_grad/features/auth/data/repositories/auth_repo_impl.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
-import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
@@ -26,8 +25,6 @@ import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_progress_preview_use_case.dart';
-import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_current_university_profile_params.dart';
-import 'package:quiz_app_grad/features/onboarding/domain/use_cases/params/submit_school_stage_params.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
@@ -348,14 +345,6 @@ class AppRouter {
             ? null
             : AppRouterPath.welcome;
 
-      case AuthSessionStatus.needsEmailVerification:
-        return null;
-
-      case AuthSessionStatus.needsOnboarding:
-        return _needsOnboardingAllowedRoutes.contains(currentLocation)
-            ? null
-            : AppRouterPath.onboarding;
-
       case AuthSessionStatus.authenticated:
         return null;
     }
@@ -368,17 +357,16 @@ class AppRouter {
     AppRouterPath.login,
     AppRouterPath.register,
     AppRouterPath.verifyEmail,
+    AppRouterPath.onboarding,
     AppRouterPath.forgotPasswordEmail,
     AppRouterPath.forgotPasswordOtpCode,
     AppRouterPath.forgotPasswordNewPassword,
+
     AppRouterPath.home,
     AppRouterPath.mainLayout,
   };
 
-  static const Set<String> _needsOnboardingAllowedRoutes = {
-    AppRouterPath.onboarding,
-    AppRouterPath.welcome,
-  };
+
 
   static CustomTransitionPage<void> _slidePage({
     required GoRouterState state,
