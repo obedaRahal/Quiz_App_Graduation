@@ -986,6 +986,7 @@ OnboardingStepType _resolveResumeTargetStep({
 
     case 3:
     case 4:
+    case 5:
       return OnboardingStepType.interests;
 
     default:

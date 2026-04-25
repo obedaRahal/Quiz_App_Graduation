@@ -72,52 +72,6 @@ class AppRouter {
               _slidePage(state: state, child: const IntroView()),
         ),
 
-        // GoRoute(
-        //   path: AppRouterPath.onboarding,
-        //   name: AppRouterName.onboarding,
-        //   pageBuilder: (context, state) => _slidePage(
-        //     state: state,
-        //     child: BlocProvider(
-        //       create: (_) {
-        //         final args = state.extra as OnboardingRouteArgs?;
-
-        //         final rawEmail = args?.email.trim();
-        //         final email = (rawEmail != null && rawEmail.isNotEmpty)
-        //             ? rawEmail
-        //             : 'obdrhl@gmail.com';
-
-        //         final lastCompletedStep = args?.lastCompletedStep;
-
-        //         final cubit = OnboardingCubit(
-        //           onboardingEmail: email,
-        //           submitDiscoverySourceUseCase:
-        //               sl<SubmitDiscoverySourceUseCase>(),
-        //           submitEducationLevelUseCase:
-        //               sl<SubmitEducationLevelUseCase>(),
-        //           submitSchoolStageUseCase: sl<SubmitSchoolStageUseCase>(),
-        //           submitCurrentUniversityProfileUseCase:
-        //               sl<SubmitCurrentUniversityProfileUseCase>(),
-        //           submitGraduateAcademicProfileUseCase:
-        //               sl<SubmitGraduateAcademicProfileUseCase>(),
-        //           getOnboardingInterestsUseCase:
-        //               sl<GetOnboardingInterestsUseCase>(),
-        //           submitUserInterestsUseCase: sl<SubmitUserInterestsUseCase>(),
-        //           getOnboardingProgressPreviewUseCase:
-        //               sl<GetOnboardingProgressPreviewUseCase>(),
-        //         );
-
-        //         if (lastCompletedStep != null) {
-        //           cubit.initializeProgressPreviewIfNeeded(
-        //             lastCompletedStep: lastCompletedStep,
-        //           );
-        //         }
-
-        //         return cubit;
-        //       },
-        //       child: const OnboardingView(),
-        //     ),
-        //   ),
-        // ),
         GoRoute(
           path: AppRouterPath.onboarding,
           name: AppRouterName.onboarding,
@@ -181,72 +135,46 @@ class AppRouter {
             );
           },
         ),
+
+        // GoRoute(
+        //   path: AppRouterPath.register,
+        //   name: AppRouterName.register,
+        //   builder: (context, state) {
+        //     final dio = Dio(
+        //       BaseOptions(
+        //         baseUrl: EndPoints.baseUrl,
+        //         receiveDataWhenStatusError: true,
+        //       ),
+        //     );
+        //     final apiConsumer = DioConsumer(dio: dio);
+        //     final authRemoteDataSource = AuthRemoteDataSourceImpl(
+        //       apiConsumer: apiConsumer,
+        //       refreshDio: sl<Dio>(instanceName: 'refresh_dio')
+        //     );
+
+        //     final authRepository = AuthRepositoryImpl(
+        //       authRemoteDataSource: authRemoteDataSource,
+        //     );
+
+        //     final registerUseCase = RegisterUseCase(authRepository);
+        //     return BlocProvider(
+        //       create: (_) => RegisterCubit(registerUseCase),
+        //       child: const RegisterPage(),
+        //     );
+        //   },
+        // ),
         GoRoute(
           path: AppRouterPath.register,
           name: AppRouterName.register,
           builder: (context, state) {
-            final dio = Dio(
-              BaseOptions(
-                baseUrl: EndPoints.baseUrl,
-                receiveDataWhenStatusError: true,
-              ),
-            );
-            final apiConsumer = DioConsumer(dio: dio);
-            final authRemoteDataSource = AuthRemoteDataSourceImpl(
-              apiConsumer: apiConsumer,
-            );
-
-            final authRepository = AuthRepositoryImpl(
-              authRemoteDataSource: authRemoteDataSource,
-            );
-
-            final registerUseCase = RegisterUseCase(authRepository);
             return BlocProvider(
-              create: (_) => RegisterCubit(registerUseCase),
+              create: (_) => sl<RegisterCubit>(),
               child: const RegisterPage(),
             );
           },
         ),
+
         GoRoute(
-          // path: AppRouterPath.verifyEmail,
-          // name: AppRouterName.verifyEmail,
-          // // pageBuilder: (context, state) =>
-          // //     _slidePage(state: state, child: const VerifyEmailPage()),
-          // builder: (context, state) {
-          //   return BlocProvider(
-          //     create: (_) => VerifyRegisterCubit(),
-          //     child: const VerifyEmailPage(),
-          //   );
-          // },
-          //           path: AppRouterPath.verifyEmail,
-          //           name: AppRouterName.verifyEmail,
-          //           builder: (context, state) {
-          //             final extra = state.extra as Map<String, dynamic>?;
-          //             final email = extra?['email'] as String? ?? '';
-          // final dio = Dio(
-          //               BaseOptions(
-          //                 baseUrl: EndPoints.baseUrl,
-          //                 receiveDataWhenStatusError: true,
-          //               ),
-          //             );
-          //             final apiConsumer = DioConsumer(dio: dio);
-          //             final authRemoteDataSource = AuthRemoteDataSourceImpl(
-          //               apiConsumer: apiConsumer,
-          //             );
-
-          //             final authRepository = AuthRepositoryImpl(
-          //               authRemoteDataSource: authRemoteDataSource,
-          //             );
-
-          //             final verifyEmailUseCase = VerifyEmailUseCase(authRepository);
-          //             final cubit = sl<VerifyRegisterCubit>();
-          //             cubit.setEmail(email);
-
-          //             return BlocProvider(
-          //              create: (_) => VerifyRegisterCubit(verifyEmailUseCase: verifyEmailUseCase),
-          //               child: const VerifyEmailPage(),
-          //             );
-          //           },
           path: AppRouterPath.verifyEmail,
           name: AppRouterName.verifyEmail,
           builder: (context, state) {
@@ -346,7 +274,9 @@ class AppRouter {
             : AppRouterPath.welcome;
 
       case AuthSessionStatus.authenticated:
-        return null;
+        return _authBlockedRoutes.contains(currentLocation)
+            ? AppRouterPath.mainLayout
+            : null;
     }
   }
 
@@ -362,11 +292,22 @@ class AppRouter {
     AppRouterPath.forgotPasswordOtpCode,
     AppRouterPath.forgotPasswordNewPassword,
 
-    AppRouterPath.home,
-    AppRouterPath.mainLayout,
+    // AppRouterPath.home,
+    // AppRouterPath.mainLayout,
   };
 
-
+  static const Set<String> _authBlockedRoutes = {
+    AppRouterPath.splash,
+    AppRouterPath.welcome,
+    AppRouterPath.intro,
+    AppRouterPath.login,
+    AppRouterPath.register,
+    AppRouterPath.verifyEmail,
+    AppRouterPath.onboarding,
+    AppRouterPath.forgotPasswordEmail,
+    AppRouterPath.forgotPasswordOtpCode,
+    AppRouterPath.forgotPasswordNewPassword,
+  };
 
   static CustomTransitionPage<void> _slidePage({
     required GoRouterState state,
