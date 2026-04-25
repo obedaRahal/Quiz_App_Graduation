@@ -96,7 +96,7 @@ class ForgotPasswordEmailPage extends StatelessWidget {
             state.errorMessage != null) {
           showValidationTopSnackBar(
             context,
-            title: 'خطأ',
+            title: state.snackBarTitle ?? 'خطأ',
             message: state.errorMessage ?? 'حدث خطأ ما.',
             type: AppValidationSnackBarType.error,
           );
@@ -105,7 +105,7 @@ class ForgotPasswordEmailPage extends StatelessWidget {
         if (state.requestOtpStatus == ForgotPasswordRequestOtpStatus.success) {
           showValidationTopSnackBar(
             context,
-            title: 'نجاح',
+            title: state.snackBarTitle ?? 'تمت العملية بنجاح',
             message: state.successMessage ?? 'تمت العملية بنجاح.',
             type: AppValidationSnackBarType.success,
           );

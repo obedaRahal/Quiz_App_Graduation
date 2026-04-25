@@ -30,21 +30,20 @@ class ForgotPasswordNewPasswordPage extends StatelessWidget {
         if (state.resetStatus == ForgotPasswordResetStatus.failure &&
             state.errorMessage != null) {
           showValidationTopSnackBar(
-            context,
-            title: 'خطأ',
-            message: state.errorMessage ?? 'حدث خطأ ما.',
-            type: AppValidationSnackBarType.error,
-          );
+  context,
+  title: state.snackBarTitle ?? 'خطأ',
+  message: state.errorMessage ?? 'حدث خطأ ما.',
+  type: AppValidationSnackBarType.error,
+);
         }
 
         if (state.resetStatus == ForgotPasswordResetStatus.success) {
-          showValidationTopSnackBar(
-            context,
-            title: 'نجاح',
-            message: state.resetSuccessMessage ?? 'تمت العملية بنجاح.',
-            type: AppValidationSnackBarType.success,
-          );
-
+         showValidationTopSnackBar(
+  context,
+  title: state.snackBarTitle ?? 'تمت العملية بنجاح',
+  message: state.successMessage ?? 'تمت العملية بنجاح.',
+  type: AppValidationSnackBarType.success,
+);
           context.goNamed(AppRouterName.login);
         }
       },

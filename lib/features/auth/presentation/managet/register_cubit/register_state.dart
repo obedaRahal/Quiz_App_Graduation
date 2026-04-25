@@ -26,6 +26,7 @@ class RegisterState {
   final Gender? selectedGender;
   final RegisterStatus registerStatus;
   final String? errorMessage;
+    final String? snackBarTitle;
   final String? successMessage;
   final String? otpCode;
 
@@ -36,6 +37,7 @@ class RegisterState {
     this.errorMessage,
     this.successMessage,
     this.otpCode,
+    this.snackBarTitle,
   });
 
   RegisterState copyWith({
@@ -45,6 +47,7 @@ class RegisterState {
     String? errorMessage,
     String? successMessage,
     String? otpCode,
+    String? snackBarTitle,
   }) {
     return RegisterState(
       isPasswordObscure: isPasswordObscure ?? this.isPasswordObscure,
@@ -53,6 +56,7 @@ class RegisterState {
       errorMessage: errorMessage,
       successMessage: successMessage,
       otpCode: otpCode ?? this.otpCode,
+      snackBarTitle: snackBarTitle,
     );
   }
 }

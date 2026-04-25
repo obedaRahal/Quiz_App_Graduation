@@ -25,7 +25,7 @@ class ForgotPasswordOtpCodePage extends StatelessWidget {
             state.errorMessage != null) {
           showValidationTopSnackBar(
             context,
-            title: 'خطأ',
+            title: state.snackBarTitle ?? 'خطأ',
             message: state.errorMessage ?? 'حدث خطأ ما.',
             type: AppValidationSnackBarType.error,
           );
@@ -34,7 +34,7 @@ class ForgotPasswordOtpCodePage extends StatelessWidget {
         if (state.verifyOtpStatus == ForgotPasswordVerifyOtpStatus.success) {
           showValidationTopSnackBar(
             context,
-            title: 'نجاح',
+            title: state.snackBarTitle ?? 'تمت العملية بنجاح',
             message: state.successMessage ?? 'تمت العملية بنجاح.',
             type: AppValidationSnackBarType.success,
           );
@@ -51,7 +51,7 @@ class ForgotPasswordOtpCodePage extends StatelessWidget {
             state.errorMessage != null) {
           showValidationTopSnackBar(
             context,
-            title: 'خطأ',
+            title: state.snackBarTitle ?? 'خطأ',
             message: state.errorMessage ?? 'حدث خطأ ما.',
             type: AppValidationSnackBarType.error,
           );
@@ -61,8 +61,8 @@ class ForgotPasswordOtpCodePage extends StatelessWidget {
             state.resendSuccessMessage != null) {
           showValidationTopSnackBar(
             context,
-            title: 'نجاح',
-            message: state.resendSuccessMessage ?? 'تمت العملية بنجاح.',
+            title: state.snackBarTitle ?? 'تمت العملية بنجاح',
+            message: state.successMessage ?? 'تمت العملية بنجاح.',
             type: AppValidationSnackBarType.success,
           );
         }

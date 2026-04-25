@@ -31,7 +31,7 @@ class RegisterPage extends StatelessWidget {
             state.errorMessage != null) {
           showValidationTopSnackBar(
             context,
-            title: 'خطأ',
+            title: state.snackBarTitle ?? 'خطأ',
             message: state.errorMessage ?? 'حدث خطأ ما.',
             type: AppValidationSnackBarType.error,
           );
@@ -40,7 +40,7 @@ class RegisterPage extends StatelessWidget {
         if (state.registerStatus == RegisterStatus.success) {
           showValidationTopSnackBar(
             context,
-            title: 'نجاح',
+            title: state.snackBarTitle ?? 'تمت العملية بنجاح',
             message: state.successMessage ?? 'تمت العملية بنجاح.',
             type: AppValidationSnackBarType.success,
           );
@@ -52,8 +52,6 @@ class RegisterPage extends StatelessWidget {
               'otpCode': state.otpCode,
             },
           );
-
-          debugPrint(" verify Email ");
         }
       },
       builder: (context, state) {

@@ -2,17 +2,20 @@
 
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:quiz_app_grad/features/auth/domain/use_cases/resend_otp_use_case.dart';
 // import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_case.dart';
 // import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_state.dart';
 
 // class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
 //   Timer? _timer;
 //   final VerifyEmailUseCase verifyEmailUseCase;
+//   final ResendOtpUseCase resendOtpUseCase;
 
 //   String email = '';
 
 //   VerifyRegisterCubit({
 //     required this.verifyEmailUseCase,
+//     required this.resendOtpUseCase,
 //   }) : super(const VerifyRegisterState()) {
 //     debugPrint("============ VerifyRegisterCubit INIT ============");
 //     debugPrint("VerifyRegisterCubit created for email: $email");
@@ -26,7 +29,6 @@
 
 //   void otpChanged(String value) {
 //     debugPrint("VerifyRegisterCubit.otpChanged -> $value");
-
 //     emit(
 //       state.copyWith(
 //         otpCode: value,
@@ -70,18 +72,17 @@
 //     debugPrint("otpCode => $otpCode");
 
 //     if (email.isEmpty) {
-//       debugPrint("Verify validation failed => email is empty");
 //       emit(
 //         state.copyWith(
 //           verifyStatus: VerifyRegisterStatus.failure,
-//           errorMessage: 'البريد الإلكتروني غير متوفر.',
+//           snackBarTitle: 'تنبيه',
+//     errorMessage: 'البريد الإلكتروني غير متوفر.',
 //         ),
 //       );
 //       return;
 //     }
 
 //     if (otpCode.isEmpty) {
-//       debugPrint("Verify validation failed => otpCode is empty");
 //       emit(
 //         state.copyWith(
 //           verifyStatus: VerifyRegisterStatus.failure,
@@ -92,7 +93,6 @@
 //     }
 
 //     if (otpCode.length != 6) {
-//       debugPrint("Verify validation failed => otpCode length is not 6");
 //       emit(
 //         state.copyWith(
 //           verifyStatus: VerifyRegisterStatus.failure,
@@ -111,15 +111,10 @@
 //     );
 
 //     try {
-//       debugPrint("Verify email request started...");
-
 //       final result = await verifyEmailUseCase(
 //         email: email,
 //         otpCode: otpCode,
 //       );
-
-//       debugPrint("Verify email request success");
-//       debugPrint("message => ${result.message}");
 
 //       emit(
 //         state.copyWith(
@@ -128,7 +123,7 @@
 //           errorMessage: null,
 //         ),
 //       );
-//     }  catch (e, s) {
+//     } catch (e, s) {
 //       debugPrint("VERIFY EMAIL ERROR => $e");
 //       debugPrint("VERIFY EMAIL STACK => $s");
 
@@ -141,11 +136,73 @@
 //     }
 //   }
 
-//   @override
-//   Future<void> close() {
-//     _timer?.cancel();
-//     return super.close();
+//    Future<void> resendCode() async {
+//     debugPrint('================ VerifyRegisterCubit.resendCode ================');
+//     debugPrint('email => $email');
+
+//     if (email.isEmpty) {
+//       debugPrint('resend aborted => email is empty');
+//       emit(
+//         state.copyWith(
+//           resendStatus: VerifyResendStatus.failure,
+//           errorMessage: 'البريد الإلكتروني غير متوفر.',
+//         ),
+//       );
+//       return;
+//     }
+
+//     emit(
+//       state.copyWith(
+//         resendStatus: VerifyResendStatus.loading,
+//         errorMessage: null,
+//         resendSuccessMessage: null,
+//       ),
+//     );
+
+//     try {
+//       final result = await resendOtpUseCase(email: email);
+
+//       debugPrint('resend success => ${result.message}');
+
+//       emit(
+//         state.copyWith(
+//           resendStatus: VerifyResendStatus.success,
+//           resendSuccessMessage: result.message,
+//           errorMessage: null,
+//         ),
+//       );
+
+//       restartTimer();
+//     } catch (e, s) {
+//       debugPrint('RESEND OTP ERROR => $e');
+//       debugPrint('RESEND OTP STACK => $s');
+
+//       emit(
+//         state.copyWith(
+//           resendStatus: VerifyResendStatus.failure,
+//           errorMessage: e.toString(),
+//         ),
+//       );
+//     }
 //   }
+//   @override
+// Future<void> close() {
+//   _timer?.cancel();
+//   return super.close();
+// }
+// String _extractErrorTitle(Object e) {
+//   try {
+//     final dynamic exception = e;
+//     final dynamic errorModel = exception.errorModel;
+//     final dynamic title = errorModel.errorTitle;
+
+//     if (title != null && title.toString().trim().isNotEmpty) {
+//       return title.toString();
+//     }
+//   } catch (_) {}
+
+//   return 'خطأ';
+// }
 // }
 import 'dart:async';
 
@@ -157,6 +214,7 @@ import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register
 
 class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
   Timer? _timer;
+
   final VerifyEmailUseCase verifyEmailUseCase;
   final ResendOtpUseCase resendOtpUseCase;
 
@@ -178,6 +236,7 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
 
   void otpChanged(String value) {
     debugPrint("VerifyRegisterCubit.otpChanged -> $value");
+
     emit(
       state.copyWith(
         otpCode: value,
@@ -224,6 +283,7 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       emit(
         state.copyWith(
           verifyStatus: VerifyRegisterStatus.failure,
+          snackBarTitle: 'تنبيه',
           errorMessage: 'البريد الإلكتروني غير متوفر.',
         ),
       );
@@ -234,6 +294,7 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       emit(
         state.copyWith(
           verifyStatus: VerifyRegisterStatus.failure,
+          snackBarTitle: 'تنبيه',
           errorMessage: 'يرجى إدخال رمز التحقق.',
         ),
       );
@@ -244,6 +305,7 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       emit(
         state.copyWith(
           verifyStatus: VerifyRegisterStatus.failure,
+          snackBarTitle: 'تنبيه',
           errorMessage: 'يجب أن يتكون رمز التحقق من 6 أرقام.',
         ),
       );
@@ -267,6 +329,7 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       emit(
         state.copyWith(
           verifyStatus: VerifyRegisterStatus.success,
+          snackBarTitle: result.title,
           successMessage: result.message,
           errorMessage: null,
         ),
@@ -278,21 +341,24 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       emit(
         state.copyWith(
           verifyStatus: VerifyRegisterStatus.failure,
+          snackBarTitle: _extractErrorTitle(e),
           errorMessage: e.toString(),
         ),
       );
     }
   }
 
-   Future<void> resendCode() async {
+  Future<void> resendCode() async {
     debugPrint('================ VerifyRegisterCubit.resendCode ================');
     debugPrint('email => $email');
 
     if (email.isEmpty) {
       debugPrint('resend aborted => email is empty');
+
       emit(
         state.copyWith(
           resendStatus: VerifyResendStatus.failure,
+          snackBarTitle: 'تنبيه',
           errorMessage: 'البريد الإلكتروني غير متوفر.',
         ),
       );
@@ -315,6 +381,7 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       emit(
         state.copyWith(
           resendStatus: VerifyResendStatus.success,
+          snackBarTitle: result.title,
           resendSuccessMessage: result.message,
           errorMessage: null,
         ),
@@ -328,14 +395,30 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       emit(
         state.copyWith(
           resendStatus: VerifyResendStatus.failure,
+          snackBarTitle: _extractErrorTitle(e),
           errorMessage: e.toString(),
         ),
       );
     }
   }
+
+  String _extractErrorTitle(Object e) {
+    try {
+      final dynamic exception = e;
+      final dynamic errorModel = exception.errorModel;
+      final dynamic title = errorModel.errorTitle;
+
+      if (title != null && title.toString().trim().isNotEmpty) {
+        return title.toString();
+      }
+    } catch (_) {}
+
+    return 'خطأ';
+  }
+
   @override
-Future<void> close() {
-  _timer?.cancel();
-  return super.close();
-}
+  Future<void> close() {
+    _timer?.cancel();
+    return super.close();
+  }
 }

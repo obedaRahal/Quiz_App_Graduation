@@ -1,43 +1,3 @@
-// import 'dart:async';
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_state.dart';
-
-// class ForgetPasswordCubit extends Cubit<ForgetPasswordState>{
-// Timer? _timer;
-//  ForgetPasswordCubit() : super(const ForgetPasswordState()) {
-//     debugPrint("============ VerifyRegisterCubit INIT ============");
-//     debugPrint("VerifyRegisterCubit created for email: ");
-//     _startTimer();
-//   }
-//   void _startTimer() {
-//     debugPrint("VerifyRegisterCubit._startTimer() -> reset to 300s");
-//     _timer?.cancel();
-//     if (isClosed) return;
-//     emit(state.copyWith(remainingSeconds: 300));
-
-//     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-//       if (state.remainingSeconds <= 1) {
-//         debugPrint("VerifyRegisterCubit timer finished (0s left)");
-//         timer.cancel();
-//         if (isClosed) return;
-//         emit(state.copyWith(remainingSeconds: 0));
-//         if (isClosed) return;
-//       } else {
-//         if (isClosed) return;
-//         emit(state.copyWith(remainingSeconds: state.remainingSeconds - 1));
-//         if (isClosed) return;
-//       }
-//     });
-//   }
-//   void togglePasswordVisibility() {
-//     debugPrint(
-//       "LoginCubit.togglePasswordVisibility -> ${!state.isPasswordObscure}",
-//     );
-//     emit(state.copyWith(isPasswordObscure: !state.isPasswordObscure));
-//   }
-// }
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -129,20 +89,30 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       emit(
         state.copyWith(
           requestOtpStatus: ForgotPasswordRequestOtpStatus.success,
-          successMessage: result.message,
-          errorMessage: null,
+          // successMessage: result.message,
+          // errorMessage: null,
+          snackBarTitle: result.title,
+    successMessage: result.message,
+    errorMessage: null,
         ),
       );
     } catch (e, s) {
       debugPrint("FORGOT PASSWORD REQUEST OTP ERROR => $e");
       debugPrint("FORGOT PASSWORD REQUEST OTP STACK => $s");
 
+      // emit(
+      //   state.copyWith(
+      //     requestOtpStatus: ForgotPasswordRequestOtpStatus.failure,
+      //     errorMessage: e.toString(),
+      //   ),
+      // );
       emit(
-        state.copyWith(
-          requestOtpStatus: ForgotPasswordRequestOtpStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
+  state.copyWith(
+    requestOtpStatus: ForgotPasswordRequestOtpStatus.failure,
+    snackBarTitle: _extractErrorTitle(e),
+    errorMessage: e.toString(),
+  ),
+);
     }
   }
 
@@ -218,20 +188,30 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       emit(
         state.copyWith(
           verifyOtpStatus: ForgotPasswordVerifyOtpStatus.success,
-          successMessage: result.message,
-          errorMessage: null,
+          // successMessage: result.message,
+          // errorMessage: null,
+          snackBarTitle: result.title,
+    successMessage: result.message,
+    errorMessage: null,
         ),
       );
     } catch (e, s) {
       debugPrint("FORGOT PASSWORD VERIFY OTP ERROR => $e");
       debugPrint("FORGOT PASSWORD VERIFY OTP STACK => $s");
 
+      // emit(
+      //   state.copyWith(
+      //     verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
+      //     errorMessage: e.toString(),
+      //   ),
+      // );
       emit(
-        state.copyWith(
-          verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
+  state.copyWith(
+     verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
+    snackBarTitle: _extractErrorTitle(e),
+    errorMessage: e.toString(),
+  ),
+);
     }
   }
 
@@ -269,8 +249,11 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       emit(
         state.copyWith(
           resendOtpStatus: ForgotPasswordResendOtpStatus.success,
-          resendSuccessMessage: result.message,
-          errorMessage: null,
+          // resendSuccessMessage: result.message,
+          // errorMessage: null,
+          snackBarTitle: result.title,
+    successMessage: result.message,
+    errorMessage: null,
         ),
       );
 
@@ -279,12 +262,19 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       debugPrint("FORGOT PASSWORD RESEND OTP ERROR => $e");
       debugPrint("FORGOT PASSWORD RESEND OTP STACK => $s");
 
+      // emit(
+      //   state.copyWith(
+      //     resendOtpStatus: ForgotPasswordResendOtpStatus.failure,
+      //     errorMessage: e.toString(),
+      //   ),
+      // );
       emit(
-        state.copyWith(
-          resendOtpStatus: ForgotPasswordResendOtpStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
+  state.copyWith(
+    resendOtpStatus: ForgotPasswordResendOtpStatus.failure,
+    snackBarTitle: _extractErrorTitle(e),
+    errorMessage: e.toString(),
+  ),
+);
     }
   }
 
@@ -372,8 +362,11 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       emit(
         state.copyWith(
           resetStatus: ForgotPasswordResetStatus.success,
-          resetSuccessMessage: result.message,
-          errorMessage: null,
+          // resetSuccessMessage: result.message,
+          // errorMessage: null,
+          snackBarTitle: result.title,
+    successMessage: result.message,
+    errorMessage: null,
         ),
       );
     } catch (e, s) {
@@ -396,5 +389,18 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       otpCode: value,
     ),
   );
+}
+String _extractErrorTitle(Object e) {
+  try {
+    final dynamic exception = e;
+    final dynamic errorModel = exception.errorModel;
+    final dynamic title = errorModel.errorTitle;
+
+    if (title != null && title.toString().trim().isNotEmpty) {
+      return title.toString();
+    }
+  } catch (_) {}
+
+  return 'خطأ';
 }
 }

@@ -25,12 +25,43 @@ class VerifyEmailPage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return BlocConsumer<VerifyRegisterCubit, VerifyRegisterState>(
+      // listener: (context, state) {
+      //   if (state.verifyStatus == VerifyRegisterStatus.failure &&
+      //       state.errorMessage != null) {
+      //     showValidationTopSnackBar(
+      //       context,
+      //       title: 'خطأ',
+      //       message: state.errorMessage ?? 'حدث خطأ ما.',
+      //       type: AppValidationSnackBarType.error,
+      //     );
+      //   }
+
+      //   if (state.verifyStatus == VerifyRegisterStatus.success) {
+      //     showValidationTopSnackBar(
+      //       context,
+      //       title: 'نجاح',
+      //       message: state.successMessage ?? 'تمت العملية بنجاح.',
+      //       type: AppValidationSnackBarType.success,
+      //     );
+
+      //     context.goNamed(AppRouterName.mainLayout);
+      //   }
+      //   if (state.resendStatus == VerifyResendStatus.success &&
+      //       state.resendSuccessMessage != null) {
+      //     showValidationTopSnackBar(
+      //       context,
+      //       title: 'نجاح',
+      //       message: state.resendSuccessMessage ?? 'تمت العملية بنجاح.',
+      //       type: AppValidationSnackBarType.success,
+      //     );
+      //   }
+      // },
       listener: (context, state) {
         if (state.verifyStatus == VerifyRegisterStatus.failure &&
             state.errorMessage != null) {
           showValidationTopSnackBar(
             context,
-            title: 'خطأ',
+            title: state.snackBarTitle ?? 'خطأ',
             message: state.errorMessage ?? 'حدث خطأ ما.',
             type: AppValidationSnackBarType.error,
           );
@@ -50,7 +81,7 @@ class VerifyEmailPage extends StatelessWidget {
         if (state.verifyStatus == VerifyRegisterStatus.success) {
           showValidationTopSnackBar(
             context,
-            title: 'نجاح',
+            title: state.snackBarTitle ?? 'تمت العملية بنجاح',
             message: state.successMessage ?? 'تمت العملية بنجاح.',
             type: AppValidationSnackBarType.success,
           );
@@ -73,12 +104,20 @@ class VerifyEmailPage extends StatelessWidget {
             extra: OnboardingRouteArgs(email: verifiedEmail),
           );
         }
-
+        if (state.resendStatus == VerifyResendStatus.failure &&
+            state.errorMessage != null) {
+          showValidationTopSnackBar(
+            context,
+            title: state.snackBarTitle ?? 'خطأ',
+            message: state.errorMessage ?? 'حدث خطأ ما.',
+            type: AppValidationSnackBarType.error,
+          );
+        }
         if (state.resendStatus == VerifyResendStatus.success &&
             state.resendSuccessMessage != null) {
           showValidationTopSnackBar(
             context,
-            title: 'نجاح',
+            title: state.snackBarTitle ?? 'تمت العملية بنجاح',
             message: state.resendSuccessMessage ?? 'تمت العملية بنجاح.',
             type: AppValidationSnackBarType.success,
           );

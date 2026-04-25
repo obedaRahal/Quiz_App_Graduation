@@ -4,10 +4,12 @@ import 'package:quiz_app_grad/features/auth/domain/entities/register_response_en
 class RegisterResponseModel {
   final RegisterUserModel user;
   final String otpCode;
+  final String title;
 
   const RegisterResponseModel({
     required this.user,
     required this.otpCode,
+    required this.title,
   });
 
   factory RegisterResponseModel.fromJson(Map<String, dynamic> json) {
@@ -15,6 +17,7 @@ class RegisterResponseModel {
     return RegisterResponseModel(
       user: RegisterUserModel.fromJson(data['user'] ?? {}),
       otpCode: data['otpCode'] ?? '',
+      title: json['title'] ?? '',
     );
   }
 
@@ -24,6 +27,7 @@ class RegisterResponseModel {
       email: user.email,
       gender: user.gender,
       otpCode: otpCode,
+      title: title,
     );
   }
 }

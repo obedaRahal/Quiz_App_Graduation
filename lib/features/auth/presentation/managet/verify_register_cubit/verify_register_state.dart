@@ -1,43 +1,3 @@
-// class VerifyRegisterState {
-//   final int remainingSeconds;
-//   final String otpCode;
-//   final VerifyRegisterStatus verifyStatus;
-//   final String? errorMessage;
-//   final String? successMessage;
-
-//   const VerifyRegisterState({
-//     this.remainingSeconds = 300,
-//     this.otpCode = '',
-//     this.verifyStatus = VerifyRegisterStatus.initial,
-//     this.errorMessage,
-//     this.successMessage,
-//   });
-
-//   bool get isTimerFinished => remainingSeconds <= 0;
-
-//   VerifyRegisterState copyWith({
-//     int? remainingSeconds,
-//     String? otpCode,
-//     VerifyRegisterStatus? verifyStatus,
-//     String? errorMessage,
-//     String? successMessage,
-//   }) {
-//     return VerifyRegisterState(
-//       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
-//       otpCode: otpCode ?? this.otpCode,
-//       verifyStatus: verifyStatus ?? this.verifyStatus,
-//       errorMessage: errorMessage,
-//       successMessage: successMessage,
-//     );
-//   }
-// }
-
-// enum VerifyRegisterStatus {
-//   initial,
-//   loading,
-//   success,
-//   failure,
-// }
 class VerifyRegisterState {
   final int remainingSeconds;
   final String otpCode;
@@ -46,6 +6,7 @@ class VerifyRegisterState {
   final String? errorMessage;
   final String? successMessage;
   final String? resendSuccessMessage;
+  final String? snackBarTitle;
 
   const VerifyRegisterState({
     this.remainingSeconds = 300,
@@ -55,6 +16,7 @@ class VerifyRegisterState {
     this.errorMessage,
     this.successMessage,
     this.resendSuccessMessage,
+    this.snackBarTitle,
   });
 
   bool get isTimerFinished => remainingSeconds <= 0;
@@ -67,6 +29,7 @@ class VerifyRegisterState {
     String? errorMessage,
     String? successMessage,
     String? resendSuccessMessage,
+    String? snackBarTitle,
   }) {
     return VerifyRegisterState(
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
@@ -76,20 +39,11 @@ class VerifyRegisterState {
       errorMessage: errorMessage,
       successMessage: successMessage,
       resendSuccessMessage: resendSuccessMessage,
+      snackBarTitle: snackBarTitle,
     );
   }
 }
 
-enum VerifyRegisterStatus {
-  initial,
-  loading,
-  success,
-  failure,
-}
+enum VerifyRegisterStatus { initial, loading, success, failure }
 
-enum VerifyResendStatus {
-  initial,
-  loading,
-  success,
-  failure,
-}
+enum VerifyResendStatus { initial, loading, success, failure }
