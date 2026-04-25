@@ -78,6 +78,7 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
     final response = await apiConsumer.post(
       EndPoints.onboardingDiscoverySource,
       data: {'email': email, 'discovery_source': discoverySource},
+      options: Options(extra: {'requiresAuth': false}),
     );
 
     debugPrint("← response (submitDiscoverySource): $response");
@@ -108,6 +109,7 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
         'governorate': governorate,
         'education_level': educationLevel,
       },
+      options: Options(extra: {'requiresAuth': false}),
     );
 
     debugPrint("← response (submitEducationLevel): $response");
@@ -133,6 +135,7 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
     final response = await apiConsumer.post(
       EndPoints.onboardingSchoolStage,
       data: {'email': email, 'school_stage': schoolStage},
+      options: Options(extra: {'requiresAuth': false}),
     );
 
     debugPrint("← response (submitSchoolStage): $response");
@@ -166,6 +169,7 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
         'department': department,
         'university_year': universityYear,
       },
+      options: Options(extra: {'requiresAuth': false}),
     );
 
     debugPrint("← response (submitCurrentUniversityProfile): $response");
@@ -216,6 +220,7 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
     final response = await apiConsumer.post(
       EndPoints.onboardingGraduateAcademicProfile,
       data: FormData.fromMap(formMap),
+      options: Options(extra: {'requiresAuth': false}),
     );
 
     debugPrint("← response (submitGraduateAcademicProfile): $response");
@@ -238,7 +243,10 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
     );
     debugPrint("→ endpoint: ${EndPoints.onboardingInterests}");
 
-    final response = await apiConsumer.get(EndPoints.onboardingInterests);
+    final response = await apiConsumer.get(
+      EndPoints.onboardingInterests,
+      options: Options(extra: {'requiresAuth': false}),
+    );
 
     debugPrint("← response (getOnboardingInterests): $response");
     debugPrint("=================================================");
@@ -263,6 +271,7 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
     final response = await apiConsumer.post(
       EndPoints.onboardingUserInterests,
       data: {'email': email, 'interest_ids': interestIds},
+      options: Options(extra: {'requiresAuth': false}),
     );
 
     debugPrint("← response (submitUserInterests): $response");
@@ -273,30 +282,28 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
     );
   }
 
-
   @override
-Future<OnboardingProgressPreviewResponseModel> getOnboardingProgressPreview({
-  required String email,
-}) async {
-  debugPrint(
-    "============ OnboardingRemoteDataSourceImpl.getOnboardingProgressPreview ============",
-  );
-  debugPrint(
-    "→ endpoint: ${EndPoints.onboardingProgressPreview} | data: {email: $email}",
-  );
+  Future<OnboardingProgressPreviewResponseModel> getOnboardingProgressPreview({
+    required String email,
+  }) async {
+    debugPrint(
+      "============ OnboardingRemoteDataSourceImpl.getOnboardingProgressPreview ============",
+    );
+    debugPrint(
+      "→ endpoint: ${EndPoints.onboardingProgressPreview} | data: {email: $email}",
+    );
 
-  final response = await apiConsumer.post(
-    EndPoints.onboardingProgressPreview,
-    data: {
-      'email': email,
-    },
-  );
+    final response = await apiConsumer.post(
+      EndPoints.onboardingProgressPreview,
+      data: {'email': email},
+      options: Options(extra: {'requiresAuth': false}),
+    );
 
-  debugPrint("← response (getOnboardingProgressPreview): $response");
-  debugPrint("=================================================");
+    debugPrint("← response (getOnboardingProgressPreview): $response");
+    debugPrint("=================================================");
 
-  return OnboardingProgressPreviewResponseModel.fromJson(
-    response as Map<String, dynamic>,
-  );
-}
+    return OnboardingProgressPreviewResponseModel.fromJson(
+      response as Map<String, dynamic>,
+    );
+  }
 }

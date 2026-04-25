@@ -10,9 +10,6 @@ class LoginUseCase {
     required String email,
     required String password,
   }) {
-    return authRepository.login(
-      email: email,
-      password: password,
-    );
+    return authRepository.login(email: email, password: password);
   }
 }

@@ -70,16 +70,47 @@ Future<void> _registerCore() async {
     );
   }
 
+  // if (!sl.isRegistered<ApiConsumer>()) {
+  //   sl.registerLazySingleton<ApiConsumer>(
+  //     () => DioConsumer(
+  //       dio: sl<Dio>(),
+  //       getAccessToken: TokenStorage.getAccessToken,
+  //       clearSession: () async {
+  //         await TokenStorage.clear();
+  //         sl<AuthSession>().markUnauthenticated();
+  //       },
+  //     ),
+  //   );
+  // }
+
   if (!sl.isRegistered<ApiConsumer>()) {
     sl.registerLazySingleton<ApiConsumer>(
       () => DioConsumer(
         dio: sl<Dio>(),
         getAccessToken: TokenStorage.getAccessToken,
+        isTokenExpiringSoon: () => TokenStorage.isAccessTokenExpiringSoon(
+          buffer: const Duration(minutes: 2),
+        ),
+        refreshToken: () => sl<AuthRepository>().refreshAccessToken(),
         clearSession: () async {
           await TokenStorage.clear();
           sl<AuthSession>().markUnauthenticated();
         },
       ),
+    );
+  }
+
+  if (!sl.isRegistered<Dio>(instanceName: 'refresh_dio')) {
+    sl.registerLazySingleton<Dio>(
+      () => Dio(
+        BaseOptions(
+          receiveDataWhenStatusError: true,
+          connectTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+          sendTimeout: const Duration(seconds: 30),
+        ),
+      ),
+      instanceName: 'refresh_dio',
     );
   }
 }
@@ -192,7 +223,10 @@ void _registerFilePickerFeature() {
 void _registerAuthFeature() {
   if (!sl.isRegistered<AuthRemoteDataSource>()) {
     sl.registerLazySingleton<AuthRemoteDataSource>(
-      () => AuthRemoteDataSourceImpl(apiConsumer: sl<ApiConsumer>()),
+      () => AuthRemoteDataSourceImpl(
+        apiConsumer: sl<ApiConsumer>(),
+        refreshDio: sl<Dio>(instanceName: 'refresh_dio'),
+      ),
     );
   }
 

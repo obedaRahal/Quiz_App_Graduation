@@ -150,6 +150,7 @@ class LoginPage extends StatelessWidget {
             type: AppValidationSnackBarType.success,
           );
 
+          sl<AuthSession>().markAuthenticated();
           context.goNamed(AppRouterName.mainLayout);
         }
       },

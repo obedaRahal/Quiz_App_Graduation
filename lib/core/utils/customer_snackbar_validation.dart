@@ -615,7 +615,7 @@ class _ValidationSnackBarOverlayState extends State<_ValidationSnackBarOverlay>
                                     if (_hasAction) ...[
                                       SizedBox(height: SizeConfig.h(0.012)),
                                       Align(
-                                        alignment: Alignment.centerRight,
+                                        alignment: Alignment.centerLeft,
                                         child: InkWell(
                                           borderRadius: BorderRadius.circular(
                                             8,

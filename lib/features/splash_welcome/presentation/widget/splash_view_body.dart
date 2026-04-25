@@ -1,313 +1,17 @@
-// import 'dart:async';
-
-// import 'package:flutter/material.dart';
-// import 'package:go_router/go_router.dart';
-// import 'package:quiz_app_grad/core/config/app_router_name.dart';
-// import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
-// import 'package:quiz_app_grad/core/di/service_locator.dart';
-// import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
-// import 'package:quiz_app_grad/core/theme/assets/images.dart';
-// import 'package:quiz_app_grad/core/utils/auth_session.dart';
-// import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-// import 'package:quiz_app_grad/features/splash_welcome/presentation/widget/sliding_text.dart';
-
-// class SplashViewBody extends StatefulWidget {
-//   const SplashViewBody({super.key});
-
-//   @override
-//   State<SplashViewBody> createState() => _SplashViewbodyState();
-// }
-
-// class _SplashViewbodyState extends State<SplashViewBody>
-//     with SingleTickerProviderStateMixin {
-//   late AnimationController animationController;
-//   late Animation<Offset> slidingAnimation;
-//   Timer? _timer;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     initSlidingAnimation();
-//     navigateToHome();
-//   }
-
-//   @override
-//   void dispose() {
-//     _timer?.cancel();
-//     animationController.dispose();
-//     super.dispose();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     SizeConfig.init(context);
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       crossAxisAlignment: CrossAxisAlignment.stretch,
-//       children: [
-//         Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Image.asset(
-//             AppImage.logo,
-//             height: SizeConfig.height * 0.25,
-//             width: SizeConfig.width * .5,
-//             errorBuilder: (context, error, stackTrace) =>
-//                 const Icon(Icons.access_time_rounded),
-//           ),
-//         ),
-//         Text(
-//           "نيرد",
-//           textAlign: TextAlign.center,
-
-//           style: TextStyle(
-//             fontSize: SizeConfig.height * 0.07,
-//             fontFamily: AppFont.elMessiriBold,
-//           ),
-//         ),
-//         Divider(
-//           endIndent: SizeConfig.height * 0.12,
-//           indent: SizeConfig.height * 0.12,
-//         ),
-//         SlidingText(slidingAnimation: slidingAnimation),
-//       ],
-//     );
-//   }
-
-//   void initSlidingAnimation() {
-//     animationController = AnimationController(
-//       vsync: this,
-//       duration: const Duration(seconds: 1),
-//     );
-
-//     slidingAnimation = Tween<Offset>(
-//       begin: const Offset(0, 5),
-//       end: Offset.zero,
-//     ).animate(animationController);
-
-//     animationController.forward();
-//   }
-
-//   void navigateToHome() {
-//     _timer = Timer(const Duration(seconds: 5), () {
-//       if (!mounted) return;
-
-//       final hasSeenIntro =
-//           CacheHelper.getBool(key: CacheHelper.hasSeenIntroKey) ?? false;
-
-//       sl<AuthSession>().markUnauthenticated();
-
-//       if (hasSeenIntro) {
-//         context.goNamed(AppRouterName.welcome);
-//       } else {
-//         context.goNamed(AppRouterName.intro);
-//       }
-//     });
-//   }
-// }
-
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
+import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-
-// class SplashViewBody extends StatefulWidget {
-//   const SplashViewBody({super.key});
-
-//   @override
-//   State<SplashViewBody> createState() => _SplashViewBodyState();
-// }
-
-// class _SplashViewBodyState extends State<SplashViewBody>
-//     with SingleTickerProviderStateMixin {
-//   late final AnimationController _controller;
-
-//   late final Animation<double> _logoScaleAnimation;
-//   late final Animation<double> _logoFadeAnimation;
-//   late final Animation<Offset> _titleSlideAnimation;
-//   late final Animation<double> _titleFadeAnimation;
-//   late final Animation<double> _taglineFadeAnimation;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _initAnimations();
-//     _startSplashSequence();
-//   }
-
-//   @override
-//   void dispose() {
-//     _controller.dispose();
-//     super.dispose();
-//   }
-
-//   void _initAnimations() {
-//     _controller = AnimationController(
-//       vsync: this,
-//       duration: const Duration(milliseconds: 1800),
-//     );
-
-//     _logoScaleAnimation = Tween<double>(begin: 0.82, end: 1).animate(
-//       CurvedAnimation(
-//         parent: _controller,
-//         curve: const Interval(0.00, 0.35, curve: Curves.easeOutBack),
-//       ),
-//     );
-
-//     _logoFadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-//       CurvedAnimation(
-//         parent: _controller,
-//         curve: const Interval(0.00, 0.28, curve: Curves.easeIn),
-//       ),
-//     );
-
-//     _titleSlideAnimation =
-//         Tween<Offset>(begin: const Offset(0, 0.35), end: Offset.zero).animate(
-//           CurvedAnimation(
-//             parent: _controller,
-//             curve: const Interval(0.22, 0.60, curve: Curves.easeOutCubic),
-//           ),
-//         );
-
-//     _titleFadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-//       CurvedAnimation(
-//         parent: _controller,
-//         curve: const Interval(0.20, 0.50, curve: Curves.easeIn),
-//       ),
-//     );
-
-//     _taglineFadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-//       CurvedAnimation(
-//         parent: _controller,
-//         curve: const Interval(0.45, 0.80, curve: Curves.easeIn),
-//       ),
-//     );
-//   }
-
-//   Future<void> _startSplashSequence() async {
-//     await _controller.forward();
-
-//     await Future.delayed(const Duration(milliseconds: 1200));
-
-//     if (!mounted) return;
-
-//     final hasSeenIntro =
-//         CacheHelper.getBool(key: CacheHelper.hasSeenIntroKey) ?? false;
-
-//     // انتبه: لا تضع markUnauthenticated هنا إلا إذا كان هذا مقصودًا فعلاً
-//     sl<AuthSession>().markUnauthenticated();
-
-//     if (hasSeenIntro) {
-//       context.goNamed(AppRouterName.welcome);
-//     } else {
-//       context.goNamed(AppRouterName.intro);
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     SizeConfig.init(context);
-
-//     return Container(
-//       width: double.infinity,
-//       height: double.infinity,
-//       decoration: const BoxDecoration(
-//         gradient: LinearGradient(
-//           begin: Alignment.topCenter,
-//           end: Alignment.bottomCenter,
-//           colors: [AppColor.white, AppColor.primaryToWhiht],
-//         ),
-//       ),
-//       child: SafeArea(
-//         child: Center(
-//           child: Padding(
-//             padding: EdgeInsets.symmetric(horizontal: SizeConfig.width * .08),
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 FadeTransition(
-//                   opacity: _logoFadeAnimation,
-//                   child: ScaleTransition(
-//                     scale: _logoScaleAnimation,
-//                     child: Container(
-//                       padding: const EdgeInsets.all(18),
-//                       decoration: BoxDecoration(
-//                         shape: BoxShape.circle,
-//                         boxShadow: [
-//                           BoxShadow(
-//                             color: AppColor.primary.withOpacity(.25),
-//                             blurRadius: 30,
-//                             spreadRadius: 10,
-//                           ),
-//                         ],
-//                       ),
-//                       child: Image.asset(
-//                         AppImage.logo,
-//                         height: SizeConfig.height * .25,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-
-//                 SizedBox(height: SizeConfig.height * .025),
-
-//                 FadeTransition(
-//                   opacity: _titleFadeAnimation,
-//                   child: SlideTransition(
-//                     position: _titleSlideAnimation,
-//                     child: Text(
-//                       "نيرد",
-//                       textAlign: TextAlign.center,
-//                       style: TextStyle(
-//                         fontSize: SizeConfig.height * 0.055,
-//                         fontFamily: AppFont.elMessiriBold,
-//                         color: AppColor.black,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-
-//                 SizedBox(height: SizeConfig.height * .008),
-
-//                 FadeTransition(
-//                   opacity: _taglineFadeAnimation,
-//                   child: Container(
-//                     padding: EdgeInsets.symmetric(
-//                       horizontal: SizeConfig.width * .04,
-//                       vertical: SizeConfig.height * .008,
-//                     ),
-//                     decoration: BoxDecoration(
-//                       color: AppColor.white.withOpacity(.65),
-//                       borderRadius: BorderRadius.circular(20),
-//                     ),
-//                     child: Text(
-//                       "اختبارات • خطة دراسية • محتوى تعليمي",
-//                       textAlign: TextAlign.center,
-//                       style: TextStyle(
-//                         fontSize: SizeConfig.diagonal * .015,
-//                         fontFamily: AppFont.elMessiriBold,
-//                         color: AppColor.greyToDark,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
 
 class SplashViewBody extends StatefulWidget {
   const SplashViewBody({super.key});
@@ -420,25 +124,175 @@ class _SplashViewBodyState extends State<SplashViewBody>
     );
   }
 
+  // Future<void> _startSequence() async {
+  //   try {
+  //     await _controller.forward();
+  //     await Future.delayed(const Duration(milliseconds: 700));
+
+  //     if (!mounted) return;
+
+  //     final hasSeenIntro =
+  //         CacheHelper.getBool(key: CacheHelper.hasSeenIntroKey) ?? false;
+
+  //     sl<AuthSession>().markUnauthenticated();
+
+  //     if (hasSeenIntro) {
+  //       context.goNamed(AppRouterName.welcome);
+  //     } else {
+  //       context.goNamed(AppRouterName.intro);
+  //     }
+  //   } on TickerCanceled {
+  //     // تجاهل الخطأ إذا تم التخلص من الـ controller قبل اكتمال الأنيميشن
+  //   }
+  // }
+
   Future<void> _startSequence() async {
     try {
+      debugPrint("============ SplashViewBody._startSequence ============");
+
       await _controller.forward();
+      debugPrint("✓ splash animation finished");
+
       await Future.delayed(const Duration(milliseconds: 700));
+      debugPrint("✓ splash delay finished");
 
-      if (!mounted) return;
+      if (!mounted) {
+        debugPrint("✗ SplashViewBody not mounted anymore");
+        debugPrint("=================================================");
+        return;
+      }
 
-      final hasSeenIntro =
-          CacheHelper.getBool(key: CacheHelper.hasSeenIntroKey) ?? false;
+      await _resolveStartupFlow();
+    } on TickerCanceled {
+      debugPrint("✗ splash animation cancelled");
+    } catch (e, s) {
+      debugPrint("✗ SplashViewBody._startSequence error => $e");
+      debugPrint("✗ SplashViewBody._startSequence stack => $s");
 
+      await TokenStorage.clear();
       sl<AuthSession>().markUnauthenticated();
 
-      if (hasSeenIntro) {
+      if (!mounted) return;
+      context.goNamed(AppRouterName.welcome);
+    }
+  }
+
+  Future<void> _resolveStartupFlow() async {
+    debugPrint("============ SplashViewBody._resolveStartupFlow ============");
+
+    final hasSeenIntro =
+        CacheHelper.getBool(key: CacheHelper.hasSeenIntroKey) ?? false;
+
+    debugPrint("→ hasSeenIntro: $hasSeenIntro");
+
+    if (!hasSeenIntro) {
+      debugPrint("→ user did not see intro yet");
+      sl<AuthSession>().markUnauthenticated();
+
+      if (!mounted) return;
+      context.goNamed(AppRouterName.intro);
+      debugPrint("→ navigated to intro");
+      debugPrint("=================================================");
+      return;
+    }
+
+    debugPrint("→ intro already seen, checking auth session...");
+    await _restoreSessionAndNavigate();
+  }
+
+  Future<void> _restoreSessionAndNavigate() async {
+    debugPrint(
+      "============ SplashViewBody._restoreSessionAndNavigate ============",
+    );
+
+    final authSession = sl<AuthSession>();
+    final authRepository = sl<AuthRepository>();
+
+    try {
+      authSession.markChecking();
+      debugPrint("→ auth session marked as checking");
+
+      final hasAccessToken = await TokenStorage.hasAccessToken();
+      final currentToken = await TokenStorage.getAccessToken();
+      final expiryAt = await TokenStorage.getAccessTokenExpiry();
+
+      debugPrint("→ hasAccessToken: $hasAccessToken");
+      debugPrint("→ token length: ${currentToken?.length ?? 0}");
+      debugPrint("→ expiryAt: ${expiryAt?.toIso8601String() ?? 'null'}");
+
+      if (!hasAccessToken || currentToken == null || currentToken.isEmpty) {
+        debugPrint("→ no stored access token found");
+        await TokenStorage.clear();
+        authSession.markUnauthenticated();
+
+        if (!mounted) return;
         context.goNamed(AppRouterName.welcome);
-      } else {
-        context.goNamed(AppRouterName.intro);
+        debugPrint("→ navigated to welcome");
+        debugPrint("=================================================");
+        return;
       }
-    } on TickerCanceled {
-      // تجاهل الخطأ إذا تم التخلص من الـ controller قبل اكتمال الأنيميشن
+
+      final hasValidAccessToken = await TokenStorage.hasValidAccessToken(
+        buffer: const Duration(minutes: 2),
+      );
+
+      debugPrint("→ hasValidAccessToken(buffer 2m): $hasValidAccessToken");
+
+      if (hasValidAccessToken) {
+        debugPrint("→ stored token is still valid");
+        authSession.markAuthenticated();
+
+        if (!mounted) return;
+        context.goNamed(AppRouterName.mainLayout);
+        debugPrint("→ navigated to mainLayout");
+        debugPrint("=================================================");
+        return;
+      }
+
+      debugPrint("→ token expired or expiring soon, trying refresh...");
+
+      final refreshSucceeded = await authRepository.refreshAccessToken();
+
+      debugPrint("→ refreshSucceeded: $refreshSucceeded");
+
+      if (refreshSucceeded) {
+        final refreshedToken = await TokenStorage.getAccessToken();
+        final refreshedExpiry = await TokenStorage.getAccessTokenExpiry();
+
+        debugPrint("✓ refresh succeeded");
+        debugPrint("→ refreshed token length: ${refreshedToken?.length ?? 0}");
+        debugPrint(
+          "→ refreshed expiryAt: ${refreshedExpiry?.toIso8601String() ?? 'null'}",
+        );
+
+        authSession.markAuthenticated();
+
+        if (!mounted) return;
+        context.goNamed(AppRouterName.mainLayout);
+        debugPrint("→ navigated to mainLayout after refresh");
+        debugPrint("=================================================");
+        return;
+      }
+
+      debugPrint("✗ refresh returned false");
+      await TokenStorage.clear();
+      authSession.markUnauthenticated();
+
+      if (!mounted) return;
+      context.goNamed(AppRouterName.welcome);
+      debugPrint("→ navigated to welcome after failed refresh");
+    } catch (e, s) {
+      debugPrint("✗ Splash restore session error => $e");
+      debugPrint("✗ Splash restore session stack => $s");
+
+      await TokenStorage.clear();
+      authSession.markUnauthenticated();
+
+      if (!mounted) return;
+      context.goNamed(AppRouterName.welcome);
+      debugPrint("→ navigated to welcome after exception");
+    } finally {
+      debugPrint("=================================================");
     }
   }
 

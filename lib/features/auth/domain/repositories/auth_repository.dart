@@ -24,19 +24,22 @@ abstract class AuthRepository {
   });
   Future<ResendOtpResponseEntity> resendOtp({required String email});
   Future<ForgotPasswordRequestOtpResponseEntity> forgotPasswordRequestOtp({
-  required String email,
-});
-Future<ForgotPasswordVerifyOtpResponseEntity> forgotPasswordVerifyOtp({
-  required String email,
-  required String otpCode,
-});
-Future<ForgotPasswordResendOtpResponseEntity> forgotPasswordResendOtp({
-  required String email,
-});
-Future<ForgotPasswordResetResponseEntity> forgotPasswordReset({
-  required String email,
-  required String otpCode,
-  required String password,
-  required String passwordConfirmation,
-});
+    required String email,
+  });
+  Future<ForgotPasswordVerifyOtpResponseEntity> forgotPasswordVerifyOtp({
+    required String email,
+    required String otpCode,
+  });
+  Future<ForgotPasswordResendOtpResponseEntity> forgotPasswordResendOtp({
+    required String email,
+  });
+  Future<ForgotPasswordResetResponseEntity> forgotPasswordReset({
+    required String email,
+    required String otpCode,
+    required String password,
+    required String passwordConfirmation,
+  });
+
+  // for refresh tokennnnnnnnn
+  Future<bool> refreshAccessToken();
 }
