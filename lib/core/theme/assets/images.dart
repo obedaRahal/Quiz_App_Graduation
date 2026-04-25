@@ -41,7 +41,10 @@ class AppImage {
   /////// Forget Password /////////////////
   static String get forgetPassword1 => '$_baseImageLight/forgetpassword1.svg';
   static String get forgetPassword2 => '$_baseImageLight/forgetpassword2.svg';
+  static String get forgetPasswordPng2 => '$_baseImageLight/Group 57@2x.png';
   static String get forgetPassword3 => '$_baseImageLight/forgetpassword3.svg';
+    static String get forgetPasswordPng3 => '$_baseImageLight/Group 58@2x.png';
+
 
   /////////// Home /////////////
   static String get homeProfilePhoto => '$_baseImageLight/homeprofilephoto.svg';

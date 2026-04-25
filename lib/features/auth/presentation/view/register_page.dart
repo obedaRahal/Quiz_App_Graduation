@@ -55,187 +55,307 @@ class RegisterPage extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        SizeConfig.init(context);
+
+        final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        final isKeyboardOpen = keyboardHeight > 0;
+
+        final isSmall = SizeConfig.isSmallPhone || SizeConfig.height < 700;
+
+        final horizontalPadding = SizeConfig.sw(isSmall ? 0.04 : 0.045);
+        final topGap = SizeConfig.sh(isSmall ? 0.014 : 0.025);
+        final afterHeaderGap = SizeConfig.sh(isSmall ? 0.018 : 0.028);
+        final fieldGap = SizeConfig.sh(isSmall ? 0.012 : 0.02);
+
+        final genderIconPadding = isSmall ? 8.0 : 10.0;
+        final genderIconSize = isSmall ? 30.0 : 34.0;
+
+        final bottomFixedAreaHeight = isSmall ? 92.0 : 108.0;
+
         return Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  TopContainerAuth(
-                    title: 'انشاء حساب',
-                    body:
-                        'انضم الينا وابدأ رحلتك في التطوير في \nشتّى المجالات الأكادمية بكل سهولة\n وسرعة حيث أن كل شيء اصبح في\n مكان واحد',
+          resizeToAvoidBottomInset: true,
+          body: SafeArea(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.only(
+                    left: horizontalPadding,
+                    right: horizontalPadding,
+                    top: topGap,
+                    bottom: isKeyboardOpen
+                        ? keyboardHeight + 24
+                        : bottomFixedAreaHeight + 20,
                   ),
-                  const SizedBox(height: 25),
-
-                  AuthFieldLabel(
-                    label: 'الاسم',
-                    controller: cubit.nameController,
-                    hint: 'ادخل اسمك باللغة التي تريدها...',
-                    keyboardType: TextInputType.name,
-                    suffixIcon: Icons.person_outlined,
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  AuthFieldLabel(
-                    label: 'البريد الالكتروني',
-                    controller: cubit.emailController,
-                    hint: 'ادخل بريدك الالكتروني...',
-                    keyboardType: TextInputType.emailAddress,
-                    suffixIcon: Icons.email_outlined,
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  AuthFieldLabel(
-                    label: 'كلمة المرور',
-                    controller: cubit.passwordController,
-                    hint: 'ادخل كلمة المرور الخاصة بك...',
-                    suffixIcon: state.isPasswordObscure
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                    obscureText: state.isPasswordObscure,
-                    onSuffixTap: () {
-                      context.read<RegisterCubit>().togglePasswordVisibility();
-                    },
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  CustomTextWidget(
-                    'الجنس',
-                    fontSize: SizeConfig.text(0.05),
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                  ),
-
-                  SizedBox(height: SizeConfig.height * .01),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          context.read<RegisterCubit>().selectGender(
-                            Gender.male,
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? state.selectedGender == Gender.male
-                                      ? AppPalette.primaryDark
-                                      : AppPalette.fieldColorNDark
-                                : AppPalette.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: state.selectedGender == Gender.male
-                                  ? isDark
-                                        ? AppPalette.primaryDark
-                                        : AppPalette.primary
-                                  : isDark
-                                  ? AppPalette.borderFieldColorNDark
-                                  : AppPalette.greyBorder,
-                              width: 2,
-                            ),
-                          ),
-                          child: SvgPicture.asset(
-                            AppImage.male,
-                            color: state.selectedGender == Gender.male
-                                ? isDark
-                                      ? AppPalette.black
-                                      : AppPalette.primary
-                                : AppPalette.greyMedium,
-                          ),
-                        ),
+                      TopContainerAuth(
+                        title: 'انشاء حساب',
+                        body:
+                            'انضم الينا وابدأ رحلتك في التطوير في \nشتّى المجالات الأكادمية بكل سهولة\n وسرعة حيث أن كل شيء اصبح في\n مكان واحد',
+                        compact: isSmall,
                       ),
 
-                      const SizedBox(width: 12),
+                      SizedBox(height: afterHeaderGap),
 
-                      GestureDetector(
-                        onTap: () {
-                          context.read<RegisterCubit>().selectGender(
-                            Gender.female,
-                          );
+                      AuthFieldLabel(
+                        label: 'الاسم',
+                        controller: cubit.nameController,
+                        hint: 'ادخل اسمك باللغة التي تريدها...',
+                        keyboardType: TextInputType.name,
+                        suffixIcon: Icons.person_outlined,
+                        compact: isSmall,
+                      ),
+
+                      SizedBox(height: fieldGap),
+
+                      AuthFieldLabel(
+                        label: 'البريد الالكتروني',
+                        controller: cubit.emailController,
+                        hint: 'ادخل بريدك الالكتروني...',
+                        keyboardType: TextInputType.emailAddress,
+                        suffixIcon: Icons.email_outlined,
+                        compact: isSmall,
+                      ),
+
+                      SizedBox(height: fieldGap),
+
+                      AuthFieldLabel(
+                        label: 'كلمة المرور',
+                        controller: cubit.passwordController,
+                        hint: 'ادخل كلمة المرور الخاصة بك...',
+                        suffixIcon: state.isPasswordObscure
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        obscureText: state.isPasswordObscure,
+                        compact: isSmall,
+                        onSuffixTap: () {
+                          context
+                              .read<RegisterCubit>()
+                              .togglePasswordVisibility();
                         },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: isDark
-                                ? state.selectedGender == Gender.female
-                                      ? AppPalette.primaryDark
-                                      : AppPalette.fieldColorNDark
-                                : AppPalette.white,
-                            border: Border.all(
-                              color: state.selectedGender == Gender.female
-                                  ? isDark
-                                        ? AppPalette.primaryDark
-                                        : AppPalette.primary
-                                  : isDark
-                                  ? AppPalette.borderFieldColorNDark
-                                  : AppPalette.greyBorder,
-                              width: 2,
+                      ),
+
+                      SizedBox(height: fieldGap),
+
+                      CustomTextWidget(
+                        'الجنس',
+                        fontSize: SizeConfig.text(isSmall ? 0.04 : 0.05),
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
+
+                      SizedBox(height: SizeConfig.sh(isSmall ? .006 : .01)),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              context.read<RegisterCubit>().selectGender(
+                                Gender.male,
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(genderIconPadding),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? state.selectedGender == Gender.male
+                                          ? AppPalette.primaryDark
+                                          : AppPalette.fieldColorNDark
+                                    : AppPalette.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: state.selectedGender == Gender.male
+                                      ? isDark
+                                            ? AppPalette.primaryDark
+                                            : AppPalette.primary
+                                      : isDark
+                                      ? AppPalette.borderFieldColorNDark
+                                      : AppPalette.greyBorder,
+                                  width: 2,
+                                ),
+                              ),
+                              child: SvgPicture.asset(
+                                AppImage.male,
+                                width: genderIconSize,
+                                height: genderIconSize,
+                                color: state.selectedGender == Gender.male
+                                    ? isDark
+                                          ? AppPalette.black
+                                          : AppPalette.primary
+                                    : AppPalette.greyMedium,
+                              ),
                             ),
                           ),
-                          child: SvgPicture.asset(
-                            AppImage.female,
-                            color: state.selectedGender == Gender.female
-                                ? isDark
-                                      ? AppPalette.black
-                                      : AppPalette.primary
-                                : AppPalette.greyMedium,
+
+                          SizedBox(width: SizeConfig.sw(0.03)),
+
+                          GestureDetector(
+                            onTap: () {
+                              context.read<RegisterCubit>().selectGender(
+                                Gender.female,
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(genderIconPadding),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? state.selectedGender == Gender.female
+                                          ? AppPalette.primaryDark
+                                          : AppPalette.fieldColorNDark
+                                    : AppPalette.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: state.selectedGender == Gender.female
+                                      ? isDark
+                                            ? AppPalette.primaryDark
+                                            : AppPalette.primary
+                                      : isDark
+                                      ? AppPalette.borderFieldColorNDark
+                                      : AppPalette.greyBorder,
+                                  width: 2,
+                                ),
+                              ),
+                              child: SvgPicture.asset(
+                                AppImage.female,
+                                width: genderIconSize,
+                                height: genderIconSize,
+                                color: state.selectedGender == Gender.female
+                                    ? isDark
+                                          ? AppPalette.black
+                                          : AppPalette.primary
+                                    : AppPalette.greyMedium,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
+                ),
 
-                  const SizedBox(height: 30),
+                // Positioned(
+                //   left: horizontalPadding,
+                //   right: horizontalPadding,
+                //   bottom: 8,
+                //   child: Container(
+                //     color: Theme.of(context).scaffoldBackgroundColor,
+                //     child: Column(
+                //       mainAxisSize: MainAxisSize.min,
+                //       children: [
+                //         CustomButtonWidget(
+                //           width: double.infinity,
+                //           backgroundColor: AppPalette.primary,
+                //           childHorizontalPad: SizeConfig.width * .07,
+                //           childVerticalPad:
+                //               SizeConfig.height * (isSmall ? .009 : .012),
+                //           borderRadius: 8,
+                //           onTap: () {
+                //             if (state.registerStatus ==
+                //                 RegisterStatus.loading) {
+                //               return;
+                //             }
 
-                  CustomButtonWidget(
-                    width: double.infinity,
-                    backgroundColor: AppPalette.primary,
-                    childHorizontalPad: SizeConfig.width * .07,
-                    childVerticalPad: SizeConfig.height * .012,
-                    borderRadius: 8,
-                    onTap: () {
-                      if (state.registerStatus == RegisterStatus.loading) {
-                        return;
-                      }
+                //             context.read<RegisterCubit>().submitRegister();
+                //           },
+                //           child: state.registerStatus == RegisterStatus.loading
+                //               ? SizedBox(
+                //                   height: isSmall ? 20 : 22,
+                //                   width: isSmall ? 20 : 22,
+                //                   child: CircularProgressIndicator(
+                //                     strokeWidth: 2.5,
+                //                     color: colorScheme.onSecondary,
+                //                   ),
+                //                 )
+                //               : CustomTextWidget(
+                //                   "تأكيد الإدخال",
+                //                   fontSize: SizeConfig.text(
+                //                     isSmall ? 0.044 : 0.055,
+                //                   ),
+                //                   color: colorScheme.onSecondary,
+                //                 ),
+                //         ),
 
-                      context.read<RegisterCubit>().submitRegister();
-                    },
-                    child: state.registerStatus == RegisterStatus.loading
-                        ? SizedBox(
-                            height: 22,
-                            width: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              color: colorScheme.onSecondary,
-                            ),
-                          )
-                        : CustomTextWidget(
-                            "تأكيد الإدخال",
-                            fontSize: SizeConfig.text(0.055),
-                            color: colorScheme.onSecondary,
+                //         SizedBox(height: SizeConfig.sh(isSmall ? .008 : .014)),
+
+                //         TowTextRow(
+                //           text: " لديك حساب فعلا، قم ",
+                //           actionText: "تسجيل الدخول ",
+                //           onTap: () {
+                //             GoRouter.of(
+                //               context,
+                //             ).replaceNamed(AppRouterName.login);
+                //           },
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                if (!isKeyboardOpen)
+                  Positioned(
+                    left: horizontalPadding,
+                    right: horizontalPadding,
+                    bottom: 8,
+                    child: Container(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CustomButtonWidget(
+                            width: double.infinity,
+                            backgroundColor: AppPalette.primary,
+                            childHorizontalPad: SizeConfig.width * .07,
+                            childVerticalPad:
+                                SizeConfig.height * (isSmall ? .009 : .012),
+                            borderRadius: 8,
+                            onTap: () {
+                              if (state.registerStatus ==
+                                  RegisterStatus.loading) {
+                                return;
+                              }
+
+                              context.read<RegisterCubit>().submitRegister();
+                            },
+                            child:
+                                state.registerStatus == RegisterStatus.loading
+                                ? SizedBox(
+                                    height: isSmall ? 20 : 22,
+                                    width: isSmall ? 20 : 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: colorScheme.onSecondary,
+                                    ),
+                                  )
+                                : CustomTextWidget(
+                                    "تأكيد الإدخال",
+                                    fontSize: SizeConfig.text(
+                                      isSmall ? 0.044 : 0.055,
+                                    ),
+                                    color: colorScheme.onSecondary,
+                                  ),
                           ),
-                  ),
 
-                  SizedBox(height: SizeConfig.height * .02),
+                          SizedBox(
+                            height: SizeConfig.sh(isSmall ? .008 : .014),
+                          ),
 
-                  TowTextRow(
-                    text: " لديك حساب فعلا، قم ",
-                    actionText: "تسجيل الدخول ",
-                    onTap: () {
-                      GoRouter.of(context).replaceNamed(AppRouterName.login);
-                    },
+                          TowTextRow(
+                            text: " لديك حساب فعلا، قم ",
+                            actionText: "تسجيل الدخول ",
+                            onTap: () {
+                              GoRouter.of(
+                                context,
+                              ).replaceNamed(AppRouterName.login);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-              ),
+              ],
             ),
           ),
         );
@@ -243,3 +363,187 @@ class RegisterPage extends StatelessWidget {
     );
   }
 }
+        // return Scaffold(
+        //   body: Padding(
+        //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
+        //     child: SingleChildScrollView(
+        //       child: Column(
+        //         crossAxisAlignment: CrossAxisAlignment.end,
+        //         children: [
+        //           TopContainerAuth(
+        //             title: 'انشاء حساب',
+        //             body:
+        //                 'انضم الينا وابدأ رحلتك في التطوير في \nشتّى المجالات الأكادمية بكل سهولة\n وسرعة حيث أن كل شيء اصبح في\n مكان واحد',
+        //           ),
+        //           const SizedBox(height: 25),
+
+        //           AuthFieldLabel(
+        //             label: 'الاسم',
+        //             controller: cubit.nameController,
+        //             hint: 'ادخل اسمك باللغة التي تريدها...',
+        //             keyboardType: TextInputType.name,
+        //             suffixIcon: Icons.person_outlined,
+        //           ),
+
+        //           const SizedBox(height: 25),
+
+        //           AuthFieldLabel(
+        //             label: 'البريد الالكتروني',
+        //             controller: cubit.emailController,
+        //             hint: 'ادخل بريدك الالكتروني...',
+        //             keyboardType: TextInputType.emailAddress,
+        //             suffixIcon: Icons.email_outlined,
+        //           ),
+
+        //           const SizedBox(height: 25),
+
+        //           AuthFieldLabel(
+        //             label: 'كلمة المرور',
+        //             controller: cubit.passwordController,
+        //             hint: 'ادخل كلمة المرور الخاصة بك...',
+        //             suffixIcon: state.isPasswordObscure
+        //                 ? Icons.visibility_off
+        //                 : Icons.visibility,
+        //             obscureText: state.isPasswordObscure,
+        //             onSuffixTap: () {
+        //               context.read<RegisterCubit>().togglePasswordVisibility();
+        //             },
+        //           ),
+
+        //           const SizedBox(height: 25),
+
+        //           CustomTextWidget(
+        //             'الجنس',
+        //             fontSize: SizeConfig.text(0.05),
+        //             color: colorScheme.onSurface,
+        //             fontWeight: FontWeight.bold,
+        //           ),
+
+        //           SizedBox(height: SizeConfig.height * .01),
+
+        //           Row(
+        //             mainAxisAlignment: MainAxisAlignment.end,
+        //             children: [
+        //               GestureDetector(
+        //                 onTap: () {
+        //                   context.read<RegisterCubit>().selectGender(
+        //                     Gender.male,
+        //                   );
+        //                 },
+        //                 child: Container(
+        //                   padding: const EdgeInsets.all(10),
+        //                   decoration: BoxDecoration(
+        //                     color: isDark
+        //                         ? state.selectedGender == Gender.male
+        //                               ? AppPalette.primaryDark
+        //                               : AppPalette.fieldColorNDark
+        //                         : AppPalette.white,
+        //                     borderRadius: BorderRadius.circular(12),
+        //                     border: Border.all(
+        //                       color: state.selectedGender == Gender.male
+        //                           ? isDark
+        //                                 ? AppPalette.primaryDark
+        //                                 : AppPalette.primary
+        //                           : isDark
+        //                           ? AppPalette.borderFieldColorNDark
+        //                           : AppPalette.greyBorder,
+        //                       width: 2,
+        //                     ),
+        //                   ),
+        //                   child: SvgPicture.asset(
+        //                     AppImage.male,
+        //                     color: state.selectedGender == Gender.male
+        //                         ? isDark
+        //                               ? AppPalette.black
+        //                               : AppPalette.primary
+        //                         : AppPalette.greyMedium,
+        //                   ),
+        //                 ),
+        //               ),
+
+        //               const SizedBox(width: 12),
+
+        //               GestureDetector(
+        //                 onTap: () {
+        //                   context.read<RegisterCubit>().selectGender(
+        //                     Gender.female,
+        //                   );
+        //                 },
+        //                 child: Container(
+        //                   padding: const EdgeInsets.all(10),
+        //                   decoration: BoxDecoration(
+        //                     borderRadius: BorderRadius.circular(12),
+        //                     color: isDark
+        //                         ? state.selectedGender == Gender.female
+        //                               ? AppPalette.primaryDark
+        //                               : AppPalette.fieldColorNDark
+        //                         : AppPalette.white,
+        //                     border: Border.all(
+        //                       color: state.selectedGender == Gender.female
+        //                           ? isDark
+        //                                 ? AppPalette.primaryDark
+        //                                 : AppPalette.primary
+        //                           : isDark
+        //                           ? AppPalette.borderFieldColorNDark
+        //                           : AppPalette.greyBorder,
+        //                       width: 2,
+        //                     ),
+        //                   ),
+        //                   child: SvgPicture.asset(
+        //                     AppImage.female,
+        //                     color: state.selectedGender == Gender.female
+        //                         ? isDark
+        //                               ? AppPalette.black
+        //                               : AppPalette.primary
+        //                         : AppPalette.greyMedium,
+        //                   ),
+        //                 ),
+        //               ),
+        //             ],
+        //           ),
+
+        //           const SizedBox(height: 30),
+
+        //           CustomButtonWidget(
+        //             width: double.infinity,
+        //             backgroundColor: AppPalette.primary,
+        //             childHorizontalPad: SizeConfig.width * .07,
+        //             childVerticalPad: SizeConfig.height * .012,
+        //             borderRadius: 8,
+        //             onTap: () {
+        //               if (state.registerStatus == RegisterStatus.loading) {
+        //                 return;
+        //               }
+
+        //               context.read<RegisterCubit>().submitRegister();
+        //             },
+        //             child: state.registerStatus == RegisterStatus.loading
+        //                 ? SizedBox(
+        //                     height: 22,
+        //                     width: 22,
+        //                     child: CircularProgressIndicator(
+        //                       strokeWidth: 2.5,
+        //                       color: colorScheme.onSecondary,
+        //                     ),
+        //                   )
+        //                 : CustomTextWidget(
+        //                     "تأكيد الإدخال",
+        //                     fontSize: SizeConfig.text(0.055),
+        //                     color: colorScheme.onSecondary,
+        //                   ),
+        //           ),
+
+        //           SizedBox(height: SizeConfig.height * .02),
+
+        //           TowTextRow(
+        //             text: " لديك حساب فعلا، قم ",
+        //             actionText: "تسجيل الدخول ",
+        //             onTap: () {
+        //               GoRouter.of(context).replaceNamed(AppRouterName.login);
+        //             },
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // );

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -23,39 +24,9 @@ class VerifyEmailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final appColors = context.appColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = context.colorScheme;
 
     return BlocConsumer<VerifyRegisterCubit, VerifyRegisterState>(
-      // listener: (context, state) {
-      //   if (state.verifyStatus == VerifyRegisterStatus.failure &&
-      //       state.errorMessage != null) {
-      //     showValidationTopSnackBar(
-      //       context,
-      //       title: 'خطأ',
-      //       message: state.errorMessage ?? 'حدث خطأ ما.',
-      //       type: AppValidationSnackBarType.error,
-      //     );
-      //   }
-
-      //   if (state.verifyStatus == VerifyRegisterStatus.success) {
-      //     showValidationTopSnackBar(
-      //       context,
-      //       title: 'نجاح',
-      //       message: state.successMessage ?? 'تمت العملية بنجاح.',
-      //       type: AppValidationSnackBarType.success,
-      //     );
-
-      //     context.goNamed(AppRouterName.mainLayout);
-      //   }
-      //   if (state.resendStatus == VerifyResendStatus.success &&
-      //       state.resendSuccessMessage != null) {
-      //     showValidationTopSnackBar(
-      //       context,
-      //       title: 'نجاح',
-      //       message: state.resendSuccessMessage ?? 'تمت العملية بنجاح.',
-      //       type: AppValidationSnackBarType.success,
-      //     );
-      //   }
-      // },
       listener: (context, state) {
         if (state.verifyStatus == VerifyRegisterStatus.failure &&
             state.errorMessage != null) {
@@ -67,17 +38,6 @@ class VerifyEmailPage extends StatelessWidget {
           );
         }
 
-        // if (state.verifyStatus == VerifyRegisterStatus.success) {
-        //   showValidationTopSnackBar(
-        //     context,
-        //     title: 'نجاح',
-        //     message: state.successMessage ?? 'تمت العملية بنجاح.',
-        //     type: AppValidationSnackBarType.success,
-        //   );
-
-        //   context.goNamed(AppRouterName.mainLayout);
-        // }
-
         if (state.verifyStatus == VerifyRegisterStatus.success) {
           showValidationTopSnackBar(
             context,
@@ -85,10 +45,12 @@ class VerifyEmailPage extends StatelessWidget {
             message: state.successMessage ?? 'تمت العملية بنجاح.',
             type: AppValidationSnackBarType.success,
           );
+
           final verifiedEmail = context
               .read<VerifyRegisterCubit>()
               .email
               .trim();
+
           if (verifiedEmail.isEmpty) {
             showValidationTopSnackBar(
               context,
@@ -98,12 +60,13 @@ class VerifyEmailPage extends StatelessWidget {
             );
             return;
           }
-          debugPrint("emais is : $verifiedEmail");
+
           context.goNamed(
             AppRouterName.onboarding,
             extra: OnboardingRouteArgs(email: verifiedEmail),
           );
         }
+
         if (state.resendStatus == VerifyResendStatus.failure &&
             state.errorMessage != null) {
           showValidationTopSnackBar(
@@ -113,6 +76,7 @@ class VerifyEmailPage extends StatelessWidget {
             type: AppValidationSnackBarType.error,
           );
         }
+
         if (state.resendStatus == VerifyResendStatus.success &&
             state.resendSuccessMessage != null) {
           showValidationTopSnackBar(
@@ -124,69 +88,146 @@ class VerifyEmailPage extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TopContainerAuth(
-                    title: 'تأكيد البريد الالكتروني',
-                    body:
-                        'عزيزي المستخدم يرجى منك تأكيد\n بريدك الالكتروني عن طريق ادخال الرمز\n المكون من ست ارقام علما انك ستفقد\n الرمز الخاص بك في حال نفاذ الوقت',
-                  ),
-                  const SizedBox(height: 25),
+        SizeConfig.init(context);
 
-                  CustomBackgroundWithChild(
-                    borderRadius: BorderRadius.circular(20),
-                    width: double.infinity,
-                    backgroundColor: isDark
-                        ? AppPalette.greyMediumDark
-                        : AppPalette.primarySoft,
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: CustomTextWidget(
-                        "نحن نقوم باجراء احترازي فقط",
-                        fontSize: SizeConfig.text(0.05),
-                        color: appColors.primaryToPrimaryDark,
+        final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        final isKeyboardOpen = keyboardHeight > 0;
+
+        final isSmall = SizeConfig.isSmallPhone || SizeConfig.height < 700;
+
+        final horizontalPadding = SizeConfig.sw(isSmall ? 0.04 : 0.045);
+        final topGap = SizeConfig.sh(isSmall ? 0.014 : 0.03);
+        final afterHeaderGap = SizeConfig.sh(isSmall ? 0.018 : 0.03);
+        final sectionGap = SizeConfig.sh(isSmall ? 0.018 : 0.035);
+
+        return Scaffold(
+          resizeToAvoidBottomInset: true,
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.only(
+                    left: horizontalPadding,
+                    right: horizontalPadding,
+                    top: topGap,
+                    bottom: isKeyboardOpen ? keyboardHeight + 16 : 16,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - topGap - 16,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          TopContainerAuth(
+                            title: 'تأكيد البريد الالكتروني',
+                            body:
+                                'عزيزي المستخدم يرجى منك تأكيد\n بريدك الالكتروني عن طريق ادخال الرمز\n المكون من ست ارقام علما انك ستفقد\n الرمز الخاص بك في حال نفاذ الوقت',
+                            compact: isSmall,
+                          ),
+
+                          SizedBox(height: afterHeaderGap),
+
+                          CustomBackgroundWithChild(
+                            borderRadius: BorderRadius.circular(20),
+                            width: double.infinity,
+                            backgroundColor: isDark
+                                ? AppPalette.greyMediumDark
+                                : AppPalette.primarySoft,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.sw(0.025),
+                                vertical: SizeConfig.sh(
+                                  isSmall ? 0.006 : 0.008,
+                                ),
+                              ),
+                              child: CustomTextWidget(
+                                "نحن نقوم باجراء احترازي فقط",
+                                fontSize: SizeConfig.text(
+                                  isSmall ? 0.038 : 0.05,
+                                ),
+                                color: appColors.primaryToPrimaryDark,
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: sectionGap * 1.4),
+
+                          OtpInputSection(
+                            compact: isSmall,
+                            remainingSeconds: state.remainingSeconds,
+                            onSubmit: () {
+                              context
+                                  .read<VerifyRegisterCubit>()
+                                  .submitVerifyEmail();
+                            },
+                            onResend: () {
+                              if (state.resendStatus ==
+                                  VerifyResendStatus.loading) {
+                                return;
+                              }
+
+                              context.read<VerifyRegisterCubit>().resendCode();
+                            },
+                            onOtpChanged: (value) {
+                              context.read<VerifyRegisterCubit>().otpChanged(
+                                value,
+                              );
+                            },
+                            isSubmitting:
+                                state.verifyStatus ==
+                                VerifyRegisterStatus.loading,
+                            showSubmitButton: false,
+                          ),
+
+                          const Spacer(),
+
+                          state.verifyStatus == VerifyRegisterStatus.loading
+                              ? const Center(child: CircularProgressIndicator())
+                              : CustomButtonWidget(
+                                  width: double.infinity,
+                                  backgroundColor:
+                                      appColors.primaryToPrimaryDark,
+                                  childHorizontalPad: SizeConfig.width * .07,
+                                  childVerticalPad:
+                                      SizeConfig.height *
+                                      (isSmall ? .009 : .012),
+                                  borderRadius: 10,
+                                  onTap: () {
+                                    context
+                                        .read<VerifyRegisterCubit>()
+                                        .submitVerifyEmail();
+                                  },
+                                  child: CustomTextWidget(
+                                    "تأكيد الإدخال",
+                                    fontSize: SizeConfig.text(
+                                      isSmall ? 0.044 : 0.055,
+                                    ),
+                                    color: colorScheme.onSecondary,
+                                  ),
+                                ),
+                          SizedBox(
+                            height: SizeConfig.sh(isSmall ? 0.012 : 0.02),
+                          ),
+                          CustomTextWidget(
+                            "من خلال تأكيد بريدك فأنت توافق على شروط",
+                            fontSize: SizeConfig.text(isSmall ? 0.035 : 0.043),
+                            color: AppPalette.greyMedium,
+                          ),
+
+                          TowTextRow(
+                            text: " تطبيق اختباراتي، ",
+                            actionText: "سياسة الخصوصية",
+                            onTap: () {},
+                          ),
+                        ],
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 35),
-
-                  OtpInputSection(
-                    remainingSeconds: state.remainingSeconds,
-                    onSubmit: () {
-                      context.read<VerifyRegisterCubit>().submitVerifyEmail();
-                    },
-                    onResend: () {
-                      if (state.resendStatus == VerifyResendStatus.loading)
-                        return;
-                      context.read<VerifyRegisterCubit>().resendCode();
-                    },
-                    onOtpChanged: (value) {
-                      context.read<VerifyRegisterCubit>().otpChanged(value);
-                    },
-                    isSubmitting:
-                        state.verifyStatus == VerifyRegisterStatus.loading,
-                  ),
-
-                  SizedBox(height: SizeConfig.height * .04),
-
-                  CustomTextWidget(
-                    "من خلال تأكيد بريدك فأنت توافق على شروط",
-                    fontSize: SizeConfig.diagonal * .018,
-                    color: AppPalette.greyMedium,
-                  ),
-
-                  TowTextRow(
-                    text: " تطبيق اختباراتي، ",
-                    actionText: "سياسة الخصوصية",
-                    onTap: () {},
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         );
@@ -194,3 +235,181 @@ class VerifyEmailPage extends StatelessWidget {
     );
   }
 }
+// class VerifyEmailPage extends StatelessWidget {
+//   const VerifyEmailPage({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final appColors = context.appColors;
+//     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+//     return BlocConsumer<VerifyRegisterCubit, VerifyRegisterState>(
+//       // listener: (context, state) {
+//       //   if (state.verifyStatus == VerifyRegisterStatus.failure &&
+//       //       state.errorMessage != null) {
+//       //     showValidationTopSnackBar(
+//       //       context,
+//       //       title: 'خطأ',
+//       //       message: state.errorMessage ?? 'حدث خطأ ما.',
+//       //       type: AppValidationSnackBarType.error,
+//       //     );
+//       //   }
+
+//       //   if (state.verifyStatus == VerifyRegisterStatus.success) {
+//       //     showValidationTopSnackBar(
+//       //       context,
+//       //       title: 'نجاح',
+//       //       message: state.successMessage ?? 'تمت العملية بنجاح.',
+//       //       type: AppValidationSnackBarType.success,
+//       //     );
+
+//       //     context.goNamed(AppRouterName.mainLayout);
+//       //   }
+//       //   if (state.resendStatus == VerifyResendStatus.success &&
+//       //       state.resendSuccessMessage != null) {
+//       //     showValidationTopSnackBar(
+//       //       context,
+//       //       title: 'نجاح',
+//       //       message: state.resendSuccessMessage ?? 'تمت العملية بنجاح.',
+//       //       type: AppValidationSnackBarType.success,
+//       //     );
+//       //   }
+//       // },
+//       listener: (context, state) {
+//         if (state.verifyStatus == VerifyRegisterStatus.failure &&
+//             state.errorMessage != null) {
+//           showValidationTopSnackBar(
+//             context,
+//             title: state.snackBarTitle ?? 'خطأ',
+//             message: state.errorMessage ?? 'حدث خطأ ما.',
+//             type: AppValidationSnackBarType.error,
+//           );
+//         }
+
+//         // if (state.verifyStatus == VerifyRegisterStatus.success) {
+//         //   showValidationTopSnackBar(
+//         //     context,
+//         //     title: 'نجاح',
+//         //     message: state.successMessage ?? 'تمت العملية بنجاح.',
+//         //     type: AppValidationSnackBarType.success,
+//         //   );
+
+//         //   context.goNamed(AppRouterName.mainLayout);
+//         // }
+
+//         if (state.verifyStatus == VerifyRegisterStatus.success) {
+//           showValidationTopSnackBar(
+//             context,
+//             title: state.snackBarTitle ?? 'تمت العملية بنجاح',
+//             message: state.successMessage ?? 'تمت العملية بنجاح.',
+//             type: AppValidationSnackBarType.success,
+//           );
+//           final verifiedEmail = context
+//               .read<VerifyRegisterCubit>()
+//               .email
+//               .trim();
+//           if (verifiedEmail.isEmpty) {
+//             showValidationTopSnackBar(
+//               context,
+//               title: 'خطأ',
+//               message: 'تعذر تحديد البريد الإلكتروني للمتابعة.',
+//               type: AppValidationSnackBarType.error,
+//             );
+//             return;
+//           }
+//           debugPrint("emais is : $verifiedEmail");
+//           context.goNamed(
+//             AppRouterName.onboarding,
+//             extra: OnboardingRouteArgs(email: verifiedEmail),
+//           );
+//         }
+//         if (state.resendStatus == VerifyResendStatus.failure &&
+//             state.errorMessage != null) {
+//           showValidationTopSnackBar(
+//             context,
+//             title: state.snackBarTitle ?? 'خطأ',
+//             message: state.errorMessage ?? 'حدث خطأ ما.',
+//             type: AppValidationSnackBarType.error,
+//           );
+//         }
+//         if (state.resendStatus == VerifyResendStatus.success &&
+//             state.resendSuccessMessage != null) {
+//           showValidationTopSnackBar(
+//             context,
+//             title: state.snackBarTitle ?? 'تمت العملية بنجاح',
+//             message: state.resendSuccessMessage ?? 'تمت العملية بنجاح.',
+//             type: AppValidationSnackBarType.success,
+//           );
+//         }
+//       },
+//       builder: (context, state) {
+//         return Scaffold(
+//           body: Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
+//             child: SingleChildScrollView(
+//               child: Column(
+//                 children: [
+//                   TopContainerAuth(
+//                     title: 'تأكيد البريد الالكتروني',
+//                     body:
+//                         'عزيزي المستخدم يرجى منك تأكيد\n بريدك الالكتروني عن طريق ادخال الرمز\n المكون من ست ارقام علما انك ستفقد\n الرمز الخاص بك في حال نفاذ الوقت',
+//                   ),
+//                   const SizedBox(height: 25),
+
+//                   CustomBackgroundWithChild(
+//                     borderRadius: BorderRadius.circular(20),
+//                     width: double.infinity,
+//                     backgroundColor: isDark
+//                         ? AppPalette.greyMediumDark
+//                         : AppPalette.primarySoft,
+//                     child: Padding(
+//                       padding: const EdgeInsets.all(4.0),
+//                       child: CustomTextWidget(
+//                         "نحن نقوم باجراء احترازي فقط",
+//                         fontSize: SizeConfig.text(0.05),
+//                         color: appColors.primaryToPrimaryDark,
+//                       ),
+//                     ),
+//                   ),
+
+//                   const SizedBox(height: 35),
+
+//                   OtpInputSection(
+//                     remainingSeconds: state.remainingSeconds,
+//                     onSubmit: () {
+//                       context.read<VerifyRegisterCubit>().submitVerifyEmail();
+//                     },
+//                     onResend: () {
+//                       if (state.resendStatus == VerifyResendStatus.loading)
+//                         return;
+//                       context.read<VerifyRegisterCubit>().resendCode();
+//                     },
+//                     onOtpChanged: (value) {
+//                       context.read<VerifyRegisterCubit>().otpChanged(value);
+//                     },
+//                     isSubmitting:
+//                         state.verifyStatus == VerifyRegisterStatus.loading,
+//                   ),
+
+//                   SizedBox(height: SizeConfig.height * .04),
+
+//                   CustomTextWidget(
+//                     "من خلال تأكيد بريدك فأنت توافق على شروط",
+//                     fontSize: SizeConfig.diagonal * .018,
+//                     color: AppPalette.greyMedium,
+//                   ),
+
+//                   TowTextRow(
+//                     text: " تطبيق اختباراتي، ",
+//                     actionText: "سياسة الخصوصية",
+//                     onTap: () {},
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }

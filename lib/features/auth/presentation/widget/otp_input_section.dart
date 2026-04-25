@@ -8,6 +8,122 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/auth/presentation/widget/tow_text_row.dart';
 
+// class OtpInputSection extends StatelessWidget {
+//   final ValueChanged<String> onOtpChanged;
+//   final VoidCallback onSubmit;
+//   final VoidCallback onResend;
+//   final bool isSubmitting;
+//   final int remainingSeconds;
+//   final String buttonText;
+
+//   const OtpInputSection({
+//     super.key,
+//     required this.onOtpChanged,
+//     required this.onSubmit,
+//     required this.onResend,
+//     required this.isSubmitting,
+//     required this.remainingSeconds,
+//     this.buttonText = "تأكيد الإدخال",
+
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final minutes = (remainingSeconds ~/ 60).toString().padLeft(1, '0');
+//     final seconds = (remainingSeconds % 60).toString().padLeft(2, '0');
+//     final appColors = context.appColors;
+//     final colorScheme = context.colorScheme;
+//     final isDark = Theme.of(context).brightness == Brightness.dark;
+//     return Column(
+//       children: [
+//         Row(
+//           textDirection: TextDirection.rtl,
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             CustomTextWidget(
+//               "ادخل الرمز",
+//               color: isDark ? AppPalette.titleWhiteINDark : AppPalette.black,
+//             ),
+//             CustomTextWidget(
+//               "$minutes:$seconds",
+//               color: appColors.primaryToPrimaryDark,
+//               fontWeight: FontWeight.bold,
+//             ),
+//           ],
+//         ),
+//         SizedBox(height: SizeConfig.height * .01),
+
+//         Directionality(
+//           textDirection: TextDirection.ltr,
+//           child: PinCodeTextField(
+//             errorTextDirection: TextDirection.rtl,
+//             appContext: context,
+//             length: 6,
+//             textStyle: TextStyle(
+//               fontSize: SizeConfig.height * .025,
+//               color: isDark ? AppPalette.titleWhiteINDark : AppPalette.black,
+//               fontFamily: AppFont.reemKufi,
+//             ),
+//             animationType: AnimationType.fade,
+//             pinTheme: PinTheme(
+//               shape: PinCodeFieldShape.box,
+//               borderRadius: BorderRadius.circular(10),
+//               fieldHeight: SizeConfig.height * .075,
+//               fieldWidth: SizeConfig.height * .068,
+//               activeFillColor: isDark
+//                   ? AppPalette.greyMediumDark
+//                   : AppPalette.greyBorder,
+//               selectedFillColor: isDark
+//                   ? AppPalette.greyMediumDark
+//                   : AppPalette.greyBorder,
+//               inactiveFillColor: isDark
+//                   ? AppPalette.greyMediumDark
+//                   : AppPalette.greyBorder,
+//               inactiveColor: isDark
+//                   ? AppPalette.greyMediumDark
+//                   : AppPalette.primarySoft,
+//               selectedColor: appColors.primaryToPrimaryDark,
+//               activeColor: appColors.primaryToPrimaryDark,
+//               errorBorderColor: Colors.red,
+//             ),
+//             animationDuration: const Duration(milliseconds: 300),
+//             enableActiveFill: true,
+//             onChanged: onOtpChanged,
+//             validator: (value) {
+//               if (value == null || value.length != 6) {
+//                 return 'أدخل الرمز المؤلف من 6 أرقام';
+//               }
+//               return null;
+//             },
+//           ),
+//         ),
+
+//         SizedBox(height: SizeConfig.height * .04),
+//         TowTextRow(
+//           text: "لم تستلم رمز بعد ؟ ",
+//           actionText: "إعادة ارسال الرمز",
+//           onTap: onResend,
+//         ),
+//         SizedBox(height: SizeConfig.height * .04),
+//         isSubmitting
+//             ? const Center(child: CircularProgressIndicator())
+//             : CustomButtonWidget(
+//                 width: double.infinity,
+//                 backgroundColor: appColors.primaryToPrimaryDark,
+//                 childHorizontalPad: SizeConfig.width * .07,
+//                 childVerticalPad: SizeConfig.height * .012,
+//                 borderRadius: 10,
+//                 onTap: onSubmit,
+//                 child: CustomTextWidget(
+//                   buttonText,
+//                   fontSize: SizeConfig.height * .025,
+//                   color: colorScheme.onSecondary,
+//                 ),
+//               ),
+//       ],
+//     );
+//   }
+// }
 class OtpInputSection extends StatelessWidget {
   final ValueChanged<String> onOtpChanged;
   final VoidCallback onSubmit;
@@ -15,6 +131,8 @@ class OtpInputSection extends StatelessWidget {
   final bool isSubmitting;
   final int remainingSeconds;
   final String buttonText;
+  final bool compact;
+  final bool showSubmitButton;
 
   const OtpInputSection({
     super.key,
@@ -24,15 +142,27 @@ class OtpInputSection extends StatelessWidget {
     required this.isSubmitting,
     required this.remainingSeconds,
     this.buttonText = "تأكيد الإدخال",
+    this.compact = false,
+    this.showSubmitButton = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final minutes = (remainingSeconds ~/ 60).toString().padLeft(1, '0');
     final seconds = (remainingSeconds % 60).toString().padLeft(2, '0');
+
     final appColors = context.appColors;
     final colorScheme = context.colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final fieldWidth = (SizeConfig.safeWidth * (compact ? 0.115 : 0.125))
+        .clamp(36.0, 52.0)
+        .toDouble();
+
+    final fieldHeight = (SizeConfig.safeHeight * (compact ? 0.055 : 0.065))
+        .clamp(42.0, 58.0)
+        .toDouble();
+
     return Column(
       children: [
         Row(
@@ -41,16 +171,19 @@ class OtpInputSection extends StatelessWidget {
           children: [
             CustomTextWidget(
               "ادخل الرمز",
+              fontSize: SizeConfig.text(compact ? 0.04 : 0.048),
               color: isDark ? AppPalette.titleWhiteINDark : AppPalette.black,
             ),
             CustomTextWidget(
               "$minutes:$seconds",
+              fontSize: SizeConfig.text(compact ? 0.04 : 0.048),
               color: appColors.primaryToPrimaryDark,
               fontWeight: FontWeight.bold,
             ),
           ],
         ),
-        SizedBox(height: SizeConfig.height * .01),
+
+        SizedBox(height: SizeConfig.sh(compact ? .008 : .012)),
 
         Directionality(
           textDirection: TextDirection.ltr,
@@ -58,8 +191,9 @@ class OtpInputSection extends StatelessWidget {
             errorTextDirection: TextDirection.rtl,
             appContext: context,
             length: 6,
+            keyboardType: TextInputType.number,
             textStyle: TextStyle(
-              fontSize: SizeConfig.height * .025,
+              fontSize: SizeConfig.text(compact ? 0.045 : 0.055),
               color: isDark ? AppPalette.titleWhiteINDark : AppPalette.black,
               fontFamily: AppFont.reemKufi,
             ),
@@ -67,8 +201,8 @@ class OtpInputSection extends StatelessWidget {
             pinTheme: PinTheme(
               shape: PinCodeFieldShape.box,
               borderRadius: BorderRadius.circular(10),
-              fieldHeight: SizeConfig.height * .075,
-              fieldWidth: SizeConfig.height * .068,
+              fieldHeight: fieldHeight,
+              fieldWidth: fieldWidth,
               activeFillColor: isDark
                   ? AppPalette.greyMediumDark
                   : AppPalette.greyBorder,
@@ -97,28 +231,32 @@ class OtpInputSection extends StatelessWidget {
           ),
         ),
 
-        SizedBox(height: SizeConfig.height * .04),
+        SizedBox(height: SizeConfig.sh(compact ? .012 : .012)),
+
         TowTextRow(
           text: "لم تستلم رمز بعد ؟ ",
           actionText: "إعادة ارسال الرمز",
           onTap: onResend,
         ),
-        SizedBox(height: SizeConfig.height * .04),
-        isSubmitting
-            ? const Center(child: CircularProgressIndicator())
-            : CustomButtonWidget(
-                width: double.infinity,
-                backgroundColor: appColors.primaryToPrimaryDark,
-                childHorizontalPad: SizeConfig.width * .07,
-                childVerticalPad: SizeConfig.height * .012,
-                borderRadius: 10,
-                onTap: onSubmit,
-                child: CustomTextWidget(
-                  buttonText,
-                  fontSize: SizeConfig.height * .025,
-                  color: colorScheme.onSecondary,
+
+        if (showSubmitButton) ...[
+          SizedBox(height: SizeConfig.sh(compact ? .025 : .04)),
+          isSubmitting
+              ? const Center(child: CircularProgressIndicator())
+              : CustomButtonWidget(
+                  width: double.infinity,
+                  backgroundColor: appColors.primaryToPrimaryDark,
+                  childHorizontalPad: SizeConfig.width * .07,
+                  childVerticalPad: SizeConfig.height * (compact ? .009 : .012),
+                  borderRadius: 10,
+                  onTap: onSubmit,
+                  child: CustomTextWidget(
+                    buttonText,
+                    fontSize: SizeConfig.text(compact ? 0.044 : 0.055),
+                    color: colorScheme.onSecondary,
+                  ),
                 ),
-              ),
+        ],
       ],
     );
   }
