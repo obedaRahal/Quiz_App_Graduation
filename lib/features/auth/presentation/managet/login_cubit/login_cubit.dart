@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:quiz_app_grad/core/database/api/token_refresh_service.dart';
+import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/errors/exceptions.dart';
+import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/login_use_case.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/resend_otp_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   final LoginUseCase loginUseCase;
-final ResendOtpUseCase resendOtpUseCase;
- LoginCubit({
-  required this.loginUseCase,
-  required this.resendOtpUseCase,
-}) : super(const LoginState());
+  final ResendOtpUseCase resendOtpUseCase;
+  LoginCubit({required this.loginUseCase, required this.resendOtpUseCase})
+    : super(const LoginState());
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -65,6 +67,12 @@ final ResendOtpUseCase resendOtpUseCase;
       debugPrint("LOGIN SUCCESS => token length: ${result.token.length}");
       debugPrint("LOGIN USER => ${result.user.name}");
 
+      await TokenStorage.saveAccessToken(
+        token: result.token,
+        expiresInSeconds: result.expiresIn,
+      );
+
+      sl<AuthSession>().markAuthenticated();
       emit(
         state.copyWith(
           loginStatus: LoginStatus.success,
@@ -72,18 +80,15 @@ final ResendOtpUseCase resendOtpUseCase;
           errorMessage: null,
         ),
       );
-    }
-    // catch (e, s) {
-    //   debugPrint("LOGIN ERROR => $e");
-    //   debugPrint("LOGIN STACK => $s");
-    //   emit(
-    //     state.copyWith(
-    //       loginStatus: LoginStatus.failure,
-    //       errorMessage: e.toString(),
-    //     ),
-    //   );
-    // }
-    catch (e, s) {
+      final savedToken = await TokenStorage.getAccessToken();
+      debugPrint('SAVED TOKEN => $savedToken');
+
+      //       final refreshed = await sl<TokenRefreshService>().refreshToken();
+      // debugPrint('MANUAL REFRESH RESULT => $refreshed');
+
+      // final tokenAfterRefresh = await TokenStorage.getAccessToken();
+      // debugPrint('TOKEN AFTER REFRESH => $tokenAfterRefresh');
+    } catch (e, s) {
       debugPrint("LOGIN ERROR => $e");
       debugPrint("LOGIN STACK => $s");
 
@@ -143,23 +148,24 @@ final ResendOtpUseCase resendOtpUseCase;
     passwordController.dispose();
     return super.close();
   }
+
   Future<void> resendVerifyEmailOtp() async {
-  final email = emailController.text.trim();
+    final email = emailController.text.trim();
 
-  if (email.isEmpty) {
-    debugPrint('resendVerifyEmailOtp aborted => email is empty');
-    return;
+    if (email.isEmpty) {
+      debugPrint('resendVerifyEmailOtp aborted => email is empty');
+      return;
+    }
+
+    try {
+      debugPrint('LOGIN resend verify email OTP => $email');
+
+      await resendOtpUseCase(email: email);
+
+      debugPrint('LOGIN resend verify email OTP success');
+    } catch (e, s) {
+      debugPrint('LOGIN resend verify email OTP error => $e');
+      debugPrint('LOGIN resend verify email OTP stack => $s');
+    }
   }
-
-  try {
-    debugPrint('LOGIN resend verify email OTP => $email');
-
-    await resendOtpUseCase(email: email);
-
-    debugPrint('LOGIN resend verify email OTP success');
-  } catch (e, s) {
-    debugPrint('LOGIN resend verify email OTP error => $e');
-    debugPrint('LOGIN resend verify email OTP stack => $s');
-  }
-}
 }

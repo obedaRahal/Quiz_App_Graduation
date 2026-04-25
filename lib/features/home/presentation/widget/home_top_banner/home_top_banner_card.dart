@@ -77,32 +77,30 @@ class HomeTopBannerCard extends StatelessWidget {
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18),
-                                  color: isDark
-                                      ? AppPalette.fieldColorNDark
-                                      : AppPalette.white,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(18),
+                                color: isDark
+                                    ? AppPalette.fieldColorNDark
+                                    : AppPalette.white,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 2,
+                                  horizontal: 12,
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 2,
-                                    horizontal: 12,
-                                  ),
-                                  child: CustomTextWidget(
-                                    index == 0
-                                        ? "انشئ اختبارا جديدا"
-                                        : index == 1
-                                        ? "انشئ خطة دراسية"
-                                        : "انشئ محتوى للمكتبة",
-                                    fontSize: SizeConfig.diagonal * .015,
-                                    color: index == 0
-                                        ? AppPalette.homeContainer1
-                                        : index == 1
-                                        ? AppPalette.homeContainer2
-                                        : AppPalette.homeContainer3,
-                                  ),
+                                child: CustomTextWidget(
+                                  index == 0
+                                      ? "انشئ اختبارا جديدا"
+                                      : index == 1
+                                      ? "انشئ خطة دراسية"
+                                      : "انشئ محتوى للمكتبة",
+                                  fontSize: SizeConfig.diagonal * .015,
+                                  color: index == 0
+                                      ? AppPalette.homeContainer1
+                                      : index == 1
+                                      ? AppPalette.homeContainer2
+                                      : AppPalette.homeContainer3,
                                 ),
                               ),
                             ),
@@ -141,8 +139,8 @@ class HomeTopBannerCard extends StatelessWidget {
                     : index == 1
                     ? AppImage.mind2
                     : AppImage.mind3,
-                height: imageSize * 1.18,
-                width: imageSize * 1.18,
+                height: imageSize * 1.28,
+                width: imageSize * 1.28,
               ),
             ),
           ],

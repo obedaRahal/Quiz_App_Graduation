@@ -22,17 +22,14 @@ class InstructorsSection extends StatelessWidget {
             horizontal: SizeConfig.w(0.036),
             vertical: SizeConfig.h(0.01),
           ),
-          child: Expanded(
-            // 🔥 مهم لتجنب overflow
-            child: CustomTextWidget(
-              "اشهر أصحاب المعلومات",
-              fontSize: titleSize,
-              color: colorScheme.secondary,
-              textAlign: TextAlign.right,
-              fontWeight: FontWeight.bold,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+          child: CustomTextWidget(
+            "اشهر أصحاب المعلومات",
+            fontSize: titleSize,
+            color: colorScheme.secondary,
+            textAlign: TextAlign.right,
+            fontWeight: FontWeight.bold,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
         const SizedBox(height: 14),

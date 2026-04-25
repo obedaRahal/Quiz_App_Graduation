@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:quiz_app_grad/core/database/api/token_refresh_service.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/core/services/file_picker_service_impl.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picker_service.dart';
 import 'package:quiz_app_grad/features/auth/data/datasource/auth_remote_data_source.dart';
@@ -55,6 +56,11 @@ Future<void> _registerCore() async {
   if (!sl.isRegistered<AuthSession>()) {
     sl.registerLazySingleton<AuthSession>(() => AuthSession());
   }
+  if (!sl.isRegistered<TokenRefreshService>()) {
+  sl.registerLazySingleton<TokenRefreshService>(
+    () => TokenRefreshService(dio: sl<Dio>()),
+  );
+}
 
   if (!sl.isRegistered<Dio>()) {
     sl.registerLazySingleton<Dio>(
@@ -70,18 +76,32 @@ Future<void> _registerCore() async {
     );
   }
 
+  // if (!sl.isRegistered<ApiConsumer>()) {
+  //   sl.registerLazySingleton<ApiConsumer>(
+  //     () => DioConsumer(
+  //       dio: sl<Dio>(),
+  //       getAccessToken: TokenStorage.getAccessToken,
+  //       clearSession: () async {
+  //         await TokenStorage.clear();
+  //         sl<AuthSession>().markUnauthenticated();
+  //       },
+  //     ),
+  //   );
+  // }
   if (!sl.isRegistered<ApiConsumer>()) {
-    sl.registerLazySingleton<ApiConsumer>(
-      () => DioConsumer(
-        dio: sl<Dio>(),
-        getAccessToken: TokenStorage.getAccessToken,
-        clearSession: () async {
-          await TokenStorage.clear();
-          sl<AuthSession>().markUnauthenticated();
-        },
-      ),
-    );
-  }
+  sl.registerLazySingleton<ApiConsumer>(
+    () => DioConsumer(
+      dio: sl<Dio>(),
+      getAccessToken: TokenStorage.getAccessToken,
+      isTokenExpiringSoon: TokenStorage.isAccessTokenExpiringSoon,
+      refreshToken: sl<TokenRefreshService>().refreshToken,
+      clearSession: () async {
+        await TokenStorage.clear();
+        sl<AuthSession>().markUnauthenticated();
+      },
+    ),
+  );
+}
 }
 
 void _registerThemeFeature() {
