@@ -38,11 +38,14 @@ class SelectedInterestsWrap extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        CustomTextWidget(
-          'الاهتمامات المختارة',
-          color: appColors.blackTogreyMedium,
-          fontSize: SizeConfig.text(0.04),
-          fontFamily: AppFont.elMessiriSemiBold,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+          child: CustomTextWidget(
+            'الاهتمامات المختارة',
+            color: appColors.blackTogreyMedium,
+            fontSize: SizeConfig.text(0.04),
+            fontFamily: AppFont.elMessiriSemiBold,
+          ),
         ),
         SizedBox(height: SizeConfig.h(0.012)),
         Container(

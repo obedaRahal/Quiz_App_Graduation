@@ -8,7 +8,6 @@ import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
-import 'package:quiz_app_grad/features/onboarding/presentation/models/onboarding_route_args.dart';
 import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -28,121 +27,122 @@ class WelcomeViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Stack(
-            children: [
-              // ThemedAppImage(
-              //   height: SizeConfig.h(0.84),
-              //   width: double.infinity,
-              //   //scale: 1.5,
-              //   //fit: BoxFit.cover,
-              //   lightPath: AppImage.welcomeLight,
-              //   darkPath: AppImage.welcomeDark,
-              //   alignment: Alignment.center,
-              // ),
-              SizedBox(
-                width: double.infinity,
-                height: SizeConfig.h(0.75),
-                child: ClipRect(
-                  child: ThemedAppImage(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Stack(
+          children: [
+            // ThemedAppImage(
+            //   height: SizeConfig.h(0.84),
+            //   width: double.infinity,
+            //   //scale: 1.5,
+            //   //fit: BoxFit.cover,
+            //   lightPath: AppImage.welcomeLight,
+            //   darkPath: AppImage.welcomeDark,
+            //   alignment: Alignment.center,
+            // ),
+            SizedBox(
+              width: double.infinity,
+              height: SizeConfig.h(0.57),
+              child: ClipRect(
+                child: ThemedAppImage(
                     width: double.infinity,
-                    height: SizeConfig.h(0.75),
-                    fit: BoxFit.cover,
-                    scale: 1,
-                    lightPath: AppImage.welcomeLight,
-                    darkPath: AppImage.welcomeDark,
-                    alignment: Alignment.center,
-                  ),
+                  //fit: BoxFit.cover,
+                  //scale: 0.9,
+                  lightPath: AppImage.welcomeLight,
+                  darkPath: AppImage.welcomeDark,
+                  alignment: Alignment.center,
                 ),
               ),
-
-              Positioned(
-                top: 10,
-                right: 10,
-                child: CustomButtonWidget(
-                  onTap: () {
-                    debugPrint("change mode ");
-                    context.read<ThemeCubit>().toggleTheme();
-                  },
-                  child: ThemedAppImage(
-                    darkPath: AppImage.logoDark,
-                    lightPath: AppImage.logoLight,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          CustomTextWidget(
-            "اختباراتي",
-            fontSize: SizeConfig.text(0.065),
-            fontFamily: AppFont.elMessiriBold,
-            color: appColors.primaryToPrimaryDark,
-          ),
-
-          CustomTextWidget(
-            "الدراسة صارت أسهل ! \n كل ما تحتاجه للنجاح الأكاديمي \n أصبح في مكان واحد",
-            fontSize: SizeConfig.text(0.04),
-            color: appColors.blackTogreyMedium,
-          ),
-
-          Row(
-            children: [
-              CustomButtonWidget(
-                backgroundColor: appColors.blackToGreyLightDark,
-                childHorizontalPad: SizeConfig.w(.06),
-                childVerticalPad: SizeConfig.h(.01),
-                borderRadius: 30,
+            ),
+    
+            Positioned(
+              top: 10,
+              right: 10,
+              child: CustomButtonWidget(
                 onTap: () {
-                  debugPrint("اكمال ال onboarding");
-
-                  context.pushNamed(
-                    AppRouterName.onboarding,
-                    extra: const OnboardingRouteArgs(
-                      email: 'obdrhl@gmail.com',
-                      lastCompletedStep: 3,
-                    ),
-                  );
+                  debugPrint("change mode ");
+                  context.read<ThemeCubit>().toggleTheme();
                 },
-                child: CustomTextWidget(
-                  "اكمال",
-                  fontSize: SizeConfig.text(.038),
-                  color: Colors.white,
+                child: ThemedAppImage(
+                  darkPath: AppImage.logoDark,
+                  lightPath: AppImage.logoLight,
                 ),
               ),
+            ),
+          ],
+        ),
+        SizedBox(height: SizeConfig.h(.03),),
+    
+        CustomTextWidget(
+          "اختباراتي",
+          fontSize: SizeConfig.text(0.065),
+          fontFamily: AppFont.elMessiriBold,
+          color: appColors.primaryToPrimaryDark,
+        ),
+                SizedBox(height: SizeConfig.h(.015),),
 
-              CustomButtonWidget(
-                backgroundColor: appColors.blackToGreyLightDark,
-                childHorizontalPad: SizeConfig.w(.06),
-                childVerticalPad: SizeConfig.h(.01),
-                borderRadius: 30,
-                onTap: () {
-                  debugPrint(" onboardingggggg");
-                  //context.pushNamed(AppRouterName.onboarding);
-                  context.pushNamed(
-                    AppRouterName.onboarding,
-                    extra: const OnboardingRouteArgs(
-                      email: 'obdrhl@gmail.com',
-                      lastCompletedStep: 0,
-                    ),
-                  );
-                  //context.pushNamed(AppRouterName.onboarding);
-                },
-                child: CustomTextWidget(
-                  "onboarding",
-                  fontSize: SizeConfig.text(.038),
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          DownPartWelcome(),
-        ],
-      ),
+    
+        CustomTextWidget(
+          "الدراسة صارت أسهل ! \n كل ما تحتاجه للنجاح الأكاديمي \n أصبح في مكان واحد",
+          fontSize: SizeConfig.text(0.04),
+          color: appColors.blackTogreyMedium,
+        ),
+    
+        // Row(
+        //   children: [
+        //     CustomButtonWidget(
+        //       backgroundColor: appColors.blackToGreyLightDark,
+        //       childHorizontalPad: SizeConfig.w(.06),
+        //       childVerticalPad: SizeConfig.h(.01),
+        //       borderRadius: 30,
+        //       onTap: () {
+        //         debugPrint("اكمال ال onboarding");
+    
+        //         context.pushNamed(
+        //           AppRouterName.onboarding,
+        //           extra: const OnboardingRouteArgs(
+        //             email: 'obdrhl@gmail.com',
+        //             lastCompletedStep: 3,
+        //           ),
+        //         );
+        //       },
+        //       child: CustomTextWidget(
+        //         "اكمال",
+        //         fontSize: SizeConfig.text(.038),
+        //         color: Colors.white,
+        //       ),
+        //     ),
+    
+        //     CustomButtonWidget(
+        //       backgroundColor: appColors.blackToGreyLightDark,
+        //       childHorizontalPad: SizeConfig.w(.06),
+        //       childVerticalPad: SizeConfig.h(.01),
+        //       borderRadius: 30,
+        //       onTap: () {
+        //         debugPrint(" onboardingggggg");
+        //         //context.pushNamed(AppRouterName.onboarding);
+        //         context.pushNamed(
+        //           AppRouterName.onboarding,
+        //           extra: const OnboardingRouteArgs(
+        //             email: 'obdrhl@gmail.com',
+        //             lastCompletedStep: 0,
+        //           ),
+        //         );
+        //         //context.pushNamed(AppRouterName.onboarding);
+        //       },
+        //       child: CustomTextWidget(
+        //         "onboarding",
+        //         fontSize: SizeConfig.text(.038),
+        //         color: Colors.white,
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        Spacer(),
+        DownPartWelcome(),
+      ],
     );
   }
 }

@@ -42,94 +42,98 @@ class GraduatedUniversityStep extends StatelessWidget {
           department: state.graduatedDepartment,
         );
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            const _SectionLabel(title: 'الجامعة'),
-            SizedBox(height: SizeConfig.h(0.005)),
-            OnboardingDropdownField<UniversityOption>(
-              value: selectedUniversity,
-              items: currentUniversityOptions,
-              hintText: 'اختر الجامعة التي تخرجت منها',
-              labelBuilder: (item) => item.title,
-              itemBuilder: (item) => UniversityDropdownItem(item: item),
-              selectedItemBuilder: (item) => UniversityDropdownItem(item: item),
-              onChanged: (value) {
-                if (value == null) return;
-                context.read<OnboardingCubit>().graduatedUniversityChanged(
-                  value.title,
-                );
-              },
-            ),
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const _SectionLabel(title: 'الجامعة'),
+              SizedBox(height: SizeConfig.h(0.005)),
+              OnboardingDropdownField<UniversityOption>(
+                value: selectedUniversity,
+                items: currentUniversityOptions,
+                hintText: 'اختر الجامعة التي تخرجت منها',
+                labelBuilder: (item) => item.title,
+                itemBuilder: (item) => UniversityDropdownItem(item: item),
+                selectedItemBuilder: (item) =>
+                    UniversityDropdownItem(item: item),
+                onChanged: (value) {
+                  if (value == null) return;
+                  context.read<OnboardingCubit>().graduatedUniversityChanged(
+                    value.title,
+                  );
+                },
+              ),
 
-            SizedBox(height: SizeConfig.h(0.03)),
+              SizedBox(height: SizeConfig.h(0.03)),
 
-            const _SectionLabel(title: 'القسم'),
-            SizedBox(height: SizeConfig.h(0.005)),
-            OnboardingDropdownField<DepartmentOption>(
-              value: selectedDepartment,
-              items: availableDepartments,
-              hintText: 'اختر القسم الذي تخرجت منه',
-              labelBuilder: (item) => item.title,
-              isEnabled: selectedUniversity != null,
-              onChanged: (value) {
-                if (value == null) return;
-                context.read<OnboardingCubit>().graduatedDepartmentChanged(
-                  value.title,
-                );
-              },
-            ),
+              const _SectionLabel(title: 'القسم'),
+              SizedBox(height: SizeConfig.h(0.005)),
+              OnboardingDropdownField<DepartmentOption>(
+                value: selectedDepartment,
+                items: availableDepartments,
+                hintText: 'اختر القسم الذي تخرجت منه',
+                labelBuilder: (item) => item.title,
+                isEnabled: selectedUniversity != null,
+                onChanged: (value) {
+                  if (value == null) return;
+                  context.read<OnboardingCubit>().graduatedDepartmentChanged(
+                    value.title,
+                  );
+                },
+              ),
 
-            SizedBox(height: SizeConfig.h(0.03)),
+              SizedBox(height: SizeConfig.h(0.03)),
 
-            OnboardingImagePickerField(
-              title: 'الشهادة الجامعية',
-              hintText: 'يرجى إرفاق شهادتك الجامعية...',
-              imagePath: state.graduationCertificateImagePath,
-              onTap: () {
-                _pickAndSubmitImage(
-                  context,
-                  onPicked: (path) {
-                    context
-                        .read<OnboardingCubit>()
-                        .graduationCertificateImageChanged(path);
-                  },
-                );
-              },
-              // () async {
-              //   final path = await _pickImagePath();
-              //   if (path == null || !context.mounted) return;
-              //   context
-              //       .read<OnboardingCubit>()
-              //       .graduationCertificateImageChanged(path);
-              // },
-            ),
+              OnboardingImagePickerField(
+                title: 'الشهادة الجامعية',
+                hintText: 'يرجى إرفاق شهادتك الجامعية...',
+                imagePath: state.graduationCertificateImagePath,
+                onTap: () {
+                  _pickAndSubmitImage(
+                    context,
+                    onPicked: (path) {
+                      context
+                          .read<OnboardingCubit>()
+                          .graduationCertificateImageChanged(path);
+                    },
+                  );
+                },
+                // () async {
+                //   final path = await _pickImagePath();
+                //   if (path == null || !context.mounted) return;
+                //   context
+                //       .read<OnboardingCubit>()
+                //       .graduationCertificateImageChanged(path);
+                // },
+              ),
 
-            SizedBox(height: SizeConfig.h(0.03)),
+              SizedBox(height: SizeConfig.h(0.03)),
 
-            OnboardingImagePickerField(
-              title: 'الهوية الشخصية',
-              hintText: 'يرجى إرفاق الوجه الأمامي للهوية الشخصية...',
-              imagePath: state.personalIdentityImagePath,
-              onTap: () {
-                _pickAndSubmitImage(
-                  context,
-                  onPicked: (path) {
-                    context
-                        .read<OnboardingCubit>()
-                        .personalIdentityImageChanged(path);
-                  },
-                );
-              },
-              // onTap: () async {
-              //   final path = await _pickImagePath();
-              //   if (path == null || !context.mounted) return;
-              //   context.read<OnboardingCubit>().personalIdentityImageChanged(
-              //     path,
-              //   );
-              // },
-            ),
-          ],
+              OnboardingImagePickerField(
+                title: 'الهوية الشخصية',
+                hintText: 'يرجى إرفاق الوجه الأمامي للهوية الشخصية...',
+                imagePath: state.personalIdentityImagePath,
+                onTap: () {
+                  _pickAndSubmitImage(
+                    context,
+                    onPicked: (path) {
+                      context
+                          .read<OnboardingCubit>()
+                          .personalIdentityImageChanged(path);
+                    },
+                  );
+                },
+                // onTap: () async {
+                //   final path = await _pickImagePath();
+                //   if (path == null || !context.mounted) return;
+                //   context.read<OnboardingCubit>().personalIdentityImageChanged(
+                //     path,
+                //   );
+                // },
+              ),
+            ],
+          ),
         );
       },
     );

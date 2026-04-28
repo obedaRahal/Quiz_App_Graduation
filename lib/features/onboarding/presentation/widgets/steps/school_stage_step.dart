@@ -38,54 +38,57 @@ class SchoolStageStep extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.schoolStage != current.schoolStage,
       builder: (context, state) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: _SchoolStageCard(
-                    imagePath: _options[1].imagePath,
-                    option: _options[1],
-                    isSelected: state.schoolStage == _options[1].title,
-                    onTap: () {
-                      context.read<OnboardingCubit>().schoolStageChanged(
-                        _options[1].title,
-                      );
-                      //debugPrint(state.schoolStage);
-                    },
+        return Padding(
+          padding:  EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03),),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: _SchoolStageCard(
+                      imagePath: _options[1].imagePath,
+                      option: _options[1],
+                      isSelected: state.schoolStage == _options[1].title,
+                      onTap: () {
+                        context.read<OnboardingCubit>().schoolStageChanged(
+                          _options[1].title,
+                        );
+                        //debugPrint(state.schoolStage);
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(width: SizeConfig.w(0.04)),
-                Expanded(
-                  child: _SchoolStageCard(
-                    imagePath: _options[0].imagePath,
-                    option: _options[0],
-                    isSelected: state.schoolStage == _options[0].title,
-                    onTap: () {
-                      context.read<OnboardingCubit>().schoolStageChanged(
-                        _options[0].title,
-                      );
-                    },
+                  SizedBox(width: SizeConfig.w(0.04)),
+                  Expanded(
+                    child: _SchoolStageCard(
+                      imagePath: _options[0].imagePath,
+                      option: _options[0],
+                      isSelected: state.schoolStage == _options[0].title,
+                      onTap: () {
+                        context.read<OnboardingCubit>().schoolStageChanged(
+                          _options[0].title,
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: SizeConfig.h(0.03)),
-            SizedBox(
-              width: SizeConfig.w(0.42),
-              child: _SchoolStageCard(
-                imagePath: _options[2].imagePath,
-                option: _options[2],
-                isSelected: state.schoolStage == _options[2].title,
-                onTap: () {
-                  context.read<OnboardingCubit>().schoolStageChanged(
-                    _options[2].title,
-                  );
-                },
+                ],
               ),
-            ),
-          ],
+              SizedBox(height: SizeConfig.h(0.03)),
+              SizedBox(
+                width: SizeConfig.w(0.42),
+                child: _SchoolStageCard(
+                  imagePath: _options[2].imagePath,
+                  option: _options[2],
+                  isSelected: state.schoolStage == _options[2].title,
+                  onTap: () {
+                    context.read<OnboardingCubit>().schoolStageChanged(
+                      _options[2].title,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

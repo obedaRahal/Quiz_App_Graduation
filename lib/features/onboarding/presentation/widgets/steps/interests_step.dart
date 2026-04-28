@@ -66,20 +66,20 @@ class InterestsStep extends StatelessWidget {
               );
             }),
 
-            if (state.errorMessage != null &&
-                state.errorMessage!.trim().isNotEmpty)
-              Padding(
-                padding: EdgeInsets.only(top: SizeConfig.h(0.01)),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: CustomTextWidget(
-                    state.errorMessage!,
-                    color: Colors.red,
-                    fontSize: SizeConfig.text(0.028),
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-              ),
+            // if (state.errorMessage != null &&
+            //     state.errorMessage!.trim().isNotEmpty)
+            //   Padding(
+            //     padding: EdgeInsets.only(top: SizeConfig.h(0.01)),
+            //     child: Align(
+            //       alignment: Alignment.centerRight,
+            //       child: CustomTextWidget(
+            //         state.errorMessage!,
+            //         color: Colors.red,
+            //         fontSize: SizeConfig.text(0.028),
+            //         textAlign: TextAlign.right,
+            //       ),
+            //     ),
+            //   ),
           ],
         );
       },

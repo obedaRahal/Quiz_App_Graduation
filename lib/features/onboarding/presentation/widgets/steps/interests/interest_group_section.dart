@@ -26,34 +26,37 @@ class InterestGroupSection extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        CustomTextWidget(
-          group.title,
-          color: appColors.blackTogreyMedium,
-          fontSize: SizeConfig.text(0.045),
-          fontFamily: AppFont.elMessiriSemiBold,
-        ),
-        SizedBox(height: SizeConfig.h(0.012)),
-        Wrap(
-          textDirection: TextDirection.rtl,
-          alignment: WrapAlignment.start,
-          runAlignment: WrapAlignment.end,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: SizeConfig.w(0.02),
-          runSpacing: SizeConfig.h(0.012),
-          children: group.items.map((item) {
-            final isSelected = selectedInterestIds.contains(item.id);
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          CustomTextWidget(
+            group.title,
+            color: appColors.blackTogreyMedium,
+            fontSize: SizeConfig.text(0.045),
+            fontFamily: AppFont.elMessiriSemiBold,
+          ),
+          SizedBox(height: SizeConfig.h(0.012)),
+          Wrap(
+            textDirection: TextDirection.rtl,
+            alignment: WrapAlignment.start,
+            runAlignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: SizeConfig.w(0.02),
+            runSpacing: SizeConfig.h(0.012),
+            children: group.items.map((item) {
+              final isSelected = selectedInterestIds.contains(item.id);
 
-            return InterestChipItem(
-              label: item.name,
-              isSelected: isSelected,
-              onTap: () => onToggle(item),
-            );
-          }).toList(),
-        ),
-      ],
+              return InterestChipItem(
+                label: item.name,
+                isSelected: isSelected,
+                onTap: () => onToggle(item),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
-}
+} 

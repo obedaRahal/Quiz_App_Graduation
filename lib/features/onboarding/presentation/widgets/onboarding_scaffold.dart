@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/arrow_back.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_step_type.dart';
+import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/education_level_step.dart';
 import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
 
 import '../../../../core/theme/color/app_colors.dart';
@@ -59,8 +62,8 @@ class OnboardingScaffold extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(
-            left: SizeConfig.w(0.03),
-            right: SizeConfig.w(0.03),
+            //left: SizeConfig.w(0.03),
+            //right: SizeConfig.w(0.03),
             bottom: SizeConfig.w(0.03),
           ),
           child: Column(
@@ -69,19 +72,19 @@ class OnboardingScaffold extends StatelessWidget {
               Row(
                 children: [
                   if (showBackButton) ArrowBack(onTap: onBack),
-                  CustomButtonWidget(
-                    onTap: () {
-                      debugPrint("change mode ");
-                      context.read<ThemeCubit>().toggleTheme();
-                    },
+                  CustomBackgroundWithChild(
+                    backgroundColor: appColors.whiteToblack,
+                    //onTap:(){},
                     child: ThemedAppImage(
                       darkPath: AppImage.logoDark,
                       lightPath: AppImage.logoLight,
                       //scale: 5,
+                      color: appColors.whiteToblack,
                     ),
                   ),
                 ],
               ),
+
               AnimatedOnboardingProgressBar(
                 currentStep: currentStep,
                 totalSteps: 5,
@@ -89,64 +92,74 @@ class OnboardingScaffold extends StatelessWidget {
               //SizedBox(height: SizeConfig.h(0.025)),
               if (hasTitle) ...[
                 SizedBox(height: SizeConfig.h(0.02)),
-                CustomTextWidget(
-                  title!,
-                  textAlign: TextAlign.right,
-                  color: appColors.primaryToPrimaryDark,
-                  fontSize: SizeConfig.text(0.045),
-                  fontWeight: FontWeight.bold,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+                  child: CustomTextWidget(
+                    title!,
+                    textAlign: TextAlign.right,
+                    color: appColors.primaryToPrimaryDark,
+                    fontSize: SizeConfig.text(0.045),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
 
               if (hasDescription) ...[
                 SizedBox(height: SizeConfig.h(0.01)),
-                CustomTextWidget(
-                  description!,
-                  textAlign: TextAlign.right,
-                  color: AppPalette.greyMedium,
-                  fontSize: SizeConfig.text(0.035),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+                  child: CustomTextWidget(
+                    description!,
+                    textAlign: TextAlign.right,
+                    color: AppPalette.greyMedium,
+                    fontSize: SizeConfig.text(0.035),
+                  ),
                 ),
               ],
               SizedBox(height: SizeConfig.h(0.03)),
               Expanded(child: SingleChildScrollView(child: child)),
               SizedBox(height: SizeConfig.h(0.015)),
-              CustomButtonWidget(
-                childVerticalPad: SizeConfig.h(0.01),
-                width: double.infinity,
-                borderRadius: 10,
-                backgroundColor: isNextEnabled
-                    ? appColors.primaryToPrimaryDark
-                    : isDark
-                    ? AppPalette.greyLightDark
-                    : AppPalette.greyLight,
-                //appColors.greyToGreyMediumDark,
-                boxShadow: [
-                  BoxShadow(
-                    color: isNextEnabled
-                        ? appColors.primaryToPrimaryDark
-                        : appColors.greyToGreyMediumDark,
-                    blurRadius: isDark ? 6 : 10,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
-                onTap: isNextEnabled && !isSubmitting ? onNext : () {},
-                child: isSubmitting
-                    ? SizedBox(
-                        width: SizeConfig.w(0.1),
-                        height: SizeConfig.h(0.049),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: Colors.white,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+                child: CustomButtonWidget(
+                  childVerticalPad: SizeConfig.h(0.01),
+                  width: double.infinity,
+                  borderRadius: 10,
+                  backgroundColor: isNextEnabled
+                      ? appColors.primaryToPrimaryDark
+                      : isDark
+                      ? AppPalette.greyLightDark
+                      : AppPalette.greyLight,
+                  //appColors.greyToGreyMediumDark,
+                  boxShadow: [
+                    BoxShadow(
+                      color: isNextEnabled
+                          ? appColors.primaryToPrimaryDark
+                          : appColors.greyToGreyMediumDark,
+                      blurRadius: isDark ? 6 : 10,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                  onTap: isNextEnabled && !isSubmitting ? onNext : () {},
+                  child: isSubmitting
+                      ? SizedBox(
+                          width: SizeConfig.h(0.07),
+                          height: SizeConfig.h(0.0365),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: Colors.white,
+                          ),
+                        )
+                      : CustomTextWidget(
+                          fontSize: SizeConfig.h(0.026),
+                          nextButtonText,
+                          color: isNextEnabled
+                              ? appColors.whiteToblack
+                              : appColors.greyMediumTogrey,
+                          //AppPalette.grey
+                          //AppPalette.greyMedium,
                         ),
-                      )
-                    : CustomTextWidget(
-                        nextButtonText,
-                        color: isNextEnabled
-                            ? appColors.whiteToblack
-                            : appColors.greyMediumTogrey,
-                        //AppPalette.grey
-                        //AppPalette.greyMedium,
-                      ),
+                ),
               ),
             ],
           ),

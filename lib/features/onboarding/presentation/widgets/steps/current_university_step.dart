@@ -47,75 +47,78 @@ class CurrentUniversityStep extends StatelessWidget {
                 (index) => index + 1,
               );
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            _SectionLabel(title: 'الجامعة'),
-            SizedBox(height: SizeConfig.h(0.005)),
-            OnboardingDropdownField<UniversityOption>(
-              value: selectedUniversity,
-              items: currentUniversityOptions,
-              hintText: 'اختر الجامعة التي تدرس فيها',
-              labelBuilder: (item) => item.title,
-              itemBuilder: (item) => UniversityDropdownItem(item: item),
-              selectedItemBuilder: (item) => UniversityDropdownItem(item: item),
-              onChanged: (value) {
-                if (value == null) return;
-                context.read<OnboardingCubit>().currentUniversityChanged(
-                  value.title,
-                );
-              },
-            ),
-
-            SizedBox(height: SizeConfig.h(0.03)),
-
-            _SectionLabel(title: 'القسم'),
-            SizedBox(height: SizeConfig.h(0.005)),
-            OnboardingDropdownField<DepartmentOption>(
-              value: selectedDepartment,
-              items: availableDepartments,
-              hintText: 'اختر القسم',
-              labelBuilder: (item) => item.title,
-              isEnabled: selectedUniversity != null,
-              onChanged: (value) {
-                if (value == null) return;
-                context
-                    .read<OnboardingCubit>()
-                    .currentDepartmentAtUniversityChanged(value.title);
-              },
-            ),
-
-            SizedBox(height: SizeConfig.h(0.03)),
-
-            _SectionLabel(title: 'السنة الدراسية'),
-            SizedBox(height: SizeConfig.h(0.005)),
-            OnboardingDropdownField<int>(
-              value: state.currentStudyYearAtUniversity,
-              items: availableStudyYears,
-              hintText: 'اختر السنة الدراسية',
-              labelBuilder: yearLabel,
-              isEnabled: selectedDepartment != null,
-              onChanged: (value) {
-                if (value == null) return;
-                context
-                    .read<OnboardingCubit>()
-                    .currentStudyYearAtUniversityChanged(value);
-              },
-            ),
-
-            if (selectedDepartment != null) ...[
-              SizedBox(height: SizeConfig.h(0.012)),
-              Align(
-                alignment: Alignment.centerRight,
-                child: CustomTextWidget(
-                  'عدد سنوات هذا القسم: ${selectedDepartment.yearsCount}',
-                  textAlign: TextAlign.right,
-                  fontSize: SizeConfig.text(0.03),
-                  color: AppPalette.greyMedium,
-                ),
+        return Padding(
+          padding:  EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03),),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _SectionLabel(title: 'الجامعة'),
+              SizedBox(height: SizeConfig.h(0.005)),
+              OnboardingDropdownField<UniversityOption>(
+                value: selectedUniversity,
+                items: currentUniversityOptions,
+                hintText: 'اختر الجامعة التي تدرس فيها',
+                labelBuilder: (item) => item.title,
+                itemBuilder: (item) => UniversityDropdownItem(item: item),
+                selectedItemBuilder: (item) => UniversityDropdownItem(item: item),
+                onChanged: (value) {
+                  if (value == null) return;
+                  context.read<OnboardingCubit>().currentUniversityChanged(
+                    value.title,
+                  );
+                },
               ),
+          
+              SizedBox(height: SizeConfig.h(0.03)),
+          
+              _SectionLabel(title: 'القسم'),
+              SizedBox(height: SizeConfig.h(0.005)),
+              OnboardingDropdownField<DepartmentOption>(
+                value: selectedDepartment,
+                items: availableDepartments,
+                hintText: 'اختر القسم',
+                labelBuilder: (item) => item.title,
+                isEnabled: selectedUniversity != null,
+                onChanged: (value) {
+                  if (value == null) return;
+                  context
+                      .read<OnboardingCubit>()
+                      .currentDepartmentAtUniversityChanged(value.title);
+                },
+              ),
+          
+              SizedBox(height: SizeConfig.h(0.03)),
+          
+              _SectionLabel(title: 'السنة الدراسية'),
+              SizedBox(height: SizeConfig.h(0.005)),
+              OnboardingDropdownField<int>(
+                value: state.currentStudyYearAtUniversity,
+                items: availableStudyYears,
+                hintText: 'اختر السنة الدراسية',
+                labelBuilder: yearLabel,
+                isEnabled: selectedDepartment != null,
+                onChanged: (value) {
+                  if (value == null) return;
+                  context
+                      .read<OnboardingCubit>()
+                      .currentStudyYearAtUniversityChanged(value);
+                },
+              ),
+          
+              if (selectedDepartment != null) ...[
+                SizedBox(height: SizeConfig.h(0.012)),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: CustomTextWidget(
+                    'عدد سنوات هذا القسم: ${selectedDepartment.yearsCount}',
+                    textAlign: TextAlign.right,
+                    fontSize: SizeConfig.text(0.03),
+                    color: AppPalette.greyMedium,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         );
       },
     );

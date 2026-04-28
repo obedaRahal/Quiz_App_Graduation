@@ -45,7 +45,7 @@ class OnboardingDoneStep extends StatelessWidget {
 
         Column(
           children: [
-            SizedBox(height: 90),
+            SizedBox(height: SizeConfig.w(0.25),),
             Center(
               child: CustomTextWidget(
                 'مستعد للانطلاق\nفي تجربة جديدة\nومميزة؟',

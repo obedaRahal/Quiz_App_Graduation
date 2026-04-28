@@ -30,7 +30,7 @@ class HeardAboutStep extends StatelessWidget {
             final isSelected = state.heardAbout == option.title;
 
             return Padding(
-              padding: EdgeInsets.only(bottom: SizeConfig.h(0.015)),
+              padding: EdgeInsets.only(bottom: SizeConfig.h(0.015) ,right: SizeConfig.w(0.03), left: SizeConfig.w(0.03),),
               child: OnboardingOptionSelectedCard(
                 label: option.title,
                 icon: option.icon,

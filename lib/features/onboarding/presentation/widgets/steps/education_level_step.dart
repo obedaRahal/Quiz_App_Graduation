@@ -84,53 +84,56 @@ class EducationLevelStep extends StatelessWidget {
         //   }
         // }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // _GovernorateDropdown(
-            //   value: state.governorate,
-            //   items: _governorates,
-            //   onChanged: (value) {
-            //     if (value == null) return;
-            //     context.read<OnboardingCubit>().governorateChanged(value);
-            //     //debugPrint(value);
-            //   },
-            // ),
-            OnboardingDropdownField<String>(
-              value: state.governorate,
-              items: _governorates,
-              hintText: 'اختر المحافظة التي تسكن فيها',
-              labelBuilder: (item) => item,
-              onChanged: (value) {
-                if (value == null) return;
-                context.read<OnboardingCubit>().governorateChanged(value);
-              },
-            ),
-            SizedBox(height: SizeConfig.h(0.02)),
-            _EducationGroupContainer(
-              title: 'طالب',
-              icon: Icons.info_outline_rounded,
-              isGroupSelected: isStudentGroupSelected,
-              children: _buildEducationOptionCards(
-                context: context,
-                state: state,
-                options: _studentOptions,
+        return Padding(
+          padding:  EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03),),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // _GovernorateDropdown(
+              //   value: state.governorate,
+              //   items: _governorates,
+              //   onChanged: (value) {
+              //     if (value == null) return;
+              //     context.read<OnboardingCubit>().governorateChanged(value);
+              //     //debugPrint(value);
+              //   },
+              // ),
+              OnboardingDropdownField<String>(
+                value: state.governorate,
+                items: _governorates,
+                hintText: 'اختر المحافظة التي تسكن فيها',
+                labelBuilder: (item) => item,
+                onChanged: (value) {
+                  if (value == null) return;
+                  context.read<OnboardingCubit>().governorateChanged(value);
+                },
               ),
-            ),
-
-            SizedBox(height: SizeConfig.h(0.02)),
-
-            _EducationGroupContainer(
-              title: 'صاحب معلومة',
-              icon: Icons.info_outline_rounded,
-              isGroupSelected: isKnowledgeOwnerGroupSelected,
-              children: _buildEducationOptionCards(
-                context: context,
-                state: state,
-                options: _knowledgeOwnerOptions,
+              SizedBox(height: SizeConfig.h(0.02)),
+              _EducationGroupContainer(
+                title: 'طالب',
+                icon: Icons.info_outline_rounded,
+                isGroupSelected: isStudentGroupSelected,
+                children: _buildEducationOptionCards(
+                  context: context,
+                  state: state,
+                  options: _studentOptions,
+                ),
               ),
-            ),
-          ],
+          
+              SizedBox(height: SizeConfig.h(0.02)),
+          
+              _EducationGroupContainer(
+                title: 'صاحب معلومة',
+                icon: Icons.info_outline_rounded,
+                isGroupSelected: isKnowledgeOwnerGroupSelected,
+                children: _buildEducationOptionCards(
+                  context: context,
+                  state: state,
+                  options: _knowledgeOwnerOptions,
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
