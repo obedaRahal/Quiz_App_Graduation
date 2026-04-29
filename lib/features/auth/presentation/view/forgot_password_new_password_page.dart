@@ -115,8 +115,8 @@ class ForgotPasswordNewPasswordPage extends StatelessWidget {
                     child:
                         state.resetStatus == ForgotPasswordResetStatus.loading
                         ? SizedBox(
-                            height: 22,
-                            width: 22,
+                            height: 29,
+                            width: 26,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
                               color: colorScheme.onSecondary,

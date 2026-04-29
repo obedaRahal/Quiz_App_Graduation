@@ -24,7 +24,7 @@ class HomeTopBannerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Stack(

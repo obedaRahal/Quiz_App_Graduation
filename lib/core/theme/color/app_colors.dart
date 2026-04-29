@@ -5,6 +5,7 @@ abstract class AppPalette {
   static const primary = Color(0XFF5582FF);
   static const primarySoft = Color(0XFFEEF2FF);
   static const primaryToWhite = Color(0XFFF6F6F6);
+  static const primarySoftMore = Color(0XFFF7F9FF);
 
   static const borderFieldColorNLight = Color(0xffDFDFDF);
 
@@ -12,6 +13,9 @@ abstract class AppPalette {
   static const white = Colors.white;
   static const whiteSoft = Color(0xFFF2F2F2);
   static const whiteToGrey = Color(0xFFF1F1F1);
+  static const red = Color(0xFFFF4444);
+  static const green = Color(0xFF17E32B);
+  static const orange = Color(0xFFFEB200);
 
 
   static const grey = Color(0xFFF9F9F9);

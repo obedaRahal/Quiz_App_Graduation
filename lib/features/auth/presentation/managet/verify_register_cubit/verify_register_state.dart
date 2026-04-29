@@ -8,6 +8,8 @@ class VerifyRegisterState {
   final String? resendSuccessMessage;
   final String? snackBarTitle;
 
+final bool showOtpError;
+
   const VerifyRegisterState({
     this.remainingSeconds = 300,
     this.otpCode = '',
@@ -17,6 +19,7 @@ class VerifyRegisterState {
     this.successMessage,
     this.resendSuccessMessage,
     this.snackBarTitle,
+    this.showOtpError = false,
   });
 
   bool get isTimerFinished => remainingSeconds <= 0;
@@ -30,6 +33,7 @@ class VerifyRegisterState {
     String? successMessage,
     String? resendSuccessMessage,
     String? snackBarTitle,
+    bool? showOtpError,
   }) {
     return VerifyRegisterState(
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
@@ -40,6 +44,7 @@ class VerifyRegisterState {
       successMessage: successMessage,
       resendSuccessMessage: resendSuccessMessage,
       snackBarTitle: snackBarTitle,
+      showOtpError: showOtpError ?? this.showOtpError,
     );
   }
 }

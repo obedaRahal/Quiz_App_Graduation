@@ -14,6 +14,8 @@ abstract class AppRouterName {
 
   static const home = 'homePage';
   static const mainLayout = 'mainLayout';
+  static const allCategoriesPage = 'allCategoriesPage';
+
 
 }
 
@@ -34,5 +36,7 @@ abstract class AppRouterPath {
 
   static const home = '/homePage';
   static const mainLayout = '/mainLayout';
+  static const allCategoriesPage = '/allCategoriesPage';
+
 
 }

@@ -71,51 +71,6 @@ class ForgotPasswordOtpCodePage extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        // return Scaffold(
-        //   body: Padding(
-        //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-        //     child: SingleChildScrollView(
-        //       child: Column(
-        //         children: [
-        //           CommonTopPartForgetPassword(
-        //             title: "تأكيد البريد المدخل",
-        //             bodyText:
-        //                 "الرجاء ادخال الرمز المكون من ستة \nأرقام الى بريدك الخاص",
-        //             img: AppImage.forgetPasswordPng2,
-        //             imgHeight: SizeConfig.height * .35,
-        //           ),
-
-        //           SizedBox(height: SizeConfig.height * .04),
-
-        //           OtpInputSection(
-        //             remainingSeconds: state.remainingSeconds,
-        //             onSubmit: () {
-        //               context.read<ForgetPasswordCubit>().verifyOtp();
-        //             },
-        //             onResend: () {
-        //               if (state.resendOtpStatus ==
-        //                   ForgotPasswordResendOtpStatus.loading) {
-        //                 return;
-        //               }
-
-        //               context
-        //                   .read<ForgetPasswordCubit>()
-        //                   .resendForgotPasswordOtp();
-        //             },
-        //             onOtpChanged: (value) {
-        //               context.read<ForgetPasswordCubit>().otpChanged(value);
-        //             },
-        //             isSubmitting:
-        //                 state.verifyOtpStatus ==
-        //                     ForgotPasswordVerifyOtpStatus.loading ||
-        //                 state.resendOtpStatus ==
-        //                     ForgotPasswordResendOtpStatus.loading,
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // );
         return Scaffold(
           resizeToAvoidBottomInset: false,
           body: LayoutBuilder(
@@ -125,7 +80,7 @@ class ForgotPasswordOtpCodePage extends StatelessWidget {
               final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
               final bottomSafe = MediaQuery.of(context).padding.bottom;
               final isKeyboardOpen = keyboardHeight > 0;
-
+              final colorScheme = Theme.of(context).colorScheme;
               final isSmall =
                   SizeConfig.isSmallPhone || SizeConfig.height < 700;
 
@@ -180,6 +135,7 @@ class ForgotPasswordOtpCodePage extends StatelessWidget {
                               OtpInputSection(
                                 compact: isSmall,
                                 showSubmitButton: false,
+                                showOtpError: state.showOtpError,
                                 remainingSeconds: state.remainingSeconds,
                                 onSubmit: () {
                                   context
@@ -226,7 +182,14 @@ class ForgotPasswordOtpCodePage extends StatelessWidget {
                                     ForgotPasswordVerifyOtpStatus.loading ||
                                 state.resendOtpStatus ==
                                     ForgotPasswordResendOtpStatus.loading
-                            ? const Center(child: CircularProgressIndicator())
+                            ? SizedBox(
+                                height: 29,
+                                width: 26,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: colorScheme.onSecondary,
+                                ),
+                              )
                             : CustomButtonWidget(
                                 width: double.infinity,
                                 backgroundColor:

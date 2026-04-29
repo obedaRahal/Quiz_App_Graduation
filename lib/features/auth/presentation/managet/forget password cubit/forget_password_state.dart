@@ -16,6 +16,8 @@ class ForgetPasswordState {
   final String? snackBarTitle;
 
   final String otpCode;
+final bool showOtpError;
+
   final ForgotPasswordVerifyOtpStatus verifyOtpStatus;
 
   final ForgotPasswordResendOtpStatus resendOtpStatus;
@@ -31,6 +33,7 @@ class ForgetPasswordState {
     this.errorMessage,
     this.successMessage,
     this.otpCode = '',
+    this.showOtpError = false,
     this.verifyOtpStatus = ForgotPasswordVerifyOtpStatus.initial,
     this.resendOtpStatus = ForgotPasswordResendOtpStatus.initial,
     this.resendSuccessMessage,
@@ -54,6 +57,7 @@ class ForgetPasswordState {
     ForgotPasswordResetStatus? resetStatus,
     String? resetSuccessMessage,
     String? snackBarTitle,
+    bool? showOtpError,
   }) {
     return ForgetPasswordState(
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
@@ -68,6 +72,7 @@ class ForgetPasswordState {
       resetStatus: resetStatus ?? this.resetStatus,
       resetSuccessMessage: resetSuccessMessage,
       snackBarTitle: snackBarTitle,
+      showOtpError: showOtpError ?? this.showOtpError,
     );
   }
 }

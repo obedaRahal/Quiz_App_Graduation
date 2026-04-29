@@ -20,6 +20,13 @@ import 'package:quiz_app_grad/features/auth/presentation/view/forgot_password_ot
 import 'package:quiz_app_grad/features/auth/presentation/view/login_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
+import 'package:quiz_app_grad/features/get_all_interests/data/models/get_all_interests_model.dart';
+import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
+import 'package:quiz_app_grad/features/get_all_interests/presentation/managet/all_interests_cubit.dart';
+import 'package:quiz_app_grad/features/get_all_interests/presentation/view/get_all_categories.dart';
+import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
+import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
+import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
@@ -222,8 +229,25 @@ class AppRouter {
           name: AppRouterName.home,
           builder: (context, state) {
             return BlocProvider(
-              create: (_) => HomeCubit(),
+              create: (context) => HomeCubit(
+                getRecommendedTestsUseCase: sl<GetRecommendedTestsUseCase>(),
+                getRecommendedInterestsUseCase:
+                    sl<GetRecommendedInterestsUseCase>(),
+                getRecommendedUsersUseCase: sl<GetRecommendedUsersUseCase>(),
+              )..getHomeData(),
               child: const HomePage(),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRouterPath.allCategoriesPage,
+          name: AppRouterName.allCategoriesPage,
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => AllInterestsCubit(
+                getAllInterestsUseCase: sl<GetAllInterestsUseCase>(),
+              )..getAllInterests(),
+              child: const AllCategoriesPage(),
             );
           },
         ),

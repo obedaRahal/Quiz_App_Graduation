@@ -35,11 +35,11 @@ class CustomBottomNavBar extends StatelessWidget {
               color: isDark ? AppPalette.fieldColorNDark : AppPalette.white,
 
               boxShadow: [
-                // BoxShadow(
-                //   color: Colors.black.withOpacity(0.08),
-                //   blurRadius: 18,
-                //   offset: const Offset(0, -4),
-                // ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.094),
+                  blurRadius: 18,
+                  offset: const Offset(0, -4),
+                ),
               ],
             ),
             child: Row(

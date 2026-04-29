@@ -15,6 +15,16 @@ import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_ca
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
+import 'package:quiz_app_grad/features/get_all_interests/data/data_source/all_interests_remote_data_source.dart';
+import 'package:quiz_app_grad/features/get_all_interests/data/repositories/all_interests_repository_impl.dart';
+import 'package:quiz_app_grad/features/get_all_interests/domain/repositories/all_interests_repository.dart';
+import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
+import 'package:quiz_app_grad/features/home/data/datasource/home_remote_data_source.dart';
+import 'package:quiz_app_grad/features/home/data/repositories/home_repo_impl.dart';
+import 'package:quiz_app_grad/features/home/domain/repositories/home_repostory.dart';
+import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
+import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
+import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_remote_data_source.dart';
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -56,11 +66,11 @@ Future<void> _registerCore() async {
   if (!sl.isRegistered<AuthSession>()) {
     sl.registerLazySingleton<AuthSession>(() => AuthSession());
   }
-//   if (!sl.isRegistered<TokenRefreshService>()) {
-//   sl.registerLazySingleton<TokenRefreshService>(
-//     () => TokenRefreshService(dio: sl<Dio>()),
-//   );
-// }
+  //   if (!sl.isRegistered<TokenRefreshService>()) {
+  //   sl.registerLazySingleton<TokenRefreshService>(
+  //     () => TokenRefreshService(dio: sl<Dio>()),
+  //   );
+  // }
 
   if (!sl.isRegistered<Dio>()) {
     sl.registerLazySingleton<Dio>(
@@ -330,4 +340,28 @@ void _registerAuthFeature() {
       () => ForgotPasswordResetUseCase(sl<AuthRepository>()),
     );
   }
+  sl.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(api: sl()),
+  );
+
+  sl.registerLazySingleton<HomeRepository>(
+    () => HomeRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton(() => GetRecommendedTestsUseCase(sl()));
+  sl.registerLazySingleton(() => GetRecommendedInterestsUseCase(sl()));
+  sl.registerLazySingleton(() => GetRecommendedUsersUseCase(sl()));
+ 
+
+  sl.registerLazySingleton<AllInterestsRepository>(
+    () => AllInterestsRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton(() => GetAllInterestsUseCase(sl()));
+  // All Interests
+  sl.registerLazySingleton<AllInterestsRemoteDataSource>(
+    () => AllInterestsRemoteDataSourceImpl(api: sl()),
+  );
+
+ 
 }
