@@ -68,7 +68,7 @@ class RegisterPage extends StatelessWidget {
         final fieldGap = SizeConfig.sh(isSmall ? 0.012 : 0.02);
 
         final genderIconPadding = isSmall ? 8.0 : 10.0;
-        final genderIconSize = isSmall ? 30.0 : 34.0;
+        final genderIconSize = isSmall ? 25.0 : 28.0;
 
         final bottomFixedAreaHeight = isSmall ? 92.0 : 108.0;
 
@@ -165,6 +165,8 @@ class RegisterPage extends StatelessWidget {
                                     ? state.selectedGender == Gender.male
                                           ? AppPalette.primaryDark
                                           : AppPalette.fieldColorNDark
+                                    : state.selectedGender == Gender.male
+                                    ? AppPalette.primarySoftMore
                                     : AppPalette.white,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
@@ -206,6 +208,8 @@ class RegisterPage extends StatelessWidget {
                                     ? state.selectedGender == Gender.female
                                           ? AppPalette.primaryDark
                                           : AppPalette.fieldColorNDark
+                                    : state.selectedGender == Gender.female
+                                    ? AppPalette.primarySoftMore
                                     : AppPalette.white,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
@@ -237,63 +241,6 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ),
 
-                // Positioned(
-                //   left: horizontalPadding,
-                //   right: horizontalPadding,
-                //   bottom: 8,
-                //   child: Container(
-                //     color: Theme.of(context).scaffoldBackgroundColor,
-                //     child: Column(
-                //       mainAxisSize: MainAxisSize.min,
-                //       children: [
-                //         CustomButtonWidget(
-                //           width: double.infinity,
-                //           backgroundColor: AppPalette.primary,
-                //           childHorizontalPad: SizeConfig.width * .07,
-                //           childVerticalPad:
-                //               SizeConfig.height * (isSmall ? .009 : .012),
-                //           borderRadius: 8,
-                //           onTap: () {
-                //             if (state.registerStatus ==
-                //                 RegisterStatus.loading) {
-                //               return;
-                //             }
-
-                //             context.read<RegisterCubit>().submitRegister();
-                //           },
-                //           child: state.registerStatus == RegisterStatus.loading
-                //               ? SizedBox(
-                //                   height: isSmall ? 20 : 22,
-                //                   width: isSmall ? 20 : 22,
-                //                   child: CircularProgressIndicator(
-                //                     strokeWidth: 2.5,
-                //                     color: colorScheme.onSecondary,
-                //                   ),
-                //                 )
-                //               : CustomTextWidget(
-                //                   "تأكيد الإدخال",
-                //                   fontSize: SizeConfig.text(
-                //                     isSmall ? 0.044 : 0.055,
-                //                   ),
-                //                   color: colorScheme.onSecondary,
-                //                 ),
-                //         ),
-
-                //         SizedBox(height: SizeConfig.sh(isSmall ? .008 : .014)),
-
-                //         TowTextRow(
-                //           text: " لديك حساب فعلا، قم ",
-                //           actionText: "تسجيل الدخول ",
-                //           onTap: () {
-                //             GoRouter.of(
-                //               context,
-                //             ).replaceNamed(AppRouterName.login);
-                //           },
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
                 if (!isKeyboardOpen)
                   Positioned(
                     left: horizontalPadding,
@@ -322,8 +269,8 @@ class RegisterPage extends StatelessWidget {
                             child:
                                 state.registerStatus == RegisterStatus.loading
                                 ? SizedBox(
-                                    height: isSmall ? 20 : 22,
-                                    width: isSmall ? 20 : 22,
+                                    height: 29,
+                                    width: 26,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.5,
                                       color: colorScheme.onSecondary,

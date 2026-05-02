@@ -1,8 +1,7 @@
 class EndPoints {
   //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
-  static const String baseUrl = 'http://192.168.1.105/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
-
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
 
@@ -22,10 +21,9 @@ class EndPoints {
   static const String onboardingUserInterests =
       '$baseUrl/auth/onboarding/user-interests';
   static const String onboardingProgressPreview =
-    '$baseUrl/auth/onboarding/progress-preview';
+      '$baseUrl/auth/onboarding/progress-preview';
 
-      
-      // Auth ///////////////////
+  // Auth ///////////////////
   static const String register = '/auth/register';
   static const String verifyEmail = '/auth/verify-email';
   static const String login = '/auth/login';
@@ -36,6 +34,10 @@ class EndPoints {
       '/auth/forgot-password/verify-otp';
   static const String forgotPasswordResendOtp =
       '/auth/forgot-password/resend-otp';
-  static const String forgotPasswordReset =
-      '/auth/forgot-password/reset';
+  static const String forgotPasswordReset = '/auth/forgot-password/reset';
+  static const String recommendedTests = '/home/recommended-tests';
+  static const String recommendedInterests = '/home/recommended-interests';
+  static const String recommendedUsers = '/home/recommended-users';
+  static const String allInterests = '/home/all-interests';
+  
 }

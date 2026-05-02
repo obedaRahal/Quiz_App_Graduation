@@ -92,8 +92,8 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
           // successMessage: result.message,
           // errorMessage: null,
           snackBarTitle: result.title,
-    successMessage: result.message,
-    errorMessage: null,
+          successMessage: result.message,
+          errorMessage: null,
         ),
       );
     } catch (e, s) {
@@ -107,12 +107,12 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       //   ),
       // );
       emit(
-  state.copyWith(
-    requestOtpStatus: ForgotPasswordRequestOtpStatus.failure,
-    snackBarTitle: _extractErrorTitle(e),
-    errorMessage: e.toString(),
-  ),
-);
+        state.copyWith(
+          requestOtpStatus: ForgotPasswordRequestOtpStatus.failure,
+          snackBarTitle: _extractErrorTitle(e),
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -131,7 +131,13 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
   }
 
   void otpChanged(String value) {
-    emit(state.copyWith(otpCode: value, errorMessage: null));
+    emit(
+      state.copyWith(
+        otpCode: value,
+        errorMessage: null,
+        showOtpError: value.length == 6 ? false : state.showOtpError,
+      ),
+    );
   }
 
   Future<void> verifyOtp() async {
@@ -160,16 +166,21 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       );
       return;
     }
+if (state.otpCode.length != 6) {
+    emit(state.copyWith(showOtpError: true));
+    return;
+  }
 
-    if (otpCode.length != 6) {
-      emit(
-        state.copyWith(
-          verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
-          errorMessage: 'يجب أن يتكون رمز التحقق من 6 أرقام.',
-        ),
-      );
-      return;
-    }
+  emit(state.copyWith(showOtpError: false));
+    // if (otpCode.length != 6) {
+    //   emit(
+    //     state.copyWith(
+    //       verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
+    //       errorMessage: 'يجب أن يتكون رمز التحقق من 6 أرقام.',
+    //     ),
+    //   );
+    //   return;
+    // }
 
     emit(
       state.copyWith(
@@ -191,8 +202,8 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
           // successMessage: result.message,
           // errorMessage: null,
           snackBarTitle: result.title,
-    successMessage: result.message,
-    errorMessage: null,
+          successMessage: result.message,
+          errorMessage: null,
         ),
       );
     } catch (e, s) {
@@ -206,12 +217,12 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       //   ),
       // );
       emit(
-  state.copyWith(
-     verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
-    snackBarTitle: _extractErrorTitle(e),
-    errorMessage: e.toString(),
-  ),
-);
+        state.copyWith(
+          verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
+          snackBarTitle: _extractErrorTitle(e),
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -252,8 +263,8 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
           // resendSuccessMessage: result.message,
           // errorMessage: null,
           snackBarTitle: result.title,
-    successMessage: result.message,
-    errorMessage: null,
+          successMessage: result.message,
+          errorMessage: null,
         ),
       );
 
@@ -269,12 +280,12 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       //   ),
       // );
       emit(
-  state.copyWith(
-    resendOtpStatus: ForgotPasswordResendOtpStatus.failure,
-    snackBarTitle: _extractErrorTitle(e),
-    errorMessage: e.toString(),
-  ),
-);
+        state.copyWith(
+          resendOtpStatus: ForgotPasswordResendOtpStatus.failure,
+          snackBarTitle: _extractErrorTitle(e),
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -365,8 +376,8 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
           // resetSuccessMessage: result.message,
           // errorMessage: null,
           snackBarTitle: result.title,
-    successMessage: result.message,
-    errorMessage: null,
+          successMessage: result.message,
+          errorMessage: null,
         ),
       );
     } catch (e, s) {
@@ -381,26 +392,24 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       );
     }
   }
+
   void setOtpCode(String value) {
-  debugPrint("ForgetPasswordCubit.setOtpCode -> $value");
+    debugPrint("ForgetPasswordCubit.setOtpCode -> $value");
 
-  emit(
-    state.copyWith(
-      otpCode: value,
-    ),
-  );
-}
-String _extractErrorTitle(Object e) {
-  try {
-    final dynamic exception = e;
-    final dynamic errorModel = exception.errorModel;
-    final dynamic title = errorModel.errorTitle;
+    emit(state.copyWith(otpCode: value));
+  }
 
-    if (title != null && title.toString().trim().isNotEmpty) {
-      return title.toString();
-    }
-  } catch (_) {}
+  String _extractErrorTitle(Object e) {
+    try {
+      final dynamic exception = e;
+      final dynamic errorModel = exception.errorModel;
+      final dynamic title = errorModel.errorTitle;
 
-  return 'خطأ';
-}
+      if (title != null && title.toString().trim().isNotEmpty) {
+        return title.toString();
+      }
+    } catch (_) {}
+
+    return 'خطأ';
+  }
 }

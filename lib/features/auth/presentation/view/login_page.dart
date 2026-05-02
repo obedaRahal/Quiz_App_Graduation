@@ -264,8 +264,8 @@ class LoginPage extends StatelessWidget {
                             },
                             child: state.loginStatus == LoginStatus.loading
                                 ? SizedBox(
-                                    height: isSmall ? 20 : 22,
-                                    width: isSmall ? 20 : 22,
+                                    height: 29,
+                                    width: 26,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.5,
                                       color: colorScheme.onSecondary,

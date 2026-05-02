@@ -19,8 +19,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PageController controller = PageController(viewportFraction: 0.90);
-    final PageController controller2 = PageController(viewportFraction: 0.70);
+    final PageController controller = PageController(viewportFraction: 0.95);
+    final PageController controller2 = PageController(viewportFraction: 0.74);
     SizeConfig.init(context);
     final appColors = context.appColors;
     final colorScheme = context.colorScheme;
@@ -150,6 +150,15 @@ class HomePage extends StatelessWidget {
                             SizedBox(width: SizeConfig.w(0.03)),
 
                             FilterItem(
+                              title: "مجاني",
+                              index: 3,
+                              state: state,
+                              onTap: () =>
+                                  context.read<HomeCubit>().changeFilter(3),
+                            ),
+                            SizedBox(width: SizeConfig.w(0.03)),
+
+                            FilterItem(
                               title: "جديد",
                               index: 1,
                               state: state,
@@ -172,21 +181,34 @@ class HomePage extends StatelessWidget {
                   );
                 },
               ),
-              HomeSliderSection(
-                controller2: controller2,
-                isDark: isDark,
-                appColors: appColors,
-                colorScheme: colorScheme,
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return HomeSliderSection(
+                    controller2: controller2,
+                    isDark: isDark,
+                    appColors: appColors,
+                    colorScheme: colorScheme,
+                    state: state,
+                  );
+                },
               ),
 
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: CategoriesSection(categories: categories),
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: CategoriesSection(state: state),
+                  );
+                },
               ),
               const SizedBox(height: 24),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: InstructorsSection(instructors: instructors),
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: InstructorsSection(state: state),
+                  );
+                },
               ),
             ],
           ),

@@ -2,18 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/home/domain/entities/recommended_tests_response_entity.dart';
+import 'package:quiz_app_grad/features/home/presentation/widget/card_widgets/test_card_long_press_menu.dart';
 import 'home_slider_card_footer.dart';
 import 'home_slider_card_header.dart';
 import 'home_slider_card_stats.dart';
 import 'home_slider_card_tags.dart';
 
 class HomeSliderCard extends StatelessWidget {
+  final RecommendedTestItemEntity item;
   final bool isDark;
   final dynamic appColors;
   final dynamic colorScheme;
 
   const HomeSliderCard({
     super.key,
+    required this.item,
     required this.isDark,
     required this.appColors,
     required this.colorScheme,
@@ -21,80 +25,89 @@ class HomeSliderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 9,
-        vertical: 6,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          width: 1,
-          color: isDark
-              ? AppPalette.borderFieldColorNDark
-              : AppPalette.greyBorderCart,
+    return GestureDetector(
+      onLongPress: () {
+        showTestCardLongPressMenu(context: context, isDark: isDark, item: item);
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            width: 1,
+            color: isDark
+                ? AppPalette.borderFieldColorNDark
+                : AppPalette.greyBorderCart,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color:
+                  (isDark ? const Color(0xFF484848) : const Color(0xFFD9D9D9))
+                      .withOpacity(0.30),
+              offset: const Offset(0, 4),
+              blurRadius: 14,
+              spreadRadius: -1,
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: (isDark
-                    ? const Color(0xFF484848)
-                    : const Color(0xFFD9D9D9))
-                .withOpacity(0.30),
-            offset: const Offset(0, 4),
-            blurRadius: 14,
-            spreadRadius: -1,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          HomeSliderCardHeader(isDark: isDark),
-          Divider(
-            color: isDark
-                ? AppPalette.borderFieldColorNDark
-                : AppPalette.greyBorderCart,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: CustomTextWidget(
-              "جلسة امتحانية",
-              textAlign: TextAlign.right,
-              fontWeight: FontWeight.bold,
-              fontSize: SizeConfig.text(0.06),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            HomeSliderCardHeader(isDark: isDark, owner: item.owner),
+            Divider(
               color: isDark
-                  ? AppPalette.textWhiteINDark
-                  : AppPalette.textColorInHome,
+                  ? AppPalette.borderFieldColorNDark
+                  : AppPalette.greyBorderCart,
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 4,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: CustomTextWidget(
+                item.test.title,
+                textAlign: TextAlign.right,
+                fontWeight: FontWeight.bold,
+                fontSize: SizeConfig.text(0.05).clamp(12.0, 15.3),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                color: isDark
+                    ? AppPalette.textWhiteINDark
+                    : AppPalette.textColorInHome,
+              ),
             ),
-            child: CustomTextWidget(
-              "هذه الأسئلة تساعد على التقدم للامتحان بثقة وذلك في مادة خوارزميات البحث",
-              fontSize: SizeConfig.diagonal * .016,
-              textAlign: TextAlign.right,
-              color: AppPalette.greyMedium,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: CustomTextWidget(
+                item.test.description,
+                fontSize: SizeConfig.diagonal * .014,
+                textAlign: TextAlign.right,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                color: AppPalette.greyMedium,
+              ),
             ),
-          ),
-          HomeSliderCardTags(isDark: isDark),
-          SizedBox(height: SizeConfig.height * .005),
-          HomeSliderCardStats(isDark: isDark),
-          SizedBox(height: SizeConfig.height * .003),
-          Divider(
-            color: isDark
-                ? AppPalette.borderFieldColorNDark
-                : AppPalette.greyBorderCart,
-          ),
-          HomeSliderCardFooter(
-            isDark: isDark,
-            appColors: appColors,
-            colorScheme: colorScheme,
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: HomeSliderCardTags(
+                isDark: isDark,
+                tags: item.test.interestNames,
+              ),
+            ),
+            SizedBox(height: SizeConfig.height * .005),
+            HomeSliderCardStats(isDark: isDark, test: item.test),
+            SizedBox(height: SizeConfig.height * .003),
+            Divider(
+              color: isDark
+                  ? AppPalette.borderFieldColorNDark
+                  : AppPalette.greyBorderCart,
+            ),
+            HomeSliderCardFooter(
+              isDark: isDark,
+              appColors: appColors,
+              colorScheme: colorScheme,
+              price: item.test.price,
+            ),
+          ],
+        ),
       ),
     );
   }

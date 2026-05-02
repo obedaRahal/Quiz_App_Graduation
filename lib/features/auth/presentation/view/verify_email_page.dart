@@ -82,9 +82,11 @@ class VerifyEmailPage extends StatelessWidget {
           showValidationTopSnackBar(
             context,
             title: state.snackBarTitle ?? 'تمت العملية بنجاح',
-            message: state.resendSuccessMessage ?? 'تمت العملية بنجاح.',
+            message: state.successMessage ?? 'تمت العملية بنجاح.',
             type: AppValidationSnackBarType.success,
           );
+
+         
         }
       },
       builder: (context, state) {
@@ -158,6 +160,7 @@ class VerifyEmailPage extends StatelessWidget {
                           OtpInputSection(
                             compact: isSmall,
                             remainingSeconds: state.remainingSeconds,
+                            showOtpError: state.showOtpError,
                             onSubmit: () {
                               context
                                   .read<VerifyRegisterCubit>()
@@ -185,7 +188,14 @@ class VerifyEmailPage extends StatelessWidget {
                           const Spacer(),
 
                           state.verifyStatus == VerifyRegisterStatus.loading
-                              ? const Center(child: CircularProgressIndicator())
+                              ? SizedBox(
+                                  height: 29,
+                                  width: 26,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: colorScheme.onSecondary,
+                                  ),
+                                )
                               : CustomButtonWidget(
                                   width: double.infinity,
                                   backgroundColor:
@@ -213,7 +223,7 @@ class VerifyEmailPage extends StatelessWidget {
                           ),
                           CustomTextWidget(
                             "من خلال تأكيد بريدك فأنت توافق على شروط",
-                            fontSize: SizeConfig.text(isSmall ? 0.035 : 0.043),
+                            fontSize: SizeConfig.text(isSmall ? 0.012 : 0.034),
                             color: AppPalette.greyMedium,
                           ),
 

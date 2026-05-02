@@ -25,14 +25,14 @@ class TowTextRow extends StatelessWidget {
       children: [
         CustomTextWidget(
           text,
-          fontSize: SizeConfig.diagonal * .018,
+          fontSize: SizeConfig.diagonal * .016,
           color: AppPalette.greyMedium,
         ),
         InkWell(
           onTap: onTap,
           child: CustomTextWidget(
             actionText,
-            fontSize: SizeConfig.diagonal * .02,
+            fontSize: SizeConfig.diagonal * .016,
             color: appColors.primaryToPrimaryDark,
           ),
         ),

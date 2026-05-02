@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:quiz_app_grad/core/database/api/token_refresh_service.dart';
 import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
+import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/errors/exceptions.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
@@ -66,10 +67,14 @@ class LoginCubit extends Cubit<LoginState> {
 
       debugPrint("LOGIN SUCCESS => token length: ${result.token.length}");
       debugPrint("LOGIN USER => ${result.user.name}");
-
       await TokenStorage.saveAccessToken(
         token: result.token,
         expiresInSeconds: result.expiresIn,
+      );
+
+      await UserLocalStorage.saveUserInfo(
+        name: result.user.name,
+        gender: result.user.gender,
       );
 
       sl<AuthSession>().markAuthenticated();

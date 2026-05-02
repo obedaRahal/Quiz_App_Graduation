@@ -241,6 +241,7 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       state.copyWith(
         otpCode: value,
         errorMessage: null,
+        showOtpError: value.length == 6 ? false : state.showOtpError,
       ),
     );
   }
@@ -300,17 +301,22 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       );
       return;
     }
+if (state.otpCode.length != 6) {
+    emit(state.copyWith(showOtpError: true));
+    return;
+  }
 
-    if (otpCode.length != 6) {
-      emit(
-        state.copyWith(
-          verifyStatus: VerifyRegisterStatus.failure,
-          snackBarTitle: 'تنبيه',
-          errorMessage: 'يجب أن يتكون رمز التحقق من 6 أرقام.',
-        ),
-      );
-      return;
-    }
+  emit(state.copyWith(showOtpError: false));
+    // if (otpCode.length != 6) {
+    //   emit(
+    //     state.copyWith(
+    //       verifyStatus: VerifyRegisterStatus.failure,
+    //       snackBarTitle: 'تنبيه',
+    //       errorMessage: 'يجب أن يتكون رمز التحقق من 6 أرقام.',
+    //     ),
+    //   );
+    //   return;
+    // }
 
     emit(
       state.copyWith(
@@ -321,10 +327,7 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
     );
 
     try {
-      final result = await verifyEmailUseCase(
-        email: email,
-        otpCode: otpCode,
-      );
+      final result = await verifyEmailUseCase(email: email, otpCode: otpCode);
 
       emit(
         state.copyWith(
@@ -349,7 +352,9 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
   }
 
   Future<void> resendCode() async {
-    debugPrint('================ VerifyRegisterCubit.resendCode ================');
+    debugPrint(
+      '================ VerifyRegisterCubit.resendCode ================',
+    );
     debugPrint('email => $email');
 
     if (email.isEmpty) {

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
+import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
+import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/views/details_of_test_view.dart';
@@ -22,7 +26,15 @@ class MainLayoutBody extends StatelessWidget {
           body: IndexedStack(
             index: state.currentIndex,
             children: [
-              BlocProvider(create: (_) => HomeCubit(), child: const HomePage()),
+              BlocProvider(
+                create: (_) => HomeCubit(
+                  getRecommendedTestsUseCase: sl<GetRecommendedTestsUseCase>(),
+                  getRecommendedInterestsUseCase:
+                      sl<GetRecommendedInterestsUseCase>(),
+                  getRecommendedUsersUseCase: sl<GetRecommendedUsersUseCase>(),
+                )..getHomeData(),
+                child: const HomePage(),
+              ),
               const Center(child: Text('المكتبة')),
               const Center(child: Text('المختبر')),
               Center(child: InkWell(
