@@ -8,7 +8,7 @@ import '../../../../../../core/utils/media_query_config.dart';
 class InterestChipItem extends StatelessWidget {
   final String label;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final VoidCallback? onRemove;
 
   const InterestChipItem({

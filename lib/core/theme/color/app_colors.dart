@@ -41,6 +41,15 @@ abstract class AppPalette {
   static const titleWhiteINDark = Color(0xffC0C0C0);
   static const fieldColorNDark = Color(0xff2E2E2E);
   static const borderFieldColorNDark = Color(0xff484848);
+  
+  //  details of test
+  static const red = Color(0xffFF7D7D);
+  static const violet = Color(0xff7a73c4);
+  static const violetMedium = Color(0xffA153B5);
+  static const green = Color(0xff15D623);
+  static const greenSoft = Color(0xffE3FFE5);
+
+
 
 
 }

@@ -20,6 +20,7 @@ import 'package:quiz_app_grad/features/auth/presentation/view/forgot_password_ot
 import 'package:quiz_app_grad/features/auth/presentation/view/login_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/views/details_of_test_view.dart';
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
@@ -227,6 +228,14 @@ class AppRouter {
             );
           },
         ),
+
+        GoRoute(
+          path: AppRouterPath.detailsOfTest,
+          name: AppRouterName.detailsOfTest,
+          builder: (context, state) {
+            return const DetailsOfTestView();
+          },
+        ),
       ],
     );
   }
@@ -265,8 +274,9 @@ class AppRouter {
     AppRouterPath.forgotPasswordOtpCode,
     AppRouterPath.forgotPasswordNewPassword,
 
-    // AppRouterPath.home,
-    // AppRouterPath.mainLayout,
+    AppRouterPath.home,
+    AppRouterPath.mainLayout,
+    AppRouterPath.detailsOfTest,
   };
 
   static const Set<String> _authBlockedRoutes = {

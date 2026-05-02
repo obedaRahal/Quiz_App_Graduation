@@ -115,31 +115,28 @@ class WelcomeViewBody extends StatelessWidget {
         //       ),
         //     ),
     
-        //     CustomButtonWidget(
-        //       backgroundColor: appColors.blackToGreyLightDark,
-        //       childHorizontalPad: SizeConfig.w(.06),
-        //       childVerticalPad: SizeConfig.h(.01),
-        //       borderRadius: 30,
-        //       onTap: () {
-        //         debugPrint(" onboardingggggg");
-        //         //context.pushNamed(AppRouterName.onboarding);
-        //         context.pushNamed(
-        //           AppRouterName.onboarding,
-        //           extra: const OnboardingRouteArgs(
-        //             email: 'obdrhl@gmail.com',
-        //             lastCompletedStep: 0,
-        //           ),
-        //         );
-        //         //context.pushNamed(AppRouterName.onboarding);
-        //       },
-        //       child: CustomTextWidget(
-        //         "onboarding",
-        //         fontSize: SizeConfig.text(.038),
-        //         color: Colors.white,
-        //       ),
-        //     ),
-        //   ],
-        // ),
+            CustomButtonWidget(
+              backgroundColor: appColors.blackToGreyLightDark,
+              childHorizontalPad: SizeConfig.w(.06),
+              childVerticalPad: SizeConfig.h(.01),
+              borderRadius: 30,
+              onTap: () {
+                debugPrint(" onboardingggggg");
+                //context.pushNamed(AppRouterName.onboarding);
+                context.pushNamed(
+                  AppRouterName.mainLayout,
+                 
+                );
+                //context.pushNamed(AppRouterName.onboarding);
+              },
+              child: CustomTextWidget(
+                "onboarding",
+                fontSize: SizeConfig.text(.038),
+                color: Colors.white,
+              ),
+            ),
+          
+        
         Spacer(),
         DownPartWelcome(),
       ],

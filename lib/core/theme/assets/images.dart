@@ -26,12 +26,24 @@ class AppImage {
   static String get intro3 => '$_baseImageLight/intro3light.svg';
 
   /////////// onboardoing ////////////
-    static String get number1Onboarding => '$_baseIcon/number1.svg';
-    static String get number2Onboarding => '$_baseIcon/number2.svg';
-    static String get number3Onboarding => '$_baseIcon/number3.svg';
-    static String get onbardingupcheck => '$_baseImageLight/onboardingupcheck.png';
-    static String get onbardingdowncheck => '$_baseImageLight/onboardingdowncheck.png';
+  static String get number1Onboarding => '$_baseIcon/number1.svg';
+  static String get number2Onboarding => '$_baseIcon/number2.svg';
+  static String get number3Onboarding => '$_baseIcon/number3.svg';
+  static String get onbardingupcheck =>
+      '$_baseImageLight/onboardingupcheck.png';
+  static String get onbardingdowncheck =>
+      '$_baseImageLight/onboardingdowncheck.png';
 
+      //////////////// details of test
+        static String get layersIcon => '$_baseIcon/layers.svg';
+        static String get muscleIcon => '$_baseIcon/muscle.svg';
+        static String get verifyCheck => '$_baseIcon/verifyCheck.svg';
+        static String get downmark => '$_baseIcon/downmark.svg';
+        static String get numberofquestion => '$_baseIcon/numberofquestion.svg';
+        static String get timer => '$_baseIcon/timer.svg';
+
+      
+  /////////////////////////////////////////////////////////////////
   ////////////////////// darkkkk image ////////////////////////////
   //////////////////////////////////////////////////////////////
   static String get welcomeDark => '$_baseImageDark/newWelcomeDark.svg';
@@ -43,8 +55,7 @@ class AppImage {
   static String get forgetPassword2 => '$_baseImageLight/forgetpassword2.svg';
   static String get forgetPasswordPng2 => '$_baseImageLight/Group 57@2x.png';
   static String get forgetPassword3 => '$_baseImageLight/forgetpassword3.svg';
-    static String get forgetPasswordPng3 => '$_baseImageLight/Group 58@2x.png';
-
+  static String get forgetPasswordPng3 => '$_baseImageLight/Group 58@2x.png';
 
   /////////// Home /////////////
   static String get homeProfilePhoto => '$_baseImageLight/homeprofilephoto.svg';
@@ -58,6 +69,6 @@ class AppImage {
   static String get chemical => '$_baseImageLight/chemical-lab-svgrepo-com.svg';
   static String get home => '$_baseImageLight/home-3 (1).svg';
   static String get library => '$_baseImageLight/library-svgrepo-com.svg';
-  static String get bookmark => '$_baseImageLight/book-bookmark-minimalistic-svgrepo-com.svg';
-
+  static String get bookmark =>
+      '$_baseImageLight/book-bookmark-minimalistic-svgrepo-com.svg';
 }

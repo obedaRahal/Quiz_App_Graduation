@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/arrow_back.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
@@ -7,9 +6,6 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
-import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_step_type.dart';
-import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/education_level_step.dart';
-import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
 
 import '../../../../core/theme/color/app_colors.dart';
 import '../../../../core/utils/media_query_config.dart';
