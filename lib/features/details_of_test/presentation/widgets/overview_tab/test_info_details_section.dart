@@ -10,17 +10,49 @@ import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interest_chip_item.dart';
 
 class TestInfoDetailsSection extends StatelessWidget {
-  const TestInfoDetailsSection({super.key});
+  final int questionCount;
+  final int? durationSeconds;
+  final int? passMarkPercentage;
+  final String publishedAt;
+  final String lastContentUpdatedAt;
+  final String targetLevel;
+  final String language;
+  final int participantsCount;
+  //final String reviewStatus;
+  final List<String> interests;
+
+  const TestInfoDetailsSection({
+    super.key,
+    required this.questionCount,
+    this.durationSeconds,
+    this.passMarkPercentage,
+    required this.publishedAt,
+    required this.lastContentUpdatedAt,
+    required this.targetLevel,
+    required this.language,
+    required this.participantsCount,
+    //required this.reviewStatus,
+    required this.interests,
+  });
+
+  String _formatDuration(int? seconds) {
+    if (seconds == null || seconds <= 0) return 'غير محدد';
+
+    final minutes = seconds ~/ 60;
+    if (minutes < 60) return '$minutes دقيقة';
+
+    final hours = minutes ~/ 60;
+    final remainingMinutes = minutes % 60;
+
+    if (remainingMinutes == 0) return '$hours ساعة';
+
+    return '$hours ساعة و $remainingMinutes دقيقة';
+  }
 
   @override
   Widget build(BuildContext context) {
-    final categories = const [
-      'رياضيات',
-      'فيزياء',
-      'الهندسة المعلوماتية',
-      'لغة عربية',
-      'برمجة',
-    ];
+    final categories = interests.isEmpty ? const ['غير مصنف'] : interests;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -40,7 +72,7 @@ class TestInfoDetailsSection extends StatelessWidget {
               child: _TestInfoItem(
                 iconPath: AppImage.numberofquestion,
                 title: "عدد الأسئلة",
-                value: "34",
+                value: questionCount.toString(),
               ),
             ),
             VerticalInfoDivider(),
@@ -49,7 +81,7 @@ class TestInfoDetailsSection extends StatelessWidget {
               child: _TestInfoItem(
                 iconPath: AppImage.timer,
                 title: "المدة",
-                value: "34 دقيقة",
+                value: _formatDuration(durationSeconds),
               ),
             ),
             VerticalInfoDivider(),
@@ -58,7 +90,9 @@ class TestInfoDetailsSection extends StatelessWidget {
               child: _TestInfoItem(
                 iconPath: AppImage.downmark,
                 title: "حد النجاح",
-                value: "50%",
+                value: passMarkPercentage == null
+                    ? 'غير محدد'
+                    : '$passMarkPercentage%',
               ),
             ),
             VerticalInfoDivider(),
@@ -67,7 +101,7 @@ class TestInfoDetailsSection extends StatelessWidget {
               child: _TestInfoItem(
                 iconPath: AppImage.timer,
                 title: "نشر في",
-                value: "2026/4/30",
+                value:  publishedAt.isEmpty ? 'غير محدد' : publishedAt,
               ),
             ),
           ],
@@ -102,23 +136,25 @@ class TestInfoDetailsSection extends StatelessWidget {
           children: [
             _MetaInfoItem(
               title: "تصنيف دراسي",
-              value: "سنة أولى جامعة",
+              value: targetLevel.isEmpty ? 'غير محدد' : targetLevel,
               icon: FontAwesomeIcons.bookOpenReader,
             ),
             _MetaInfoItem(
               title: "آخر تعديل",
-              value: "25/02/2022",
+              value:lastContentUpdatedAt.isEmpty
+                  ? 'غير محدد'
+                  : lastContentUpdatedAt,
               icon: FontAwesomeIcons.penToSquare,
             ),
 
             _MetaInfoItem(
               title: "اللغة",
-              value: "العربية",
+              value: language.isEmpty ? 'غير محدد' : language,
               icon: FontAwesomeIcons.language,
             ),
             _MetaInfoItem(
               title: "المتقدمين",
-              value: "24000",
+              value: participantsCount.toString(),
               icon: FontAwesomeIcons.users,
             ),
           ],
@@ -152,7 +188,11 @@ class _MetaInfoItem extends StatelessWidget {
             childHorizontalPad: SizeConfig.w(0.02),
             childVerticalPad: SizeConfig.h(0.01),
             borderRadius: BorderRadius.circular(15),
-            child: FaIcon(icon, size: SizeConfig.h(0.025), color: AppPalette.primary),
+            child: FaIcon(
+              icon,
+              size: SizeConfig.h(0.025),
+              color: AppPalette.primary,
+            ),
           ),
 
           SizedBox(width: SizeConfig.w(0.015)),

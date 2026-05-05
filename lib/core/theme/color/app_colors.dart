@@ -16,6 +16,7 @@ abstract class AppPalette {
   static const red = Color(0xFFFF4444);
   static const green = Color(0xFF17E32B);
   static const orange = Color(0xFFFEB200);
+  static const yellow = Color(0xFFFFD52C);
 
 
   static const grey = Color(0xFFF9F9F9);
@@ -47,10 +48,10 @@ abstract class AppPalette {
   static const borderFieldColorNDark = Color(0xff484848);
   
   //  details of test
-  static const red = Color(0xffFF7D7D);
+  //static const red = Color(0xffFF7D7D);
   static const violet = Color(0xff7a73c4);
   static const violetMedium = Color(0xffA153B5);
-  static const green = Color(0xff15D623);
+  //static const green = Color(0xff15D623);
   static const greenSoft = Color(0xffE3FFE5);
 
 

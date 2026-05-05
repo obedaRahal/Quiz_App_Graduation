@@ -20,6 +20,8 @@ import 'package:quiz_app_grad/features/auth/presentation/view/forgot_password_ot
 import 'package:quiz_app_grad/features/auth/presentation/view/login_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/models/get_all_interests_model.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
 import 'package:quiz_app_grad/features/get_all_interests/presentation/managet/all_interests_cubit.dart';
@@ -253,11 +255,46 @@ class AppRouter {
           },
         ),
 
+        // GoRoute(
+        //   path: AppRouterPath.detailsOfTest,
+        //   name: AppRouterName.detailsOfTest,
+        //   builder: (context, state) {
+        //     return const DetailsOfTestView();
+        //   },
+        // ),
         GoRoute(
           path: AppRouterPath.detailsOfTest,
           name: AppRouterName.detailsOfTest,
-          builder: (context, state) {
-            return const DetailsOfTestView();
+          pageBuilder: (context, state) {
+            final args = state.extra as DetailsOfTestRouteArgs?;
+
+            final testId = args?.testId ?? 0;
+
+            debugPrint("============ DetailsOfTest Route ============");
+            debugPrint("→ received testId: $testId");
+            debugPrint("=================================================");
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider(
+                //lazy: false,
+                create: (_) {
+                  final cubit = sl<DetailsOfTestCubit>();
+
+                  if (testId > 0) {
+                    // Future.microtask(
+                    //   () => cubit.getOtherTestDetailsOverview(testId: testId),
+                    // );
+                    cubit.getOtherTestDetailsOverview(testId: testId);
+                  } else {
+                    debugPrint("✗ DetailsOfTest Route: invalid testId");
+                  }
+
+                  return cubit;
+                },
+                child: const DetailsOfTestView(),
+              ),
+            );
           },
         ),
       ],

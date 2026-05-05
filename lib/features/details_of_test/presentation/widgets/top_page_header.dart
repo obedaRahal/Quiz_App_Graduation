@@ -52,7 +52,7 @@ class _HeaderActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomButtonWidget(
       childHorizontalPad: SizeConfig.w(0.02),
-      childVerticalPad: SizeConfig.h(0.01),
+      childVerticalPad: SizeConfig.w(0.02),
       borderRadius: 20,
       boxShadow: const [
         BoxShadow(

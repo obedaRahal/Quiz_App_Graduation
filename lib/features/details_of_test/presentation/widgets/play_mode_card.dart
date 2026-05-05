@@ -57,7 +57,10 @@ class PlayModeCard extends StatelessWidget {
                   Positioned(
                     bottom: 0,
                     left: 0,
-                    child: SvgPicture.asset(iconPath, height: 40),
+                    child: SvgPicture.asset(
+                      iconPath,
+                      height: SizeConfig.h(0.06),
+                    ),
                   ),
                   Positioned(
                     left: 2,

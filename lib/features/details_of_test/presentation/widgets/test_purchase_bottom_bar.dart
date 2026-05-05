@@ -7,9 +7,27 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_details_card.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_status_badge.dart';
 
 class TestPurchaseBottomBar extends StatelessWidget {
-  const TestPurchaseBottomBar({super.key});
+  final String reviewStatus;
+  final bool isFree;
+  final bool hasPurchased;
+  final bool canPurchase;
+  final bool canDownload;
+  final bool canReport;
+
+  const TestPurchaseBottomBar({
+    super.key,
+    required this.reviewStatus,
+    required this.isFree,
+    required this.hasPurchased,
+    required this.canPurchase,
+    required this.canDownload,
+    required this.canReport,
+  });
+
+  bool get _showBuyButton => canPurchase && !isFree && !hasPurchased;
 
   @override
   Widget build(BuildContext context) {
@@ -27,21 +45,56 @@ class TestPurchaseBottomBar extends StatelessWidget {
       ],
       child: Row(
         children: [
-          CustomButtonWidget(
-            backgroundColor: AppPalette.primary,
-            childHorizontalPad: SizeConfig.w(0.09),
-            childVerticalPad: SizeConfig.w(0.013),
-            borderRadius: 20,
-            boxShadow: [BoxShadow(color: AppPalette.primary, blurRadius: 4)],
-            onTap: () {
-              debugPrint("buy now");
-            },
-            child: CustomTextWidget(
-              "اشتري الان",
-              fontSize: SizeConfig.text(0.033),
-              color: AppPalette.white,
+          if (_showBuyButton)
+            CustomButtonWidget(
+              backgroundColor: AppPalette.primary,
+              childHorizontalPad: SizeConfig.w(0.09),
+              childVerticalPad: SizeConfig.w(0.013),
+              borderRadius: 20,
+              boxShadow: [BoxShadow(color: AppPalette.primary, blurRadius: 4)],
+              onTap: () {
+                debugPrint("buy now");
+              },
+              child: CustomTextWidget(
+                "اشتري الان",
+                fontSize: SizeConfig.text(0.033),
+                color: AppPalette.white,
+              ),
+            )
+          else
+            Row(
+              children: [
+                CustomButtonWidget(
+                  backgroundColor: AppPalette.primary,
+                  childHorizontalPad: SizeConfig.w(0.045),
+                  childVerticalPad: SizeConfig.w(0.013),
+                  borderRadius: 20,
+                  onTap: canDownload
+                      ? () => debugPrint("download test")
+                      : () {},
+                  child: CustomTextWidget(
+                    "تحميل الاختبار",
+                    fontSize: SizeConfig.text(0.03),
+                    color: AppPalette.white,
+                  ),
+                ),
+
+                SizedBox(width: SizeConfig.w(0.02)),
+
+                CustomButtonWidget(
+                  backgroundColor: AppPalette.grey,
+                  childHorizontalPad: SizeConfig.w(0.04),
+                  childVerticalPad: SizeConfig.w(0.013),
+                  borderRadius: 20,
+                  onTap: canReport ? () => debugPrint("report test") : () {},
+                  child: CustomTextWidget(
+                    "تقديم إبلاغ",
+                    fontSize: SizeConfig.text(0.03),
+                    color: AppPalette.greyMedium,
+                  ),
+                ),
+              ],
             ),
-          ),
 
           const Spacer(),
 
@@ -66,32 +119,11 @@ class TestPurchaseBottomBar extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              CustomBackgroundWithChild(
+              TestStatusBadge(
+                title: reviewStatus,
                 backgroundColor: AppPalette.greenSoft,
-                childHorizontalPad: SizeConfig.w(0.02),
-                childVerticalPad: SizeConfig.h(0.003),
-                borderRadius: BorderRadius.circular(16),
-                child: Row(
-                  textDirection: TextDirection.rtl,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FaIcon(
-                      FontAwesomeIcons.solidSquareCheck,
-                      size: SizeConfig.h(0.02),
-                      color: AppPalette.green,
-                    ),
-                    const SizedBox(width: 5),
-                    CustomTextWidget(
-                      "تم التاكد منه",
-                      color: AppPalette.green,
-                      fontFamily: AppFont.elMessiriSemiBold,
-                      fontSize: SizeConfig.text(0.03),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.end,
-                    ),
-                  ],
-                ),
+                foregroundColor: AppPalette.green,
+                icon: FontAwesomeIcons.solidSquareCheck,
               ),
             ],
           ),

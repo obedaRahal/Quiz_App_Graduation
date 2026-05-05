@@ -15,6 +15,11 @@ import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_ca
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/data_sources/details_of_test_remote_data_source.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/repo_impl/details_of_test_repository_impl.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/repositories/details_of_test_repository.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/data_source/all_interests_remote_data_source.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/repositories/all_interests_repository_impl.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/repositories/all_interests_repository.dart';
@@ -60,6 +65,7 @@ Future<void> initSl() async {
   _registerOnboardingFeature();
   _registerFilePickerFeature();
   _registerAuthFeature();
+  _registerDetailsOfTestFeature();
 }
 
 Future<void> _registerCore() async {
@@ -161,6 +167,35 @@ void _registerThemeFeature() {
       () => ThemeCubit(
         getThemeModeUseCase: sl<GetThemeModeUseCase>(),
         setThemeModeUseCase: sl<SetThemeModeUseCase>(),
+      ),
+    );
+  }
+}
+
+void _registerDetailsOfTestFeature() {
+  if (!sl.isRegistered<DetailsOfTestRemoteDataSource>()) {
+    sl.registerLazySingleton<DetailsOfTestRemoteDataSource>(
+      () => DetailsOfTestRemoteDataSourceImpl(apiConsumer: sl()),
+    );
+  }
+
+  if (!sl.isRegistered<DetailsOfTestRepository>()) {
+    sl.registerLazySingleton<DetailsOfTestRepository>(
+      () => DetailsOfTestRepositoryImpl(remoteDataSource: sl()),
+    );
+  }
+
+  if (!sl.isRegistered<GetOtherTestDetailsOverviewUseCase>()) {
+    sl.registerLazySingleton<GetOtherTestDetailsOverviewUseCase>(
+      () => GetOtherTestDetailsOverviewUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<DetailsOfTestCubit>()) {
+    sl.registerFactory<DetailsOfTestCubit>(
+      () => DetailsOfTestCubit(
+        getOtherTestDetailsOverviewUseCase:
+            sl<GetOtherTestDetailsOverviewUseCase>(),
       ),
     );
   }
@@ -351,7 +386,6 @@ void _registerAuthFeature() {
   sl.registerLazySingleton(() => GetRecommendedTestsUseCase(sl()));
   sl.registerLazySingleton(() => GetRecommendedInterestsUseCase(sl()));
   sl.registerLazySingleton(() => GetRecommendedUsersUseCase(sl()));
- 
 
   sl.registerLazySingleton<AllInterestsRepository>(
     () => AllInterestsRepositoryImpl(remoteDataSource: sl()),
@@ -362,6 +396,4 @@ void _registerAuthFeature() {
   sl.registerLazySingleton<AllInterestsRemoteDataSource>(
     () => AllInterestsRemoteDataSourceImpl(api: sl()),
   );
-
- 
 }

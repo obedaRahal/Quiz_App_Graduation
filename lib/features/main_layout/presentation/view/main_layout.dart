@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
@@ -37,15 +38,18 @@ class MainLayoutBody extends StatelessWidget {
               ),
               const Center(child: Text('المكتبة')),
               const Center(child: Text('المختبر')),
-              Center(child: InkWell(
-                
-                onTap: () {
-                  context.pushNamed(AppRouterName.detailsOfTest);
-                },
-                child: Text("details of test" , 
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    //context.pushNamed(AppRouterName.detailsOfTest);
+                    context.pushNamed(
+                      AppRouterName.detailsOfTest,
+                      extra: DetailsOfTestRouteArgs(testId: 4),
+                    );
+                  },
+                  child: Text("details of test"),
                 ),
-              )),
-              
+              ),
             ],
           ),
           bottomNavigationBar: const CustomBottomNavBar(),

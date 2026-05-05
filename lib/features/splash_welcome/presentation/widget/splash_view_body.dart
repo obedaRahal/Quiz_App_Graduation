@@ -218,6 +218,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
 
       debugPrint("→ hasAccessToken: $hasAccessToken");
       debugPrint("→ token length: ${currentToken?.length ?? 0}");
+      debugPrint("→ token is: $currentToken");
       debugPrint("→ expiryAt: ${expiryAt?.toIso8601String() ?? 'null'}");
 
       if (!hasAccessToken || currentToken == null || currentToken.isEmpty) {

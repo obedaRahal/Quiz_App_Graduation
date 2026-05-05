@@ -6,11 +6,173 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
+// class TestDetailsCard extends StatelessWidget {
+//   const TestDetailsCard({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return CustomBackgroundWithChild(
+//       width: double.infinity,
+//       childHorizontalPad: SizeConfig.w(0.022),
+//       childVerticalPad: SizeConfig.h(0.012),
+//       borderRadius: BorderRadius.circular(10),
+//       boxShadow: const [
+//         BoxShadow(
+//           color: AppPalette.greyMedium,
+//           blurRadius: 2,
+//           offset: Offset(0, 0),
+//         ),
+//       ],
+//       border: Border.all(color: AppPalette.greyLight, width: 2),
+//       backgroundColor: AppPalette.grey,
+//       child: Row(
+//         crossAxisAlignment: CrossAxisAlignment.stretch,
+//         children: [
+//           SizedBox(
+//             width: SizeConfig.w(0.14),
+//             child: Column(
+//               children: [
+//                 CustomBackgroundWithChild(
+//                   backgroundColor: AppPalette.red,
+//                   childHorizontalPad: SizeConfig.w(0.03),
+//                   childVerticalPad: 2,
+//                   borderRadius: BorderRadius.circular(5),
+//                   child: CustomTextWidget(
+//                     "صعب",
+//                     fontSize: SizeConfig.text(0.027),
+//                     color: AppPalette.white,
+//                   ),
+//                 ),
+
+//                 const Spacer(),
+
+//                 CustomTextWidget(
+//                   "120",
+//                   fontSize: SizeConfig.text(0.055),
+//                   color: AppPalette.black,
+//                   fontFamily: AppFont.elMessiriBold,
+//                 ),
+//                 CustomTextWidget(
+//                   "ليرة سورية",
+//                   fontSize: SizeConfig.text(0.028),
+//                   color: AppPalette.greyMedium,
+//                 ),
+//               ],
+//             ),
+//           ),
+
+//           Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 10),
+//             child: DashedVerticalDivider(
+//               height: SizeConfig.h(0.14),
+//               color: AppPalette.greyLight,
+//               width: 2,
+//               dashGap: 2,
+//               dashHeight: SizeConfig.h(0.015),
+//             ),
+//           ),
+
+//           Expanded(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.end,
+//               children: [
+//                 CustomTextWidget(
+//                   "جلسة امتحانية اولى",
+//                   fontSize: SizeConfig.text(0.046),
+//                   color: AppPalette.black,
+//                   fontFamily: AppFont.elMessiriBold,
+//                   textAlign: TextAlign.end,
+//                   maxLines: 1,
+//                   overflow: TextOverflow.ellipsis,
+//                 ),
+
+//                 //SizedBox(height: SizeConfig.h(0.006)),
+//                 CustomTextWidget(
+//                   "هذه الأسئلة مخصصة للامتحان ونيل أعلى الدرجات بسهولة مطلقة مع شرح مبسط ومراجعة قوية قبل الاختبار",
+//                   fontSize: SizeConfig.text(0.028),
+//                   color: AppPalette.greyMedium,
+//                   textAlign: TextAlign.end,
+//                   maxLines: 3,
+//                   overflow: TextOverflow.ellipsis,
+//                   textDirection: TextDirection.ltr,
+//                 ),
+
+//                 SizedBox(height: SizeConfig.h(0.01)),
+
+//                 Row(
+//                   mainAxisAlignment: MainAxisAlignment.end,
+//                   children: [
+//                     _TestInfoCounter(
+//                       value: "65",
+//                       icon: FontAwesomeIcons.bookmark,
+//                     ),
+//                     SizedBox(width: SizeConfig.w(0.025)),
+//                     _TestInfoCounter(
+//                       value: "12",
+//                       icon: FontAwesomeIcons.comment,
+//                     ),
+//                     SizedBox(width: SizeConfig.w(0.025)),
+//                     _TestInfoCounter(value: "65", icon: FontAwesomeIcons.heart),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
 class TestDetailsCard extends StatelessWidget {
-  const TestDetailsCard({super.key});
+  final String title;
+  final String description;
+  final String difficultyLevel;
+  final double price;
+  final int likesCount;
+  final int reviewsCount;
+  final int bookmarksCount;
+
+  const TestDetailsCard({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.difficultyLevel,
+    required this.price,
+    required this.likesCount,
+    required this.reviewsCount,
+    required this.bookmarksCount,
+  });
+
+  Color _difficultyColor(String difficulty) {
+    switch (difficulty.trim()) {
+      case 'سهل':
+        return AppPalette.green;
+      case 'متوسط':
+        return AppPalette.orange;
+      case 'صعب':
+        return AppPalette.red;
+      default:
+        return AppPalette.primary;
+    }
+  }
+
+  String _formatPrice(double price) {
+    if (price <= 0) return 'مجاني';
+
+    if (price % 1 == 0) {
+      return price.toInt().toString();
+    }
+
+    return price.toStringAsFixed(2);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final difficultyColor = _difficultyColor(difficultyLevel);
+    final priceText = _formatPrice(price);
+    final isFree = price <= 0;
+
     return CustomBackgroundWithChild(
       width: double.infinity,
       childHorizontalPad: SizeConfig.w(0.022),
@@ -33,30 +195,45 @@ class TestDetailsCard extends StatelessWidget {
             child: Column(
               children: [
                 CustomBackgroundWithChild(
-                  backgroundColor: AppPalette.red,
+                  backgroundColor: difficultyColor,
                   childHorizontalPad: SizeConfig.w(0.03),
                   childVerticalPad: 2,
                   borderRadius: BorderRadius.circular(5),
                   child: CustomTextWidget(
-                    "صعب",
+                    difficultyLevel,
                     fontSize: SizeConfig.text(0.027),
                     color: AppPalette.white,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
 
                 const Spacer(),
 
-                CustomTextWidget(
-                  "120",
-                  fontSize: SizeConfig.text(0.055),
-                  color: AppPalette.black,
-                  fontFamily: AppFont.elMessiriBold,
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      CustomTextWidget(
+                        priceText,
+                        fontSize: SizeConfig.text(isFree ? 0.04 : 0.055),
+                        color: AppPalette.black,
+                        fontFamily: AppFont.elMessiriBold,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
-                CustomTextWidget(
-                  "ليرة سورية",
-                  fontSize: SizeConfig.text(0.028),
-                  color: AppPalette.greyMedium,
-                ),
+
+                if (!isFree)
+                  CustomTextWidget(
+                    "ليرة سورية",
+                    fontSize: SizeConfig.text(0.028),
+                    color: AppPalette.greyMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
               ],
             ),
           ),
@@ -76,25 +253,32 @@ class TestDetailsCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                CustomTextWidget(
-                  "جلسة امتحانية اولى",
-                  fontSize: SizeConfig.text(0.046),
-                  color: AppPalette.black,
-                  fontFamily: AppFont.elMessiriBold,
-                  textAlign: TextAlign.end,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+
+                  child: Row(
+                    children: [
+                      CustomTextWidget(
+                        title,
+                        fontSize: SizeConfig.text(0.046),
+                        color: AppPalette.black,
+                        fontFamily: AppFont.elMessiriBold,
+                        textAlign: TextAlign.end,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
 
-                //SizedBox(height: SizeConfig.h(0.006)),
                 CustomTextWidget(
-                  "هذه الأسئلة مخصصة للامتحان ونيل أعلى الدرجات بسهولة مطلقة مع شرح مبسط ومراجعة قوية قبل الاختبار",
+                  description,
                   fontSize: SizeConfig.text(0.028),
                   color: AppPalette.greyMedium,
-                  textAlign: TextAlign.end,
+                  textAlign: TextAlign.start,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  textDirection: TextDirection.ltr,
+                  textDirection: TextDirection.rtl,
                 ),
 
                 SizedBox(height: SizeConfig.h(0.01)),
@@ -103,16 +287,19 @@ class TestDetailsCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     _TestInfoCounter(
-                      value: "65",
+                      value: bookmarksCount.toString(),
                       icon: FontAwesomeIcons.bookmark,
                     ),
                     SizedBox(width: SizeConfig.w(0.025)),
                     _TestInfoCounter(
-                      value: "12",
+                      value: reviewsCount.toString(),
                       icon: FontAwesomeIcons.comment,
                     ),
                     SizedBox(width: SizeConfig.w(0.025)),
-                    _TestInfoCounter(value: "65", icon: FontAwesomeIcons.heart),
+                    _TestInfoCounter(
+                      value: likesCount.toString(),
+                      icon: FontAwesomeIcons.heart,
+                    ),
                   ],
                 ),
               ],

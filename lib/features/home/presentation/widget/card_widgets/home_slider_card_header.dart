@@ -32,27 +32,33 @@ class HomeSliderCardHeader extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: isSvg
-    ? CustomAppImage(
-        height: SizeConfig.w(0.12),
-        width: SizeConfig.w(0.12),
-        path: AppImage.carmen,
-        fit: BoxFit.cover,
-      )
-    : Image.network(
-        profilePicture,
-        height: SizeConfig.w(0.12),
-        width: SizeConfig.w(0.12),
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) {
-          return CustomAppImage(
-            height: SizeConfig.w(0.12),
-            width: SizeConfig.w(0.12),
-            path: AppImage.carmen,
-            fit: BoxFit.cover,
-          );
-        },
-      ),
+            child: CustomAppImage(
+              path: owner.profilePicture,
+              height: SizeConfig.w(0.12),
+              width: SizeConfig.w(0.12),
+              fit: BoxFit.cover,
+            ),
+            //         isSvg
+            // ? CustomAppImage(
+            //     height: SizeConfig.w(0.12),
+            //     width: SizeConfig.w(0.12),
+            //     path: AppImage.carmen,
+            //     fit: BoxFit.cover,
+            //   )
+            // : Image.network(
+            //     profilePicture,
+            //     height: SizeConfig.w(0.12),
+            //     width: SizeConfig.w(0.12),
+            //     fit: BoxFit.cover,
+            //     errorBuilder: (_, __, ___) {
+            //       return CustomAppImage(
+            //         height: SizeConfig.w(0.12),
+            //         width: SizeConfig.w(0.12),
+            //         path: AppImage.carmen,
+            //         fit: BoxFit.cover,
+            //       );
+            //     },
+            //   ),
             // isSvg
             //     ? SvgPicture.network(
             //         profilePicture,

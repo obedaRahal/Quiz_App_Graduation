@@ -104,7 +104,7 @@ class _SampleQuestionCardState extends State<SampleQuestionCard> {
 
           CustomTextWidget(
             widget.question.question,
-            textAlign: TextAlign.end,
+            textAlign: TextAlign.start,
             color: AppPalette.black,
             fontFamily: AppFont.elMessiriMedium,
             fontSize: SizeConfig.text(0.035),
@@ -114,7 +114,6 @@ class _SampleQuestionCardState extends State<SampleQuestionCard> {
 
           CustomTextWidget(
             "الخيارات",
-            color: AppPalette.black,
             fontFamily: AppFont.elMessiriSemiBold,
             fontSize: SizeConfig.text(0.035),
           ),
@@ -217,7 +216,7 @@ class SampleOptionItem extends StatelessWidget {
 
     return InkWell(
       borderRadius: BorderRadius.circular(6),
-      onTap: onTap,
+      onTap: isRevealed ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
@@ -241,14 +240,16 @@ class SampleOptionItem extends StatelessWidget {
               fontSize: SizeConfig.text(0.035),
             ),
             SizedBox(width: SizeConfig.w(0.015)),
-            CustomTextWidget(
-              option.text,
-              textAlign: TextAlign.end,
-              color: textColor,
-              fontFamily: AppFont.elMessiriMedium,
-              fontSize: SizeConfig.text(0.03),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            Expanded(
+              child: CustomTextWidget(
+                option.text,
+                textAlign: TextAlign.start,
+                color: textColor,
+                fontFamily: AppFont.elMessiriMedium,
+                fontSize: SizeConfig.text(0.03),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),

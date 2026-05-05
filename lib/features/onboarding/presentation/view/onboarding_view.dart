@@ -28,12 +28,8 @@ class OnboardingView extends StatelessWidget {
       listener: (context, state) {
         final message = state.errorMessage?.trim();
 
-        
-
         if (message != null && message.isNotEmpty) {
-
           showValidationTopSnackBar(
-            
             context,
             title: state.errorTitle ?? 'خطأ تحقق !',
             message: state.errorMessage ?? 'حدث خطا',

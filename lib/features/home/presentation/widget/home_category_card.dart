@@ -75,6 +75,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -118,20 +119,20 @@ class CategoryCard extends StatelessWidget {
                 color: const Color(0xff5E88FF),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: SvgPicture.network(
-                iconUrl,
+              child: CustomAppImage(
+               path:  iconUrl,
                 fit: BoxFit.contain,
-                colorFilter: ColorFilter.mode(
-                  isDark ? AppPalette.black : AppPalette.white,
-                  BlendMode.srcIn,
-                ),
-                placeholderBuilder: (_) {
-                  return const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 1.5),
-                  );
-                },
+                // colorFilter: ColorFilter.mode(
+                //   isDark ? AppPalette.black : AppPalette.white,
+                //   BlendMode.srcIn,
+                // ),
+                // placeholderBuilder: (_) {
+                //   return const SizedBox(
+                //     width: 16,
+                //     height: 16,
+                //     child: CircularProgressIndicator(strokeWidth: 1.5),
+                //   );
+                // },
               ),
             ),
           ),

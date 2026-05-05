@@ -1,6 +1,6 @@
 class EndPoints {
-  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  //static const String baseUrl = 'http://172.20.10.7/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
@@ -39,5 +39,8 @@ class EndPoints {
   static const String recommendedInterests = '/home/recommended-interests';
   static const String recommendedUsers = '/home/recommended-users';
   static const String allInterests = '/home/all-interests';
-  
+
+  // details of test
+  static String otherTestDetailsOverview(int testId) =>
+      '$baseUrl/test/tests-details/other/$testId';
 }
