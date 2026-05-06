@@ -19,6 +19,8 @@ import 'package:quiz_app_grad/features/details_of_test/data/data_sources/details
 import 'package:quiz_app_grad/features/details_of_test/data/repo_impl/details_of_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/repositories/details_of_test_repository.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/data_source/all_interests_remote_data_source.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/repositories/all_interests_repository_impl.dart';
@@ -196,7 +198,23 @@ void _registerDetailsOfTestFeature() {
       () => DetailsOfTestCubit(
         getOtherTestDetailsOverviewUseCase:
             sl<GetOtherTestDetailsOverviewUseCase>(),
+        getOtherTestDetailsSampleUseCase:
+            sl<GetOtherTestDetailsSampleUseCase>(),
+        getOtherTestDetailsReviewsUseCase:
+            sl<GetOtherTestDetailsReviewsUseCase>(),
       ),
+    );
+  }
+
+  if (!sl.isRegistered<GetOtherTestDetailsSampleUseCase>()) {
+    sl.registerLazySingleton<GetOtherTestDetailsSampleUseCase>(
+      () => GetOtherTestDetailsSampleUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetOtherTestDetailsReviewsUseCase>()) {
+    sl.registerLazySingleton<GetOtherTestDetailsReviewsUseCase>(
+      () => GetOtherTestDetailsReviewsUseCase(sl<DetailsOfTestRepository>()),
     );
   }
 }

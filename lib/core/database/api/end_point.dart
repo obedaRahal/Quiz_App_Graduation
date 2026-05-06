@@ -43,4 +43,10 @@ class EndPoints {
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';
+  static String otherTestDetailsSample(int testId) =>
+      '$baseUrl/test/tests-details/other/sample/$testId';
+  static String otherTestDetailsReviews({
+    required int testId,
+    required String rating,
+  }) => '$baseUrl/test/test-details/reviews/$testId?rating=$rating';
 }

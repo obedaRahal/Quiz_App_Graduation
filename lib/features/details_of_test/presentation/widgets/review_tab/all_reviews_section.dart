@@ -6,7 +6,7 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/test_ratings_summary_section.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/display_rating_stars_row.dart';
 
 class ReviewsSection extends StatelessWidget {
   final ReviewRatingFilter selectedFilter;
@@ -284,30 +284,28 @@ class PublicReviewCard extends StatelessWidget {
               ),
             ],
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _ReviewReportMenuButton(onReport: onReport),
-              //SizedBox(width: SizeConfig.w(0.02)),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _PublicReviewerHeader(review: review),
-
-                    SizedBox(height: SizeConfig.h(0.015)),
-                    CustomTextWidget(
-                      review.reviewText,
-                      textAlign: TextAlign.right,
-                      color: appColors.greyMediumTogrey,
-                      fontSize: SizeConfig.text(0.034),
-                    ),
-                    SizedBox(height: SizeConfig.h(0.041)),
-                  ],
-                ),
+              _PublicReviewerHeader(review: review),
+          
+              SizedBox(height: SizeConfig.h(0.015)),
+              CustomTextWidget(
+                review.reviewText,
+                textAlign: TextAlign.right,
+                color: appColors.greyMediumTogrey,
+                fontSize: SizeConfig.text(0.034),
               ),
+              SizedBox(height: SizeConfig.h(0.041)),
             ],
           ),
+        ),
+
+        Positioned(
+          left: 0,
+          //right: 0,
+          top: 8,
+          child: _ReviewReportMenuButton(onReport: onReport),
         ),
 
         Positioned(

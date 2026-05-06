@@ -1,65 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 
 class SampleTestTab extends StatelessWidget {
-  const SampleTestTab({super.key});
+  final List<SampleQuestionEntity> questions;
+
+  const SampleTestTab({super.key, required this.questions});
 
   @override
   Widget build(BuildContext context) {
-    final questions = [
-      PreviewQuestionUiModel(
-        number: 1,
-        question:
-            "أي من بنى التحكم بالنفاذ الآتية تنشئ لكل مستخدم بطاقة تصف موارد الحوسبة التي يحق له النفاذ إليها والعمليات التي يستطيع إنجازها؟",
-        options: const [
-          PreviewOptionUiModel(
-            letter: "A",
-            text: "مصفوفات التحكم بالنفاذ",
-            isCorrect: false,
-          ),
-          PreviewOptionUiModel(
-            letter: "B",
-            text: "قوائم التحكم بالنفاذ",
-            isCorrect: true,
-          ),
-          PreviewOptionUiModel(
-            letter: "C",
-            text: "تذاكر المقدرة",
-            isCorrect: false,
-          ),
-          PreviewOptionUiModel(
-            letter: "D",
-            text: "جدول التفويض الزمني الخاص بالمصفوفات",
-            isCorrect: false,
-          ),
-        ],
-      ),
-    ];
-
     return Column(
       children: questions.map((question) {
         return Padding(
           padding: EdgeInsets.only(bottom: SizeConfig.h(0.015)),
-          child: SampleQuestionCard(question: question),
+          child: SampleQuestionCard(
+            question: PreviewQuestionUiModel(
+              number: question.position,
+              question: question.questionText,
+              hintText: question.hintText,
+              options: question.options.map((option) {
+                return PreviewOptionUiModel(
+                  letter: _optionLetter(option.position),
+                  text: option.optionText,
+                  isCorrect: option.isCorrect,
+                );
+              }).toList(),
+            ),
+          ),
         );
       }).toList(),
     );
+  }
+
+  String _optionLetter(int position) {
+    const letters = ['A', 'B', 'C', 'D', 'E'];
+
+    if (position <= 0 || position > letters.length) {
+      return position.toString();
+    }
+
+    return letters[position - 1];
   }
 }
 
 class PreviewQuestionUiModel {
   final int number;
   final String question;
+  final String? hintText;
+
   final List<PreviewOptionUiModel> options;
 
   const PreviewQuestionUiModel({
     required this.number,
     required this.question,
     required this.options,
+    required this.hintText,
   });
 }
 
@@ -89,7 +90,11 @@ class _SampleQuestionCardState extends State<SampleQuestionCard> {
 
   @override
   Widget build(BuildContext context) {
+    final hint = widget.question.hintText?.trim();
+    final hasHint = hint != null && hint.isNotEmpty;
+
     return CustomBackgroundWithChild(
+      width: double.infinity,
       backgroundColor: AppPalette.white,
       borderRadius: BorderRadius.circular(15),
       border: Border.all(color: AppPalette.borderFieldColorNLight),
@@ -111,11 +116,40 @@ class _SampleQuestionCardState extends State<SampleQuestionCard> {
           ),
 
           SizedBox(height: SizeConfig.h(0.014)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (hasHint)
+                InkWell(
+                  onTap: () {
+                    showValidationTopSnackBar(
+                      context,
+                      title: "توضيح",
+                      message: hint,
+                      type: AppValidationSnackBarType.hint,
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.w(0.03),
+                    ),
+                    child: FaIcon(
+                      FontAwesomeIcons.lightbulb,
+                      color: AppPalette.yellow,
+                      size: SizeConfig.h(0.03),
+                    ),
+                  ),
+                )
+              else
+                SizedBox(width: SizeConfig.w(0.09)),
 
-          CustomTextWidget(
-            "الخيارات",
-            fontFamily: AppFont.elMessiriSemiBold,
-            fontSize: SizeConfig.text(0.035),
+              CustomTextWidget(
+                "الخيارات",
+                fontFamily: AppFont.elMessiriSemiBold,
+                fontSize: SizeConfig.text(0.035),
+                color: AppPalette.primary,
+              ),
+            ],
           ),
 
           SizedBox(height: SizeConfig.h(0.008)),

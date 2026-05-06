@@ -66,16 +66,26 @@ class TestPurchaseBottomBar extends StatelessWidget {
               children: [
                 CustomButtonWidget(
                   backgroundColor: AppPalette.primary,
-                  childHorizontalPad: SizeConfig.w(0.045),
+                  childHorizontalPad: SizeConfig.w(0.04),
                   childVerticalPad: SizeConfig.w(0.013),
                   borderRadius: 20,
                   onTap: canDownload
                       ? () => debugPrint("download test")
                       : () {},
-                  child: CustomTextWidget(
-                    "تحميل الاختبار",
-                    fontSize: SizeConfig.text(0.03),
-                    color: AppPalette.white,
+                  child: Row(
+                    children: [
+                      CustomTextWidget(
+                        "تحميل الاختبار",
+                        fontSize: SizeConfig.text(0.025),
+                        color: AppPalette.white,
+                      ),
+
+                       Icon(
+                        Icons.download,
+                        size: SizeConfig.h(0.02),
+                        color: AppPalette.white,
+                      ),
+                    ],
                   ),
                 ),
 
@@ -87,10 +97,19 @@ class TestPurchaseBottomBar extends StatelessWidget {
                   childVerticalPad: SizeConfig.w(0.013),
                   borderRadius: 20,
                   onTap: canReport ? () => debugPrint("report test") : () {},
-                  child: CustomTextWidget(
-                    "تقديم إبلاغ",
-                    fontSize: SizeConfig.text(0.03),
-                    color: AppPalette.greyMedium,
+                  child: Row(
+                    children: [
+                      CustomTextWidget(
+                        "تقديم إبلاغ",
+                        fontSize: SizeConfig.text(0.025),
+                        color: AppPalette.greyMedium,
+                      ),
+                      Icon(
+                        Icons.flag_outlined,
+                        size: SizeConfig.h(0.02),
+                        color: AppPalette.greyMedium,
+                      ),
+                    ],
                   ),
                 ),
               ],

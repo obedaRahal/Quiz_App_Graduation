@@ -19,18 +19,18 @@ class InterestCard extends StatelessWidget {
     }
   }
 
-  String _fixLocalhostUrl(String url) {
-    if (url.contains('localhost')) {
-      return url.replaceFirst('http://localhost', 'http://10.0.2.2');
-    }
-    return url;
-  }
+  // String _fixLocalhostUrl(String url) {
+  //   if (url.contains('localhost')) {
+  //     return url.replaceFirst('http://localhost', 'http://10.0.2.2');
+  //   }
+  //   return url;
+  // }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final iconColor = _parseColor(interest.iconColor);
-    final iconUrl = _fixLocalhostUrl(interest.iconSvg);
+    final iconUrl = interest.iconSvg;
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.026)),

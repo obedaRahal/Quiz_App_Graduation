@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/display_rating_stars_row.dart';
 
 import '../../../../../core/theme/color/app_colors.dart';
 
 class TestRatingSummarySection extends StatelessWidget {
-  const TestRatingSummarySection({super.key});
+  final double averageRating;
+  final int totalReviewsCount;
+  final int commentsCount;
+  final List<RatingDistributionEntity> ratingDistribution;
+  const TestRatingSummarySection({
+    super.key,
+    required this.averageRating,
+    required this.totalReviewsCount,
+    required this.commentsCount,
+    required this.ratingDistribution,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final ratingRows = const [
-      RatingDistributionUiModel(stars: 5, percentage: 0.95),
-      RatingDistributionUiModel(stars: 4, percentage: 0.88),
-      RatingDistributionUiModel(stars: 3, percentage: 0.50),
-      RatingDistributionUiModel(stars: 2, percentage: 0.75),
-      RatingDistributionUiModel(stars: 1, percentage: 0.92),
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -37,30 +42,23 @@ class TestRatingSummarySection extends StatelessWidget {
             Expanded(
               flex: 4,
               child: _RatingScoreColumn(
-                rating: 4,
-                totalRatingsText: '2K تقييم',
-                totalCommentsText: '18 تعليق',
+                rating: averageRating,
+                totalRatingsText: '$totalReviewsCount تقييم',
+                totalCommentsText: '$commentsCount تعليق',
               ),
             ),
 
             SizedBox(width: SizeConfig.w(0.06)),
 
-            Expanded(flex: 4, child: _RatingBarsColumn(rows: ratingRows)),
+            Expanded(
+              flex: 4,
+              child: _RatingBarsColumn(rows: ratingDistribution),
+            ),
           ],
         ),
       ],
     );
   }
-}
-
-class RatingDistributionUiModel {
-  final int stars;
-  final double percentage; // من 0 إلى 1
-
-  const RatingDistributionUiModel({
-    required this.stars,
-    required this.percentage,
-  });
 }
 
 class _RatingScoreColumn extends StatelessWidget {
@@ -119,48 +117,8 @@ class _RatingScoreColumn extends StatelessWidget {
   }
 }
 
-class DisplayRatingStarsRow extends StatelessWidget {
-  final double rating;
-  final int maxStars;
-  final double? starSize;
-  final Color filledColor;
-  final Color emptyColor;
-  final double horizontalSpacing;
-
-  const DisplayRatingStarsRow({
-    super.key,
-    required this.rating,
-    this.maxStars = 5,
-    this.starSize,
-    this.filledColor = AppPalette.yellow,
-    this.emptyColor = AppPalette.greyLight,
-    this.horizontalSpacing = 0,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final filledStars = rating.round().clamp(0, maxStars);
-
-    return Row(
-      textDirection: TextDirection.rtl,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: List.generate(maxStars, (index) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalSpacing),
-          child: Icon(
-            Icons.star_rounded,
-            size: starSize ?? SizeConfig.h(0.035
-            ),
-            color: index < filledStars ? filledColor : emptyColor,
-          ),
-        );
-      }),
-    );
-  }
-}
-
 class _RatingBarsColumn extends StatelessWidget {
-  final List<RatingDistributionUiModel> rows;
+  final List<RatingDistributionEntity> rows;
 
   const _RatingBarsColumn({required this.rows});
 
@@ -178,43 +136,53 @@ class _RatingBarsColumn extends StatelessWidget {
 }
 
 class _RatingBarRow extends StatelessWidget {
-  final RatingDistributionUiModel row;
+  final RatingDistributionEntity row;
 
   const _RatingBarRow({required this.row});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      textDirection: TextDirection.rtl,
-      children: [
-        SizedBox(
-          width: SizeConfig.w(0.11),
-          child: CustomTextWidget(
-            '${row.stars} نجوم',
-            color: AppPalette.greyMedium,
-            fontSize: SizeConfig.text(0.027),
-            textAlign: TextAlign.end,
+    final progressValue = (row.percentage / 100).clamp(0.0, 1.0);
+
+    return GestureDetector(
+      onLongPress: () {
+        showValidationTopSnackBar(
+          context,
+          title: "توضيح",
+          message: '${row.count} تقييمات بعدد ${row.stars} نجوم',
+          type: AppValidationSnackBarType.success,
+        );
+      },
+      child: Row(
+        textDirection: TextDirection.rtl,
+        children: [
+          SizedBox(
+            width: SizeConfig.w(0.11),
+            child: CustomTextWidget(
+              '${row.stars} نجوم',
+              color: AppPalette.greyMedium,
+              fontSize: SizeConfig.text(0.027),
+              textAlign: TextAlign.end,
+            ),
           ),
-        ),
-
-        SizedBox(width: SizeConfig.w(0.018)),
-
-        Directionality(
-          textDirection: TextDirection.rtl,
-          child: Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: LinearProgressIndicator(
+          SizedBox(width: SizeConfig.w(0.018)),
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: Expanded(
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                value: row.percentage.clamp(0.0, 1.0),
-                minHeight: 6,
-                backgroundColor: AppPalette.primarySoft,
-                valueColor: AlwaysStoppedAnimation<Color>(AppPalette.primary),
+                child: LinearProgressIndicator(
+                  borderRadius: BorderRadius.circular(20),
+                  value: progressValue,
+                  minHeight: 6,
+                  backgroundColor: AppPalette.primarySoft,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppPalette.primary),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

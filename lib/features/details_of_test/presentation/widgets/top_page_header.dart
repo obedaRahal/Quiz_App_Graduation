@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
@@ -21,11 +20,14 @@ class TopPageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+      padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _HeaderActionButton(icon: Icons.arrow_back_ios, onTap: onBack),
+          _HeaderActionButton(
+            icon: Icons.arrow_back_ios_rounded,
+            onTap: onBack,
+          ),
           Expanded(
             child: Center(
               child: CustomTextWidget(

@@ -7,13 +7,13 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/home/domain/entities/recommended_users_response_entity.dart';
 
-String fixLocalhostUrl(String url) {
-  if (url.contains('localhost')) {
-    return url.replaceFirst('http://localhost', 'http://10.0.2.2');
-  }
+// String fixLocalhostUrl(String url) {
+//   if (url.contains('localhost')) {
+//     return url.replaceFirst('http://localhost', 'http://10.0.2.2');
+//   }
 
-  return url;
-}
+//   return url;
+// }
 
 class InstructorCard extends StatelessWidget {
   final RecommendedUserEntity item;
@@ -23,7 +23,7 @@ class InstructorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final avatarUrl = fixLocalhostUrl(item.avatarUrl);
+    final avatarUrl =item.avatarUrl;
     final isSvg = avatarUrl.toLowerCase().endsWith('.svg');
 
     return SizedBox(

@@ -81,13 +81,13 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/home/domain/entities/recommended_interests_response_entity.dart';
 
-String fixLocalhostUrl(String url) {
-  if (url.contains('localhost')) {
-    return url.replaceFirst('http://localhost', 'http://10.0.2.2');
-  }
+// String fixLocalhostUrl(String url) {
+//   if (url.contains('localhost')) {
+//     return url.replaceFirst('http://localhost', 'http://10.0.2.2');
+//   }
 
-  return url;
-}
+//   return url;
+// }
 
 class CategoryCard extends StatelessWidget {
   final RecommendedInterestEntity item;
@@ -97,7 +97,7 @@ class CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconUrl = fixLocalhostUrl(item.iconSvg);
+    final iconUrl =item.iconSvg;
 
     return Container(
       width: SizeConfig.width * 0.36,

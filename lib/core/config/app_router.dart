@@ -286,6 +286,11 @@ class AppRouter {
                     //   () => cubit.getOtherTestDetailsOverview(testId: testId),
                     // );
                     cubit.getOtherTestDetailsOverview(testId: testId);
+                    cubit.getOtherTestDetailsSample(testId: testId);
+                    cubit.getOtherTestDetailsReviews(
+                      testId: testId,
+                      rating: 'all',
+                    );
                   } else {
                     debugPrint("✗ DetailsOfTest Route: invalid testId");
                   }
