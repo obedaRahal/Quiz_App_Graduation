@@ -13,6 +13,11 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
   final int likesCount;
   final int reviewsCount;
   final int bookmarksCount;
+  final bool hasLiked;
+  final bool hasBookmarked;
+  final VoidCallback? onLikeTap;
+  final VoidCallback? onBookmarkTap;
+
   const TestDetailsWithPlayModesSection({
     super.key,
     required this.title,
@@ -22,13 +27,18 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
     required this.likesCount,
     required this.reviewsCount,
     required this.bookmarksCount,
+
+    required this.hasLiked,
+    required this.hasBookmarked,
+    this.onLikeTap,
+    this.onBookmarkTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final detailsHeight = SizeConfig.h(0.21);
-    const playCardHeight = 140.0;
-    const overlapSpace = 60.0;
+    final playCardHeight =  SizeConfig.h(0.15);
+    final overlapSpace =  SizeConfig.h(0.04);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
@@ -50,42 +60,43 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                   likesCount: likesCount,
                   reviewsCount: reviewsCount,
                   bookmarksCount: bookmarksCount,
+                  hasLiked: hasLiked,
+                  hasBookmarked: hasBookmarked,
+                  onLikeTap: onLikeTap,
+                  onBookmarkTap: onBookmarkTap,
                 ),
               ),
             ),
 
             Positioned(
               top: detailsHeight - overlapSpace,
-              left: SizeConfig.w(0.22),
-              right: 5,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    PlayModeCard(
-                      title: "التحدي 1VS1",
-                      iconPath: AppImage.muscleIcon,
-                      backgroundColor: AppPalette.violetMedium,
-                      shadowColor: AppPalette.circleContainer3,
-                      onTap: () => debugPrint("challenge"),
-                    ),
-                    PlayModeCard(
-                      title: "اختيارات متعددة",
-                      iconPath: "assets/icons/layers.svg",
-                      backgroundColor: AppPalette.homeContainer3,
-                      shadowColor: AppPalette.circleContainer3,
-                      onTap: () => debugPrint("mcq"),
-                    ),
-                    PlayModeCard(
-                      title: "بطاقات الاستذكار",
-                      iconPath: "assets/icons/layers.svg",
-                      backgroundColor: AppPalette.homeContainer2,
-                      shadowColor: AppPalette.circleContainer1,
-                      onTap: () => debugPrint("flashcards"),
-                    ),
-                  ],
-                ),
+              left: SizeConfig.w(0.2),
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  PlayModeCard(
+                    title: "التحدي 1VS1",
+                    iconPath: AppImage.muscleIcon,
+                    backgroundColor: AppPalette.violetMedium,
+                    shadowColor: AppPalette.circleContainer3,
+                    onTap: () => debugPrint("challenge"),
+                  ),
+                  PlayModeCard(
+                    title: "اختيارات متعددة",
+                    iconPath: "assets/icons/layers.svg",
+                    backgroundColor: AppPalette.homeContainer3,
+                    shadowColor: AppPalette.circleContainer3,
+                    onTap: () => debugPrint("mcq"),
+                  ),
+                  PlayModeCard(
+                    title: "بطاقات الاستذكار",
+                    iconPath: "assets/icons/layers.svg",
+                    backgroundColor: AppPalette.homeContainer2,
+                    shadowColor: AppPalette.circleContainer1,
+                    onTap: () => debugPrint("flashcards"),
+                  ),
+                ],
               ),
             ),
           ],

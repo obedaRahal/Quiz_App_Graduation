@@ -24,19 +24,22 @@ class DisplayRatingStarsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final filledStars = rating.round().clamp(0, maxStars);
 
-    return Row(
-      textDirection: TextDirection.rtl,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: List.generate(maxStars, (index) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalSpacing),
-          child: Icon(
-            Icons.star_rounded,
-            size: starSize ?? SizeConfig.h(0.035),
-            color: index < filledStars ? filledColor : emptyColor,
-          ),
-        );
-      }),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        textDirection: TextDirection.rtl,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: List.generate(maxStars, (index) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalSpacing),
+            child: Icon(
+              Icons.star_rounded,
+              size: starSize ?? SizeConfig.h(0.036),
+              color: index < filledStars ? filledColor : emptyColor,
+            ),
+          );
+        }),
+      ),
     );
   }
 }

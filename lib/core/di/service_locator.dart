@@ -18,9 +18,13 @@ import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register
 import 'package:quiz_app_grad/features/details_of_test/data/data_sources/details_of_test_remote_data_source.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/repo_impl/details_of_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/repositories/details_of_test_repository.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/data_source/all_interests_remote_data_source.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/repositories/all_interests_repository_impl.dart';
@@ -202,6 +206,10 @@ void _registerDetailsOfTestFeature() {
             sl<GetOtherTestDetailsSampleUseCase>(),
         getOtherTestDetailsReviewsUseCase:
             sl<GetOtherTestDetailsReviewsUseCase>(),
+        likeTestUseCase: sl<LikeTestUseCase>(),
+        unlikeTestUseCase: sl<UnlikeTestUseCase>(),
+        bookmarkTestUseCase: sl<BookmarkTestUseCase>(),
+        unbookmarkTestUseCase: sl<UnbookmarkTestUseCase>(),
       ),
     );
   }
@@ -215,6 +223,29 @@ void _registerDetailsOfTestFeature() {
   if (!sl.isRegistered<GetOtherTestDetailsReviewsUseCase>()) {
     sl.registerLazySingleton<GetOtherTestDetailsReviewsUseCase>(
       () => GetOtherTestDetailsReviewsUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<LikeTestUseCase>()) {
+    sl.registerLazySingleton<LikeTestUseCase>(
+      () => LikeTestUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<UnlikeTestUseCase>()) {
+    sl.registerLazySingleton<UnlikeTestUseCase>(
+      () => UnlikeTestUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+  if (!sl.isRegistered<BookmarkTestUseCase>()) {
+    sl.registerLazySingleton<BookmarkTestUseCase>(
+      () => BookmarkTestUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<UnbookmarkTestUseCase>()) {
+    sl.registerLazySingleton<UnbookmarkTestUseCase>(
+      () => UnbookmarkTestUseCase(sl<DetailsOfTestRepository>()),
     );
   }
 }

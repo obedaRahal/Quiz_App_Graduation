@@ -139,7 +139,8 @@ class TestCreatorModel {
     return TestCreatorModel(
       id: json['id'] as int? ?? 0,
       name: json['name']?.toString() ?? '',
-      isAcademicallyVerified: json['is_academically_verified'] as bool? ?? false,
+      isAcademicallyVerified:
+          json['is_academically_verified'] as bool? ?? false,
       followersCount: json['followers_count'] as int? ?? 0,
       followingCount: json['following_count'] as int? ?? 0,
       publishedTestsCount: json['published_tests_count'] as int? ?? 0,
@@ -202,9 +203,8 @@ class TestExtraInfoModel {
       reviewStatus: json['review_status']?.toString() ?? '',
       interests: interestsJson
           .map(
-            (item) => TestInterestModel.fromJson(
-              item as Map<String, dynamic>? ?? {},
-            ),
+            (item) =>
+                TestInterestModel.fromJson(item as Map<String, dynamic>? ?? {}),
           )
           .toList(),
       viewerContext: TestViewerContextModel.fromJson(
@@ -234,10 +234,7 @@ class TestInterestModel {
   final int id;
   final String name;
 
-  const TestInterestModel({
-    required this.id,
-    required this.name,
-  });
+  const TestInterestModel({required this.id, required this.name});
 
   factory TestInterestModel.fromJson(Map<String, dynamic> json) {
     return TestInterestModel(
@@ -247,10 +244,7 @@ class TestInterestModel {
   }
 
   TestInterestEntity toEntity() {
-    return TestInterestEntity(
-      id: id,
-      name: name,
-    );
+    return TestInterestEntity(id: id, name: name);
   }
 }
 
@@ -263,6 +257,8 @@ class TestViewerContextModel {
   final bool canPurchase;
   final bool canDownload;
   final bool canReport;
+  final bool hasLiked;
+  final bool hasBookmarked;
 
   const TestViewerContextModel({
     required this.isOwner,
@@ -273,6 +269,8 @@ class TestViewerContextModel {
     required this.canPurchase,
     required this.canDownload,
     required this.canReport,
+    required this.hasLiked,
+    required this.hasBookmarked,
   });
 
   factory TestViewerContextModel.fromJson(Map<String, dynamic> json) {
@@ -285,6 +283,8 @@ class TestViewerContextModel {
       canPurchase: json['can_purchase'] as bool? ?? false,
       canDownload: json['can_download'] as bool? ?? false,
       canReport: json['can_report'] as bool? ?? false,
+      hasLiked: json['has_liked'] as bool? ?? false,
+      hasBookmarked: json['has_bookmarked'] as bool? ?? false,
     );
   }
 
@@ -298,6 +298,8 @@ class TestViewerContextModel {
       canPurchase: canPurchase,
       canDownload: canDownload,
       canReport: canReport,
+      hasLiked: hasLiked,
+      hasBookmarked: hasBookmarked,
     );
   }
 }

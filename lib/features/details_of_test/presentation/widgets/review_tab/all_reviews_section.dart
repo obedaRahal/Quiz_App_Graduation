@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/display_rating_stars_row.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/my_published_review_card.dart';
 
 class ReviewsSection extends StatelessWidget {
   final ReviewRatingFilter selectedFilter;
@@ -287,8 +285,15 @@ class PublicReviewCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _PublicReviewerHeader(review: review),
-          
+              ReviewHeader(
+                reviewerName: review.reviewerName,
+                avatarPath: review.avatarPath,
+                isVerified: review.isVerified,
+                publishedAtText: review.publishedAtText,
+                rating: review.rating,
+                helpfulCount: review.helpfulCount,
+              ),
+
               SizedBox(height: SizeConfig.h(0.015)),
               CustomTextWidget(
                 review.reviewText,
@@ -296,7 +301,7 @@ class PublicReviewCard extends StatelessWidget {
                 color: appColors.greyMediumTogrey,
                 fontSize: SizeConfig.text(0.034),
               ),
-              SizedBox(height: SizeConfig.h(0.041)),
+              SizedBox(height: SizeConfig.h(0.05)),
             ],
           ),
         ),
@@ -319,8 +324,8 @@ class PublicReviewCard extends StatelessWidget {
             ),
             child: _ReviewHelpfulQuestionRow(
               currentVote: review.myHelpfulVote,
-              onYes: onHelpfulYes,
-              onNo: onHelpfulNo,
+              onYesTap: onHelpfulYes,
+              onNoTap: onHelpfulNo,
             ),
           ),
         ),
@@ -374,178 +379,47 @@ class _ReviewReportMenuButton extends StatelessWidget {
   }
 }
 
-class _PublicReviewerHeader extends StatelessWidget {
-  final PublicReviewUiModel review;
-
-  const _PublicReviewerHeader({required this.review});
-
-  @override
-  Widget build(BuildContext context) {
-    final appColors = context.appColors;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Row(
-      textDirection: TextDirection.rtl,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _ReviewerAvatar(avatarPath: review.avatarPath),
-        SizedBox(width: SizeConfig.w(0.02)),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Row(
-                textDirection: TextDirection.rtl,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Flexible(
-                    flex: 7,
-                    child: CustomTextWidget(
-                      review.reviewerName,
-                      textAlign: TextAlign.right,
-                      color: appColors.blackTogreyMedium,
-                      fontFamily: AppFont.elMessiriSemiBold,
-                      fontSize: SizeConfig.text(0.038),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (review.isVerified) ...[
-                    SizedBox(width: SizeConfig.w(0.012)),
-                    Icon(
-                      Icons.verified_rounded,
-                      color: AppPalette.primary,
-                      size: 16,
-                    ),
-                  ],
-
-                  Spacer(),
-
-                  CustomBackgroundWithChild(
-                    backgroundColor: isDark
-                        ? AppPalette.primary.withOpacity(0.18)
-                        : AppPalette.primarySoft,
-                    borderRadius: BorderRadius.circular(5),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.w(0.018),
-                      vertical: SizeConfig.h(0.004),
-                    ),
-
-                    child: CustomTextWidget(
-                      '${review.helpfulCount} وجدوها مفيدة',
-                      color: AppPalette.primary,
-                      fontFamily: AppFont.elMessiriMedium,
-                      fontSize: SizeConfig.text(0.022),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: SizeConfig.h(0.006)),
-
-              _PublicReviewMetaRow(
-                dateText: review.publishedAtText,
-                rating: review.rating,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ReviewerAvatar extends StatelessWidget {
-  final String? avatarPath;
-
-  const _ReviewerAvatar({required this.avatarPath});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: avatarPath == null || avatarPath!.trim().isEmpty
-          ? Container(
-              width: 48,
-              height: 48,
-              color: AppPalette.greyLight,
-              child: const Icon(Icons.person, size: 24),
-            )
-          : CustomAppImage(
-              path: avatarPath!,
-              width: 48,
-              height: 48,
-              fit: BoxFit.cover,
-            ),
-    );
-  }
-}
-
-class _PublicReviewMetaRow extends StatelessWidget {
-  final String dateText;
-  final double rating;
-
-  const _PublicReviewMetaRow({required this.dateText, required this.rating});
-
-  @override
-  Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
-    return Row(
-      textDirection: TextDirection.rtl,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        DisplayRatingStarsRow(
-          rating: rating,
-          starSize: SizeConfig.h(0.028),
-          horizontalSpacing: 1,
-        ),
-        SizedBox(width: SizeConfig.w(0.02)),
-        CustomTextWidget(
-          dateText,
-          color: appColors.greyMediumTogrey,
-          fontSize: SizeConfig.text(0.029),
-        ),
-      ],
-    );
-  }
-}
-
 class _ReviewHelpfulQuestionRow extends StatelessWidget {
   final bool? currentVote;
-  final VoidCallback onYes;
-  final VoidCallback onNo;
+  final VoidCallback onYesTap;
+  final VoidCallback onNoTap;
 
   const _ReviewHelpfulQuestionRow({
     required this.currentVote,
-    required this.onYes,
-    required this.onNo,
+    required this.onYesTap,
+    required this.onNoTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
     return Row(
       textDirection: TextDirection.rtl,
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        CustomTextWidget(
-          'هل وجدت هذه المراجعة مفيدة؟',
-          color: AppPalette.primary,
-          fontSize: SizeConfig.text(0.03),
-          textAlign: TextAlign.right,
+        Expanded(
+          child: CustomTextWidget(
+            'هل وجدت هذه المراجعة مفيدة؟',
+            color: AppPalette.primary,
+            fontSize: SizeConfig.text(0.03),
+            textAlign: TextAlign.right,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
-        Spacer(),
+
+        SizedBox(width: SizeConfig.w(0.02)),
+
         _HelpfulActionButton(
           title: 'نعم',
           isSelected: currentVote == true,
-          onTap: onYes,
+          onTap: onYesTap,
         ),
+
         SizedBox(width: SizeConfig.w(0.02)),
+
         _HelpfulActionButton(
           title: 'لا',
           isSelected: currentVote == false,
-          onTap: onNo,
+          onTap: onNoTap,
         ),
       ],
     );

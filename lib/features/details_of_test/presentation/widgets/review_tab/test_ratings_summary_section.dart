@@ -163,20 +163,25 @@ class _RatingBarRow extends StatelessWidget {
               color: AppPalette.greyMedium,
               fontSize: SizeConfig.text(0.027),
               textAlign: TextAlign.end,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
+
           SizedBox(width: SizeConfig.w(0.018)),
-          Directionality(
-            textDirection: TextDirection.rtl,
-            child: Expanded(
+
+          Expanded(
+            child: Directionality(
+              textDirection: TextDirection.rtl,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: LinearProgressIndicator(
-                  borderRadius: BorderRadius.circular(20),
                   value: progressValue,
                   minHeight: 6,
                   backgroundColor: AppPalette.primarySoft,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppPalette.primary),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    AppPalette.primary,
+                  ),
                 ),
               ),
             ),

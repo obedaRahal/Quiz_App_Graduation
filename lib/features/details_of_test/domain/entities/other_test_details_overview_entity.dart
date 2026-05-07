@@ -10,6 +10,20 @@ class OtherTestDetailsOverviewEntity {
     required this.statusCode,
     required this.data,
   });
+
+  OtherTestDetailsOverviewEntity copyWith({
+    bool? success,
+    String? title,
+    int? statusCode,
+    TestDetailsOverviewDataEntity? data,
+  }) {
+    return OtherTestDetailsOverviewEntity(
+      success: success ?? this.success,
+      title: title ?? this.title,
+      statusCode: statusCode ?? this.statusCode,
+      data: data ?? this.data,
+    );
+  }
 }
 
 class TestDetailsOverviewDataEntity {
@@ -24,6 +38,20 @@ class TestDetailsOverviewDataEntity {
     required this.creator,
     required this.extraInfo,
   });
+
+  TestDetailsOverviewDataEntity copyWith({
+    int? id,
+    TestBasicInfoEntity? basicInfo,
+    TestCreatorEntity? creator,
+    TestExtraInfoEntity? extraInfo,
+  }) {
+    return TestDetailsOverviewDataEntity(
+      id: id ?? this.id,
+      basicInfo: basicInfo ?? this.basicInfo,
+      creator: creator ?? this.creator,
+      extraInfo: extraInfo ?? this.extraInfo,
+    );
+  }
 }
 
 class TestBasicInfoEntity {
@@ -44,6 +72,26 @@ class TestBasicInfoEntity {
     required this.reviewsCount,
     required this.bookmarksCount,
   });
+
+  TestBasicInfoEntity copyWith({
+    String? title,
+    String? description,
+    String? difficultyLevel,
+    double? price,
+    int? likesCount,
+    int? reviewsCount,
+    int? bookmarksCount,
+  }) {
+    return TestBasicInfoEntity(
+      title: title ?? this.title,
+      description: description ?? this.description,
+      difficultyLevel: difficultyLevel ?? this.difficultyLevel,
+      price: price ?? this.price,
+      likesCount: likesCount ?? this.likesCount,
+      reviewsCount: reviewsCount ?? this.reviewsCount,
+      bookmarksCount: bookmarksCount ?? this.bookmarksCount,
+    );
+  }
 }
 
 class TestCreatorEntity {
@@ -92,16 +140,41 @@ class TestExtraInfoEntity {
     required this.interests,
     required this.viewerContext,
   });
+
+  TestExtraInfoEntity copyWith({
+    int? questionCount,
+    int? durationSeconds,
+    int? passMarkPercentage,
+    String? publishedAt,
+    String? lastContentUpdatedAt,
+    String? targetLevel,
+    String? language,
+    int? participantsCount,
+    String? reviewStatus,
+    List<TestInterestEntity>? interests,
+    TestViewerContextEntity? viewerContext,
+  }) {
+    return TestExtraInfoEntity(
+      questionCount: questionCount ?? this.questionCount,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      passMarkPercentage: passMarkPercentage ?? this.passMarkPercentage,
+      publishedAt: publishedAt ?? this.publishedAt,
+      lastContentUpdatedAt: lastContentUpdatedAt ?? this.lastContentUpdatedAt,
+      targetLevel: targetLevel ?? this.targetLevel,
+      language: language ?? this.language,
+      participantsCount: participantsCount ?? this.participantsCount,
+      reviewStatus: reviewStatus ?? this.reviewStatus,
+      interests: interests ?? this.interests,
+      viewerContext: viewerContext ?? this.viewerContext,
+    );
+  }
 }
 
 class TestInterestEntity {
   final int id;
   final String name;
 
-  const TestInterestEntity({
-    required this.id,
-    required this.name,
-  });
+  const TestInterestEntity({required this.id, required this.name});
 }
 
 class TestViewerContextEntity {
@@ -113,6 +186,8 @@ class TestViewerContextEntity {
   final bool canPurchase;
   final bool canDownload;
   final bool canReport;
+  final bool hasLiked;
+  final bool hasBookmarked;
 
   const TestViewerContextEntity({
     required this.isOwner,
@@ -123,5 +198,33 @@ class TestViewerContextEntity {
     required this.canPurchase,
     required this.canDownload,
     required this.canReport,
+    required this.hasLiked,
+    required this.hasBookmarked,
   });
+
+  TestViewerContextEntity copyWith({
+    bool? isOwner,
+    bool? isFree,
+    bool? isPaid,
+    bool? hasPurchased,
+    bool? isFollowingCreator,
+    bool? canPurchase,
+    bool? canDownload,
+    bool? canReport,
+    bool? hasLiked,
+    bool? hasBookmarked,
+  }) {
+    return TestViewerContextEntity(
+      isOwner: isOwner ?? this.isOwner,
+      isFree: isFree ?? this.isFree,
+      isPaid: isPaid ?? this.isPaid,
+      hasPurchased: hasPurchased ?? this.hasPurchased,
+      isFollowingCreator: isFollowingCreator ?? this.isFollowingCreator,
+      canPurchase: canPurchase ?? this.canPurchase,
+      canDownload: canDownload ?? this.canDownload,
+      canReport: canReport ?? this.canReport,
+      hasLiked: hasLiked ?? this.hasLiked,
+      hasBookmarked: hasBookmarked ?? this.hasBookmarked,
+    );
+  }
 }

@@ -24,8 +24,8 @@ class PlayModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double cardWidth = SizeConfig.w(0.22);
-    double cardHeight = SizeConfig.h(0.151);
+    double cardWidth = SizeConfig.w(0.21);
+    double cardHeight = SizeConfig.h(0.15);
     final borderRadius = BorderRadius.circular(8);
 
     return SizedBox(
@@ -51,7 +51,7 @@ class PlayModeCard extends StatelessWidget {
                     child: CustomTextWidget(
                       "اللعب بنمط",
                       color: AppPalette.white,
-                      fontSize: SizeConfig.text(0.024),
+                      fontSize: SizeConfig.text(0.023),
                     ),
                   ),
                   Positioned(
@@ -63,7 +63,7 @@ class PlayModeCard extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    left: 2,
+                    left: 0,
                     bottom: SizeConfig.h(0.035),
                     child: SizedBox(
                       width: SizeConfig.w(0.16),
@@ -72,7 +72,7 @@ class PlayModeCard extends StatelessWidget {
                         textAlign: TextAlign.start,
                         color: AppPalette.white,
                         fontFamily: AppFont.elMessiriSemiBold,
-                        fontSize: SizeConfig.text(0.032),
+                        fontSize: SizeConfig.text(0.03),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),

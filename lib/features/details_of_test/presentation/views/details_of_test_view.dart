@@ -18,96 +18,118 @@ class DetailsOfTestView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
-          child: Column(
-            children: [
-              TopPageHeader(
-                title: 'تفاصيل اختبار',
-                onBack: () => context.pop(),
-                onShare: () {
-                  debugPrint('share');
-                },
-              ),
+        child: Column(
+          children: [
+            TopPageHeader(
+              title: 'تفاصيل اختبار',
+              onBack: () => context.pop(),
+              onShare: () {
+                debugPrint('share');
+              },
+            ),
 
-              SizedBox(height: SizeConfig.h(0.015)),
+            SizedBox(height: SizeConfig.h(0.015)),
 
-              Expanded(
-                child: BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
-                  builder: (context, state) {
-                    if (state.isOverviewLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+            Expanded(
+              child: BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
+                builder: (context, state) {
+                  if (state.isOverviewLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                    if (state.isOverviewFailure) {
-                      return Center(
-                        child: CustomTextWidget(
-                          state.errorMessage ?? 'حدث خطأ أثناء جلب التفاصيل',
-                          color: AppPalette.red,
-                          textAlign: TextAlign.center,
-                        ),
-                      );
-                    }
-
-                    final overview = state.overviewDetails;
-
-                    if (overview == null) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          TestDetailsWithPlayModesSection(
-                            title: overview.data.basicInfo.title,
-                            description: overview.data.basicInfo.description,
-                            difficultyLevel:
-                                overview.data.basicInfo.difficultyLevel,
-                            price: overview.data.basicInfo.price,
-                            likesCount: overview.data.basicInfo.likesCount,
-                            reviewsCount: overview.data.basicInfo.reviewsCount,
-                            bookmarksCount:
-                                overview.data.basicInfo.bookmarksCount,
-                          ),
-
-                          SizedBox(height: SizeConfig.h(0.035)),
-
-                          DetailsOfTestTabsSection(
-                            overview: overview,
-                            testId: overview.data.id,
-                          ),
-
-                          SizedBox(height: SizeConfig.h(0.02)),
-                        ],
+                  if (state.isOverviewFailure) {
+                    return Center(
+                      child: CustomTextWidget(
+                        state.errorMessage ?? 'حدث خطأ أثناء جلب التفاصيل',
+                        color: AppPalette.red,
+                        textAlign: TextAlign.center,
                       ),
                     );
-                  },
-                ),
-              ),
+                  }
 
-              BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
-                builder: (context, state) {
                   final overview = state.overviewDetails;
 
                   if (overview == null) {
                     return const SizedBox.shrink();
                   }
 
-                  return TestPurchaseBottomBar(
-                    reviewStatus: overview.data.extraInfo.reviewStatus,
-                    isFree: overview.data.extraInfo.viewerContext.isFree,
-                    hasPurchased:
-                        overview.data.extraInfo.viewerContext.hasPurchased,
-                    canPurchase:
-                        overview.data.extraInfo.viewerContext.canPurchase,
-                    canDownload:
-                        overview.data.extraInfo.viewerContext.canDownload,
-                    canReport: overview.data.extraInfo.viewerContext.canReport,
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TestDetailsWithPlayModesSection(
+                          title: overview.data.basicInfo.title,
+                          description: overview.data.basicInfo.description,
+                          difficultyLevel:
+                              overview.data.basicInfo.difficultyLevel,
+                          price: overview.data.basicInfo.price,
+                          likesCount: overview.data.basicInfo.likesCount,
+                          reviewsCount: overview.data.basicInfo.reviewsCount,
+                          bookmarksCount:
+                              overview.data.basicInfo.bookmarksCount,
+                          hasLiked:
+                              overview.data.extraInfo.viewerContext.hasLiked,
+                          hasBookmarked: overview
+                              .data
+                              .extraInfo
+                              .viewerContext
+                              .hasBookmarked,
+                          onLikeTap: () {
+                            debugPrint("toggle like");
+                            context.read<DetailsOfTestCubit>().toggleTestLike(
+                              testId: overview.data.id,
+                            );
+                          },
+                          onBookmarkTap: () {
+                            debugPrint("toggle bookmark");
+                            context
+                                .read<DetailsOfTestCubit>()
+                                .toggleTestBookmark(testId: overview.data.id);
+                          },
+                        ),
+
+                        SizedBox(height: SizeConfig.h(0.035)),
+
+                        DetailsOfTestTabsSection(
+                          overview: overview,
+                          testId: overview.data.id,
+                        ),
+
+                        SizedBox(height: SizeConfig.h(0.02)),
+                      ],
+                    ),
                   );
                 },
               ),
-            ],
-          ),
+            ),
+
+            BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
+              builder: (context, state) {
+                final overview = state.overviewDetails;
+
+                if (overview == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return TestPurchaseBottomBar(
+                  reviewStatus: overview.data.extraInfo.reviewStatus,
+                  isFree: overview.data.extraInfo.viewerContext.isFree,
+                  hasPurchased:
+                      overview.data.extraInfo.viewerContext.hasPurchased,
+                  canPurchase:
+                      overview.data.extraInfo.viewerContext.canPurchase,
+                  canDownload:
+                      overview.data.extraInfo.viewerContext.canDownload,
+                  canReport: overview.data.extraInfo.viewerContext.canReport,
+
+                  onBuyTap: () {
+                    debugPrint("buy now");
+                  },
+                  onDownloadTap: () => debugPrint("download test"),
+                  onReportTap: () => debugPrint("report test"),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

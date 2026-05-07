@@ -101,7 +101,7 @@ class TestInfoDetailsSection extends StatelessWidget {
               child: _TestInfoItem(
                 iconPath: AppImage.timer,
                 title: "نشر في",
-                value:  publishedAt.isEmpty ? 'غير محدد' : publishedAt,
+                value: _safeText(publishedAt),
               ),
             ),
           ],
@@ -132,24 +132,22 @@ class TestInfoDetailsSection extends StatelessWidget {
           //textDirection: TextDirection.rtl,
           alignment: WrapAlignment.spaceBetween,
           runSpacing: SizeConfig.h(0.015),
-          spacing: SizeConfig.w(0.0005),
+          //spacing: SizeConfig.w(0.0005),
           children: [
             _MetaInfoItem(
               title: "تصنيف دراسي",
-              value: targetLevel.isEmpty ? 'غير محدد' : targetLevel,
+              value: _safeText(targetLevel),
               icon: FontAwesomeIcons.bookOpenReader,
             ),
             _MetaInfoItem(
               title: "آخر تعديل",
-              value:lastContentUpdatedAt.isEmpty
-                  ? 'غير محدد'
-                  : lastContentUpdatedAt,
+              value:_safeText(lastContentUpdatedAt),
               icon: FontAwesomeIcons.penToSquare,
             ),
 
             _MetaInfoItem(
               title: "اللغة",
-              value: language.isEmpty ? 'غير محدد' : language,
+              value: _safeText(language),
               icon: FontAwesomeIcons.language,
             ),
             _MetaInfoItem(
@@ -161,6 +159,11 @@ class TestInfoDetailsSection extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _safeText(String value) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? 'غير محدد' : trimmed;
   }
 }
 

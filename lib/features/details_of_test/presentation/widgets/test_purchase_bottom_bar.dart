@@ -17,6 +17,10 @@ class TestPurchaseBottomBar extends StatelessWidget {
   final bool canDownload;
   final bool canReport;
 
+  final VoidCallback onBuyTap;
+  final VoidCallback onDownloadTap;
+  final VoidCallback onReportTap;
+
   const TestPurchaseBottomBar({
     super.key,
     required this.reviewStatus,
@@ -25,6 +29,9 @@ class TestPurchaseBottomBar extends StatelessWidget {
     required this.canPurchase,
     required this.canDownload,
     required this.canReport,
+    required this.onBuyTap,
+    required this.onDownloadTap,
+    required this.onReportTap,
   });
 
   bool get _showBuyButton => canPurchase && !isFree && !hasPurchased;
@@ -52,9 +59,7 @@ class TestPurchaseBottomBar extends StatelessWidget {
               childVerticalPad: SizeConfig.w(0.013),
               borderRadius: 20,
               boxShadow: [BoxShadow(color: AppPalette.primary, blurRadius: 4)],
-              onTap: () {
-                debugPrint("buy now");
-              },
+              onTap: onBuyTap,
               child: CustomTextWidget(
                 "اشتري الان",
                 fontSize: SizeConfig.text(0.033),
@@ -69,9 +74,7 @@ class TestPurchaseBottomBar extends StatelessWidget {
                   childHorizontalPad: SizeConfig.w(0.04),
                   childVerticalPad: SizeConfig.w(0.013),
                   borderRadius: 20,
-                  onTap: canDownload
-                      ? () => debugPrint("download test")
-                      : () {},
+                  onTap: canDownload ? onDownloadTap : () {},
                   child: Row(
                     children: [
                       CustomTextWidget(
@@ -80,7 +83,7 @@ class TestPurchaseBottomBar extends StatelessWidget {
                         color: AppPalette.white,
                       ),
 
-                       Icon(
+                      Icon(
                         Icons.download,
                         size: SizeConfig.h(0.02),
                         color: AppPalette.white,
@@ -96,7 +99,7 @@ class TestPurchaseBottomBar extends StatelessWidget {
                   childHorizontalPad: SizeConfig.w(0.04),
                   childVerticalPad: SizeConfig.w(0.013),
                   borderRadius: 20,
-                  onTap: canReport ? () => debugPrint("report test") : () {},
+                  onTap: canReport ? onReportTap : () {},
                   child: Row(
                     children: [
                       CustomTextWidget(
@@ -121,7 +124,7 @@ class TestPurchaseBottomBar extends StatelessWidget {
             height: SizeConfig.h(0.06),
             dashGap: 2,
             width: 2,
-            dashHeight: 10,
+            dashHeight: 6,
             color: AppPalette.greyMedium,
           ),
 

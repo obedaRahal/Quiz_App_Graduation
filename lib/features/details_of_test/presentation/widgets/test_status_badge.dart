@@ -26,22 +26,25 @@ class TestStatusBadge extends StatelessWidget {
       childHorizontalPad: SizeConfig.w(0.02),
       childVerticalPad: SizeConfig.h(0.003),
       borderRadius: BorderRadius.circular(16),
-      child: Row(
-        textDirection: TextDirection.rtl,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FaIcon(icon, size: SizeConfig.h(0.02), color: foregroundColor),
-          const SizedBox(width: 5),
-          CustomTextWidget(
-            title,
-            color: foregroundColor,
-            fontFamily: AppFont.elMessiriSemiBold,
-            fontSize: SizeConfig.text(0.03),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.end,
-          ),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          textDirection: TextDirection.rtl,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FaIcon(icon, size: SizeConfig.h(0.02), color: foregroundColor),
+            const SizedBox(width: 5),
+            CustomTextWidget(
+              title,
+              color: foregroundColor,
+              fontFamily: AppFont.elMessiriSemiBold,
+              fontSize: SizeConfig.text(0.025),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+            ),
+          ],
+        ),
       ),
     );
   }

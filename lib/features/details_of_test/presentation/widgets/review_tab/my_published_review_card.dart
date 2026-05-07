@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -52,9 +53,16 @@ class MyPublishedReviewCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _ReviewerHeader(review: review),
+              ReviewHeader(
+                reviewerName: review.reviewerName,
+                avatarPath: review.avatarPath,
+                isVerified: review.isVerified,
+                publishedAtText: review.publishedAtText,
+                rating: review.rating,
+                helpfulCount: review.helpfulCount,
+              ),
               SizedBox(height: SizeConfig.h(0.006)),
-          
+
               SizedBox(height: SizeConfig.h(0.012)),
               CustomTextWidget(
                 review.reviewText,
@@ -149,63 +157,6 @@ class _ReviewMoreButton extends StatelessWidget {
   }
 }
 
-class _ReviewerHeader extends StatelessWidget {
-  final MyPublishedReviewUiModel review;
-
-  const _ReviewerHeader({required this.review});
-
-  @override
-  Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
-    return Row(
-      textDirection: TextDirection.rtl,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _ReviewerAvatar(avatarPath: review.avatarPath),
-        SizedBox(width: SizeConfig.w(0.025)),
-
-        Expanded(
-          child: Column(
-            children: [
-              Row(
-                textDirection: TextDirection.rtl,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Flexible(
-                    child: CustomTextWidget(
-                      review.reviewerName,
-                      textAlign: TextAlign.right,
-                      color: appColors.blackTogreyMedium,
-                      fontFamily: AppFont.elMessiriSemiBold,
-                      fontSize: SizeConfig.text(0.038),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (review.isVerified) ...[
-                    SizedBox(width: SizeConfig.w(0.012)),
-                    Icon(
-                      Icons.verified_rounded,
-                      color: AppPalette.primary,
-                      size: 14,
-                    ),
-                  ],
-                ],
-              ),
-
-              _ReviewMetaRow(
-                dateText: review.publishedAtText,
-                rating: review.rating,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _ReviewerAvatar extends StatelessWidget {
   final String? avatarPath;
 
@@ -256,6 +207,104 @@ class _ReviewMetaRow extends StatelessWidget {
           dateText,
           color: appColors.greyMediumTogrey,
           fontSize: SizeConfig.text(0.029),
+        ),
+      ],
+    );
+  }
+}
+
+class ReviewHeader extends StatelessWidget {
+  final String reviewerName;
+  final String? avatarPath;
+  final bool isVerified;
+  final String publishedAtText;
+  final double rating;
+  final int? helpfulCount;
+
+  const ReviewHeader({
+    super.key,
+    required this.reviewerName,
+    required this.avatarPath,
+    required this.isVerified,
+    required this.publishedAtText,
+    required this.rating,
+    this.helpfulCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Row(
+      textDirection: TextDirection.rtl,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _ReviewerAvatar(avatarPath: avatarPath),
+
+        SizedBox(width: SizeConfig.w(0.02)),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                textDirection: TextDirection.rtl,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      reverse: true,
+                      child: CustomTextWidget(
+                        reviewerName,
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.right,
+                        color: appColors.blackTogreyMedium,
+                        fontFamily: AppFont.elMessiriSemiBold,
+                        fontSize: SizeConfig.text(0.038),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
+
+                  if (isVerified) ...[
+                    SizedBox(width: SizeConfig.w(0.012)),
+                    Icon(
+                      Icons.verified_rounded,
+                      color: AppPalette.primary,
+                      size: 15,
+                    ),
+                  ],
+
+                  SizedBox(width: SizeConfig.w(0.02)),
+
+                  if (helpfulCount != null)
+                    Padding(
+                      padding:  EdgeInsets.only(left: SizeConfig.w(0.055),),
+                      child: CustomBackgroundWithChild(
+                        backgroundColor: isDark
+                            ? AppPalette.primary.withOpacity(0.18)
+                            : AppPalette.primarySoft,
+                        borderRadius: BorderRadius.circular(5),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.w(0.018),
+                          vertical: SizeConfig.h(0.004),
+                        ),
+                        child: CustomTextWidget(
+                          '$helpfulCount وجدوها مفيدة',
+                          color: AppPalette.primary,
+                          fontFamily: AppFont.elMessiriMedium,
+                          fontSize: SizeConfig.text(0.022),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              SizedBox(height: SizeConfig.h(0.006)),
+
+              _ReviewMetaRow(dateText: publishedAtText, rating: rating),
+            ],
+          ),
         ),
       ],
     );

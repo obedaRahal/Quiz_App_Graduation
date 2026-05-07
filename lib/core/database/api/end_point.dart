@@ -1,6 +1,6 @@
 class EndPoints {
-  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
-  //static const String baseUrl = 'http://172.20.10.7/api/v1/user-mobile';
+  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  static const String baseUrl = 'http://192.168.1.106/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
@@ -49,4 +49,16 @@ class EndPoints {
     required int testId,
     required String rating,
   }) => '$baseUrl/test/test-details/reviews/$testId?rating=$rating';
+
+  static String otherTestDetailsLike(int testId) =>
+      '$baseUrl/test/like/$testId';
+
+  static String otherTestDetailsUnlike(int testId) =>
+      '$baseUrl/test/unlike/$testId';
+
+  static String otherTestDetailsBookmark(int testId) =>
+      '$baseUrl/test/bookmark/$testId';
+
+  static String otherTestDetailsUnbookmark(int testId) =>
+      '$baseUrl/test/unbookmark/$testId';
 }

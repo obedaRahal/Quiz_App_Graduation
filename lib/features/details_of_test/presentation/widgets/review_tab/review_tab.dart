@@ -8,9 +8,8 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/revi
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/rate_test_section.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/test_ratings_summary_section.dart';
 
-class ReviewTab extends StatefulWidget {
+class ReviewTab extends StatelessWidget {
   final int testId;
-
   final OtherTestDetailsReviewsEntity reviewsDetails;
 
   const ReviewTab({
@@ -20,19 +19,18 @@ class ReviewTab extends StatefulWidget {
   });
 
   @override
-  State<ReviewTab> createState() => _ReviewTabState();
-}
-
-class _ReviewTabState extends State<ReviewTab> {
-  ReviewRatingFilter selectedFilter = ReviewRatingFilter.all;
-
-  @override
   Widget build(BuildContext context) {
-    final summary = widget.reviewsDetails.data.summary;
-    final myReview = widget.reviewsDetails.data.myReview;
-    final publicReviews = widget.reviewsDetails.data.reviews
-        .map(_mapPublicReview)
+    final summary = reviewsDetails.data.summary;
+    final myReview = reviewsDetails.data.myReview;
+    final publicReviews = reviewsDetails.data.reviews
+        .map(ReviewUiMapper.mapPublicReview)
         .toList();
+
+    final selectedFilter = _filterFromRating(
+      context.select(
+        (DetailsOfTestCubit cubit) => cubit.state.selectedRatingFilter,
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -47,11 +45,11 @@ class _ReviewTabState extends State<ReviewTab> {
         Divider(height: 30, thickness: 3, color: AppPalette.whiteToGrey),
 
         if (myReview == null) ...[
-          const RateTestSection(),
+          RateTestSection(testId: testId,),
           Divider(height: 30, thickness: 3, color: AppPalette.whiteToGrey),
         ] else ...[
           MyPublishedReviewSection(
-            review: _mapMyReview(myReview),
+            review: ReviewUiMapper.mapMyReview(myReview),
             onEdit: () {
               debugPrint('edit my review => ${myReview.id}');
             },
@@ -65,12 +63,10 @@ class _ReviewTabState extends State<ReviewTab> {
         ReviewsSection(
           selectedFilter: selectedFilter,
           onFilterChanged: (value) {
-            setState(() => selectedFilter = value);
-
             final rating = value.ratingValue?.toString() ?? 'all';
 
             context.read<DetailsOfTestCubit>().getOtherTestDetailsReviews(
-              testId: widget.testId,
+              testId: testId,
               rating: rating,
             );
 
@@ -91,7 +87,29 @@ class _ReviewTabState extends State<ReviewTab> {
     );
   }
 
-  MyPublishedReviewUiModel _mapMyReview(TestReviewEntity review) {
+  ReviewRatingFilter _filterFromRating(String rating) {
+    switch (rating) {
+      case '5':
+        return ReviewRatingFilter.five;
+      case '4':
+        return ReviewRatingFilter.four;
+      case '3':
+        return ReviewRatingFilter.three;
+      case '2':
+        return ReviewRatingFilter.two;
+      case '1':
+        return ReviewRatingFilter.one;
+      case 'all':
+      default:
+        return ReviewRatingFilter.all;
+    }
+  }
+}
+
+class ReviewUiMapper {
+  const ReviewUiMapper._();
+
+  static MyPublishedReviewUiModel mapMyReview(TestReviewEntity review) {
     return MyPublishedReviewUiModel(
       reviewerName: review.user.name,
       avatarPath: review.user.avatarUrl,
@@ -99,11 +117,11 @@ class _ReviewTabState extends State<ReviewTab> {
       publishedAtText: review.createdAt,
       rating: review.rating.toDouble(),
       reviewText: review.reviewText,
-      //helpfulCount: review.yesCount,
+      helpfulCount: review.yesCount,
     );
   }
 
-  PublicReviewUiModel _mapPublicReview(TestReviewEntity review) {
+  static PublicReviewUiModel mapPublicReview(TestReviewEntity review) {
     return PublicReviewUiModel(
       id: review.id,
       reviewerName: review.user.name,
@@ -113,11 +131,11 @@ class _ReviewTabState extends State<ReviewTab> {
       rating: review.rating.toDouble(),
       reviewText: review.reviewText,
       helpfulCount: review.yesCount,
-      myHelpfulVote: _mapVoteToBool(review.viewerFeedback?.vote),
+      myHelpfulVote: mapVoteToBool(review.viewerFeedback?.vote),
     );
   }
 
-  bool? _mapVoteToBool(String? vote) {
+  static bool? mapVoteToBool(String? vote) {
     if (vote == null) return null;
 
     final normalized = vote.trim().toLowerCase();
@@ -133,3 +151,6 @@ class _ReviewTabState extends State<ReviewTab> {
     return null;
   }
 }
+
+
+

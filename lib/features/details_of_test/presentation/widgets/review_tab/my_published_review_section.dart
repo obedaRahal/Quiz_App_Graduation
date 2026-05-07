@@ -54,6 +54,7 @@ class MyPublishedReviewUiModel {
   final String publishedAtText;
   final double rating;
   final String reviewText;
+  final int helpfulCount;
 
   const MyPublishedReviewUiModel({
     required this.reviewerName,
@@ -62,5 +63,6 @@ class MyPublishedReviewUiModel {
     required this.publishedAtText,
     required this.rating,
     required this.reviewText,
+    required this.helpfulCount,
   });
 }
