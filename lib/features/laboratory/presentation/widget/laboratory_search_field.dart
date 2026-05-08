@@ -6,11 +6,14 @@ import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 class LaboratorySearchField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
-
+  final VoidCallback? onTap;
+final TextEditingController controller;
   const LaboratorySearchField({
     super.key,
     required this.onChanged,
     required this.onClear,
+     this.onTap,
+     required this.controller,
   });
 
   @override
@@ -24,6 +27,8 @@ class LaboratorySearchField extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
       ),
       child: TextField(
+        onTap: onTap,
+        controller: controller,
         onChanged: onChanged,
         textAlign: TextAlign.right,
         textDirection: TextDirection.rtl,
@@ -35,18 +40,18 @@ class LaboratorySearchField extends StatelessWidget {
             fontSize: SizeConfig.text(0.034),
             fontFamily: AppFont.elMessiriRegular,
           ),
-          prefixIcon: Icon(
-            Icons.close_rounded,
-            color: AppPalette.greyMedium,
-            size: SizeConfig.text(0.055),
-          ),
-          suffixIcon: GestureDetector(
+          prefixIcon: GestureDetector(
             onTap: onClear,
             child: Icon(
-              Icons.search_rounded,
+              Icons.close_rounded,
               color: AppPalette.greyMedium,
-              size: SizeConfig.text(0.05),
+              size: SizeConfig.text(0.055),
             ),
+          ),
+          suffixIcon: Icon(
+            Icons.search_rounded,
+            color: AppPalette.greyMedium,
+            size: SizeConfig.text(0.05),
           ),
           border: InputBorder.none,
           isDense: true,

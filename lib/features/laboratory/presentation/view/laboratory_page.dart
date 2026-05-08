@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_cubit.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_state.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_exam_sessions_section.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_header.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_search_field.dart';
@@ -16,6 +19,8 @@ class LaboratoryPage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final appColors = context.appColors;
     final colorScheme = Theme.of(context).colorScheme;
+    final scrollController = context.read<LaboratoryCubit>().scrollController;
+    final searchController = TextEditingController();
     return Scaffold(
       body: Column(
         children: [
@@ -29,25 +34,45 @@ class LaboratoryPage extends StatelessWidget {
               horizontal: SizeConfig.w(0.045),
               vertical: SizeConfig.h(0.012),
             ),
-            child: LaboratorySearchField(onChanged: (value) {}, onClear: () {}),
+            child: LaboratorySearchField(
+             controller: searchController,
+              onChanged: (value) {
+                context.read<LaboratoryCubit>().onSearchChanged(value);
+              },
+              onClear: () {
+                searchController.clear();
+
+  context.read<LaboratoryCubit>().exitSearchMode();
+              },
+              onTap: () {
+                context.read<LaboratoryCubit>().enterSearchMode();
+              },
+            ),
           ),
 
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const LaboratoryTabsSection(),
+              controller: scrollController,
+             child: BlocBuilder<LaboratoryCubit, LaboratoryState>(
+  builder: (context, state) {
+    return Column(
+      children: [
+        if (!state.isSearchMode) ...[
+          const LaboratoryTabsSection(),
 
-                  LaboratoryTestsSliderSection(
-                    controller: controller,
-                    isDark: isDark,
-                    appColors: appColors,
-                    colorScheme: colorScheme,
-                  ),
+          LaboratoryTestsSliderSection(
+            controller: controller,
+            isDark: isDark,
+            appColors: appColors,
+            colorScheme: colorScheme,
+          ),
+        ],
 
-                  const LaboratoryExamSessionsSection(),
-                ],
-              ),
+        const LaboratoryExamSessionsSection(),
+      ],
+    );
+  },
+),
             ),
           ),
         ],

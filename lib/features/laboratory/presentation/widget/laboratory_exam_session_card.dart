@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/laboratory/data/models/laboratory_exam_session_model.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/entities/test_by_interest_response_entity.dart';
 
 class LaboratoryExamSessionCard extends StatelessWidget {
-  final LaboratoryExamSessionModel item;
+  final TestByInterestEntity item;
 
   const LaboratoryExamSessionCard({super.key, required this.item});
 
   Color _difficultyColor() {
-    switch (item.difficulty.trim()) {
+    switch (item.difficultyLevel.trim()) {
       case 'سهل':
         return AppPalette.green;
       case 'متوسط':
@@ -22,7 +22,10 @@ class LaboratoryExamSessionCard extends StatelessWidget {
     }
   }
 
-  String get priceText => item.price.toString();
+  String get priceText {
+    if (item.price == 0) return '0';
+    return item.price.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +89,7 @@ class LaboratoryExamSessionCard extends StatelessWidget {
 }
 
 class _SessionInfoPanel extends StatelessWidget {
-  final LaboratoryExamSessionModel item;
+  final TestByInterestEntity item;
   final bool isDark;
   final Color difficultyColor;
 
@@ -95,7 +98,6 @@ class _SessionInfoPanel extends StatelessWidget {
     required this.isDark,
     required this.difficultyColor,
   });
-
   @override
   Widget build(BuildContext context) {
     return ClipPath(
@@ -129,7 +131,10 @@ class _SessionInfoPanel extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                _DifficultyBadge(text: item.difficulty, color: difficultyColor),
+                _DifficultyBadge(
+                  text: item.difficultyLevel,
+                  color: difficultyColor,
+                ),
               ],
             ),
             SizedBox(height: SizeConfig.h(0.009)),
@@ -151,35 +156,54 @@ class _SessionInfoPanel extends StatelessWidget {
                   child: Row(
                     children: [
                       _BlueTag(
-                        text: item.tags.isEmpty ? 'عام' : item.tags.first,
+                        text: item.interests.isEmpty
+                            ? 'عام'
+                            : item.interests.first.name,
                       ),
 
                       SizedBox(width: SizeConfig.w(0.010)),
 
-                      if (item.tags.length > 1) _BlueTag(text: item.tags[1]),
+                      if (item.interests.length > 1)
+                        _BlueTag(text: item.interests[1].name),
+                      // _BlueTag(
+                      //   text: item.tags.isEmpty ? 'عام' : item.tags.first,
+                      // ),
+
+                      // SizedBox(width: SizeConfig.w(0.010)),
+
+                      // if (item.tags.length > 1) _BlueTag(text: item.tags[1]),
                     ],
                   ),
                 ),
 
                 SizedBox(width: SizeConfig.w(0.010)),
-
                 Expanded(
-                  flex: 3,
+                  flex: 5,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      _FooterInfo(
-                        icon: Icons.timer_outlined,
-                        text: '5 د',
-                        isDark: isDark,
+                      Expanded(
+                        flex: 3,
+                        child: _FooterInfo(
+                          icon: Icons.timer_outlined,
+                          iconSize: SizeConfig.text(0.032).clamp(14.0, 18.0),
+                          fontSize: SizeConfig.text(0.032).clamp(12.0, 15.0),
+                          text: item.publishedAgo,
+                          isDark: isDark,
+                        ),
                       ),
 
-                      SizedBox(width: SizeConfig.w(0.015)),
+                      SizedBox(width: SizeConfig.w(0.010)),
 
-                      _FooterInfo(
-                        icon: Icons.edit_note_rounded,
-                        text: '${item.questionCount} سؤال',
-                        isDark: isDark,
+                      Expanded(
+                        flex: 2,
+                        child: _FooterInfo(
+                          icon: Icons.edit_note_rounded,
+                          iconSize: SizeConfig.text(0.028).clamp(11.0, 16.0),
+                          fontSize: SizeConfig.text(0.024).clamp(9.0, 12.0),
+                          text: '${item.questionCount} سؤال',
+                          isDark: isDark,
+                        ),
                       ),
                     ],
                   ),
@@ -194,7 +218,7 @@ class _SessionInfoPanel extends StatelessWidget {
 }
 
 class _SessionPricePanel extends StatelessWidget {
-  final LaboratoryExamSessionModel item;
+  final TestByInterestEntity item;
   final String priceText;
   final bool isDark;
 
@@ -257,7 +281,7 @@ class _SessionPricePanel extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     CustomTextWidget(
-                      item.rating.toStringAsFixed(1),
+                      item.averageRating.toStringAsFixed(1),
                       fontSize: SizeConfig.text(0.032),
                       color: AppPalette.greyMedium,
                     ),
@@ -305,30 +329,6 @@ class _DifficultyBadge extends StatelessWidget {
   }
 }
 
-// class _BlueTag extends StatelessWidget {
-//   final String text;
-
-//   const _BlueTag({required this.text});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: EdgeInsets.symmetric(
-//         horizontal: SizeConfig.w(0.024),
-//         vertical: SizeConfig.h(0.004),
-//       ),
-//       decoration: BoxDecoration(
-//         color: const Color(0xFF4F7DFF),
-//         borderRadius: BorderRadius.circular(7),
-//       ),
-//       child: CustomTextWidget(
-//         text,
-//         fontSize: SizeConfig.text(0.025),
-//         color: Colors.white,
-//       ),
-//     );
-//   }
-// }
 class _BlueTag extends StatelessWidget {
   final String text;
 
@@ -360,68 +360,43 @@ class _BlueTag extends StatelessWidget {
     );
   }
 }
-// class _FooterInfo extends StatelessWidget {
-//   final IconData icon;
-//   final String text;
-//   final bool isDark;
 
-//   const _FooterInfo({
-//     required this.icon,
-//     required this.text,
-//     required this.isDark,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-//       children: [
-//         CustomTextWidget(
-//           text,
-//           fontSize: SizeConfig.text(0.026),
-//           color: isDark ? AppPalette.titleWhiteINDark : const Color(0xFF26323D),
-//         ),
-//         SizedBox(width: SizeConfig.w(0.006)),
-//         Icon(icon, size: 17, color: const Color(0xFF26323D)),
-//       ],
-//     );
-//   }
-// }
 class _FooterInfo extends StatelessWidget {
   final IconData icon;
   final String text;
+  final double fontSize;
+  final double iconSize;
+
   final bool isDark;
 
   const _FooterInfo({
     required this.icon,
     required this.text,
     required this.isDark,
+    required this.fontSize,
+    required this.iconSize,
   });
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = SizeConfig.text(0.028).clamp(11.0, 17.0);
-
-    return Flexible(
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CustomTextWidget(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              fontSize: SizeConfig.text(0.022).clamp(8.0, 11.0),
-              color: isDark
-                  ? AppPalette.titleWhiteINDark
-                  : const Color(0xFF26323D),
-            ),
-
-            SizedBox(width: SizeConfig.w(0.004)),
-
-            Icon(icon, size: iconSize, color: const Color(0xFF26323D)),
-          ],
-        ),
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerRight,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomTextWidget(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            fontSize: fontSize,
+            color: isDark
+                ? AppPalette.titleWhiteINDark
+                : const Color(0xFF26323D),
+          ),
+          SizedBox(width: SizeConfig.w(0.004)),
+          Icon(icon, size: iconSize, color: const Color(0xFF26323D)),
+        ],
       ),
     );
   }

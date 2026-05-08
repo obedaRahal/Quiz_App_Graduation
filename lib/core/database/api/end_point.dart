@@ -61,4 +61,10 @@ class EndPoints {
 
   static String otherTestDetailsUnbookmark(int testId) =>
       '$baseUrl/test/unbookmark/$testId';
+  // laboratory
+  static String testsByInterest(int interestId) {
+    return '/home/test-by-interest/$interestId';
+  }
+  static const String searchLabTests  =
+    '/lab/search';
 }

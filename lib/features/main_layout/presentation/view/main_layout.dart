@@ -10,6 +10,9 @@ import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/views/details_of_test_view.dart';
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_cubit.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/view/laboratory_page.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_state.dart';
@@ -51,7 +54,18 @@ class MainLayoutBody extends StatelessWidget {
               //     child: Text("details of test"),
               //   ),
               // ),
-              LaboratoryPage(),
+              BlocProvider(
+                create: (_) =>
+                    LaboratoryCubit(
+                        getTestsByInterestUseCase:
+                            sl<GetTestsByInterestUseCase>(),
+                        searchTestsByInterestUseCase:
+                            sl<SearchTestsByInterestUseCase>(),
+                      )
+                      ..initScrollListener()
+                      ..getInitialExamSessions(interestId: 2),
+                child: const LaboratoryPage(),
+              ),
               const Center(child: Text('الخطة')),
             ],
           ),
