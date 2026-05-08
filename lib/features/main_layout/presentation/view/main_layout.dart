@@ -10,6 +10,7 @@ import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/views/details_of_test_view.dart';
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/view/laboratory_page.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_state.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/widget/custom_bottom_nav_bar.dart';
@@ -37,19 +38,21 @@ class MainLayoutBody extends StatelessWidget {
                 child: const HomePage(),
               ),
               const Center(child: Text('المكتبة')),
-              const Center(child: Text('المختبر')),
-              Center(
-                child: InkWell(
-                  onTap: () {
-                    //context.pushNamed(AppRouterName.detailsOfTest);
-                    context.pushNamed(
-                      AppRouterName.detailsOfTest,
-                      extra: DetailsOfTestRouteArgs(testId: 4),
-                    );
-                  },
-                  child: Text("details of test"),
-                ),
-              ),
+              // const Center(child: Text('المختبر')),
+              // Center(
+              //   child: InkWell(
+              //     onTap: () {
+              //       //context.pushNamed(AppRouterName.detailsOfTest);
+              //       context.pushNamed(
+              //         AppRouterName.detailsOfTest,
+              //         extra: DetailsOfTestRouteArgs(testId: 4),
+              //       );
+              //     },
+              //     child: Text("details of test"),
+              //   ),
+              // ),
+              LaboratoryPage(),
+              const Center(child: Text('الخطة')),
             ],
           ),
           bottomNavigationBar: const CustomBottomNavBar(),

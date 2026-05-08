@@ -26,9 +26,7 @@ class HomeSliderSection extends StatelessWidget {
     if (state.isRecommendedTestsLoading) {
       return SizedBox(
         height: SizeConfig.h(0.40),
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -60,10 +58,10 @@ class HomeSliderSection extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
         height: SizeConfig.isSmallPhone
-            ? SizeConfig.h(0.40)
+            ? SizeConfig.h(0.38)
             : SizeConfig.isMediumPhone
-                ? SizeConfig.h(0.41)
-                : SizeConfig.h(0.43),
+            ? SizeConfig.h(0.40)
+            : SizeConfig.h(0.41),
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: PageView.builder(
