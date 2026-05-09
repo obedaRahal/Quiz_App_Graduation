@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_state.dart';
@@ -13,9 +14,12 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
   bool _isFetchingSearchMore = false;
   final SearchTestsByInterestUseCase searchTestsByInterestUseCase;
   bool _isFetchingMore = false;
+  final GetLabRecommendedTestsUseCase getLabRecommendedTestsUseCase;
+  bool _isFetchingMoreLabTests = false;
   LaboratoryCubit({
     required this.getTestsByInterestUseCase,
     required this.searchTestsByInterestUseCase,
+    required this.getLabRecommendedTestsUseCase,
   }) : super(const LaboratoryState());
 
   @override
@@ -24,6 +28,13 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
     scrollController.dispose();
     return super.close();
   }
+
+  static const Map<int, String> _labTabs = {
+    0: 'trending',
+    3: 'free',
+    1: 'new',
+    2: 'most_participated',
+  };
 
   Future<void> getInitialExamSessions({required int interestId}) async {
     emit(
@@ -237,5 +248,83 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
     if (!state.searchHasMorePages) return;
 
     await searchExamSessions(page: state.searchCurrentPage + 1, reset: false);
+  }
+
+  Future<void> getInitialLabTests({String tab = 'trending'}) async {
+    emit(
+      state.copyWith(
+        isLabTestsLoading: true,
+        isLabTestsLoadingMore: false,
+        labTestsError: null,
+        featuredTopRatedTests: [],
+        labTests: [],
+        selectedLabTab: tab,
+        labTestsCurrentPage: 1,
+        labTestsHasMorePages: true,
+      ),
+    );
+
+    try {
+      final response = await getLabRecommendedTestsUseCase(tab: tab, page: 1);
+
+      emit(
+        state.copyWith(
+          isLabTestsLoading: false,
+          featuredTopRatedTests: response.featuredTopRated,
+          labTests: response.items,
+          selectedLabTab: response.currentTab,
+          labTestsCurrentPage: response.pagination.currentPage,
+          labTestsHasMorePages: response.pagination.hasMore,
+          labTestsError: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(isLabTestsLoading: false, labTestsError: e.toString()),
+      );
+    }
+  }
+
+  Future<void> changeLabTab(int index) async {
+    final tab = _labTabs[index] ?? 'trending';
+    await getInitialLabTests(tab: tab);
+  }
+
+  Future<void> getNextLabTestsPage() async {
+    if (_isFetchingMoreLabTests) return;
+    if (state.isLabTestsLoading || state.isLabTestsLoadingMore) return;
+    if (!state.labTestsHasMorePages) return;
+
+    _isFetchingMoreLabTests = true;
+
+    emit(state.copyWith(isLabTestsLoadingMore: true, labTestsError: null));
+
+    try {
+      final nextPage = state.labTestsCurrentPage + 1;
+
+      final response = await getLabRecommendedTestsUseCase(
+        tab: state.selectedLabTab,
+        page: nextPage,
+      );
+
+      emit(
+        state.copyWith(
+          isLabTestsLoadingMore: false,
+          labTests: [...state.labTests, ...response.items],
+          labTestsCurrentPage: response.pagination.currentPage,
+          labTestsHasMorePages: response.pagination.hasMore,
+          labTestsError: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLabTestsLoadingMore: false,
+          labTestsError: e.toString(),
+        ),
+      );
+    } finally {
+      _isFetchingMoreLabTests = false;
+    }
   }
 }

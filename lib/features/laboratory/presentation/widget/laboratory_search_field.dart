@@ -7,13 +7,13 @@ class LaboratorySearchField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
   final VoidCallback? onTap;
-final TextEditingController controller;
+  final TextEditingController controller;
   const LaboratorySearchField({
     super.key,
     required this.onChanged,
     required this.onClear,
-     this.onTap,
-     required this.controller,
+    this.onTap,
+    required this.controller,
   });
 
   @override
@@ -33,8 +33,16 @@ final TextEditingController controller;
         textAlign: TextAlign.right,
         textDirection: TextDirection.rtl,
         textAlignVertical: TextAlignVertical.center,
+        style: TextStyle(
+          color: isDark
+              ? AppPalette.textWhiteINDark
+              : AppPalette.textColorInHome,
+          fontSize: SizeConfig.text(0.034),
+          fontFamily: AppFont.elMessiriRegular,
+        ),
         decoration: InputDecoration(
           hintText: 'البحث عن اختبارات',
+
           hintStyle: TextStyle(
             color: AppPalette.greyMedium,
             fontSize: SizeConfig.text(0.034),

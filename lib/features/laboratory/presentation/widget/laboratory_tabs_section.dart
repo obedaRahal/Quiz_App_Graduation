@@ -94,98 +94,214 @@
 //     );
 //   }
 // }
+// import 'package:flutter/material.dart';
+// import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+// import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+// import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_filter_item.dart';
+
+// class LaboratoryTabsSection extends StatefulWidget {
+//   const LaboratoryTabsSection({super.key});
+
+//   @override
+//   State<LaboratoryTabsSection> createState() => _LaboratoryTabsSectionState();
+// }
+
+// class _LaboratoryTabsSectionState extends State<LaboratoryTabsSection> {
+//   int selectedIndex = 0;
+
+//   void changeTab(int index) {
+//     setState(() => selectedIndex = index);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+//     return Padding(
+//       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.036)),
+//       child: Row(
+//         textDirection: TextDirection.rtl,
+//         children: [
+//           Expanded(
+//             child: Row(
+//               textDirection: TextDirection.rtl,
+//               children: [
+//                 Expanded(
+//                   child: LaboratoryFilterItem(
+//                     title: "رائج",
+//                     index: 0,
+//                     selectedIndex: selectedIndex,
+//                     onTap: () => changeTab(0),
+//                   ),
+//                 ),
+//                 SizedBox(width: SizeConfig.w(0.018)),
+
+//                 Expanded(
+//                   child: LaboratoryFilterItem(
+//                     title: "مجاني",
+//                     index: 3,
+//                     selectedIndex: selectedIndex,
+//                     onTap: () => changeTab(3),
+//                   ),
+//                 ),
+//                 SizedBox(width: SizeConfig.w(0.018)),
+
+//                 Expanded(
+//                   child: LaboratoryFilterItem(
+//                     title: "جديد",
+//                     index: 1,
+//                     selectedIndex: selectedIndex,
+//                     onTap: () => changeTab(1),
+//                   ),
+//                 ),
+//                 SizedBox(width: SizeConfig.w(0.018)),
+
+//                 Expanded(
+//                   flex: 2,
+//                   child: LaboratoryFilterItem(
+//                     title: "الأكثر تقدما",
+//                     index: 2,
+//                     selectedIndex: selectedIndex,
+//                     onTap: () => changeTab(2),
+//                   ),
+//                 ),
+//                 SizedBox(width: SizeConfig.w(0.092)),
+//                 Container(
+//                   width: SizeConfig.w(0.075),
+//                   height: SizeConfig.w(0.075),
+//                   decoration: BoxDecoration(
+//                     color: isDark
+//                         ? AppPalette.fieldColorNDark
+//                         : AppPalette.whiteToGrey,
+//                     borderRadius: BorderRadius.circular(12),
+//                   ),
+//                   child: Icon(
+//                     Icons.filter_alt_outlined,
+//                     size: SizeConfig.text(0.045),
+//                     color: AppPalette.greyMedium,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_cubit.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_state.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_filter_item.dart';
 
-class LaboratoryTabsSection extends StatefulWidget {
+class LaboratoryTabsSection extends StatelessWidget {
   const LaboratoryTabsSection({super.key});
 
-  @override
-  State<LaboratoryTabsSection> createState() => _LaboratoryTabsSectionState();
-}
-
-class _LaboratoryTabsSectionState extends State<LaboratoryTabsSection> {
-  int selectedIndex = 0;
-
-  void changeTab(int index) {
-    setState(() => selectedIndex = index);
+  int _indexFromTab(String tab) {
+    switch (tab) {
+      case 'trending':
+        return 0;
+      case 'free':
+        return 3;
+      case 'new':
+        return 1;
+      case 'most_participated':
+        return 2;
+      default:
+        return 0;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.036)),
-      child: Row(
-        textDirection: TextDirection.rtl,
-        children: [
-          Expanded(
-            child: Row(
-              textDirection: TextDirection.rtl,
-              children: [
-                Expanded(
-                  child: LaboratoryFilterItem(
-                    title: "رائج",
-                    index: 0,
-                    selectedIndex: selectedIndex,
-                    onTap: () => changeTab(0),
-                  ),
-                ),
-                SizedBox(width: SizeConfig.w(0.018)),
+    return BlocBuilder<LaboratoryCubit, LaboratoryState>(
+      buildWhen: (previous, current) =>
+          previous.selectedLabTab != current.selectedLabTab,
+      builder: (context, state) {
+        final selectedIndex = _indexFromTab(state.selectedLabTab);
 
-                Expanded(
-                  child: LaboratoryFilterItem(
-                    title: "مجاني",
-                    index: 3,
-                    selectedIndex: selectedIndex,
-                    onTap: () => changeTab(3),
-                  ),
-                ),
-                SizedBox(width: SizeConfig.w(0.018)),
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.036)),
+          child: Row(
+            textDirection: TextDirection.rtl,
+            children: [
+              Expanded(
+                child: Row(
+                  textDirection: TextDirection.rtl,
+                  children: [
+                    Expanded(
+                      child: LaboratoryFilterItem(
+                        title: "رائج",
+                        index: 0,
+                        selectedIndex: selectedIndex,
+                        onTap: () =>
+                            context.read<LaboratoryCubit>().changeLabTab(0),
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.w(0.018)),
 
-                Expanded(
-                  child: LaboratoryFilterItem(
-                    title: "جديد",
-                    index: 1,
-                    selectedIndex: selectedIndex,
-                    onTap: () => changeTab(1),
-                  ),
-                ),
-                SizedBox(width: SizeConfig.w(0.018)),
+                    Expanded(
+                      child: LaboratoryFilterItem(
+                        title: "مجاني",
+                        index: 3,
+                        selectedIndex: selectedIndex,
+                        onTap: () =>
+                            context.read<LaboratoryCubit>().changeLabTab(3),
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.w(0.018)),
 
-                Expanded(
-                  flex: 2,
-                  child: LaboratoryFilterItem(
-                    title: "الأكثر تقدما",
-                    index: 2,
-                    selectedIndex: selectedIndex,
-                    onTap: () => changeTab(2),
-                  ),
+                    Expanded(
+                      child: LaboratoryFilterItem(
+                        title: "جديد",
+                        index: 1,
+                        selectedIndex: selectedIndex,
+                        onTap: () =>
+                            context.read<LaboratoryCubit>().changeLabTab(1),
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.w(0.018)),
+
+                    Expanded(
+                      flex: 2,
+                      child: LaboratoryFilterItem(
+                        title: "الأكثر تقدما",
+                        index: 2,
+                        selectedIndex: selectedIndex,
+                        onTap: () =>
+                            context.read<LaboratoryCubit>().changeLabTab(2),
+                      ),
+                    ),
+
+                    SizedBox(width: SizeConfig.w(0.092)),
+
+                    Container(
+                      width: SizeConfig.w(0.075),
+                      height: SizeConfig.w(0.075),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? AppPalette.fieldColorNDark
+                            : AppPalette.whiteToGrey,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.filter_alt_outlined,
+                        size: SizeConfig.text(0.045),
+                        color: AppPalette.greyMedium,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: SizeConfig.w(0.092)),
-                Container(
-                  width: SizeConfig.w(0.075),
-                  height: SizeConfig.w(0.075),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? AppPalette.fieldColorNDark
-                        : AppPalette.whiteToGrey,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.filter_alt_outlined,
-                    size: SizeConfig.text(0.045),
-                    color: AppPalette.greyMedium,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

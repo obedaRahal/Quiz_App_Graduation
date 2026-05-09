@@ -39,6 +39,7 @@ import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_use
 import 'package:quiz_app_grad/features/laboratory/data/datasource/laboratory_remote_data_source.dart';
 import 'package:quiz_app_grad/features/laboratory/data/repositories/laboratory_repository_impl.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/repositories/laboratory_repository.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_remote_data_source.dart';
@@ -464,5 +465,7 @@ void _registerAuthFeature() {
   sl.registerLazySingleton<SearchTestsByInterestUseCase>(
     () => SearchTestsByInterestUseCase(sl()),
   );
-
+sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
+  () => GetLabRecommendedTestsUseCase(sl()),
+);
 }

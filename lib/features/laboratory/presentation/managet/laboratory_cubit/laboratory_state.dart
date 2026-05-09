@@ -1,4 +1,4 @@
-import 'package:quiz_app_grad/features/laboratory/domain/entities/test_by_interest_response_entity.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/entities/lab_recommended_tests_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/test_by_interest_response_entity.dart';
 
 class LaboratoryState {
@@ -21,6 +21,17 @@ class LaboratoryState {
   final int searchCurrentPage;
   final bool searchHasMorePages;
 
+  final bool isLabTestsLoading;
+  final bool isLabTestsLoadingMore;
+  final String? labTestsError;
+
+  final List<LabRecommendedFeaturedTestEntity> featuredTopRatedTests;
+  final List<LabRecommendedTestItemEntity> labTests;
+
+  final String selectedLabTab;
+  final int labTestsCurrentPage;
+  final bool labTestsHasMorePages;
+
   const LaboratoryState({
     this.isInitialLoading = false,
     this.isLoadingMore = false,
@@ -37,6 +48,14 @@ class LaboratoryState {
     this.searchResults = const [],
     this.searchCurrentPage = 1,
     this.searchHasMorePages = true,
+    this.isLabTestsLoading = false,
+    this.isLabTestsLoadingMore = false,
+    this.labTestsError,
+    this.featuredTopRatedTests = const [],
+    this.labTests = const [],
+    this.selectedLabTab = 'trending',
+    this.labTestsCurrentPage = 1,
+    this.labTestsHasMorePages = true,
   });
 
   LaboratoryState copyWith({
@@ -55,6 +74,14 @@ class LaboratoryState {
     List<TestByInterestEntity>? searchResults,
     int? searchCurrentPage,
     bool? searchHasMorePages,
+    bool? isLabTestsLoading,
+    bool? isLabTestsLoadingMore,
+    String? labTestsError,
+    List<LabRecommendedFeaturedTestEntity>? featuredTopRatedTests,
+    List<LabRecommendedTestItemEntity>? labTests,
+    String? selectedLabTab,
+    int? labTestsCurrentPage,
+    bool? labTestsHasMorePages,
   }) {
     return LaboratoryState(
       isInitialLoading: isInitialLoading ?? this.isInitialLoading,
@@ -72,6 +99,16 @@ class LaboratoryState {
       searchResults: searchResults ?? this.searchResults,
       searchCurrentPage: searchCurrentPage ?? this.searchCurrentPage,
       searchHasMorePages: searchHasMorePages ?? this.searchHasMorePages,
+      isLabTestsLoading: isLabTestsLoading ?? this.isLabTestsLoading,
+      isLabTestsLoadingMore:
+          isLabTestsLoadingMore ?? this.isLabTestsLoadingMore,
+      labTestsError: labTestsError,
+      featuredTopRatedTests:
+          featuredTopRatedTests ?? this.featuredTopRatedTests,
+      labTests: labTests ?? this.labTests,
+      selectedLabTab: selectedLabTab ?? this.selectedLabTab,
+      labTestsCurrentPage: labTestsCurrentPage ?? this.labTestsCurrentPage,
+      labTestsHasMorePages: labTestsHasMorePages ?? this.labTestsHasMorePages,
     );
   }
 }
