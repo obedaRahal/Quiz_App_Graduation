@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
@@ -9,8 +10,10 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/g
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_reviews_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_sample_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_bookmark_action_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_follow_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_like_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
 
@@ -22,6 +25,8 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
   final UnlikeTestUseCase unlikeTestUseCase;
   final BookmarkTestUseCase bookmarkTestUseCase;
   final UnbookmarkTestUseCase unbookmarkTestUseCase;
+  final FollowCreatorUseCase followCreatorUseCase;
+  final UnfollowCreatorUseCase unfollowCreatorUseCase;
 
   DetailsOfTestCubit({
     required this.getOtherTestDetailsOverviewUseCase,
@@ -31,6 +36,8 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     required this.unlikeTestUseCase,
     required this.bookmarkTestUseCase,
     required this.unbookmarkTestUseCase,
+    required this.followCreatorUseCase,
+    required this.unfollowCreatorUseCase,
   }) : super(const DetailsOfTestState()) {
     debugPrint("============ DetailsOfTestCubit INIT ============");
   }
@@ -431,6 +438,108 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
         emit(
           state.copyWith(
             bookmarkActionStatus: TestBookmarkActionStatus.success,
+            overviewDetails: updatedOverview,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> toggleCreatorFollow({required int creatorId}) async {
+    debugPrint(
+      "============ DetailsOfTestCubit.toggleCreatorFollow ============",
+    );
+    debugPrint("→ params: {creatorId: $creatorId}");
+
+    final overview = state.overviewDetails;
+
+    if (overview == null) {
+      debugPrint("✗ overviewDetails is null, cannot toggle follow");
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (state.isFollowActionLoading) {
+      debugPrint("✗ follow action already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final currentIsFollowing =
+        overview.data.extraInfo.viewerContext.isFollowingCreator;
+
+    final currentFollowersCount = overview.data.creator.followersCount;
+
+    debugPrint("→ currentIsFollowing: $currentIsFollowing");
+    debugPrint("→ currentFollowersCount: $currentFollowersCount");
+
+    emit(
+      state.copyWith(
+        followActionStatus: FollowActionStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = currentIsFollowing
+        ? await unfollowCreatorUseCase(
+            TestFollowActionParams(creatorId: creatorId),
+          )
+        : await followCreatorUseCase(
+            TestFollowActionParams(creatorId: creatorId),
+          );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ toggle follow failure title: ${failure.title}");
+        debugPrint("✗ toggle follow failure message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            followActionStatus: FollowActionStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        final newIsFollowing = !currentIsFollowing;
+
+        final int updatedFollowersCount;
+        if (newIsFollowing == currentIsFollowing) {
+          updatedFollowersCount = currentFollowersCount;
+        } else if (newIsFollowing) {
+          updatedFollowersCount = currentFollowersCount + 1;
+        } else {
+          updatedFollowersCount = (currentFollowersCount - 1).clamp(
+            0,
+            999999999,
+          );
+        }
+
+        debugPrint("✓ toggle follow success");
+        debugPrint("→ response message: ${response.message}");
+        debugPrint("→ newIsFollowing: $newIsFollowing");
+        debugPrint("→ updatedFollowersCount: $updatedFollowersCount");
+
+        final updatedOverview = overview.copyWith(
+          data: overview.data.copyWith(
+            creator: overview.data.creator.copyWith(
+              followersCount: updatedFollowersCount,
+            ),
+            extraInfo: overview.data.extraInfo.copyWith(
+              viewerContext: overview.data.extraInfo.viewerContext.copyWith(
+                isFollowingCreator: newIsFollowing,
+              ),
+            ),
+          ),
+        );
+
+        emit(
+          state.copyWith(
+            followActionStatus: FollowActionStatus.success,
             overviewDetails: updatedOverview,
             clearError: true,
           ),

@@ -19,11 +19,13 @@ import 'package:quiz_app_grad/features/details_of_test/data/data_sources/details
 import 'package:quiz_app_grad/features/details_of_test/data/repo_impl/details_of_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/repositories/details_of_test_repository.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/data_source/all_interests_remote_data_source.dart';
@@ -216,6 +218,8 @@ void _registerDetailsOfTestFeature() {
         unlikeTestUseCase: sl<UnlikeTestUseCase>(),
         bookmarkTestUseCase: sl<BookmarkTestUseCase>(),
         unbookmarkTestUseCase: sl<UnbookmarkTestUseCase>(),
+        followCreatorUseCase: sl<FollowCreatorUseCase>(),
+        unfollowCreatorUseCase: sl<UnfollowCreatorUseCase>(),
       ),
     );
   }
@@ -254,6 +258,10 @@ void _registerDetailsOfTestFeature() {
       () => UnbookmarkTestUseCase(sl<DetailsOfTestRepository>()),
     );
   }
+
+  sl.registerLazySingleton(() => FollowCreatorUseCase(sl()));
+
+  sl.registerLazySingleton(() => UnfollowCreatorUseCase(sl()));
 }
 
 void _registerOnboardingFeature() {

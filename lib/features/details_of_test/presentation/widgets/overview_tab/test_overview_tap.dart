@@ -20,6 +20,8 @@ class TestOverviewTab extends StatelessWidget {
   final String targetLevel;
   final String language;
   final int participantsCount;
+  final VoidCallback onFollowTap;
+
   //final String reviewStatus;
   final List<String> interests;
 
@@ -42,6 +44,7 @@ class TestOverviewTab extends StatelessWidget {
     required this.participantsCount,
     //required this.reviewStatus,
     required this.interests,
+    required this.onFollowTap
   });
 
   @override
@@ -57,9 +60,7 @@ class TestOverviewTab extends StatelessWidget {
           followingCount: followingCount,
           publishedTestsCount: publishedTestsCount,
           isFollowing: isFollowingCreator,
-          onFollowTap: () {
-            debugPrint("follow / unfollow");
-          },
+          onFollowTap: onFollowTap
         ),
 
         Divider(height: 30, thickness: 3, color: AppPalette.whiteToGrey),
