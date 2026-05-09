@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
-import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
-import 'package:go_router/go_router.dart';
-import 'package:quiz_app_grad/core/config/app_router_name.dart';
-import 'package:quiz_app_grad/features/details_of_test/presentation/views/details_of_test_view.dart';
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
@@ -66,7 +62,7 @@ class MainLayoutBody extends StatelessWidget {
                             sl<GetLabRecommendedTestsUseCase>(),
                       )
                       ..initScrollListener()
-                      ..getInitialExamSessions(interestId: 2)
+                      
                       ..getInitialLabTests(tab: 'trending'),
                 child: const LaboratoryPage(),
               ),
