@@ -112,6 +112,27 @@ class TestCreatorEntity {
     required this.publishedTestsCount,
     required this.profilePicture,
   });
+
+  TestCreatorEntity copyWith({
+    int? id,
+    String? name,
+    bool? isAcademicallyVerified,
+    int? followersCount,
+    int? followingCount,
+    int? publishedTestsCount,
+    String? profilePicture,
+  }) {
+    return TestCreatorEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      isAcademicallyVerified:
+          isAcademicallyVerified ?? this.isAcademicallyVerified,
+      followersCount: followersCount ?? this.followersCount,
+      followingCount: followingCount ?? this.followingCount,
+      publishedTestsCount: publishedTestsCount ?? this.publishedTestsCount,
+      profilePicture: profilePicture ?? this.profilePicture,
+    );
+  }
 }
 
 class TestExtraInfoEntity {

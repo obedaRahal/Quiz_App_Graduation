@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_like_action_entity.dart';
 
 import '../../../../core/errors/exceptions.dart';
@@ -362,6 +363,94 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
     } catch (e) {
       debugPrint(
         "✗ DetailsOfTestRepositoryImpl.unbookmarkTest Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'حدث خطأ غير متوقع'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, TestFollowActionEntity>> followCreator({
+    required int creatorId,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.followCreator ============",
+    );
+    debugPrint("→ params: {creatorId: $creatorId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.followCreator");
+
+      final model = await remoteDataSource.followCreator(creatorId: creatorId);
+
+      debugPrint("← remoteDataSource.followCreator success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.followCreator ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.followCreator Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'حدث خطأ غير متوقع'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, TestFollowActionEntity>> unfollowCreator({
+    required int creatorId,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.unfollowCreator ============",
+    );
+    debugPrint("→ params: {creatorId: $creatorId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.unfollowCreator");
+
+      final model = await remoteDataSource.unfollowCreator(
+        creatorId: creatorId,
+      );
+
+      debugPrint("← remoteDataSource.unfollowCreator success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.unfollowCreator ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.unfollowCreator Unexpected error: $e",
       );
       debugPrint("=================================================");
 

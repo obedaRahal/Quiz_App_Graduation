@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_bookmark_action_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/test_follow_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_like_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_reviews_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_sample_model.dart';
@@ -28,6 +29,10 @@ abstract class DetailsOfTestRemoteDataSource {
   Future<TestBookmarkActionModel> bookmarkTest({required int testId});
 
   Future<TestBookmarkActionModel> unbookmarkTest({required int testId});
+
+  Future<TestFollowActionModel> followCreator({required int creatorId});
+
+  Future<TestFollowActionModel> unfollowCreator({required int creatorId});
 }
 
 class DetailsOfTestRemoteDataSourceImpl
@@ -182,5 +187,43 @@ class DetailsOfTestRemoteDataSourceImpl
     debugPrint("=================================================");
 
     return TestBookmarkActionModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<TestFollowActionModel> followCreator({required int creatorId}) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.followCreator ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.followCreator(creatorId)}");
+    debugPrint("→ method: POST");
+    debugPrint("→ params: {creatorId: $creatorId}");
+
+    final response = await apiConsumer.post(EndPoints.followCreator(creatorId));
+
+    debugPrint("← response (followCreator): $response");
+    debugPrint("=================================================");
+
+    return TestFollowActionModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<TestFollowActionModel> unfollowCreator({
+    required int creatorId,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.unfollowCreator ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.unfollowCreator(creatorId)}");
+    debugPrint("→ method: DELETE");
+    debugPrint("→ params: {creatorId: $creatorId}");
+
+    final response = await apiConsumer.delete(
+      EndPoints.unfollowCreator(creatorId),
+    );
+
+    debugPrint("← response (unfollowCreator): $response");
+    debugPrint("=================================================");
+
+    return TestFollowActionModel.fromJson(response as Map<String, dynamic>);
   }
 }

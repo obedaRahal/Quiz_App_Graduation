@@ -61,4 +61,10 @@ class EndPoints {
 
   static String otherTestDetailsUnbookmark(int testId) =>
       '$baseUrl/test/unbookmark/$testId';
+
+  static String followCreator(int creatorId) =>
+      '$baseUrl/users-profile/follow/$creatorId';
+
+  static String unfollowCreator(int creatorId) =>
+      '$baseUrl/users-profile/unfollow/$creatorId';
 }

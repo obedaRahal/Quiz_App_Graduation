@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_like_action_entity.dart';
 
 import '../../../../core/errors/failure.dart';
@@ -29,5 +30,13 @@ abstract class DetailsOfTestRepository {
 
   Future<Either<Failure, TestBookmarkActionEntity>> unbookmarkTest({
     required int testId,
+  });
+
+  Future<Either<Failure, TestFollowActionEntity>> followCreator({
+    required int creatorId,
+  });
+
+  Future<Either<Failure, TestFollowActionEntity>> unfollowCreator({
+    required int creatorId,
   });
 }

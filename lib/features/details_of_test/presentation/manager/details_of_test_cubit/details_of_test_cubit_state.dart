@@ -15,6 +15,8 @@ enum TestLikeActionStatus { initial, loading, success, failure }
 
 enum TestBookmarkActionStatus { initial, loading, success, failure }
 
+enum FollowActionStatus { initial, loading, success, failure }
+
 class DetailsOfTestState {
   //  for UI ////
   final DetailsOfTestTab selectedTab;
@@ -39,6 +41,8 @@ class DetailsOfTestState {
   final TestLikeActionStatus likeActionStatus;
   final TestBookmarkActionStatus bookmarkActionStatus;
 
+  final FollowActionStatus followActionStatus;
+
   const DetailsOfTestState({
     this.selectedTab = DetailsOfTestTab.overview,
     this.selectedSampleAnswers = const {},
@@ -58,6 +62,8 @@ class DetailsOfTestState {
 
     this.likeActionStatus = TestLikeActionStatus.initial,
     this.bookmarkActionStatus = TestBookmarkActionStatus.initial,
+
+    this.followActionStatus = FollowActionStatus.initial,
   });
 
   bool get canSubmitDraftReview => draftReviewRating > 0;
@@ -92,6 +98,9 @@ class DetailsOfTestState {
   bool get isBookmarkActionLoading =>
       bookmarkActionStatus == TestBookmarkActionStatus.loading;
 
+  bool get isFollowActionLoading =>
+      followActionStatus == FollowActionStatus.loading;
+
   DetailsOfTestState copyWith({
     //  for UI ////
     DetailsOfTestTab? selectedTab,
@@ -114,6 +123,8 @@ class DetailsOfTestState {
 
     TestLikeActionStatus? likeActionStatus,
     TestBookmarkActionStatus? bookmarkActionStatus,
+
+    FollowActionStatus? followActionStatus,
   }) {
     return DetailsOfTestState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -136,6 +147,8 @@ class DetailsOfTestState {
 
       likeActionStatus: likeActionStatus ?? this.likeActionStatus,
       bookmarkActionStatus: bookmarkActionStatus ?? this.bookmarkActionStatus,
+
+      followActionStatus: followActionStatus ?? this.followActionStatus,
     );
   }
 }
