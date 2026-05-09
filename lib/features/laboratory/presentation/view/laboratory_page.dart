@@ -35,14 +35,14 @@ class LaboratoryPage extends StatelessWidget {
               vertical: SizeConfig.h(0.012),
             ),
             child: LaboratorySearchField(
-             controller: searchController,
+              controller: searchController,
               onChanged: (value) {
                 context.read<LaboratoryCubit>().onSearchChanged(value);
               },
               onClear: () {
                 searchController.clear();
 
-  context.read<LaboratoryCubit>().exitSearchMode();
+                context.read<LaboratoryCubit>().exitSearchMode();
               },
               onTap: () {
                 context.read<LaboratoryCubit>().enterSearchMode();
@@ -53,26 +53,26 @@ class LaboratoryPage extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               controller: scrollController,
-             child: BlocBuilder<LaboratoryCubit, LaboratoryState>(
-  builder: (context, state) {
-    return Column(
-      children: [
-        if (!state.isSearchMode) ...[
-          const LaboratoryTabsSection(),
+              child: BlocBuilder<LaboratoryCubit, LaboratoryState>(
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      if (!state.isSearchMode) ...[
+                        const LaboratoryTabsSection(),
 
-          LaboratoryTestsSliderSection(
-            controller: controller,
-            isDark: isDark,
-            appColors: appColors,
-            colorScheme: colorScheme,
-          ),
-        ],
+                        LaboratoryTestsSliderSection(
+                          controller: controller,
+                          isDark: isDark,
+                          appColors: appColors,
+                          colorScheme: colorScheme,
+                        ),
+                      ],
 
-        const LaboratoryExamSessionsSection(),
-      ],
-    );
-  },
-),
+                      const LaboratoryExamSessionsSection(),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ],

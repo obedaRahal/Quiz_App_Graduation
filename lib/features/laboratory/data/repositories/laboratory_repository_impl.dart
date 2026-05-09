@@ -1,4 +1,5 @@
 import 'package:quiz_app_grad/features/laboratory/data/datasource/laboratory_remote_data_source.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/entities/lab_recommended_tests_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/search_tests_by_interest_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/test_by_interest_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/repositories/laboratory_repository.dart';
@@ -32,6 +33,18 @@ Future<SearchTestsByInterestResponseEntity> searchTestsByInterest({
     query: query,
     page: page,
     perPage: perPage,
+  );
+
+  return response.toEntity();
+}
+@override
+Future<LabRecommendedTestsResponseEntity> getLabRecommendedTests({
+  required String tab,
+  required int page,
+}) async {
+  final response = await remoteDataSource.getLabRecommendedTests(
+    tab: tab,
+    page: page,
   );
 
   return response.toEntity();
