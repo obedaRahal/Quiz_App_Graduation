@@ -55,11 +55,7 @@ class FilterItem extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: isSelected ? selectedColor : unselectedColor,
-            borderRadius: BorderRadius.circular(borderRadius),
-            // border: Border.all(
-            //   color: isSelected ? selectedColor : Colors.grey.withOpacity(0.4),
-            //   width: isSelected ? 1.5 : 1,
-            // ),
+            borderRadius: BorderRadius.circular(borderRadius),          
           ),
           child: Center(
             child: CustomTextWidget(

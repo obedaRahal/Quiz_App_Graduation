@@ -16,7 +16,7 @@ abstract class AppRouterName {
   static const mainLayout = 'mainLayout';
   static const detailsOfTest = 'detailsOfTest';
   static const allCategoriesPage = 'allCategoriesPage';
-
+  static const laboratoryPage = 'laboratoryPage';
 
 }
 
@@ -39,6 +39,7 @@ abstract class AppRouterPath {
   static const mainLayout = '/mainLayout';
   static const detailsOfTest = '/detailsOfTest';
   static const allCategoriesPage = '/allCategoriesPage';
+  static const laboratoryPage = '/laboratoryPage';
 
 
 }

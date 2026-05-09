@@ -1,6 +1,6 @@
 class EndPoints {
   //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
-  static const String baseUrl = 'http://192.168.1.106/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
@@ -67,4 +67,10 @@ class EndPoints {
 
   static String unfollowCreator(int creatorId) =>
       '$baseUrl/users-profile/unfollow/$creatorId';
+  // laboratory
+  static String testsByInterest(int interestId) {
+    return '/home/test-by-interest/$interestId';
+  }
+  static const String searchLabTests  =
+    '/lab/search';
 }

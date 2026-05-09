@@ -38,6 +38,11 @@ import 'package:quiz_app_grad/features/home/domain/repositories/home_repostory.d
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
+import 'package:quiz_app_grad/features/laboratory/data/datasource/laboratory_remote_data_source.dart';
+import 'package:quiz_app_grad/features/laboratory/data/repositories/laboratory_repository_impl.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/repositories/laboratory_repository.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_remote_data_source.dart';
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -453,4 +458,19 @@ void _registerAuthFeature() {
   sl.registerLazySingleton<AllInterestsRemoteDataSource>(
     () => AllInterestsRemoteDataSourceImpl(api: sl()),
   );
+  sl.registerLazySingleton<LaboratoryRemoteDataSource>(
+    () => LaboratoryRemoteDataSourceImpl(api: sl()),
+  );
+
+  sl.registerLazySingleton<LaboratoryRepository>(
+    () => LaboratoryRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<GetTestsByInterestUseCase>(
+    () => GetTestsByInterestUseCase(sl()),
+  );
+  sl.registerLazySingleton<SearchTestsByInterestUseCase>(
+    () => SearchTestsByInterestUseCase(sl()),
+  );
+
 }

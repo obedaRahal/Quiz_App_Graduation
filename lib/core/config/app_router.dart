@@ -33,6 +33,7 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/views/detail
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/view/laboratory_page.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_progress_preview_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
@@ -262,6 +263,13 @@ class AppRouter {
         //     return const DetailsOfTestView();
         //   },
         // ),
+        GoRoute(
+          path: AppRouterPath.laboratoryPage,
+          name: AppRouterName.laboratoryPage,
+          builder: (context, state) {
+            return const LaboratoryPage();
+          },
+        ),
         GoRoute(
           path: AppRouterPath.detailsOfTest,
           name: AppRouterName.detailsOfTest,
