@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_info_details_section.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_publisher_card.dart';
@@ -44,7 +45,7 @@ class TestOverviewTab extends StatelessWidget {
     required this.participantsCount,
     //required this.reviewStatus,
     required this.interests,
-    required this.onFollowTap
+    required this.onFollowTap,
   });
 
   @override
@@ -60,10 +61,10 @@ class TestOverviewTab extends StatelessWidget {
           followingCount: followingCount,
           publishedTestsCount: publishedTestsCount,
           isFollowing: isFollowingCreator,
-          onFollowTap: onFollowTap
+          onFollowTap: onFollowTap,
         ),
 
-        Divider(height: 30, thickness: 3, color: AppPalette.whiteToGrey),
+        CustomDivider(height: 30, thickness: 3),
 
         TestInfoDetailsSection(
           questionCount: questionCount,

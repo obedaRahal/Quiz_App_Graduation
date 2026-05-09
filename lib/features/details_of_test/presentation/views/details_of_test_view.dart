@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
@@ -10,12 +14,15 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/deta
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_details_with_play_modes_session.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_purchase_bottom_bar.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
+import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
 
 class DetailsOfTestView extends StatelessWidget {
   const DetailsOfTestView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -28,6 +35,17 @@ class DetailsOfTestView extends StatelessWidget {
               },
             ),
 
+            SizedBox(height: SizeConfig.h(0.015)),
+            CustomButtonWidget(
+              onTap: () {
+                debugPrint("change mode ");
+                context.read<ThemeCubit>().toggleTheme();
+              },
+              child: ThemedAppImage(
+                darkPath: AppImage.logoDark,
+                lightPath: AppImage.logoLight,
+              ),
+            ),
             SizedBox(height: SizeConfig.h(0.015)),
 
             Expanded(
@@ -56,6 +74,7 @@ class DetailsOfTestView extends StatelessWidget {
                   return SingleChildScrollView(
                     child: Column(
                       children: [
+                         SizedBox(height: SizeConfig.h(0.015)),
                         TestDetailsWithPlayModesSection(
                           title: overview.data.basicInfo.title,
                           description: overview.data.basicInfo.description,

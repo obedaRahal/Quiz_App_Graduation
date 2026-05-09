@@ -27,9 +27,7 @@ class MyPublishedReviewCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final cardColor = isDark ? AppPalette.greyMediumDark : AppPalette.white;
-    final shadowColor = isDark
-        ? AppPalette.greyLightDark.withOpacity(0.35)
-        : Colors.black.withOpacity(0.08);
+    final shadowColor = AppPalette.greyLightDark.withOpacity(0.35);
 
     return Stack(
       children: [
@@ -67,7 +65,7 @@ class MyPublishedReviewCard extends StatelessWidget {
               CustomTextWidget(
                 review.reviewText,
                 textAlign: TextAlign.right,
-                color: appColors.greyMediumTogrey,
+                color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
                 fontSize: SizeConfig.text(0.034),
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
@@ -192,6 +190,7 @@ class _ReviewMetaRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
       textDirection: TextDirection.rtl,
@@ -201,11 +200,12 @@ class _ReviewMetaRow extends StatelessWidget {
           rating: rating,
           starSize: SizeConfig.h(0.028),
           horizontalSpacing: 1,
+          emptyColor: isDark ? AppPalette.greyMedium : AppPalette.greyLight,
         ),
         SizedBox(width: SizeConfig.w(0.02)),
         CustomTextWidget(
           dateText,
-          color: appColors.greyMediumTogrey,
+          color: AppPalette.greyMedium,
           fontSize: SizeConfig.text(0.029),
         ),
       ],
@@ -259,7 +259,7 @@ class ReviewHeader extends StatelessWidget {
                         reviewerName,
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.right,
-                        color: appColors.blackTogreyMedium,
+                        color: appColors.blackToGrey2Dark,
                         fontFamily: AppFont.elMessiriSemiBold,
                         fontSize: SizeConfig.text(0.038),
                         maxLines: 1,
@@ -271,7 +271,7 @@ class ReviewHeader extends StatelessWidget {
                     SizedBox(width: SizeConfig.w(0.012)),
                     Icon(
                       Icons.verified_rounded,
-                      color: AppPalette.primary,
+                      color: appColors.primaryToPrimaryDark,
                       size: 15,
                     ),
                   ],
@@ -280,7 +280,7 @@ class ReviewHeader extends StatelessWidget {
 
                   if (helpfulCount != null)
                     Padding(
-                      padding:  EdgeInsets.only(left: SizeConfig.w(0.055),),
+                      padding: EdgeInsets.only(left: SizeConfig.w(0.055)),
                       child: CustomBackgroundWithChild(
                         backgroundColor: isDark
                             ? AppPalette.primary.withOpacity(0.18)
@@ -292,7 +292,7 @@ class ReviewHeader extends StatelessWidget {
                         ),
                         child: CustomTextWidget(
                           '$helpfulCount وجدوها مفيدة',
-                          color: AppPalette.primary,
+                          color: appColors.primaryToPrimaryDark,
                           fontFamily: AppFont.elMessiriMedium,
                           fontSize: SizeConfig.text(0.022),
                         ),

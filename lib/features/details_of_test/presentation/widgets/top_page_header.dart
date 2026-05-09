@@ -3,6 +3,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class TopPageHeader extends StatelessWidget {
@@ -19,6 +20,8 @@ class TopPageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
       child: Row(
@@ -32,7 +35,7 @@ class TopPageHeader extends StatelessWidget {
             child: Center(
               child: CustomTextWidget(
                 title,
-                color: AppPalette.black,
+                color: appColors.blackTogreyMedium,
                 fontFamily: AppFont.elMessiriSemiBold,
               ),
             ),
@@ -52,20 +55,26 @@ class _HeaderActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return CustomButtonWidget(
       childHorizontalPad: SizeConfig.w(0.02),
       childVerticalPad: SizeConfig.w(0.02),
       borderRadius: 20,
-      boxShadow: const [
+      boxShadow: [
         BoxShadow(
-          color: AppPalette.greyMedium,
+          color: appColors.greyMediumTogrey,
           blurRadius: 2,
           offset: Offset(0, 0),
         ),
       ],
-      backgroundColor: AppPalette.white,
+      backgroundColor: appColors.whiteToblack,
       onTap: onTap,
-      child: Icon(icon, color: AppPalette.black, size: SizeConfig.h(0.03)),
+      child: Icon(
+        icon,
+        color: appColors.blackTogreyMedium,
+        size: SizeConfig.h(0.03),
+      ),
     );
   }
 }

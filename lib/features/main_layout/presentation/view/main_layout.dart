@@ -66,7 +66,22 @@ class MainLayoutBody extends StatelessWidget {
                       ..getInitialExamSessions(interestId: 2),
                 child: const LaboratoryPage(),
               ),
-              const Center(child: Text('الخطة')),
+
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    //context.pushNamed(AppRouterName.detailsOfTest);
+                    context.pushNamed(
+                      AppRouterName.detailsOfTest,
+                      extra: DetailsOfTestRouteArgs(testId: 4),
+                    );
+                  },
+                  child: Text("details of test"),
+                ),
+              ),
+              //const Center(child: Text('الخطة')),
+
+              
             ],
           ),
           bottomNavigationBar: const CustomBottomNavBar(),

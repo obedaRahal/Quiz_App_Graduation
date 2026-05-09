@@ -34,7 +34,7 @@ class MyPublishedReviewSection extends StatelessWidget {
           fontFamily: AppFont.elMessiriSemiBold,
           fontSize: SizeConfig.text(0.04),
         ),
-        //SizedBox(height: SizeConfig.h(0.012)),
+        SizedBox(height: SizeConfig.h(0.012)),
         MyPublishedReviewCard(
           review: review,
           onEdit: onEdit,

@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.d
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class TestDetailsCard extends StatelessWidget {
@@ -59,6 +60,8 @@ class TestDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     final difficultyColor = _difficultyColor(difficultyLevel);
     final priceText = _formatPrice(price);
     final isFree = price <= 0;
@@ -68,15 +71,15 @@ class TestDetailsCard extends StatelessWidget {
       childHorizontalPad: SizeConfig.w(0.022),
       childVerticalPad: SizeConfig.h(0.012),
       borderRadius: BorderRadius.circular(10),
-      boxShadow: const [
+      boxShadow: [
         BoxShadow(
-          color: AppPalette.greyMedium,
+          color: appColors.greyMediumTogrey,
           blurRadius: 2,
           offset: Offset(0, 0),
         ),
       ],
-      border: Border.all(color: AppPalette.greyLight, width: 2),
-      backgroundColor: AppPalette.grey,
+      border: Border.all(color: appColors.greyToGreyMediumDark, width: 2),
+      backgroundColor: appColors.greyToGreyMediumDark,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -107,7 +110,7 @@ class TestDetailsCard extends StatelessWidget {
                       CustomTextWidget(
                         priceText,
                         fontSize: SizeConfig.text(isFree ? 0.04 : 0.055),
-                        color: AppPalette.black,
+                        color: appColors.blackToGrey2Dark,
                         fontFamily: AppFont.elMessiriBold,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -116,14 +119,14 @@ class TestDetailsCard extends StatelessWidget {
                   ),
                 ),
 
-                if (!isFree)
-                  CustomTextWidget(
-                    "ليرة سورية",
-                    fontSize: SizeConfig.text(0.028),
-                    color: AppPalette.greyMedium,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                //if (!isFree)
+                CustomTextWidget(
+                  "ليرة سورية",
+                  fontSize: SizeConfig.text(0.028),
+                  color: AppPalette.greyMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
@@ -151,7 +154,7 @@ class TestDetailsCard extends StatelessWidget {
                       CustomTextWidget(
                         title,
                         fontSize: SizeConfig.text(0.046),
-                        color: AppPalette.black,
+                        color: appColors.blackToGrey2Dark,
                         fontFamily: AppFont.elMessiriBold,
                         textAlign: TextAlign.end,
                         maxLines: 1,
@@ -173,25 +176,6 @@ class TestDetailsCard extends StatelessWidget {
 
                 SizedBox(height: SizeConfig.h(0.01)),
 
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.end,
-                //   children: [
-                //     _TestInfoCounter(
-                //       value: bookmarksCount.toString(),
-                //       icon: FontAwesomeIcons.bookmark,
-                //     ),
-                //     SizedBox(width: SizeConfig.w(0.025)),
-                //     _TestInfoCounter(
-                //       value: reviewsCount.toString(),
-                //       icon: FontAwesomeIcons.comment,
-                //     ),
-                //     SizedBox(width: SizeConfig.w(0.025)),
-                //     _TestInfoCounter(
-                //       value: likesCount.toString(),
-                //       icon: FontAwesomeIcons.heart,
-                //     ),
-                //   ],
-                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -272,8 +256,10 @@ class _TestInfoCounter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     final color = isActive
-        ? activeColor ?? AppPalette.primary
+        ? activeColor ?? appColors.primaryToPrimaryDark
         : AppPalette.greyMedium;
 
     return InkWell(

@@ -1,9 +1,12 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/sample_tab/sample_test_tap.dart';
@@ -22,15 +25,20 @@ class SampleQuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final hint = question.hintText?.trim();
     final hasHint = hint != null && hint.isNotEmpty;
     final isRevealed = selectedOptionId != null;
 
     return CustomBackgroundWithChild(
       width: double.infinity,
-      backgroundColor: AppPalette.white,
+      backgroundColor: isDark ? AppPalette.black : AppPalette.white,
       borderRadius: BorderRadius.circular(15),
-      border: Border.all(color: AppPalette.borderFieldColorNLight),
+      border: Border.all(
+        color: appColors.borderFieldColorNLightToborderFieldColorNDark,
+      ),
       childVerticalPad: SizeConfig.h(0.015),
       childHorizontalPad: SizeConfig.w(0.022),
       child: Column(
@@ -43,7 +51,7 @@ class SampleQuestionCard extends StatelessWidget {
           CustomTextWidget(
             question.question,
             textAlign: TextAlign.start,
-            color: AppPalette.black,
+            color: appColors.blackToGrey2Dark,
             fontFamily: AppFont.elMessiriMedium,
             fontSize: SizeConfig.text(0.035),
           ),
@@ -81,7 +89,7 @@ class SampleQuestionCard extends StatelessWidget {
                 "الخيارات",
                 fontFamily: AppFont.elMessiriSemiBold,
                 fontSize: SizeConfig.text(0.035),
-                color: AppPalette.primary,
+                color: appColors.primaryToPrimaryDark,
               ),
             ],
           ),
@@ -112,24 +120,26 @@ class _QuestionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return Row(
       textDirection: TextDirection.rtl,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CustomTextWidget(
           "السؤال",
-          color: AppPalette.primary,
+          color: appColors.primaryToPrimaryDark,
           //fontFamily: AppFont.elMessiriSemiBold,
           fontSize: SizeConfig.text(0.035),
         ),
         CustomBackgroundWithChild(
-          backgroundColor: AppPalette.primarySoft,
+          backgroundColor: appColors.primarySoftTogreyLightDark,
           childHorizontalPad: SizeConfig.w(.022),
           childVerticalPad: SizeConfig.h(.002),
           borderRadius: BorderRadius.circular(10),
           child: CustomTextWidget(
             "#$number",
-            color: AppPalette.primary,
+            color: appColors.primaryToPrimaryDark,
             fontFamily: AppFont.elMessiriBold,
             fontSize: SizeConfig.text(0.035),
           ),
@@ -155,20 +165,25 @@ class SampleOptionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final bool showCorrect = isRevealed && option.isCorrect;
     final bool showWrong = isRevealed && isSelected && !option.isCorrect;
 
     final Color backgroundColor = showCorrect
-        ? AppPalette.greenSoft
+        ? (isDark
+              ? const Color.fromARGB(255, 24, 47, 26)
+              : AppPalette.greenSoft)
         : showWrong
         ? AppPalette.red.withOpacity(0.12)
-        : AppPalette.grey;
+        : appColors.greyToGreyMediumDark;
 
     final Color borderColor = showCorrect
         ? AppPalette.green
         : showWrong
         ? AppPalette.red
-        : AppPalette.borderFieldColorNLight;
+        : appColors.borderFieldColorNLightToborderFieldColorNDark;
 
     final Color textColor = showCorrect
         ? AppPalette.green

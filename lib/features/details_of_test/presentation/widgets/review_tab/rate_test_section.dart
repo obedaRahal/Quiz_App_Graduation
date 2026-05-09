@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
@@ -13,15 +14,14 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/deta
 class RateTestSection extends StatelessWidget {
   final int testId;
 
-  const RateTestSection({
-    super.key,
-    required this.testId,
-  });
+  const RateTestSection({super.key, required this.testId});
 
   static const int maxChars = 200;
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
       buildWhen: (previous, current) =>
           previous.draftReviewRating != current.draftReviewRating ||
@@ -38,23 +38,23 @@ class RateTestSection extends StatelessWidget {
               children: [
                 CustomTextWidget(
                   "قيم الاختبار",
-                  color: AppPalette.black,
+                  color: appColors.blackTogreyMedium,
                   fontFamily: AppFont.elMessiriBold,
                   fontSize: SizeConfig.text(0.04),
                 ),
 
                 CustomButtonWidget(
                   backgroundColor: state.canSubmitDraftReview
-                      ? AppPalette.primary
-                      : AppPalette.greyMedium,
+                      ? appColors.primaryToPrimaryDark
+                      : appColors.greyMediumTogrey,
                   childHorizontalPad: SizeConfig.w(0.06),
                   childVerticalPad: SizeConfig.w(0.01),
                   borderRadius: 18,
                   onTap: state.canSubmitDraftReview
                       ? () {
                           context.read<DetailsOfTestCubit>().submitDraftReview(
-                                testId: testId,
-                              );
+                            testId: testId,
+                          );
                         }
                       : () {
                           showValidationTopSnackBar(
@@ -66,7 +66,7 @@ class RateTestSection extends StatelessWidget {
                         },
                   child: CustomTextWidget(
                     "نشر",
-                    color: AppPalette.white,
+                    color: appColors.whiteToblack,
                     fontSize: SizeConfig.text(0.03),
                   ),
                 ),
@@ -92,14 +92,12 @@ class RateTestSection extends StatelessWidget {
 
                 return GestureDetector(
                   onTap: () {
-                    context
-                        .read<DetailsOfTestCubit>()
-                        .changeDraftReviewRating(starValue);
+                    context.read<DetailsOfTestCubit>().changeDraftReviewRating(
+                      starValue,
+                    );
                   },
                   child: Icon(
-                    isSelected
-                        ? Icons.star_rounded
-                        : Icons.star_border_rounded,
+                    isSelected ? Icons.star_rounded : Icons.star_border_rounded,
                     size: SizeConfig.h(0.072),
                     color: isSelected
                         ? AppPalette.yellow
@@ -118,44 +116,46 @@ class RateTestSection extends StatelessWidget {
                 maxLines: 2,
                 textAlign: TextAlign.right,
                 textDirection: TextDirection.rtl,
-                onChanged: context.read<DetailsOfTestCubit>().changeDraftReviewText,
+                onChanged: context
+                    .read<DetailsOfTestCubit>()
+                    .changeDraftReviewText,
                 decoration: InputDecoration(
                   counterText: "",
-                  hintText: "اشرح تجربتك (اختياري)",
+                  hintText: "اشرح تجربتك",
                   hintStyle: TextStyle(
                     color: AppPalette.greyMedium,
                     fontFamily: AppFont.elMessiriRegular,
                     fontSize: SizeConfig.text(0.032),
                   ),
                   filled: true,
-                  fillColor: AppPalette.grey,
+                  fillColor: appColors.greyToGreyMediumDark,
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: SizeConfig.w(0.035),
                     vertical: SizeConfig.h(0.012),
                   ),
                   prefixIcon: Padding(
-                    padding: EdgeInsets.all(SizeConfig.h(0.015)),
+                    padding: EdgeInsets.all(SizeConfig.h(0.02)),
                     child: FaIcon(
                       FontAwesomeIcons.masksTheater,
                       color: AppPalette.greyMedium,
-                      size: SizeConfig.h(0.03),
+                      size: SizeConfig.h(0.025),
                     ),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: AppPalette.borderFieldColorNLight,
+                      color: appColors.borderFieldColorNLightToborderFieldColorNDark,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: AppPalette.borderFieldColorNLight,
+                      color: appColors.borderFieldColorNLightToborderFieldColorNDark,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: AppPalette.primary),
+                    borderSide: BorderSide(color: appColors.primaryToPrimaryDark),
                   ),
                 ),
               ),

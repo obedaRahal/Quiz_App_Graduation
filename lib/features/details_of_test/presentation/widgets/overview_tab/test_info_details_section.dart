@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interest_chip_item.dart';
 
@@ -51,6 +52,8 @@ class TestInfoDetailsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     final categories = interests.isEmpty ? const ['غير مصنف'] : interests;
 
     return Column(
@@ -58,7 +61,7 @@ class TestInfoDetailsSection extends StatelessWidget {
       children: [
         CustomTextWidget(
           "تفاصيل الاختبار",
-          color: AppPalette.black,
+          color: appColors.blackTogreyMedium,
           fontFamily: AppFont.elMessiriBold,
           fontSize: SizeConfig.text(0.04),
         ),
@@ -141,7 +144,7 @@ class TestInfoDetailsSection extends StatelessWidget {
             ),
             _MetaInfoItem(
               title: "آخر تعديل",
-              value:_safeText(lastContentUpdatedAt),
+              value: _safeText(lastContentUpdatedAt),
               icon: FontAwesomeIcons.penToSquare,
             ),
 
@@ -180,6 +183,8 @@ class _MetaInfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return SizedBox(
       width: SizeConfig.w(0.42),
       child: Row(
@@ -187,14 +192,14 @@ class _MetaInfoItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CustomBackgroundWithChild(
-            backgroundColor: AppPalette.primarySoft,
+            backgroundColor: appColors.primarySoftTogreyLightDark,
             childHorizontalPad: SizeConfig.w(0.02),
             childVerticalPad: SizeConfig.h(0.01),
             borderRadius: BorderRadius.circular(15),
             child: FaIcon(
               icon,
               size: SizeConfig.h(0.025),
-              color: AppPalette.primary,
+              color: appColors.primaryToPrimaryDark,
             ),
           ),
 
@@ -206,7 +211,7 @@ class _MetaInfoItem extends StatelessWidget {
               children: [
                 CustomTextWidget(
                   title,
-                  color: AppPalette.black,
+                  color: appColors.blackTogreyMedium,
                   fontSize: SizeConfig.text(0.027),
                   fontFamily: AppFont.elMessiriBold,
                   maxLines: 1,
@@ -241,6 +246,8 @@ class _TestInfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return Column(
       children: [
         CustomAppImage(
@@ -252,7 +259,7 @@ class _TestInfoItem extends StatelessWidget {
         const SizedBox(height: 3),
         CustomTextWidget(
           title,
-          color: AppPalette.black,
+          color: appColors.blackToGrey2Dark,
           fontSize: SizeConfig.text(0.03),
           fontFamily: AppFont.elMessiriBold,
           maxLines: 1,

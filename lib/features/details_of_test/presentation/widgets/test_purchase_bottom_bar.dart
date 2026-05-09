@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_details_card.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_status_badge.dart';
@@ -38,14 +39,17 @@ class TestPurchaseBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return CustomBackgroundWithChild(
       childVerticalPad: SizeConfig.h(0.01),
       childHorizontalPad: SizeConfig.w(0.03),
-      backgroundColor: AppPalette.white,
+      backgroundColor: appColors.whiteToblack,
       width: double.infinity,
       boxShadow: [
         BoxShadow(
-          color: AppPalette.greyBorderCart,
+          color: isDark ? AppPalette.greyMediumDark : AppPalette.greyBorderCart,
           blurRadius: 4,
           offset: const Offset(0, -4),
         ),
@@ -70,7 +74,7 @@ class TestPurchaseBottomBar extends StatelessWidget {
             Row(
               children: [
                 CustomButtonWidget(
-                  backgroundColor: AppPalette.primary,
+                  backgroundColor: appColors.primaryToPrimaryDark,
                   childHorizontalPad: SizeConfig.w(0.04),
                   childVerticalPad: SizeConfig.w(0.013),
                   borderRadius: 20,
@@ -80,13 +84,13 @@ class TestPurchaseBottomBar extends StatelessWidget {
                       CustomTextWidget(
                         "تحميل الاختبار",
                         fontSize: SizeConfig.text(0.025),
-                        color: AppPalette.white,
+                        color: appColors.whiteToblack,
                       ),
 
                       Icon(
                         Icons.download,
                         size: SizeConfig.h(0.02),
-                        color: AppPalette.white,
+                        color: appColors.whiteToblack,
                       ),
                     ],
                   ),
@@ -95,7 +99,7 @@ class TestPurchaseBottomBar extends StatelessWidget {
                 SizedBox(width: SizeConfig.w(0.02)),
 
                 CustomButtonWidget(
-                  backgroundColor: AppPalette.grey,
+                  backgroundColor: appColors.greyToGreyMediumDark,
                   childHorizontalPad: SizeConfig.w(0.04),
                   childVerticalPad: SizeConfig.w(0.013),
                   borderRadius: 20,
@@ -135,7 +139,7 @@ class TestPurchaseBottomBar extends StatelessWidget {
             children: [
               CustomTextWidget(
                 "حالة الاختبار",
-                color: AppPalette.black,
+                color: appColors.blackTogreyMedium,
                 fontSize: SizeConfig.text(0.027),
                 fontFamily: AppFont.elMessiriBold,
                 maxLines: 1,
@@ -143,7 +147,9 @@ class TestPurchaseBottomBar extends StatelessWidget {
               ),
               TestStatusBadge(
                 title: reviewStatus,
-                backgroundColor: AppPalette.greenSoft,
+                backgroundColor:isDark?
+                AppPalette.greyMediumDark
+                : AppPalette.greenSoft,
                 foregroundColor: AppPalette.green,
                 icon: FontAwesomeIcons.solidSquareCheck,
               ),

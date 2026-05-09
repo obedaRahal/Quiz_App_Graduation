@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.d
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class PlayModeCard extends StatelessWidget {
@@ -24,6 +25,8 @@ class PlayModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     double cardWidth = SizeConfig.w(0.21);
     double cardHeight = SizeConfig.h(0.15);
     final borderRadius = BorderRadius.circular(8);
@@ -40,8 +43,8 @@ class PlayModeCard extends StatelessWidget {
               childVerticalPad: SizeConfig.h(0.01),
               childHorizontalPad: SizeConfig.w(0.019),
               borderRadius: borderRadius,
-              border: Border.all(color: AppPalette.white, width: 3),
-              boxShadow: [BoxShadow(color: shadowColor, blurRadius: 12)],
+              border: Border.all(color: AppPalette.whiteSoft, width: 3),
+              boxShadow: [BoxShadow(color: shadowColor, blurRadius: 8)],
               alignment: Alignment.topRight,
               backgroundColor: backgroundColor,
               child: Stack(

@@ -12,6 +12,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   final Color greyMediumTogrey;
   final Color borderFieldColorNLightToborderFieldColorNDark;
   final Color primarySoftTogreyLightDark;
+  final Color blackToGrey2Dark;
 
   const AppThemeColors({
     required this.primaryToPrimaryDark,
@@ -24,6 +25,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     required this.greyMediumTogrey,
     required this.borderFieldColorNLightToborderFieldColorNDark,
     required this.primarySoftTogreyLightDark,
+    required this.blackToGrey2Dark,
   });
 
   @override
@@ -38,6 +40,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     Color? greyMediumTogrey,
     Color? borderFieldColorNLightToborderFieldColorNDark,
     Color? primarySoftTogreyLightDark,
+    Color? blackToGrey2Dark,
   }) {
     return AppThemeColors(
       primaryToPrimaryDark: primaryToPrimaryDark ?? this.primaryToPrimaryDark,
@@ -57,8 +60,9 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
           this.borderFieldColorNLightToborderFieldColorNDark,
 
       primarySoftTogreyLightDark:
-          primarySoftTogreyLightDark ??
-          this.primarySoftTogreyLightDark,
+          primarySoftTogreyLightDark ?? this.primarySoftTogreyLightDark,
+
+      blackToGrey2Dark: blackToGrey2Dark ?? this.blackToGrey2Dark,
     );
   }
 
@@ -107,7 +111,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
         other.greyMediumTogrey,
         t,
       )!,
-      
+
       borderFieldColorNLightToborderFieldColorNDark: Color.lerp(
         borderFieldColorNLightToborderFieldColorNDark,
         other.borderFieldColorNLightToborderFieldColorNDark,
@@ -117,6 +121,13 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       primarySoftTogreyLightDark: Color.lerp(
         primarySoftTogreyLightDark,
         other.primarySoftTogreyLightDark,
+        t,
+      )!,
+
+
+      blackToGrey2Dark: Color.lerp(
+        blackToGrey2Dark,
+        other.blackToGrey2Dark,
         t,
       )!,
     );
@@ -133,8 +144,9 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     greyMediumTogrey: AppPalette.greyMedium,
     borderFieldColorNLightToborderFieldColorNDark:
         AppPalette.borderFieldColorNLight,
-    primarySoftTogreyLightDark:
-        AppPalette.primarySoft,
+    primarySoftTogreyLightDark: AppPalette.primarySoft,
+
+    blackToGrey2Dark: AppPalette.black,
   );
 
   static const dark = AppThemeColors(
@@ -148,7 +160,8 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     greyMediumTogrey: AppPalette.grey,
     borderFieldColorNLightToborderFieldColorNDark:
         AppPalette.borderFieldColorNDark,
-    primarySoftTogreyLightDark:
-        AppPalette.greyLightDark,
+    primarySoftTogreyLightDark: AppPalette.greyLightDark,
+
+    blackToGrey2Dark: AppPalette.grey2Dark,
   );
 }

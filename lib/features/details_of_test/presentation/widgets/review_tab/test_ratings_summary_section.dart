@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
@@ -23,12 +24,14 @@ class TestRatingSummarySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         CustomTextWidget(
           "التقييم",
-          color: AppPalette.black,
+          color: appColors.blackTogreyMedium,
           fontFamily: AppFont.elMessiriBold,
           fontSize: SizeConfig.text(0.04),
         ),
@@ -74,6 +77,9 @@ class _RatingScoreColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -82,9 +88,9 @@ class _RatingScoreColumn extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text: '5/',
+                text: '5 / ',
                 style: TextStyle(
-                  color: AppPalette.black,
+                  color: appColors.blackToGreyLightDark,
                   fontSize: SizeConfig.text(0.055),
                   fontFamily: AppFont.elMessiriSemiBold,
                 ),
@@ -92,7 +98,7 @@ class _RatingScoreColumn extends StatelessWidget {
               TextSpan(
                 text: rating.toStringAsFixed(1),
                 style: TextStyle(
-                  color: AppPalette.primary,
+                  color: appColors.primaryToPrimaryDark,
                   fontSize: SizeConfig.text(0.06),
                   fontFamily: AppFont.elMessiriBold,
                 ),
@@ -111,7 +117,10 @@ class _RatingScoreColumn extends StatelessWidget {
 
         SizedBox(height: SizeConfig.h(0.015)),
 
-        DisplayRatingStarsRow(rating: rating),
+        DisplayRatingStarsRow(
+          rating: rating,
+          emptyColor: isDark ? AppPalette.greyMedium : AppPalette.greyLight,
+        ),
       ],
     );
   }
@@ -142,6 +151,8 @@ class _RatingBarRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     final progressValue = (row.percentage / 100).clamp(0.0, 1.0);
 
     return GestureDetector(
@@ -176,11 +187,12 @@ class _RatingBarRow extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: LinearProgressIndicator(
+                  borderRadius: BorderRadius.circular(20),
                   value: progressValue,
                   minHeight: 6,
-                  backgroundColor: AppPalette.primarySoft,
+                  backgroundColor: appColors.primarySoftTogreyLightDark,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    AppPalette.primary,
+                    appColors.primaryToPrimaryDark,
                   ),
                 ),
               ),

@@ -202,7 +202,7 @@ class ReviewRatingFilterBar extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppPalette.primary
+                      ? appColors.primaryToPrimaryDark
                       : appColors.greyToGreyMediumDark,
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -215,7 +215,7 @@ class ReviewRatingFilterBar extends StatelessWidget {
                         Icons.star_border_rounded,
                         size: 14,
                         color: isSelected
-                            ? AppPalette.white
+                            ? appColors.whiteToblack
                             : appColors.blackTogreyMedium,
                       ),
                       SizedBox(width: SizeConfig.w(0.008)),
@@ -223,7 +223,7 @@ class ReviewRatingFilterBar extends StatelessWidget {
                     CustomTextWidget(
                       filter.label,
                       color: isSelected
-                          ? AppPalette.white
+                          ? appColors.whiteToblack
                           : appColors.blackTogreyMedium,
                       fontSize: SizeConfig.text(0.028),
                       fontFamily: AppFont.elMessiriSemiBold,
@@ -298,7 +298,7 @@ class PublicReviewCard extends StatelessWidget {
               CustomTextWidget(
                 review.reviewText,
                 textAlign: TextAlign.right,
-                color: appColors.greyMediumTogrey,
+                color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
                 fontSize: SizeConfig.text(0.034),
               ),
               SizedBox(height: SizeConfig.h(0.05)),
@@ -392,13 +392,15 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return Row(
       textDirection: TextDirection.rtl,
       children: [
         Expanded(
           child: CustomTextWidget(
             'هل وجدت هذه المراجعة مفيدة؟',
-            color: AppPalette.primary,
+            color: appColors.primaryToPrimaryDark,
             fontSize: SizeConfig.text(0.03),
             textAlign: TextAlign.right,
             maxLines: 1,
@@ -410,7 +412,7 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
 
         _HelpfulActionButton(
           title: 'نعم',
-          isSelected: currentVote == true,
+          isSelected: currentVote == false,
           onTap: onYesTap,
         ),
 
@@ -451,18 +453,18 @@ class _HelpfulActionButton extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppPalette.primary.withOpacity(0.12)
+              ? appColors.primaryToPrimaryDark.withOpacity(0.12)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected
-                ? AppPalette.primary
+                ? appColors.primaryToPrimaryDark
                 : appColors.borderFieldColorNLightToborderFieldColorNDark,
           ),
         ),
         child: CustomTextWidget(
           title,
-          color: isSelected ? AppPalette.primary : appColors.blackTogreyMedium,
+          color: isSelected ? appColors.primaryToPrimaryDark : appColors.blackTogreyMedium,
           fontSize: SizeConfig.text(0.028),
         ),
       ),

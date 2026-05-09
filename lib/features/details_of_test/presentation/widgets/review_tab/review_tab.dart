@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
@@ -42,11 +43,13 @@ class ReviewTab extends StatelessWidget {
           ratingDistribution: summary.ratingDistribution,
         ),
 
-        Divider(height: 30, thickness: 3, color: AppPalette.whiteToGrey),
+        CustomDivider(height: 30, thickness: 3),
+
+        RateTestSection(testId: testId),
 
         if (myReview == null) ...[
-          RateTestSection(testId: testId,),
-          Divider(height: 30, thickness: 3, color: AppPalette.whiteToGrey),
+          RateTestSection(testId: testId),
+          CustomDivider(height: 30, thickness: 3),
         ] else ...[
           MyPublishedReviewSection(
             review: ReviewUiMapper.mapMyReview(myReview),
@@ -57,7 +60,7 @@ class ReviewTab extends StatelessWidget {
               debugPrint('delete my review => ${myReview.id}');
             },
           ),
-          Divider(height: 30, thickness: 3, color: AppPalette.whiteToGrey),
+        CustomDivider(height: 30, thickness: 3),
         ],
 
         ReviewsSection(
@@ -151,6 +154,3 @@ class ReviewUiMapper {
     return null;
   }
 }
-
-
-

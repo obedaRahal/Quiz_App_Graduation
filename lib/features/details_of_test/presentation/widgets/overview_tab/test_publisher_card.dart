@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class TestPublisherCard extends StatelessWidget {
@@ -31,12 +32,14 @@ class TestPublisherCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         CustomTextWidget(
           "الناشر",
-          color: AppPalette.black,
+          color: appColors.blackTogreyMedium,
           fontFamily: AppFont.elMessiriBold,
           fontSize: SizeConfig.text(0.04),
         ),
@@ -53,7 +56,6 @@ class TestPublisherCard extends StatelessWidget {
               height: SizeConfig.h(0.08),
               fit: BoxFit.cover,
               borderRadius: BorderRadius.circular(10),
-              
             ),
 
             SizedBox(width: SizeConfig.w(0.02)),
@@ -68,7 +70,7 @@ class TestPublisherCard extends StatelessWidget {
                       Flexible(
                         child: CustomTextWidget(
                           name,
-                          color: AppPalette.black,
+                          color: appColors.blackToGrey2Dark,
                           fontFamily: AppFont.elMessiriSemiBold,
                           fontSize: SizeConfig.text(0.038),
                           maxLines: 1,
@@ -83,6 +85,7 @@ class TestPublisherCard extends StatelessWidget {
                           path: AppImage.verifyCheck,
                           width: 13,
                           height: 13,
+                          color: appColors.primaryToPrimaryDark,
                         ),
                       ],
                     ],
@@ -113,16 +116,17 @@ class TestPublisherCard extends StatelessWidget {
 
             CustomButtonWidget(
               backgroundColor: isFollowing
-                  ? AppPalette.greyMedium
-                  : AppPalette.primary,
+                  ? appColors.greyMediumTogrey
+                  : appColors.primaryToPrimaryDark,
               childHorizontalPad: SizeConfig.w(0.04),
               childVerticalPad: SizeConfig.h(0.006),
               borderRadius: 6,
               onTap: onFollowTap,
               child: CustomTextWidget(
                 isFollowing ? "إلغاء" : "متابعة",
-                color: AppPalette.white,
-                fontSize: 10,
+                color: appColors.whiteToblack,
+                fontFamily: AppFont.elMessiriSemiBold,
+                fontSize: SizeConfig.text(0.03),
               ),
             ),
           ],
@@ -140,13 +144,15 @@ class _PublisherStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+        final appColors = context.appColors;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       textDirection: TextDirection.rtl,
       children: [
         CustomTextWidget(
           value,
-          color: AppPalette.black,
+          color: appColors.blackToGrey2Dark,
           fontSize: SizeConfig.text(0.035),
           fontFamily: AppFont.elMessiriBold,
         ),

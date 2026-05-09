@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_overview_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
@@ -82,13 +84,15 @@ class _DetailsTabsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    
     return Stack(
       children: [
         Positioned(
           left: 0,
           right: 0,
           bottom: 0,
-          child: Divider(height: 3, thickness: 3, color: AppPalette.greyLight),
+          child: CustomDivider(height: 3, thickness: 3,),
         ),
 
         Directionality(
@@ -107,7 +111,7 @@ class _DetailsTabsHeader extends StatelessWidget {
                     CustomTextWidget(
                       item.title,
                       color: isSelected
-                          ? AppPalette.black
+                          ? appColors.blackToGrey2Dark
                           : AppPalette.greyMedium,
                       fontFamily: isSelected
                           ? AppFont.elMessiriSemiBold
@@ -127,7 +131,7 @@ class _DetailsTabsHeader extends StatelessWidget {
                                 : SizeConfig.w(0.14)
                           : 0,
                       decoration: BoxDecoration(
-                        color: AppPalette.primary,
+                        color: appColors.primaryToPrimaryDark,
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
