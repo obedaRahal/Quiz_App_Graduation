@@ -1,4 +1,18 @@
 {
     "cmake.ignoreCMakeListsMissing": true,
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "cSpell.words": [
+        "أولًا",
+        "الاختبار",
+        "التفاعل",
+        "العثور",
+        "المراجعات",
+        "بنجاح",
+        "تتمكن",
+        "تحميل",
+        "تعذر",
+        "تنبيه",
+        "جاري",
+        "شراء"
+    ]
 }

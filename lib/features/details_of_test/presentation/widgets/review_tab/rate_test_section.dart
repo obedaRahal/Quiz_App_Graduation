@@ -13,8 +13,13 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/deta
 
 class RateTestSection extends StatelessWidget {
   final int testId;
+  final bool canSubmitReview;
 
-  const RateTestSection({super.key, required this.testId});
+  const RateTestSection({
+    super.key,
+    required this.testId,
+    required this.canSubmitReview,
+  });
 
   static const int maxChars = 200;
 
@@ -52,6 +57,20 @@ class RateTestSection extends StatelessWidget {
                   borderRadius: 18,
                   onTap: state.canSubmitDraftReview
                       ? () {
+                          // context.read<DetailsOfTestCubit>().submitDraftReview(
+                          //   testId: testId,
+                          // );
+                          if (!canSubmitReview) {
+                            showValidationTopSnackBar(
+                              context,
+                              title: "تنبيه",
+                              message:
+                                  "يجب شراء الاختبار أولًا حتى تتمكن من نشر تقييمك",
+                              type: AppValidationSnackBarType.hint,
+                            );
+                            return;
+                          }
+
                           context.read<DetailsOfTestCubit>().submitDraftReview(
                             testId: testId,
                           );
@@ -144,18 +163,22 @@ class RateTestSection extends StatelessWidget {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: appColors.borderFieldColorNLightToborderFieldColorNDark,
+                      color: appColors
+                          .borderFieldColorNLightToborderFieldColorNDark,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                      color: appColors.borderFieldColorNLightToborderFieldColorNDark,
+                      color: appColors
+                          .borderFieldColorNLightToborderFieldColorNDark,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: appColors.primaryToPrimaryDark),
+                    borderSide: BorderSide(
+                      color: appColors.primaryToPrimaryDark,
+                    ),
                   ),
                 ),
               ),

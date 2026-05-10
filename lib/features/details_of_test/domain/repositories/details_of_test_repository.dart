@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/download_test_file_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
@@ -38,5 +39,9 @@ abstract class DetailsOfTestRepository {
 
   Future<Either<Failure, TestFollowActionEntity>> unfollowCreator({
     required int creatorId,
+  });
+
+  Future<Either<Failure, DownloadTestFileEntity>> downloadTestFile({
+    required int testId,
   });
 }

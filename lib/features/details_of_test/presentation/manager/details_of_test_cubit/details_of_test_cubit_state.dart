@@ -17,6 +17,8 @@ enum TestBookmarkActionStatus { initial, loading, success, failure }
 
 enum FollowActionStatus { initial, loading, success, failure }
 
+enum DownloadTestFileStatus { initial, loading, success, failure }
+
 class DetailsOfTestState {
   //  for UI ////
   final DetailsOfTestTab selectedTab;
@@ -43,6 +45,9 @@ class DetailsOfTestState {
 
   final FollowActionStatus followActionStatus;
 
+  final DownloadTestFileStatus downloadStatus;
+  final String? downloadedFilePath;
+
   const DetailsOfTestState({
     this.selectedTab = DetailsOfTestTab.overview,
     this.selectedSampleAnswers = const {},
@@ -64,6 +69,9 @@ class DetailsOfTestState {
     this.bookmarkActionStatus = TestBookmarkActionStatus.initial,
 
     this.followActionStatus = FollowActionStatus.initial,
+
+    this.downloadStatus = DownloadTestFileStatus.initial,
+    this.downloadedFilePath,
   });
 
   bool get canSubmitDraftReview => draftReviewRating > 0;
@@ -101,6 +109,9 @@ class DetailsOfTestState {
   bool get isFollowActionLoading =>
       followActionStatus == FollowActionStatus.loading;
 
+  bool get isDownloadLoading =>
+      downloadStatus == DownloadTestFileStatus.loading;
+
   DetailsOfTestState copyWith({
     //  for UI ////
     DetailsOfTestTab? selectedTab,
@@ -125,6 +136,9 @@ class DetailsOfTestState {
     TestBookmarkActionStatus? bookmarkActionStatus,
 
     FollowActionStatus? followActionStatus,
+
+    DownloadTestFileStatus? downloadStatus,
+    String? downloadedFilePath,
   }) {
     return DetailsOfTestState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -149,6 +163,9 @@ class DetailsOfTestState {
       bookmarkActionStatus: bookmarkActionStatus ?? this.bookmarkActionStatus,
 
       followActionStatus: followActionStatus ?? this.followActionStatus,
+
+      downloadStatus: downloadStatus ?? this.downloadStatus,
+      downloadedFilePath: downloadedFilePath ?? this.downloadedFilePath,
     );
   }
 }

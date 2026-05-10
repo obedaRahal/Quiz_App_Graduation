@@ -85,14 +85,14 @@ class _DetailsTabsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    
+
     return Stack(
       children: [
         Positioned(
           left: 0,
           right: 0,
           bottom: 0,
-          child: CustomDivider(height: 3, thickness: 3,),
+          child: CustomDivider(height: 3, thickness: 3),
         ),
 
         Directionality(
@@ -192,7 +192,11 @@ class _DetailsTabContent extends StatelessWidget {
         return const _SampleTabBlocContent();
 
       case DetailsOfTestTab.reviews:
-        return _ReviewsTabBlocContent(testId: testId);
+        return _ReviewsTabBlocContent(
+          testId: testId,
+          isFree: data.extraInfo.viewerContext.isFree,
+          hasPurchased: data.extraInfo.viewerContext.hasPurchased,
+        );
     }
   }
 }
@@ -242,8 +246,14 @@ class _SampleTabBlocContent extends StatelessWidget {
 
 class _ReviewsTabBlocContent extends StatelessWidget {
   final int testId;
+  final bool isFree;
+  final bool hasPurchased;
 
-  const _ReviewsTabBlocContent({required this.testId});
+  const _ReviewsTabBlocContent({
+    required this.testId,
+    required this.isFree,
+    required this.hasPurchased,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -274,7 +284,12 @@ class _ReviewsTabBlocContent extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        return ReviewTab(reviewsDetails: reviews, testId: testId);
+        return ReviewTab(
+          reviewsDetails: reviews,
+          testId: testId,
+          isFree: isFree,
+          hasPurchased: hasPurchased,
+        );
       },
     );
   }

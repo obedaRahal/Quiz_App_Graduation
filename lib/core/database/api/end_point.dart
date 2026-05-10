@@ -1,7 +1,7 @@
 class EndPoints {
-  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
-  static const String baseUrl = 'http://10.237.223.187/api/v1/user-mobile';
-  static const String refreshToken = 'http://10.237.223.187/api/v1/refresh';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  //static const String baseUrl = 'http://10.237.223.187/api/v1/user-mobile';
+  static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
 
@@ -68,14 +68,14 @@ class EndPoints {
   static String unfollowCreator(int creatorId) =>
       '$baseUrl/users-profile/unfollow/$creatorId';
 
+  static String downloadTestFile(int testId) =>
+      '$baseUrl/test/download/$testId';
 
-      
   // laboratory
   static String testsByInterest(int interestId) {
     return '/home/test-by-interest/$interestId';
   }
-  static const String searchLabTests  =
-    '/lab/search';
-    static const String labRecommendedTests =
-    '/lab/recommended-tests';
+
+  static const String searchLabTests = '/lab/search';
+  static const String labRecommendedTests = '/lab/recommended-tests';
 }

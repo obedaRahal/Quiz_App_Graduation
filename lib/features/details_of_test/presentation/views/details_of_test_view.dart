@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
-import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
@@ -21,8 +22,6 @@ class DetailsOfTestView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -74,7 +73,7 @@ class DetailsOfTestView extends StatelessWidget {
                   return SingleChildScrollView(
                     child: Column(
                       children: [
-                         SizedBox(height: SizeConfig.h(0.015)),
+                        SizedBox(height: SizeConfig.h(0.015)),
                         TestDetailsWithPlayModesSection(
                           title: overview.data.basicInfo.title,
                           description: overview.data.basicInfo.description,
@@ -121,7 +120,68 @@ class DetailsOfTestView extends StatelessWidget {
               ),
             ),
 
-            BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
+            BlocConsumer<DetailsOfTestCubit, DetailsOfTestState>(
+              listenWhen: (previous, current) =>
+                  previous.downloadStatus != current.downloadStatus,
+              listener: (context, state) {
+                if (state.downloadStatus == DownloadTestFileStatus.loading) {
+                  showValidationTopSnackBar(
+                    context,
+                    title: "تحميل",
+                    message: "جاري تحميل ملف الاختبار...",
+                    type: AppValidationSnackBarType.hint,
+                  );
+                }
+
+                if (state.downloadStatus == DownloadTestFileStatus.success) {
+                  showValidationTopSnackBar(
+                    context,
+                    title: "تم تحميل",
+                    message: "تم حفظ ملف الاختبار بنجاح",
+                    type: AppValidationSnackBarType.success,
+                    actionText: 'عرض الاختبار',
+                    onActionTap: () async {
+                      debugPrint('show pdf');
+                      final filePath = state.downloadedFilePath;
+
+                      if (filePath == null || filePath.isEmpty) {
+                        debugPrint('✗ downloadedFilePath is null');
+
+                        showValidationTopSnackBar(
+                          context,
+                          title: "خطأ",
+                          message: "تعذر العثور على ملف الاختبار",
+                          type: AppValidationSnackBarType.error,
+                        );
+
+                        return;
+                      }
+
+                      debugPrint(
+                        "============ Open Downloaded PDF ============",
+                      );
+                      debugPrint("→ filePath: $filePath");
+
+                      final result = await OpenFilex.open(filePath);
+
+                      debugPrint("→ open result type: ${result.type}");
+                      debugPrint("→ open result message: ${result.message}");
+                      debugPrint(
+                        "=============================================",
+                      );
+                    },
+                  );
+                }
+
+                if (state.downloadStatus == DownloadTestFileStatus.failure) {
+                  showValidationTopSnackBar(
+                    context,
+                    title: state.errorTitle ?? "خطأ",
+                    message: state.errorMessage ?? "تعذر تحميل ملف الاختبار",
+                    type: AppValidationSnackBarType.error,
+                  );
+                }
+              },
               builder: (context, state) {
                 final overview = state.overviewDetails;
 
@@ -139,11 +199,17 @@ class DetailsOfTestView extends StatelessWidget {
                   canDownload:
                       overview.data.extraInfo.viewerContext.canDownload,
                   canReport: overview.data.extraInfo.viewerContext.canReport,
-
                   onBuyTap: () {
                     debugPrint("buy now");
                   },
-                  onDownloadTap: () => debugPrint("download test"),
+                  onDownloadTap: state.isDownloadLoading
+                      ? () {}
+                      : () {
+                          debugPrint("download now");
+                          context.read<DetailsOfTestCubit>().downloadTestFile(
+                            testId: overview.data.id,
+                          );
+                        },
                   onReportTap: () => debugPrint("report test"),
                 );
               },

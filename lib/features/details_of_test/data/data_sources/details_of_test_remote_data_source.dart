@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/download_test_file_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_bookmark_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_follow_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_like_action_model.dart';
@@ -33,13 +38,19 @@ abstract class DetailsOfTestRemoteDataSource {
   Future<TestFollowActionModel> followCreator({required int creatorId});
 
   Future<TestFollowActionModel> unfollowCreator({required int creatorId});
+
+  Future<DownloadTestFileModel> downloadTestFile({required int testId});
 }
 
 class DetailsOfTestRemoteDataSourceImpl
     implements DetailsOfTestRemoteDataSource {
   final ApiConsumer apiConsumer;
+  final Dio dio;
 
-  const DetailsOfTestRemoteDataSourceImpl({required this.apiConsumer});
+  const DetailsOfTestRemoteDataSourceImpl({
+    required this.apiConsumer,
+    required this.dio,
+  });
 
   @override
   Future<OtherTestDetailsOverviewModel> getOtherTestDetailsOverview({
@@ -225,5 +236,46 @@ class DetailsOfTestRemoteDataSourceImpl
     debugPrint("=================================================");
 
     return TestFollowActionModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<DownloadTestFileModel> downloadTestFile({required int testId}) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.downloadTestFile ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.downloadTestFile(testId)}");
+    debugPrint("→ method: GET");
+    debugPrint("→ params: {testId: $testId}");
+
+    final directory = await getApplicationDocumentsDirectory();
+
+    final fileName = 'test_$testId.pdf';
+    final filePath = '${directory.path}/$fileName';
+
+    debugPrint("→ target filePath: $filePath");
+
+    final response = await dio.download(
+      EndPoints.downloadTestFile(testId),
+      filePath,
+      options: Options(
+        responseType: ResponseType.bytes,
+        followRedirects: false,
+        validateStatus: (status) {
+          return status != null && status < 500;
+        },
+      ),
+    );
+
+    debugPrint("← download statusCode: ${response.statusCode}");
+    debugPrint("← saved filePath: $filePath");
+    debugPrint("=================================================");
+
+    final file = File(filePath);
+
+    if (!await file.exists()) {
+      throw Exception('لم يتم حفظ ملف الاختبار');
+    }
+
+    return DownloadTestFileModel(filePath: filePath, fileName: fileName);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/download_test_file_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
@@ -456,6 +457,50 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
 
       return Left(
         ServerFailure(title: 'حدث خطأ', message: 'حدث خطأ غير متوقع'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, DownloadTestFileEntity>> downloadTestFile({
+    required int testId,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.downloadTestFile ============",
+    );
+    debugPrint("→ params: {testId: $testId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.downloadTestFile");
+
+      final model = await remoteDataSource.downloadTestFile(testId: testId);
+
+      debugPrint("← remoteDataSource.downloadTestFile success");
+      debugPrint("→ filePath: ${model.filePath}");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.downloadTestFile ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.downloadTestFile Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر تحميل ملف الاختبار'),
       );
     }
   }

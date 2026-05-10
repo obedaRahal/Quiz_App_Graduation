@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/download_test_file_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/download_test_file_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_overview_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_reviews_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_sample_params.dart';
@@ -27,6 +29,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
   final UnbookmarkTestUseCase unbookmarkTestUseCase;
   final FollowCreatorUseCase followCreatorUseCase;
   final UnfollowCreatorUseCase unfollowCreatorUseCase;
+  final DownloadTestFileUseCase downloadTestFileUseCase;
 
   DetailsOfTestCubit({
     required this.getOtherTestDetailsOverviewUseCase,
@@ -38,6 +41,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     required this.unbookmarkTestUseCase,
     required this.followCreatorUseCase,
     required this.unfollowCreatorUseCase,
+    required this.downloadTestFileUseCase,
   }) : super(const DetailsOfTestState()) {
     debugPrint("============ DetailsOfTestCubit INIT ============");
   }
@@ -541,6 +545,58 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
           state.copyWith(
             followActionStatus: FollowActionStatus.success,
             overviewDetails: updatedOverview,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> downloadTestFile({required int testId}) async {
+    debugPrint("============ DetailsOfTestCubit.downloadTestFile ============");
+    debugPrint("→ params: {testId: $testId}");
+
+    if (state.isDownloadLoading) {
+      debugPrint("✗ download already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        downloadStatus: DownloadTestFileStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await downloadTestFileUseCase(
+      DownloadTestFileParams(testId: testId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ download failure title: ${failure.title}");
+        debugPrint("✗ download failure message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            downloadStatus: DownloadTestFileStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ download success");
+        debugPrint("→ filePath: ${response.filePath}");
+        debugPrint("→ fileName: ${response.fileName}");
+
+        emit(
+          state.copyWith(
+            downloadStatus: DownloadTestFileStatus.success,
+            downloadedFilePath: response.filePath,
             clearError: true,
           ),
         );

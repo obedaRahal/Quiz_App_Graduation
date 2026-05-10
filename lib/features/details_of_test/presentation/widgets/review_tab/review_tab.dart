@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/all_reviews_section.dart';
@@ -12,11 +12,15 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/revi
 class ReviewTab extends StatelessWidget {
   final int testId;
   final OtherTestDetailsReviewsEntity reviewsDetails;
+  final bool isFree;
+  final bool hasPurchased;
 
   const ReviewTab({
     super.key,
     required this.reviewsDetails,
     required this.testId,
+    required this.isFree,
+    required this.hasPurchased,
   });
 
   @override
@@ -26,6 +30,8 @@ class ReviewTab extends StatelessWidget {
     final publicReviews = reviewsDetails.data.reviews
         .map(ReviewUiMapper.mapPublicReview)
         .toList();
+
+    final canInteractWithReviews = isFree || hasPurchased;
 
     final selectedFilter = _filterFromRating(
       context.select(
@@ -45,10 +51,11 @@ class ReviewTab extends StatelessWidget {
 
         CustomDivider(height: 30, thickness: 3),
 
-        RateTestSection(testId: testId),
-
         if (myReview == null) ...[
-          RateTestSection(testId: testId),
+          RateTestSection(
+            testId: testId,
+            canSubmitReview: canInteractWithReviews,
+          ),
           CustomDivider(height: 30, thickness: 3),
         ] else ...[
           MyPublishedReviewSection(
@@ -60,7 +67,7 @@ class ReviewTab extends StatelessWidget {
               debugPrint('delete my review => ${myReview.id}');
             },
           ),
-        CustomDivider(height: 30, thickness: 3),
+          CustomDivider(height: 30, thickness: 3),
         ],
 
         ReviewsSection(
@@ -76,17 +83,35 @@ class ReviewTab extends StatelessWidget {
             debugPrint('filter => $rating');
           },
           reviews: publicReviews,
+          canInteractWithReviews: canInteractWithReviews,
           onReportReview: (reviewId) {
             debugPrint('report review => $reviewId');
           },
           onHelpfulYes: (reviewId) {
             debugPrint('helpful yes => $reviewId');
+            if (!canInteractWithReviews) {
+              _showPurchaseRequiredSnackBar(context);
+              return;
+            }
           },
           onHelpfulNo: (reviewId) {
             debugPrint('helpful no => $reviewId');
+            if (!canInteractWithReviews) {
+              _showPurchaseRequiredSnackBar(context);
+              return;
+            }
           },
         ),
       ],
+    );
+  }
+
+  void _showPurchaseRequiredSnackBar(BuildContext context) {
+    showValidationTopSnackBar(
+      context,
+      title: "تنبيه",
+      message: "يجب شراء الاختبار أولًا حتى تتمكن من التفاعل مع المراجعات",
+      type: AppValidationSnackBarType.hint,
     );
   }
 

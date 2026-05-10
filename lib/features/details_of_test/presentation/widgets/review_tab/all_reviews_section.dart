@@ -14,6 +14,8 @@ class ReviewsSection extends StatelessWidget {
   final ValueChanged<int> onHelpfulYes;
   final ValueChanged<int> onHelpfulNo;
 
+  final bool canInteractWithReviews;
+
   const ReviewsSection({
     super.key,
     required this.selectedFilter,
@@ -22,6 +24,8 @@ class ReviewsSection extends StatelessWidget {
     required this.onReportReview,
     required this.onHelpfulYes,
     required this.onHelpfulNo,
+
+    required this.canInteractWithReviews,
   });
 
   @override
@@ -61,6 +65,7 @@ class ReviewsSection extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: SizeConfig.h(0.018)),
                 child: PublicReviewCard(
                   review: review,
+                  canInteractWithReview: canInteractWithReviews,
                   onReport: () => onReportReview(review.id),
                   onHelpfulYes: () => onHelpfulYes(review.id),
                   onHelpfulNo: () => onHelpfulNo(review.id),
@@ -245,12 +250,16 @@ class PublicReviewCard extends StatelessWidget {
   final VoidCallback onHelpfulYes;
   final VoidCallback onHelpfulNo;
 
+  final bool canInteractWithReview;
+
   const PublicReviewCard({
     super.key,
     required this.review,
     required this.onReport,
     required this.onHelpfulYes,
     required this.onHelpfulNo,
+
+    required this.canInteractWithReview,
   });
 
   @override
@@ -324,6 +333,8 @@ class PublicReviewCard extends StatelessWidget {
             ),
             child: _ReviewHelpfulQuestionRow(
               currentVote: review.myHelpfulVote,
+              canInteract: canInteractWithReview,
+
               onYesTap: onHelpfulYes,
               onNoTap: onHelpfulNo,
             ),
@@ -381,11 +392,14 @@ class _ReviewReportMenuButton extends StatelessWidget {
 
 class _ReviewHelpfulQuestionRow extends StatelessWidget {
   final bool? currentVote;
+  final bool canInteract;
   final VoidCallback onYesTap;
   final VoidCallback onNoTap;
 
   const _ReviewHelpfulQuestionRow({
     required this.currentVote,
+    required this.canInteract,
+
     required this.onYesTap,
     required this.onNoTap,
   });
@@ -399,7 +413,10 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
       children: [
         Expanded(
           child: CustomTextWidget(
-            'هل وجدت هذه المراجعة مفيدة؟',
+            canInteract
+                ? 'هل وجدت هذه المراجعة مفيدة؟'
+                : 'اشترِ الاختبار للتفاعل مع المراجعات',
+            //'هل وجدت هذه المراجعة مفيدة؟',
             color: appColors.primaryToPrimaryDark,
             fontSize: SizeConfig.text(0.03),
             textAlign: TextAlign.right,
@@ -412,7 +429,7 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
 
         _HelpfulActionButton(
           title: 'نعم',
-          isSelected: currentVote == false,
+          isSelected: currentVote == true,
           onTap: onYesTap,
         ),
 
@@ -464,7 +481,9 @@ class _HelpfulActionButton extends StatelessWidget {
         ),
         child: CustomTextWidget(
           title,
-          color: isSelected ? appColors.primaryToPrimaryDark : appColors.blackTogreyMedium,
+          color: isSelected
+              ? appColors.primaryToPrimaryDark
+              : appColors.blackTogreyMedium,
           fontSize: SizeConfig.text(0.028),
         ),
       ),

@@ -19,6 +19,7 @@ import 'package:quiz_app_grad/features/details_of_test/data/data_sources/details
 import 'package:quiz_app_grad/features/details_of_test/data/repo_impl/details_of_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/repositories/details_of_test_repository.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/download_test_file_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
@@ -189,7 +190,8 @@ void _registerThemeFeature() {
 void _registerDetailsOfTestFeature() {
   if (!sl.isRegistered<DetailsOfTestRemoteDataSource>()) {
     sl.registerLazySingleton<DetailsOfTestRemoteDataSource>(
-      () => DetailsOfTestRemoteDataSourceImpl(apiConsumer: sl()),
+      () =>
+          DetailsOfTestRemoteDataSourceImpl(apiConsumer: sl(), dio: sl<Dio>()),
     );
   }
 
@@ -220,6 +222,7 @@ void _registerDetailsOfTestFeature() {
         unbookmarkTestUseCase: sl<UnbookmarkTestUseCase>(),
         followCreatorUseCase: sl<FollowCreatorUseCase>(),
         unfollowCreatorUseCase: sl<UnfollowCreatorUseCase>(),
+        downloadTestFileUseCase: sl<DownloadTestFileUseCase>(),
       ),
     );
   }
@@ -262,6 +265,12 @@ void _registerDetailsOfTestFeature() {
   sl.registerLazySingleton(() => FollowCreatorUseCase(sl()));
 
   sl.registerLazySingleton(() => UnfollowCreatorUseCase(sl()));
+
+  if (!sl.isRegistered<DownloadTestFileUseCase>()) {
+    sl.registerLazySingleton<DownloadTestFileUseCase>(
+      () => DownloadTestFileUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
 }
 
 void _registerOnboardingFeature() {
@@ -473,7 +482,7 @@ void _registerAuthFeature() {
   sl.registerLazySingleton<SearchTestsByInterestUseCase>(
     () => SearchTestsByInterestUseCase(sl()),
   );
-sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
-  () => GetLabRecommendedTestsUseCase(sl()),
-);
+  sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
+    () => GetLabRecommendedTestsUseCase(sl()),
+  );
 }

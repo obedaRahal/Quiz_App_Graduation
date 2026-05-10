@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
