@@ -76,6 +76,15 @@ class EndPoints {
   static String updateTestReview(int testId) =>
       '$baseUrl/test/update/review/$testId';
 
+  static String deleteTestReview(int testId) =>
+      '$baseUrl/test/delete/review/$testId';
+
+  static String addFeedbackOnReview(int reviewId) =>
+      '$baseUrl/test/add/feedback-on-review/$reviewId';
+
+  static String deleteFeedbackOnReview(int reviewId) =>
+      '$baseUrl/test/delete/feedback-on-review/$reviewId';
+
   // laboratory
   static String testsByInterest(int interestId) {
     return '/home/test-by-interest/$interestId';

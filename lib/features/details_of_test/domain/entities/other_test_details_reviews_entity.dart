@@ -10,6 +10,20 @@ class OtherTestDetailsReviewsEntity {
     required this.data,
     required this.statusCode,
   });
+
+  OtherTestDetailsReviewsEntity copyWith({
+  bool? success,
+  String? title,
+  ReviewsDataEntity? data,
+  int? statusCode,
+}) {
+  return OtherTestDetailsReviewsEntity(
+    success: success ?? this.success,
+    title: title ?? this.title,
+    data: data ?? this.data,
+    statusCode: statusCode ?? this.statusCode,
+  );
+}
 }
 
 class ReviewsDataEntity {
@@ -24,6 +38,20 @@ class ReviewsDataEntity {
     required this.reviews,
     required this.meta,
   });
+
+  ReviewsDataEntity copyWith({
+  ReviewsSummaryEntity? summary,
+  TestReviewEntity? myReview,
+  List<TestReviewEntity>? reviews,
+  ReviewsMetaEntity? meta,
+}) {
+  return ReviewsDataEntity(
+    summary: summary ?? this.summary,
+    myReview: myReview ?? this.myReview,
+    reviews: reviews ?? this.reviews,
+    meta: meta ?? this.meta,
+  );
+}
 }
 
 class ReviewsSummaryEntity {
@@ -70,6 +98,26 @@ class TestReviewEntity {
     required this.user,
     required this.viewerFeedback,
   });
+
+  TestReviewEntity copyWith({
+  int? id,
+  int? rating,
+  String? reviewText,
+  String? createdAt,
+  int? yesCount,
+  ReviewUserEntity? user,
+  ReviewViewerFeedbackEntity? viewerFeedback,
+}) {
+  return TestReviewEntity(
+    id: id ?? this.id,
+    rating: rating ?? this.rating,
+    reviewText: reviewText ?? this.reviewText,
+    createdAt: createdAt ?? this.createdAt,
+    yesCount: yesCount ?? this.yesCount,
+    user: user ?? this.user,
+    viewerFeedback: viewerFeedback ?? this.viewerFeedback,
+  );
+}
 }
 
 class ReviewUserEntity {

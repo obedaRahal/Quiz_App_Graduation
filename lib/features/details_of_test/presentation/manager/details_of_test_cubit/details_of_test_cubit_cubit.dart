@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_feedback_on_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/delete_feedback_on_review_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/delete_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/download_test_file_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
@@ -9,10 +13,13 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_othe
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/add_test_review_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/delete_review_feedback_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/delete_test_review_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/download_test_file_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_overview_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_reviews_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_sample_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/review_feedback_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_bookmark_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_follow_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_like_action_params.dart';
@@ -37,6 +44,10 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
   final AddTestReviewUseCase addTestReviewUseCase;
   final UpdateTestReviewUseCase updateTestReviewUseCase;
 
+  final DeleteTestReviewUseCase deleteTestReviewUseCase;
+  final AddFeedbackOnReviewUseCase addFeedbackOnReviewUseCase;
+  final DeleteFeedbackOnReviewUseCase deleteFeedbackOnReviewUseCase;
+
   DetailsOfTestCubit({
     required this.getOtherTestDetailsOverviewUseCase,
     required this.getOtherTestDetailsSampleUseCase,
@@ -50,6 +61,9 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     required this.downloadTestFileUseCase,
     required this.addTestReviewUseCase,
     required this.updateTestReviewUseCase,
+    required this.deleteTestReviewUseCase,
+    required this.addFeedbackOnReviewUseCase,
+    required this.deleteFeedbackOnReviewUseCase,
   }) : super(const DetailsOfTestState()) {
     debugPrint("============ DetailsOfTestCubit INIT ============");
   }
@@ -742,7 +756,6 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
       "→ params: {testId: $testId, rating: $rating, reviewTextLength: ${reviewText.length}}",
     );
 
-
     if (rating <= 0) {
       emit(
         state.copyWith(
@@ -828,5 +841,218 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
 
   void resetUpdateReviewState() {
     emit(state.copyWith(updateReviewStatus: UpdateTestReviewStatus.initial));
+  }
+
+  ///////////////////  delete review API /////////////////
+  Future<void> deleteMyReview({required int testId}) async {
+    debugPrint("============ DetailsOfTestCubit.deleteMyReview ============");
+    debugPrint("→ params: {testId: $testId}");
+
+    if (state.isDeleteReviewLoading) {
+      debugPrint("✗ delete review already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        deleteReviewStatus: DeleteTestReviewStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await deleteTestReviewUseCase(
+      DeleteTestReviewParams(testId: testId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ deleteMyReview failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            deleteReviewStatus: DeleteTestReviewStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) async {
+        debugPrint("✓ deleteMyReview success");
+        debugPrint("→ message: ${response.message}");
+        debugPrint("→ refreshing reviews after delete");
+
+        emit(
+          state.copyWith(
+            deleteReviewStatus: DeleteTestReviewStatus.success,
+            isEditingMyReview: false,
+            clearEditingReviewId: true,
+            draftReviewRating: 0,
+            draftReviewText: '',
+            clearError: true,
+          ),
+        );
+
+        await getOtherTestDetailsReviews(
+          testId: testId,
+          rating: state.selectedRatingFilter,
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetDeleteReviewState() {
+    emit(state.copyWith(deleteReviewStatus: DeleteTestReviewStatus.initial));
+  }
+
+  Future<void> toggleReviewFeedback({
+    required int reviewId,
+    required bool vote,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestCubit.toggleReviewFeedback ============",
+    );
+    debugPrint("→ params: {reviewId: $reviewId, vote: ${vote ? 'yes' : 'no'}}");
+
+    final reviewsDetails = state.reviewsDetails;
+
+    if (reviewsDetails == null) {
+      debugPrint("✗ reviewsDetails is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (state.activeFeedbackReviewId == reviewId &&
+        state.isReviewFeedbackLoading) {
+      debugPrint("✗ feedback action already loading for this review");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final reviews = reviewsDetails.data.reviews;
+    final reviewIndex = reviews.indexWhere((review) => review.id == reviewId);
+
+    if (reviewIndex == -1) {
+      debugPrint("✗ review not found");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final review = reviews[reviewIndex];
+    final currentVote = review.viewerFeedback?.vote;
+    final normalizedCurrentVote = currentVote?.trim().toLowerCase();
+
+    final requestedVote = vote ? 'yes' : 'no';
+
+    final shouldDelete =
+        review.viewerFeedback?.hasVoted == true &&
+        normalizedCurrentVote == requestedVote;
+
+    debugPrint("→ current hasVoted: ${review.viewerFeedback?.hasVoted}");
+    debugPrint("→ current vote: $normalizedCurrentVote");
+    debugPrint("→ requestedVote: $requestedVote");
+    debugPrint("→ action: ${shouldDelete ? 'DELETE' : 'POST'}");
+
+    emit(
+      state.copyWith(
+        reviewFeedbackStatus: ReviewFeedbackActionStatus.loading,
+        activeFeedbackReviewId: reviewId,
+        clearError: true,
+      ),
+    );
+
+    final result = shouldDelete
+        ? await deleteFeedbackOnReviewUseCase(
+            DeleteReviewFeedbackParams(reviewId: reviewId),
+          )
+        : await addFeedbackOnReviewUseCase(
+            ReviewFeedbackActionParams(reviewId: reviewId, vote: requestedVote),
+          );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ toggleReviewFeedback failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            reviewFeedbackStatus: ReviewFeedbackActionStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearActiveFeedbackReviewId: true,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ toggleReviewFeedback success");
+        debugPrint("→ message: ${response.message}");
+
+        final updatedReview = _buildUpdatedReviewAfterFeedback(
+          review: review,
+          requestedVote: requestedVote,
+          shouldDelete: shouldDelete,
+        );
+
+        final updatedReviews = List<TestReviewEntity>.from(reviews);
+        updatedReviews[reviewIndex] = updatedReview;
+
+        final updatedReviewsDetails = reviewsDetails.copyWith(
+          data: reviewsDetails.data.copyWith(reviews: updatedReviews),
+        );
+
+        emit(
+          state.copyWith(
+            reviewFeedbackStatus: ReviewFeedbackActionStatus.success,
+            reviewsDetails: updatedReviewsDetails,
+            clearError: true,
+            clearActiveFeedbackReviewId: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  TestReviewEntity _buildUpdatedReviewAfterFeedback({
+    required TestReviewEntity review,
+    required String requestedVote,
+    required bool shouldDelete,
+  }) {
+    final oldVote = review.viewerFeedback?.vote?.trim().toLowerCase();
+
+    int updatedYesCount = review.yesCount;
+
+    if (shouldDelete) {
+      if (oldVote == 'yes') {
+        updatedYesCount = (updatedYesCount - 1).clamp(0, 999999999);
+      }
+
+      return review.copyWith(
+        yesCount: updatedYesCount,
+        viewerFeedback: ReviewViewerFeedbackEntity(hasVoted: false, vote: null),
+      );
+    }
+
+    if (oldVote != 'yes' && requestedVote == 'yes') {
+      updatedYesCount += 1;
+    }
+
+    if (oldVote == 'yes' && requestedVote == 'no') {
+      updatedYesCount = (updatedYesCount - 1).clamp(0, 999999999);
+    }
+
+    return review.copyWith(
+      yesCount: updatedYesCount,
+      viewerFeedback: ReviewViewerFeedbackEntity(
+        hasVoted: true,
+        vote: requestedVote,
+      ),
+    );
   }
 }

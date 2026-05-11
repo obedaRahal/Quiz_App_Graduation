@@ -25,6 +25,10 @@ enum UpdateTestReviewStatus { initial, loading, success, failure }
 
 enum ReviewFormMode { create, edit }
 
+enum DeleteTestReviewStatus { initial, loading, success, failure }
+
+enum ReviewFeedbackActionStatus { initial, loading, success, failure }
+
 class DetailsOfTestState {
   //  for UI ////
   final DetailsOfTestTab selectedTab;
@@ -61,6 +65,11 @@ class DetailsOfTestState {
   final bool isEditingMyReview;
   final int? editingReviewId;
 
+  final DeleteTestReviewStatus deleteReviewStatus;
+
+  final ReviewFeedbackActionStatus reviewFeedbackStatus;
+  final int? activeFeedbackReviewId;
+
   const DetailsOfTestState({
     this.selectedTab = DetailsOfTestTab.overview,
     this.selectedSampleAnswers = const {},
@@ -91,11 +100,16 @@ class DetailsOfTestState {
     this.updateReviewStatus = UpdateTestReviewStatus.initial,
     this.isEditingMyReview = false,
     this.editingReviewId,
+
+    this.deleteReviewStatus = DeleteTestReviewStatus.initial,
+
+    this.reviewFeedbackStatus = ReviewFeedbackActionStatus.initial,
+    this.activeFeedbackReviewId,
   });
 
   bool get canSubmitDraftReview =>
       draftReviewRating > 0 && draftReviewText.trim().isNotEmpty;
-      
+
   bool get isOverviewLoading =>
       overviewStatus == DetailsOfTestOverviewStatus.loading;
   bool get isOverviewSuccess =>
@@ -137,6 +151,16 @@ class DetailsOfTestState {
   bool get isUpdateReviewFailure =>
       updateReviewStatus == UpdateTestReviewStatus.failure;
 
+  bool get isDeleteReviewLoading =>
+      deleteReviewStatus == DeleteTestReviewStatus.loading;
+  bool get isDeleteReviewSuccess =>
+      deleteReviewStatus == DeleteTestReviewStatus.success;
+  bool get isDeleteReviewFailure =>
+      deleteReviewStatus == DeleteTestReviewStatus.failure;
+
+  bool get isReviewFeedbackLoading =>
+      reviewFeedbackStatus == ReviewFeedbackActionStatus.loading;
+
   DetailsOfTestState copyWith({
     //  for UI ////
     DetailsOfTestTab? selectedTab,
@@ -171,6 +195,12 @@ class DetailsOfTestState {
     bool? isEditingMyReview,
     int? editingReviewId,
     bool clearEditingReviewId = false,
+
+    DeleteTestReviewStatus? deleteReviewStatus,
+
+    ReviewFeedbackActionStatus? reviewFeedbackStatus,
+    int? activeFeedbackReviewId,
+    bool clearActiveFeedbackReviewId = false,
   }) {
     return DetailsOfTestState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -206,6 +236,13 @@ class DetailsOfTestState {
       editingReviewId: clearEditingReviewId
           ? null
           : editingReviewId ?? this.editingReviewId,
+
+      deleteReviewStatus: deleteReviewStatus ?? this.deleteReviewStatus,
+
+      reviewFeedbackStatus: reviewFeedbackStatus ?? this.reviewFeedbackStatus,
+      activeFeedbackReviewId: clearActiveFeedbackReviewId
+          ? null
+          : activeFeedbackReviewId ?? this.activeFeedbackReviewId,
     );
   }
 }

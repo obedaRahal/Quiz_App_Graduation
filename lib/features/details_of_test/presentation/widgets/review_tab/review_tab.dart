@@ -34,6 +34,14 @@ class ReviewTab extends StatelessWidget {
 
     final canInteractWithReviews = isFree || hasPurchased;
 
+    final isFeedbackLoading = context.select(
+      (DetailsOfTestCubit cubit) => cubit.state.isReviewFeedbackLoading,
+    );
+
+    final activeFeedbackReviewId = context.select(
+      (DetailsOfTestCubit cubit) => cubit.state.activeFeedbackReviewId,
+    );
+
     final selectedFilter = _filterFromRating(
       context.select(
         (DetailsOfTestCubit cubit) => cubit.state.selectedRatingFilter,
@@ -121,7 +129,10 @@ class ReviewTab extends StatelessWidget {
                     );
                   },
                   onDelete: () {
-                    debugPrint('delete my review => ${myReview.id}');
+                    debugPrint('delete my review => $testId');
+                    context.read<DetailsOfTestCubit>().deleteMyReview(
+                      testId: testId,
+                    );
                   },
                 ),
                 CustomDivider(height: 30, thickness: 3),
@@ -144,23 +155,51 @@ class ReviewTab extends StatelessWidget {
           },
           reviews: publicReviews,
           canInteractWithReviews: canInteractWithReviews,
+          isFeedbackLoading: isFeedbackLoading,
+          activeFeedbackReviewId: activeFeedbackReviewId,
           onReportReview: (reviewId) {
             debugPrint('report review => $reviewId');
           },
           onHelpfulYes: (reviewId) {
             debugPrint('helpful yes => $reviewId');
+
             if (!canInteractWithReviews) {
               _showPurchaseRequiredSnackBar(context);
               return;
             }
+
+            context.read<DetailsOfTestCubit>().toggleReviewFeedback(
+              reviewId: reviewId,
+              vote: true,
+            );
           },
           onHelpfulNo: (reviewId) {
-            debugPrint('helpful no => $reviewId');
+            debugPrint('helpful nooo => $reviewId');
+
             if (!canInteractWithReviews) {
               _showPurchaseRequiredSnackBar(context);
               return;
             }
+
+            context.read<DetailsOfTestCubit>().toggleReviewFeedback(
+              reviewId: reviewId,
+              vote: false,
+            );
           },
+          // onHelpfulYes: (reviewId) {
+          //   debugPrint('helpful yes => $reviewId');
+          //   if (!canInteractWithReviews) {
+          //     _showPurchaseRequiredSnackBar(context);
+          //     return;
+          //   }
+          // },
+          // onHelpfulNo: (reviewId) {
+          //   debugPrint('helpful no => $reviewId');
+          //   if (!canInteractWithReviews) {
+          //     _showPurchaseRequiredSnackBar(context);
+          //     return;
+          //   }
+          // },
         ),
       ],
     );

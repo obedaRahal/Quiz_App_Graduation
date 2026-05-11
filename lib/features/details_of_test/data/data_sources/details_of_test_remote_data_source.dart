@@ -4,7 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/add_test_review_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/delete_test_review_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/download_test_file_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/review_feedback_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_bookmark_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_follow_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_like_action_model.dart';
@@ -53,6 +55,17 @@ abstract class DetailsOfTestRemoteDataSource {
     required int testId,
     required int rating,
     required String reviewText,
+  });
+
+  Future<DeleteTestReviewModel> deleteTestReview({required int testId});
+
+  Future<ReviewFeedbackActionModel> addFeedbackOnReview({
+    required int reviewId,
+    required String vote,
+  });
+
+  Future<ReviewFeedbackActionModel> deleteFeedbackOnReview({
+    required int reviewId,
   });
 }
 
@@ -343,5 +356,68 @@ class DetailsOfTestRemoteDataSourceImpl
     debugPrint("=================================================");
 
     return UpdateTestReviewModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<DeleteTestReviewModel> deleteTestReview({required int testId}) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.deleteTestReview ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.deleteTestReview(testId)}");
+    debugPrint("→ method: DELETE");
+    debugPrint("→ params: {testId: $testId}");
+
+    final response = await apiConsumer.delete(
+      EndPoints.deleteTestReview(testId),
+    );
+
+    debugPrint("← response (deleteTestReview): $response");
+    debugPrint("=================================================");
+
+    return DeleteTestReviewModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<ReviewFeedbackActionModel> addFeedbackOnReview({
+    required int reviewId,
+    required String vote,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.addFeedbackOnReview ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.addFeedbackOnReview(reviewId)}");
+    debugPrint("→ method: POST");
+    debugPrint("→ body: {vote: $vote}");
+
+    final response = await apiConsumer.post(
+      EndPoints.addFeedbackOnReview(reviewId),
+      data: {'vote': vote},
+    );
+
+    debugPrint("← response (addFeedbackOnReview): $response");
+    debugPrint("=================================================");
+
+    return ReviewFeedbackActionModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<ReviewFeedbackActionModel> deleteFeedbackOnReview({
+    required int reviewId,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.deleteFeedbackOnReview ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.deleteFeedbackOnReview(reviewId)}");
+    debugPrint("→ method: DELETE");
+    debugPrint("→ params: {reviewId: $reviewId}");
+
+    final response = await apiConsumer.delete(
+      EndPoints.deleteFeedbackOnReview(reviewId),
+    );
+
+    debugPrint("← response (deleteFeedbackOnReview): $response");
+    debugPrint("=================================================");
+
+    return ReviewFeedbackActionModel.fromJson(response as Map<String, dynamic>);
   }
 }

@@ -260,13 +260,14 @@ class _ReviewsTabBlocContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<DetailsOfTestCubit, DetailsOfTestState>(
       listenWhen: (previous, current) =>
-          previous.updateReviewStatus != current.updateReviewStatus,
+          previous.updateReviewStatus != current.updateReviewStatus ||
+          previous.deleteReviewStatus != current.deleteReviewStatus,
       listener: (context, state) {
         if (state.isUpdateReviewSuccess) {
           showValidationTopSnackBar(
             context,
-            title: "تم بنجاح",
-            message: "تم تعديل تقييمك بنجاح",
+            title: state.errorTitle ?? "! تمت العملية بنجاح",
+            message: state.errorMessage ?? "تم تعديل تقييمك بنجاح",
             type: AppValidationSnackBarType.success,
           );
 
@@ -276,12 +277,34 @@ class _ReviewsTabBlocContent extends StatelessWidget {
         if (state.isUpdateReviewFailure) {
           showValidationTopSnackBar(
             context,
-            title: state.errorTitle ?? "خطأ",
+            title: state.errorTitle ?? "! تمت العملية بنجاح",
             message: state.errorMessage ?? "تعذر تعديل التقييم",
             type: AppValidationSnackBarType.error,
           );
 
           context.read<DetailsOfTestCubit>().resetUpdateReviewState();
+        }
+
+        if (state.isDeleteReviewSuccess) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ??  "! تمت العملية بنجاح",
+            message: state.errorMessage ?? "تم حذف تقييمك بنجاح",
+            type: AppValidationSnackBarType.success,
+          );
+
+          context.read<DetailsOfTestCubit>().resetDeleteReviewState();
+        }
+
+        if (state.isDeleteReviewFailure) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? "خطأ",
+            message: state.errorMessage ?? "تعذر حذف التقييم",
+            type: AppValidationSnackBarType.error,
+          );
+
+          context.read<DetailsOfTestCubit>().resetDeleteReviewState();
         }
       },
       buildWhen: (previous, current) =>
@@ -290,7 +313,8 @@ class _ReviewsTabBlocContent extends StatelessWidget {
           previous.selectedRatingFilter != current.selectedRatingFilter ||
           previous.errorMessage != current.errorMessage ||
           previous.isEditingMyReview != current.isEditingMyReview ||
-          previous.updateReviewStatus != current.updateReviewStatus,
+          previous.updateReviewStatus != current.updateReviewStatus ||
+          previous.deleteReviewStatus != current.deleteReviewStatus,
       builder: (context, state) {
         if (state.isReviewsLoading) {
           return const Center(child: CircularProgressIndicator());

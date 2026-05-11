@@ -125,7 +125,7 @@ class _ReviewMoreButton extends StatelessWidget {
               CustomTextWidget(
                 "تعديل",
                 fontSize: SizeConfig.text(0.03),
-                color: AppPalette.black,
+                color: appColors.blackTogreyMedium,
               ),
             ],
           ),
@@ -144,7 +144,7 @@ class _ReviewMoreButton extends StatelessWidget {
               CustomTextWidget(
                 "حذف",
                 fontSize: SizeConfig.text(0.03),
-                color: AppPalette.black,
+                color: appColors.blackTogreyMedium,
               ),
             ],
           ),
