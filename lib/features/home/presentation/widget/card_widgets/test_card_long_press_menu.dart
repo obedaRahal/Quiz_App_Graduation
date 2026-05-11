@@ -44,12 +44,11 @@ void showTestCardLongPressMenu({
             ),
             Center(
               child: ScaleTransition(
-                scale: Tween<double>(begin: 0.92, end: 1.0)
-                    .animate(curvedAnimation),
-                child: TestRecommendationMenu(
-                  isDark: isDark,
-                  item: item,
-                ),
+                scale: Tween<double>(
+                  begin: 0.92,
+                  end: 1.0,
+                ).animate(curvedAnimation),
+                child: TestRecommendationMenu(isDark: isDark, item: item),
               ),
             ),
           ],
@@ -128,10 +127,8 @@ class TestRecommendationMenu extends StatelessWidget {
                 _ReasonSummaryCard(
                   isDark: isDark,
                   bucketText: _bucketText(recommendation.candidateBucket),
-                  matchedInterestsCount:
-                      recommendation.matchedInterestsCount,
-                  matchedByTargetLevel:
-                      recommendation.matchedByTargetLevel,
+                  matchedInterestsCount: recommendation.matchedInterestsCount,
+                  matchedByTargetLevel: recommendation.matchedByTargetLevel,
                 ),
 
                 SizedBox(height: SizeConfig.h(0.018)),
@@ -142,42 +139,42 @@ class TestRecommendationMenu extends StatelessWidget {
                     _BreakdownItemData(
                       title: 'تطابق الاهتمامات',
                       value: breakdown.interestScore,
-                      maxValue: 30,
+                      totalScore: recommendation.score,
                       icon: Icons.interests_rounded,
                       color: const Color(0xFF5A7BFF),
                     ),
                     _BreakdownItemData(
                       title: 'تطابق المستوى',
                       value: breakdown.targetLevelScore,
-                      maxValue: 30,
+                      totalScore: recommendation.score,
                       icon: Icons.school_rounded,
                       color: const Color(0xFF7D73E8),
                     ),
                     _BreakdownItemData(
                       title: 'تفاعل الطلاب',
                       value: breakdown.participantsScore,
-                      maxValue: 150,
+                      totalScore: recommendation.score,
                       icon: Icons.groups_rounded,
                       color: const Color(0xFF34A853),
                     ),
                     _BreakdownItemData(
                       title: 'التقييم',
                       value: breakdown.ratingScore,
-                      maxValue: 20,
+                      totalScore: recommendation.score,
                       icon: Icons.star_rounded,
                       color: const Color(0xFFFFB020),
                     ),
                     _BreakdownItemData(
                       title: 'حداثة الاختبار',
                       value: breakdown.freshnessScore,
-                      maxValue: 10,
+                      totalScore: recommendation.score,
                       icon: Icons.update_rounded,
                       color: const Color(0xFF00A7B5),
                     ),
                     _BreakdownItemData(
                       title: 'قوة نوع المطابقة',
                       value: breakdown.bucketScore,
-                      maxValue: 12,
+                      totalScore: recommendation.score,
                       icon: Icons.verified_rounded,
                       color: const Color(0xFFE056FD),
                     ),
@@ -200,10 +197,7 @@ class _RecommendationHeader extends StatelessWidget {
   final bool isDark;
   final double score;
 
-  const _RecommendationHeader({
-    required this.isDark,
-    required this.score,
-  });
+  const _RecommendationHeader({required this.isDark, required this.score});
 
   @override
   Widget build(BuildContext context) {
@@ -334,11 +328,7 @@ class _ReasonBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: color,
-            size: SizeConfig.text(0.038),
-          ),
+          Icon(icon, color: color, size: SizeConfig.text(0.038)),
           SizedBox(width: SizeConfig.w(0.012)),
           CustomTextWidget(
             text,
@@ -357,10 +347,7 @@ class _BreakdownSection extends StatelessWidget {
   final bool isDark;
   final List<_BreakdownItemData> items;
 
-  const _BreakdownSection({
-    required this.isDark,
-    required this.items,
-  });
+  const _BreakdownSection({required this.isDark, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -369,10 +356,7 @@ class _BreakdownSection extends StatelessWidget {
           .map(
             (item) => Padding(
               padding: EdgeInsets.only(bottom: SizeConfig.h(0.012)),
-              child: _BreakdownProgressItem(
-                isDark: isDark,
-                data: item,
-              ),
+              child: _BreakdownProgressItem(isDark: isDark, data: item),
             ),
           )
           .toList(),
@@ -383,14 +367,14 @@ class _BreakdownSection extends StatelessWidget {
 class _BreakdownItemData {
   final String title;
   final double value;
-  final double maxValue;
+  final double totalScore;
   final IconData icon;
   final Color color;
 
   const _BreakdownItemData({
     required this.title,
     required this.value,
-    required this.maxValue,
+    required this.totalScore,
     required this.icon,
     required this.color,
   });
@@ -400,14 +384,13 @@ class _BreakdownProgressItem extends StatelessWidget {
   final bool isDark;
   final _BreakdownItemData data;
 
-  const _BreakdownProgressItem({
-    required this.isDark,
-    required this.data,
-  });
+  const _BreakdownProgressItem({required this.isDark, required this.data});
 
   double get percent {
-    if (data.maxValue == 0) return 0;
-    final result = data.value / data.maxValue;
+    if (data.totalScore <= 0) return 0;
+
+    final result = data.value / data.totalScore;
+
     return result.clamp(0.0, 1.0);
   }
 
@@ -448,7 +431,7 @@ class _BreakdownProgressItem extends StatelessWidget {
                     ),
                   ),
                   CustomTextWidget(
-                    data.value.toStringAsFixed(1),
+                    '${data.value.toStringAsFixed(1)} (${(percent * 100).toStringAsFixed(1)}%)',
                     fontSize: SizeConfig.text(0.028),
                     color: AppPalette.greyMedium,
                   ),
@@ -477,9 +460,7 @@ class _BreakdownProgressItem extends StatelessWidget {
 class _CloseButton extends StatelessWidget {
   final bool isDark;
 
-  const _CloseButton({
-    required this.isDark,
-  });
+  const _CloseButton({required this.isDark});
 
   @override
   Widget build(BuildContext context) {

@@ -114,8 +114,8 @@ class HomeTopBannerCard extends StatelessWidget {
             ),
 
             Positioned(
-              left: -circleSize * 0.25,
-              bottom: -circleSize * 0.25,
+              left: -circleSize * 0.20,
+              bottom: -circleSize * 0.20,
               child: Container(
                 width: circleSize * 1.21,
                 height: circleSize * 1.22,
