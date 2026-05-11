@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/all_reviews_section.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/my_published_review_section.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/rate_test_section.dart';
@@ -51,24 +52,83 @@ class ReviewTab extends StatelessWidget {
 
         CustomDivider(height: 30, thickness: 3),
 
-        if (myReview == null) ...[
-          RateTestSection(
-            testId: testId,
-            canSubmitReview: canInteractWithReviews,
-          ),
-          CustomDivider(height: 30, thickness: 3),
-        ] else ...[
-          MyPublishedReviewSection(
-            review: ReviewUiMapper.mapMyReview(myReview),
-            onEdit: () {
-              debugPrint('edit my review => ${myReview.id}');
-            },
-            onDelete: () {
-              debugPrint('delete my review => ${myReview.id}');
-            },
-          ),
-          CustomDivider(height: 30, thickness: 3),
-        ],
+        // if (myReview == null) ...[
+        //   RateTestSection(
+        //     testId: testId,
+        //     canSubmitReview: canInteractWithReviews,
+        //   ),
+        //   CustomDivider(height: 30, thickness: 3),
+        // ] else ...[
+        //   MyPublishedReviewSection(
+        //     review: ReviewUiMapper.mapMyReview(myReview),
+        //     onEdit: () {
+        //       debugPrint('edit my review => ${myReview.id}');
+        //     },
+        //     onDelete: () {
+        //       debugPrint('delete my review => ${myReview.id}');
+        //     },
+        //   ),
+        //   CustomDivider(height: 30, thickness: 3),
+        // ],
+        BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
+          buildWhen: (previous, current) =>
+              previous.isEditingMyReview != current.isEditingMyReview ||
+              previous.draftReviewRating != current.draftReviewRating ||
+              previous.draftReviewText != current.draftReviewText ||
+              previous.addReviewStatus != current.addReviewStatus ||
+              previous.updateReviewStatus != current.updateReviewStatus,
+          builder: (context, state) {
+            if (myReview != null && state.isEditingMyReview) {
+              return Column(
+                children: [
+                  RateTestSection(
+                    testId: testId,
+                    canSubmitReview: canInteractWithReviews,
+                    mode: ReviewFormMode.edit,
+                    onCancelEdit: () {
+                      context
+                          .read<DetailsOfTestCubit>()
+                          .cancelEditingMyReview();
+                    },
+                  ),
+                  CustomDivider(height: 30, thickness: 3),
+                ],
+              );
+            }
+
+            if (myReview == null) {
+              return Column(
+                children: [
+                  RateTestSection(
+                    testId: testId,
+                    canSubmitReview: canInteractWithReviews,
+                    mode: ReviewFormMode.create,
+                  ),
+                  CustomDivider(height: 30, thickness: 3),
+                ],
+              );
+            }
+
+            return Column(
+              children: [
+                MyPublishedReviewSection(
+                  review: ReviewUiMapper.mapMyReview(myReview),
+                  onEdit: () {
+                    context.read<DetailsOfTestCubit>().startEditingMyReview(
+                      reviewId: myReview.id,
+                      rating: myReview.rating,
+                      reviewText: myReview.reviewText,
+                    );
+                  },
+                  onDelete: () {
+                    debugPrint('delete my review => ${myReview.id}');
+                  },
+                ),
+                CustomDivider(height: 30, thickness: 3),
+              ],
+            );
+          },
+        ),
 
         ReviewsSection(
           selectedFilter: selectedFilter,

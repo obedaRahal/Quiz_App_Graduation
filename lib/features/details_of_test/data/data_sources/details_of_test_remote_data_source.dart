@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/add_test_review_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/download_test_file_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_bookmark_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_follow_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_like_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_reviews_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_sample_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/update_test_review_model.dart';
 
 import '../../../../core/database/api/api_consumer.dart';
 import '../../../../core/database/api/end_point.dart';
@@ -40,6 +42,18 @@ abstract class DetailsOfTestRemoteDataSource {
   Future<TestFollowActionModel> unfollowCreator({required int creatorId});
 
   Future<DownloadTestFileModel> downloadTestFile({required int testId});
+
+  Future<AddTestReviewModel> addTestReview({
+    required int testId,
+    required int rating,
+    required String reviewText,
+  });
+
+  Future<UpdateTestReviewModel> updateTestReview({
+    required int testId,
+    required int rating,
+    required String reviewText,
+  });
 }
 
 class DetailsOfTestRemoteDataSourceImpl
@@ -277,5 +291,57 @@ class DetailsOfTestRemoteDataSourceImpl
     }
 
     return DownloadTestFileModel(filePath: filePath, fileName: fileName);
+  }
+
+  @override
+  Future<AddTestReviewModel> addTestReview({
+    required int testId,
+    required int rating,
+    required String reviewText,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.addTestReview ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.addTestReview(testId)}");
+    debugPrint("→ method: POST");
+    debugPrint(
+      "→ body: {rating: $rating, review_text_length: ${reviewText.trim().length}}",
+    );
+
+    final response = await apiConsumer.post(
+      EndPoints.addTestReview(testId),
+      data: {'rating': rating, 'review_text': reviewText.trim()},
+    );
+
+    debugPrint("← response (addTestReview): $response");
+    debugPrint("=================================================");
+
+    return AddTestReviewModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<UpdateTestReviewModel> updateTestReview({
+    required int testId,
+    required int rating,
+    required String reviewText,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.updateTestReview ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.updateTestReview(testId)}");
+    debugPrint("→ method: POST");
+    debugPrint(
+      "→ body: {rating: $rating, review_text_length: ${reviewText.trim().length}}",
+    );
+
+    final response = await apiConsumer.post(
+      EndPoints.updateTestReview(testId),
+      data: {'rating': rating, 'review_text': reviewText.trim()},
+    );
+
+    debugPrint("← response (updateTestReview): $response");
+    debugPrint("=================================================");
+
+    return UpdateTestReviewModel.fromJson(response as Map<String, dynamic>);
   }
 }

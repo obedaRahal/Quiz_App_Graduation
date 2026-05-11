@@ -18,6 +18,7 @@ import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register
 import 'package:quiz_app_grad/features/details_of_test/data/data_sources/details_of_test_remote_data_source.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/repo_impl/details_of_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/repositories/details_of_test_repository.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/download_test_file_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
@@ -28,6 +29,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_tes
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookmark_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/update_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/data_source/all_interests_remote_data_source.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/repositories/all_interests_repository_impl.dart';
@@ -223,6 +225,8 @@ void _registerDetailsOfTestFeature() {
         followCreatorUseCase: sl<FollowCreatorUseCase>(),
         unfollowCreatorUseCase: sl<UnfollowCreatorUseCase>(),
         downloadTestFileUseCase: sl<DownloadTestFileUseCase>(),
+        addTestReviewUseCase: sl<AddTestReviewUseCase>(),
+        updateTestReviewUseCase: sl<UpdateTestReviewUseCase>(),
       ),
     );
   }
@@ -269,6 +273,14 @@ void _registerDetailsOfTestFeature() {
   if (!sl.isRegistered<DownloadTestFileUseCase>()) {
     sl.registerLazySingleton<DownloadTestFileUseCase>(
       () => DownloadTestFileUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  sl.registerLazySingleton(() => AddTestReviewUseCase(sl()));
+
+  if (!sl.isRegistered<UpdateTestReviewUseCase>()) {
+    sl.registerLazySingleton<UpdateTestReviewUseCase>(
+      () => UpdateTestReviewUseCase(sl<DetailsOfTestRepository>()),
     );
   }
 }

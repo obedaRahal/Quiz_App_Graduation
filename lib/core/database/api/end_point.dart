@@ -71,6 +71,11 @@ class EndPoints {
   static String downloadTestFile(int testId) =>
       '$baseUrl/test/download/$testId';
 
+  static String addTestReview(int testId) => '$baseUrl/test/add/review/$testId';
+
+  static String updateTestReview(int testId) =>
+      '$baseUrl/test/update/review/$testId';
+
   // laboratory
   static String testsByInterest(int interestId) {
     return '/home/test-by-interest/$interestId';

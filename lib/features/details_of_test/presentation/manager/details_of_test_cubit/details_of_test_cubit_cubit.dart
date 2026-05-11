@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/download_test_file_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
@@ -7,6 +8,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_othe
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/add_test_review_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/download_test_file_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_overview_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_reviews_params.dart';
@@ -14,9 +16,11 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/g
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_bookmark_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_follow_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_like_action_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/update_test_review_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookmark_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/update_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
 
 class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
@@ -30,6 +34,8 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
   final FollowCreatorUseCase followCreatorUseCase;
   final UnfollowCreatorUseCase unfollowCreatorUseCase;
   final DownloadTestFileUseCase downloadTestFileUseCase;
+  final AddTestReviewUseCase addTestReviewUseCase;
+  final UpdateTestReviewUseCase updateTestReviewUseCase;
 
   DetailsOfTestCubit({
     required this.getOtherTestDetailsOverviewUseCase,
@@ -42,18 +48,21 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     required this.followCreatorUseCase,
     required this.unfollowCreatorUseCase,
     required this.downloadTestFileUseCase,
+    required this.addTestReviewUseCase,
+    required this.updateTestReviewUseCase,
   }) : super(const DetailsOfTestState()) {
     debugPrint("============ DetailsOfTestCubit INIT ============");
   }
-
+  ///////////////////// FOR UI ////////////////////////////
+  ///////////////////// FOR UI ////////////////////////////
+  ///////////////////// FOR UI ////////////////////////////
+  ///////////////////// FOR UI ////////////////////////////
   void changeSelectedTab(DetailsOfTestTab tab) {
     debugPrint(
       "============ DetailsOfTestCubit.changeSelectedTab ============",
     );
     debugPrint("→ selected tab: $tab");
-
     emit(state.copyWith(selectedTab: tab));
-
     debugPrint("=================================================");
   }
 
@@ -84,15 +93,12 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
       "============ DetailsOfTestCubit.changeDraftReviewRating ============",
     );
     debugPrint("→ rating: $rating");
-
     emit(state.copyWith(draftReviewRating: rating));
-
     debugPrint("=================================================");
   }
 
   void changeDraftReviewText(String text) {
     if (text.length > 200) return;
-
     emit(state.copyWith(draftReviewText: text));
   }
 
@@ -104,6 +110,12 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     debugPrint("→ rating: ${state.draftReviewRating}");
     debugPrint("→ reviewText: ${state.draftReviewText}");
 
+    addTestReview(
+      testId: testId,
+      rating: state.draftReviewRating,
+      reviewText: state.draftReviewText.trim(),
+    );
+
     if (state.draftReviewRating <= 0) {
       debugPrint("✗ rating is required");
       debugPrint("=================================================");
@@ -114,7 +126,12 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     debugPrint("✓ ready to submit review");
     debugPrint("=================================================");
   }
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
 
+  /////////////////////    OVERVIEW API //////////////////////////////
   Future<void> getOtherTestDetailsOverview({required int testId}) async {
     debugPrint(
       "============ DetailsOfTestCubit.getOtherTestDetailsOverview ============",
@@ -163,6 +180,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
+  /////////////////    SAMPLE API    ////////////////////
   Future<void> getOtherTestDetailsSample({required int testId}) async {
     debugPrint(
       "============ DetailsOfTestCubit.getOtherTestDetailsSample ============",
@@ -210,6 +228,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
+  ////////////////////  REVIEWS API ///////////////////////
   Future<void> getOtherTestDetailsReviews({
     required int testId,
     String rating = 'all',
@@ -264,6 +283,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
+  ////////////////////// LIKE API //////////////////////
   Future<void> toggleTestLike({required int testId}) async {
     debugPrint("============ DetailsOfTestCubit.toggleTestLike ============");
     debugPrint("→ params: {testId: $testId}");
@@ -355,6 +375,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
+  /////////////////////  BOOKMARK API ////////////////////
   Future<void> toggleTestBookmark({required int testId}) async {
     debugPrint(
       "============ DetailsOfTestCubit.toggleTestBookmark ============",
@@ -452,6 +473,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
+  /////////////////////////         FOLLOW API ////////////////////
   Future<void> toggleCreatorFollow({required int creatorId}) async {
     debugPrint(
       "============ DetailsOfTestCubit.toggleCreatorFollow ============",
@@ -554,6 +576,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
+  /////////////////////////////   DOWNLOAD API //////////////////
   Future<void> downloadTestFile({required int testId}) async {
     debugPrint("============ DetailsOfTestCubit.downloadTestFile ============");
     debugPrint("→ params: {testId: $testId}");
@@ -604,5 +627,206 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     );
 
     debugPrint("=================================================");
+  }
+
+  //////////////////    ADD REVIEW API ////////////////////
+  Future<void> addTestReview({
+    required int testId,
+    required int rating,
+    required String reviewText,
+  }) async {
+    debugPrint("============ DetailsOfTestCubit.addTestReview ============");
+    debugPrint(
+      "→ params: {testId: $testId, rating: $rating, reviewTextLength: ${reviewText.trim().length}}",
+    );
+
+    emit(state.copyWith(addReviewStatus: AddTestReviewStatus.loading));
+
+    final result = await addTestReviewUseCase(
+      AddTestReviewParams(
+        testId: testId,
+        rating: rating,
+        reviewText: reviewText,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ addTestReview failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+        debugPrint("=================================================");
+
+        emit(
+          state.copyWith(
+            addReviewStatus: AddTestReviewStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) async {
+        debugPrint("✓ addTestReview success");
+        debugPrint("→ message: ${response.message}");
+
+        emit(state.copyWith(addReviewStatus: AddTestReviewStatus.success));
+
+        debugPrint("→ refreshing reviews after add review");
+
+        await getOtherTestDetailsReviews(
+          testId: testId,
+          rating: state.selectedRatingFilter,
+        );
+
+        debugPrint("=================================================");
+      },
+    );
+  }
+
+  void resetAddReviewState() {
+    emit(state.copyWith(addReviewStatus: AddTestReviewStatus.initial));
+  }
+
+  ///////////////////// EDITING REVIEW API ////////////////////
+  void startEditingMyReview({
+    required int reviewId,
+    required int rating,
+    required String reviewText,
+  }) {
+    debugPrint(
+      "============ DetailsOfTestCubit.startEditingMyReview ============",
+    );
+    debugPrint("→ reviewId: $reviewId");
+    debugPrint("→ rating: $rating");
+    debugPrint("→ reviewTextLength: ${reviewText.trim().length}");
+
+    emit(
+      state.copyWith(
+        isEditingMyReview: true,
+        editingReviewId: reviewId,
+        draftReviewRating: rating,
+        draftReviewText: reviewText,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void cancelEditingMyReview() {
+    debugPrint(
+      "============ DetailsOfTestCubit.cancelEditingMyReview ============",
+    );
+
+    emit(
+      state.copyWith(
+        isEditingMyReview: false,
+        clearEditingReviewId: true,
+        draftReviewRating: 0,
+        draftReviewText: '',
+        updateReviewStatus: UpdateTestReviewStatus.initial,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> updateMyReview({required int testId}) async {
+    debugPrint("============ DetailsOfTestCubit.updateMyReview ============");
+
+    final rating = state.draftReviewRating;
+    final reviewText = state.draftReviewText.trim();
+
+    debugPrint(
+      "→ params: {testId: $testId, rating: $rating, reviewTextLength: ${reviewText.length}}",
+    );
+
+
+    if (rating <= 0) {
+      emit(
+        state.copyWith(
+          updateReviewStatus: UpdateTestReviewStatus.failure,
+          errorTitle: 'تنبيه',
+          errorMessage: 'اختر عدد النجوم أولًا',
+        ),
+      );
+      return;
+    }
+
+    if (reviewText.isEmpty) {
+      emit(
+        state.copyWith(
+          updateReviewStatus: UpdateTestReviewStatus.failure,
+          errorTitle: 'تنبيه',
+          errorMessage: 'اكتب تعليقك قبل النشر',
+        ),
+      );
+      return;
+    }
+
+    if (state.isUpdateReviewLoading) {
+      debugPrint("✗ update review already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        updateReviewStatus: UpdateTestReviewStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await updateTestReviewUseCase(
+      UpdateTestReviewParams(
+        testId: testId,
+        rating: rating,
+        reviewText: reviewText,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ updateMyReview failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            updateReviewStatus: UpdateTestReviewStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) async {
+        debugPrint("✓ updateMyReview success");
+        debugPrint("→ message: ${response.message}");
+        debugPrint("→ refreshing reviews after update");
+
+        emit(
+          state.copyWith(
+            updateReviewStatus: UpdateTestReviewStatus.success,
+            isEditingMyReview: false,
+            clearEditingReviewId: true,
+            draftReviewRating: 0,
+            draftReviewText: '',
+            clearError: true,
+          ),
+        );
+
+        await getOtherTestDetailsReviews(
+          testId: testId,
+          rating: state.selectedRatingFilter,
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetUpdateReviewState() {
+    emit(state.copyWith(updateReviewStatus: UpdateTestReviewStatus.initial));
   }
 }
