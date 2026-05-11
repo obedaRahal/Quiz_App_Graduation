@@ -12,14 +12,15 @@ class ProfileSection extends StatelessWidget {
 
   String _avatarByGender(String? gender) {
     if (gender == 'ذكر') {
-      return AppImage.male; // عدليها لاحقًا لصورة كارتون الذكر
+      return AppImage.homeProfilePhotofMale;
     }
 
     if (gender == 'انثى') {
-      return AppImage.female; // عدليها لاحقًا لصورة كارتون الأنثى
+      return AppImage
+          .homeProfilePhotofFemale; 
     }
 
-    return AppImage.homeProfilePhoto;
+    return AppImage.male;
   }
 
   @override
@@ -53,10 +54,7 @@ class ProfileSection extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            UserInfo(
-              isDark: isDark,
-              name: name,
-            ),
+            UserInfo(isDark: isDark, name: name),
           ],
         );
       },

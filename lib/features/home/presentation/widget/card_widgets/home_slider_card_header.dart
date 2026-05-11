@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
@@ -19,8 +18,6 @@ class HomeSliderCardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profilePicture = fixLocalhostUrl(owner.profilePicture);
-    final isSvg = profilePicture.toLowerCase().endsWith('.svg');
     return Row(
       children: [
         Padding(
@@ -38,56 +35,6 @@ class HomeSliderCardHeader extends StatelessWidget {
               width: SizeConfig.w(0.12),
               fit: BoxFit.cover,
             ),
-            //         isSvg
-            // ? CustomAppImage(
-            //     height: SizeConfig.w(0.12),
-            //     width: SizeConfig.w(0.12),
-            //     path: AppImage.carmen,
-            //     fit: BoxFit.cover,
-            //   )
-            // : Image.network(
-            //     profilePicture,
-            //     height: SizeConfig.w(0.12),
-            //     width: SizeConfig.w(0.12),
-            //     fit: BoxFit.cover,
-            //     errorBuilder: (_, __, ___) {
-            //       return CustomAppImage(
-            //         height: SizeConfig.w(0.12),
-            //         width: SizeConfig.w(0.12),
-            //         path: AppImage.carmen,
-            //         fit: BoxFit.cover,
-            //       );
-            //     },
-            //   ),
-            // isSvg
-            //     ? SvgPicture.network(
-            //         profilePicture,
-            //         height: SizeConfig.w(0.12),
-            //         width: SizeConfig.w(0.12),
-            //         fit: BoxFit.cover,
-            //         placeholderBuilder: (_) {
-            //           return CustomAppImage(
-            //             height: SizeConfig.w(0.12),
-            //             width: SizeConfig.w(0.12),
-            //             path: AppImage.carmen,
-            //             fit: BoxFit.cover,
-            //           );
-            //         },
-            //       )
-            //     : Image.network(
-            //         profilePicture,
-            //         height: SizeConfig.w(0.12),
-            //         width: SizeConfig.w(0.12),
-            //         fit: BoxFit.cover,
-            //         errorBuilder: (_, __, ___) {
-            //           return CustomAppImage(
-            //             height: SizeConfig.w(0.12),
-            //             width: SizeConfig.w(0.12),
-            //             path: AppImage.carmen,
-            //             fit: BoxFit.cover,
-            //           );
-            //         },
-            //       ),
           ),
         ),
         Expanded(
@@ -168,12 +115,4 @@ class HomeSliderCardHeader extends StatelessWidget {
       ],
     );
   }
-}
-
-String fixLocalhostUrl(String url) {
-  if (url.contains('localhost')) {
-    return url.replaceFirst('http://localhost', 'http://10.237.223.187');
-  }
-
-  return url;
 }

@@ -12,16 +12,14 @@ class NotificationButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark
             ? AppPalette.borderFieldColorNDark
-            : AppPalette.primarySoft,
+            : AppPalette.primaryToWhite,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Padding(
         padding: const EdgeInsets.all(5.5),
         child: Icon(
           Icons.notifications_outlined,
-          color: isDark
-              ? AppPalette.textWhiteINDark
-              : AppPalette.black,
+          color: isDark ? AppPalette.textWhiteINDark : AppPalette.black,
         ),
       ),
     );
