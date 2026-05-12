@@ -23,7 +23,6 @@ class MyPublishedReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final cardColor = isDark ? AppPalette.greyMediumDark : AppPalette.white;
@@ -49,7 +48,7 @@ class MyPublishedReviewCard extends StatelessWidget {
             ],
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               ReviewHeader(
                 reviewerName: review.reviewerName,
@@ -126,7 +125,7 @@ class _ReviewMoreButton extends StatelessWidget {
               CustomTextWidget(
                 "تعديل",
                 fontSize: SizeConfig.text(0.03),
-                color: AppPalette.black,
+                color: appColors.blackTogreyMedium,
               ),
             ],
           ),
@@ -145,7 +144,7 @@ class _ReviewMoreButton extends StatelessWidget {
               CustomTextWidget(
                 "حذف",
                 fontSize: SizeConfig.text(0.03),
-                color: AppPalette.black,
+                color: appColors.blackTogreyMedium,
               ),
             ],
           ),

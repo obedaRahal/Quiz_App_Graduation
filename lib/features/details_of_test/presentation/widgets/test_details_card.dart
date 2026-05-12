@@ -119,7 +119,7 @@ class TestDetailsCard extends StatelessWidget {
                   ),
                 ),
 
-                //if (!isFree)
+                if (!isFree)
                 CustomTextWidget(
                   "ليرة سورية",
                   fontSize: SizeConfig.text(0.028),

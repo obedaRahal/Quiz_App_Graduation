@@ -1,11 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/add_test_review_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/delete_test_review_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/download_test_file_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/review_feedback_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_like_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_review_action_entity.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failure.dart';
@@ -501,6 +505,277 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
 
       return Left(
         ServerFailure(title: 'حدث خطأ', message: 'تعذر تحميل ملف الاختبار'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, AddTestReviewEntity>> addTestReview({
+    required int testId,
+    required int rating,
+    required String reviewText,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.addTestReview ============",
+    );
+    debugPrint(
+      "→ params: {testId: $testId, rating: $rating, reviewTextLength: ${reviewText.trim().length}}",
+    );
+
+    try {
+      debugPrint("→ calling remoteDataSource.addTestReview");
+
+      final model = await remoteDataSource.addTestReview(
+        testId: testId,
+        rating: rating,
+        reviewText: reviewText,
+      );
+
+      debugPrint("← remoteDataSource.addTestReview success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.addTestReview ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.addTestReview CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.addTestReview Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(ServerFailure(title: 'حدث خطأ', message: 'تعذر نشر التقييم'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UpdateTestReviewEntity>> updateTestReview({
+    required int testId,
+    required int rating,
+    required String reviewText,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.updateTestReview ============",
+    );
+    debugPrint(
+      "→ params: {testId: $testId, rating: $rating, reviewTextLength: ${reviewText.trim().length}}",
+    );
+
+    try {
+      debugPrint("→ calling remoteDataSource.updateTestReview");
+
+      final model = await remoteDataSource.updateTestReview(
+        testId: testId,
+        rating: rating,
+        reviewText: reviewText,
+      );
+
+      debugPrint("← remoteDataSource.updateTestReview success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.updateTestReview ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.updateTestReview CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.updateTestReview Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر تعديل التقييم'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, DeleteTestReviewEntity>> deleteTestReview({
+    required int testId,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.deleteTestReview ============",
+    );
+    debugPrint("→ params: {testId: $testId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.deleteTestReview");
+
+      final model = await remoteDataSource.deleteTestReview(testId: testId);
+
+      debugPrint("← remoteDataSource.deleteTestReview success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.deleteTestReview ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.deleteTestReview CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.deleteTestReview Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(ServerFailure(title: 'حدث خطأ', message: 'تعذر حذف التقييم'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ReviewFeedbackActionEntity>> addFeedbackOnReview({
+    required int reviewId,
+    required String vote,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.addFeedbackOnReview ============",
+    );
+    debugPrint("→ params: {reviewId: $reviewId, vote: $vote}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.addFeedbackOnReview");
+
+      final model = await remoteDataSource.addFeedbackOnReview(
+        reviewId: reviewId,
+        vote: vote,
+      );
+
+      debugPrint("← remoteDataSource.addFeedbackOnReview success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.addFeedbackOnReview ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.addFeedbackOnReview CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.addFeedbackOnReview Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'تعذر تسجيل رأيك على المراجعة',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, ReviewFeedbackActionEntity>> deleteFeedbackOnReview({
+    required int reviewId,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.deleteFeedbackOnReview ============",
+    );
+    debugPrint("→ params: {reviewId: $reviewId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.deleteFeedbackOnReview");
+
+      final model = await remoteDataSource.deleteFeedbackOnReview(
+        reviewId: reviewId,
+      );
+
+      debugPrint("← remoteDataSource.deleteFeedbackOnReview success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.deleteFeedbackOnReview ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.deleteFeedbackOnReview CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.deleteFeedbackOnReview Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر إزالة رأيك عن المراجعة'),
       );
     }
   }

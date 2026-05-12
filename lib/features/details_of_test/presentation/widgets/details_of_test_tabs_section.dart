@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_overview_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
@@ -257,12 +258,63 @@ class _ReviewsTabBlocContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
+    return BlocConsumer<DetailsOfTestCubit, DetailsOfTestState>(
+      listenWhen: (previous, current) =>
+          previous.updateReviewStatus != current.updateReviewStatus ||
+          previous.deleteReviewStatus != current.deleteReviewStatus,
+      listener: (context, state) {
+        if (state.isUpdateReviewSuccess) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? "! تمت العملية بنجاح",
+            message: state.errorMessage ?? "تم تعديل تقييمك بنجاح",
+            type: AppValidationSnackBarType.success,
+          );
+
+          context.read<DetailsOfTestCubit>().resetUpdateReviewState();
+        }
+
+        if (state.isUpdateReviewFailure) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? "! تمت العملية بنجاح",
+            message: state.errorMessage ?? "تعذر تعديل التقييم",
+            type: AppValidationSnackBarType.error,
+          );
+
+          context.read<DetailsOfTestCubit>().resetUpdateReviewState();
+        }
+
+        if (state.isDeleteReviewSuccess) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ??  "! تمت العملية بنجاح",
+            message: state.errorMessage ?? "تم حذف تقييمك بنجاح",
+            type: AppValidationSnackBarType.success,
+          );
+
+          context.read<DetailsOfTestCubit>().resetDeleteReviewState();
+        }
+
+        if (state.isDeleteReviewFailure) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? "خطأ",
+            message: state.errorMessage ?? "تعذر حذف التقييم",
+            type: AppValidationSnackBarType.error,
+          );
+
+          context.read<DetailsOfTestCubit>().resetDeleteReviewState();
+        }
+      },
       buildWhen: (previous, current) =>
           previous.reviewsStatus != current.reviewsStatus ||
           previous.reviewsDetails != current.reviewsDetails ||
           previous.selectedRatingFilter != current.selectedRatingFilter ||
-          previous.errorMessage != current.errorMessage,
+          previous.errorMessage != current.errorMessage ||
+          previous.isEditingMyReview != current.isEditingMyReview ||
+          previous.updateReviewStatus != current.updateReviewStatus ||
+          previous.deleteReviewStatus != current.deleteReviewStatus,
       builder: (context, state) {
         if (state.isReviewsLoading) {
           return const Center(child: CircularProgressIndicator());

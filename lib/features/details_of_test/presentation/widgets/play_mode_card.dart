@@ -43,7 +43,7 @@ class PlayModeCard extends StatelessWidget {
               childVerticalPad: SizeConfig.h(0.01),
               childHorizontalPad: SizeConfig.w(0.019),
               borderRadius: borderRadius,
-              border: Border.all(color: AppPalette.whiteSoft, width: 3),
+              border: Border.all(color: appColors.whiteToblack, width: 3),
               boxShadow: [BoxShadow(color: shadowColor, blurRadius: 8)],
               alignment: Alignment.topRight,
               backgroundColor: backgroundColor,
@@ -53,8 +53,9 @@ class PlayModeCard extends StatelessWidget {
                     alignment: Alignment.topRight,
                     child: CustomTextWidget(
                       "اللعب بنمط",
-                      color: AppPalette.white,
+                      color: appColors.whiteToblack,
                       fontSize: SizeConfig.text(0.023),
+                      fontFamily: AppFont.elMessiriSemiBold,
                     ),
                   ),
                   Positioned(
@@ -73,7 +74,7 @@ class PlayModeCard extends StatelessWidget {
                       child: CustomTextWidget(
                         title,
                         textAlign: TextAlign.start,
-                        color: AppPalette.white,
+                        color: appColors.whiteToblack, 
                         fontFamily: AppFont.elMessiriSemiBold,
                         fontSize: SizeConfig.text(0.03),
                         maxLines: 2,

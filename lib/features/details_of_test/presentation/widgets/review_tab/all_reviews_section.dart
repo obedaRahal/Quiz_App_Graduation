@@ -16,6 +16,9 @@ class ReviewsSection extends StatelessWidget {
 
   final bool canInteractWithReviews;
 
+  final bool isFeedbackLoading;
+  final int? activeFeedbackReviewId;
+
   const ReviewsSection({
     super.key,
     required this.selectedFilter,
@@ -26,6 +29,9 @@ class ReviewsSection extends StatelessWidget {
     required this.onHelpfulNo,
 
     required this.canInteractWithReviews,
+
+    required this.isFeedbackLoading,
+    required this.activeFeedbackReviewId,
   });
 
   @override
@@ -66,6 +72,8 @@ class ReviewsSection extends StatelessWidget {
                 child: PublicReviewCard(
                   review: review,
                   canInteractWithReview: canInteractWithReviews,
+                  isFeedbackLoading:
+                      isFeedbackLoading && activeFeedbackReviewId == review.id,
                   onReport: () => onReportReview(review.id),
                   onHelpfulYes: () => onHelpfulYes(review.id),
                   onHelpfulNo: () => onHelpfulNo(review.id),
@@ -252,6 +260,8 @@ class PublicReviewCard extends StatelessWidget {
 
   final bool canInteractWithReview;
 
+  final bool isFeedbackLoading;
+
   const PublicReviewCard({
     super.key,
     required this.review,
@@ -260,11 +270,12 @@ class PublicReviewCard extends StatelessWidget {
     required this.onHelpfulNo,
 
     required this.canInteractWithReview,
+
+    this.isFeedbackLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final cardColor = isDark ? AppPalette.greyMediumDark : AppPalette.white;
@@ -334,7 +345,7 @@ class PublicReviewCard extends StatelessWidget {
             child: _ReviewHelpfulQuestionRow(
               currentVote: review.myHelpfulVote,
               canInteract: canInteractWithReview,
-
+              isLoading: isFeedbackLoading,
               onYesTap: onHelpfulYes,
               onNoTap: onHelpfulNo,
             ),
@@ -380,7 +391,7 @@ class _ReviewReportMenuButton extends StatelessWidget {
               CustomTextWidget(
                 "إبلاغ عن التعليق",
                 fontSize: SizeConfig.text(0.03),
-                color: AppPalette.black,
+                color: appColors.blackTogreyMedium,
               ),
             ],
           ),
@@ -395,11 +406,12 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
   final bool canInteract;
   final VoidCallback onYesTap;
   final VoidCallback onNoTap;
+  final bool isLoading;
 
   const _ReviewHelpfulQuestionRow({
     required this.currentVote,
     required this.canInteract,
-
+    this.isLoading = false,
     required this.onYesTap,
     required this.onNoTap,
   });
@@ -427,10 +439,32 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
 
         SizedBox(width: SizeConfig.w(0.02)),
 
+        // if (isLoading)
+        //   SizedBox(
+        //     width: SizeConfig.w(0.045),
+        //     height: SizeConfig.w(0.045),
+        //     child: CircularProgressIndicator(
+        //       strokeWidth: 2,
+        //       color: AppPalette.primary,
+        //     ),
+        //   )
+        // else ...[
+        //   _HelpfulActionButton(
+        //     title: 'نعم',
+        //     isSelected: currentVote == true,
+        //     onTap: onYesTap,
+        //   ),
+        //   SizedBox(width: SizeConfig.w(0.02)),
+        //   _HelpfulActionButton(
+        //     title: 'لا',
+        //     isSelected: currentVote == false,
+        //     onTap: isLoading ? null : onYesTap,
+        //   ),
+        // ],
         _HelpfulActionButton(
           title: 'نعم',
           isSelected: currentVote == true,
-          onTap: onYesTap,
+          onTap: isLoading ? null : onYesTap,
         ),
 
         SizedBox(width: SizeConfig.w(0.02)),
@@ -438,7 +472,7 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
         _HelpfulActionButton(
           title: 'لا',
           isSelected: currentVote == false,
-          onTap: onNoTap,
+          onTap: isLoading ? null : onNoTap,
         ),
       ],
     );
@@ -448,7 +482,7 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
 class _HelpfulActionButton extends StatelessWidget {
   final String title;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _HelpfulActionButton({
     required this.title,

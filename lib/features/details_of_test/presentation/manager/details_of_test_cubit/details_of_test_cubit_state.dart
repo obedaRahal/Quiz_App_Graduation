@@ -19,6 +19,16 @@ enum FollowActionStatus { initial, loading, success, failure }
 
 enum DownloadTestFileStatus { initial, loading, success, failure }
 
+enum AddTestReviewStatus { initial, loading, success, failure }
+
+enum UpdateTestReviewStatus { initial, loading, success, failure }
+
+enum ReviewFormMode { create, edit }
+
+enum DeleteTestReviewStatus { initial, loading, success, failure }
+
+enum ReviewFeedbackActionStatus { initial, loading, success, failure }
+
 class DetailsOfTestState {
   //  for UI ////
   final DetailsOfTestTab selectedTab;
@@ -48,6 +58,18 @@ class DetailsOfTestState {
   final DownloadTestFileStatus downloadStatus;
   final String? downloadedFilePath;
 
+  final AddTestReviewStatus addReviewStatus;
+
+  final UpdateTestReviewStatus updateReviewStatus;
+
+  final bool isEditingMyReview;
+  final int? editingReviewId;
+
+  final DeleteTestReviewStatus deleteReviewStatus;
+
+  final ReviewFeedbackActionStatus reviewFeedbackStatus;
+  final int? activeFeedbackReviewId;
+
   const DetailsOfTestState({
     this.selectedTab = DetailsOfTestTab.overview,
     this.selectedSampleAnswers = const {},
@@ -72,31 +94,37 @@ class DetailsOfTestState {
 
     this.downloadStatus = DownloadTestFileStatus.initial,
     this.downloadedFilePath,
+
+    this.addReviewStatus = AddTestReviewStatus.initial,
+
+    this.updateReviewStatus = UpdateTestReviewStatus.initial,
+    this.isEditingMyReview = false,
+    this.editingReviewId,
+
+    this.deleteReviewStatus = DeleteTestReviewStatus.initial,
+
+    this.reviewFeedbackStatus = ReviewFeedbackActionStatus.initial,
+    this.activeFeedbackReviewId,
   });
 
-  bool get canSubmitDraftReview => draftReviewRating > 0;
+  bool get canSubmitDraftReview =>
+      draftReviewRating > 0 && draftReviewText.trim().isNotEmpty;
 
   bool get isOverviewLoading =>
       overviewStatus == DetailsOfTestOverviewStatus.loading;
-
   bool get isOverviewSuccess =>
       overviewStatus == DetailsOfTestOverviewStatus.success;
-
   bool get isOverviewFailure =>
       overviewStatus == DetailsOfTestOverviewStatus.failure;
 
   bool get isSampleLoading => sampleStatus == DetailsOfTestSampleStatus.loading;
-
   bool get isSampleSuccess => sampleStatus == DetailsOfTestSampleStatus.success;
-
   bool get isSampleFailure => sampleStatus == DetailsOfTestSampleStatus.failure;
 
   bool get isReviewsLoading =>
       reviewsStatus == DetailsOfTestReviewsStatus.loading;
-
   bool get isReviewsSuccess =>
       reviewsStatus == DetailsOfTestReviewsStatus.success;
-
   bool get isReviewsFailure =>
       reviewsStatus == DetailsOfTestReviewsStatus.failure;
 
@@ -111,6 +139,27 @@ class DetailsOfTestState {
 
   bool get isDownloadLoading =>
       downloadStatus == DownloadTestFileStatus.loading;
+
+  bool get isAddReviewLoading => addReviewStatus == AddTestReviewStatus.loading;
+  bool get isAddReviewSuccess => addReviewStatus == AddTestReviewStatus.success;
+  bool get isAddReviewFailure => addReviewStatus == AddTestReviewStatus.failure;
+
+  bool get isUpdateReviewLoading =>
+      updateReviewStatus == UpdateTestReviewStatus.loading;
+  bool get isUpdateReviewSuccess =>
+      updateReviewStatus == UpdateTestReviewStatus.success;
+  bool get isUpdateReviewFailure =>
+      updateReviewStatus == UpdateTestReviewStatus.failure;
+
+  bool get isDeleteReviewLoading =>
+      deleteReviewStatus == DeleteTestReviewStatus.loading;
+  bool get isDeleteReviewSuccess =>
+      deleteReviewStatus == DeleteTestReviewStatus.success;
+  bool get isDeleteReviewFailure =>
+      deleteReviewStatus == DeleteTestReviewStatus.failure;
+
+  bool get isReviewFeedbackLoading =>
+      reviewFeedbackStatus == ReviewFeedbackActionStatus.loading;
 
   DetailsOfTestState copyWith({
     //  for UI ////
@@ -139,6 +188,19 @@ class DetailsOfTestState {
 
     DownloadTestFileStatus? downloadStatus,
     String? downloadedFilePath,
+
+    AddTestReviewStatus? addReviewStatus,
+
+    UpdateTestReviewStatus? updateReviewStatus,
+    bool? isEditingMyReview,
+    int? editingReviewId,
+    bool clearEditingReviewId = false,
+
+    DeleteTestReviewStatus? deleteReviewStatus,
+
+    ReviewFeedbackActionStatus? reviewFeedbackStatus,
+    int? activeFeedbackReviewId,
+    bool clearActiveFeedbackReviewId = false,
   }) {
     return DetailsOfTestState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -166,6 +228,21 @@ class DetailsOfTestState {
 
       downloadStatus: downloadStatus ?? this.downloadStatus,
       downloadedFilePath: downloadedFilePath ?? this.downloadedFilePath,
+
+      addReviewStatus: addReviewStatus ?? this.addReviewStatus,
+
+      updateReviewStatus: updateReviewStatus ?? this.updateReviewStatus,
+      isEditingMyReview: isEditingMyReview ?? this.isEditingMyReview,
+      editingReviewId: clearEditingReviewId
+          ? null
+          : editingReviewId ?? this.editingReviewId,
+
+      deleteReviewStatus: deleteReviewStatus ?? this.deleteReviewStatus,
+
+      reviewFeedbackStatus: reviewFeedbackStatus ?? this.reviewFeedbackStatus,
+      activeFeedbackReviewId: clearActiveFeedbackReviewId
+          ? null
+          : activeFeedbackReviewId ?? this.activeFeedbackReviewId,
     );
   }
 }
