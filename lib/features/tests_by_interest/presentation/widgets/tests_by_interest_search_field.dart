@@ -3,18 +3,41 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
-class LaboratorySearchField extends StatelessWidget {
+class TestsByInterestSearchField extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
-  final VoidCallback? onTap;
-  final TextEditingController controller;
-  const LaboratorySearchField({
+
+  const TestsByInterestSearchField({
     super.key,
     required this.onChanged,
     required this.onClear,
-    this.onTap,
-    required this.controller,
   });
+
+  @override
+  State<TestsByInterestSearchField> createState() =>
+      _TestsByInterestSearchFieldState();
+}
+
+class _TestsByInterestSearchFieldState
+    extends State<TestsByInterestSearchField> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() => setState(() {}));
+  }
+
+  void _clear() {
+    _controller.clear();
+    widget.onClear();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +50,8 @@ class LaboratorySearchField extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
       ),
       child: TextField(
-        onTap: onTap,
-        controller: controller,
-        onChanged: onChanged,
+        controller: _controller,
+        onChanged: widget.onChanged,
         textAlign: TextAlign.right,
         textDirection: TextDirection.rtl,
         textAlignVertical: TextAlignVertical.center,
@@ -39,31 +61,31 @@ class LaboratorySearchField extends StatelessWidget {
           color: isDark
               ? AppPalette.textWhiteINDark
               : AppPalette.textColorInHome,
-          fontSize: SizeConfig.text(0.034),
+          fontSize: SizeConfig.text(0.032),
           fontFamily: AppFont.elMessiriRegular,
         ),
         decoration: InputDecoration(
-          hintText: 'البحث عن اختبارات',
+          hintText: 'البحث عن اختبار ضمن التصنيف',
           hintStyle: TextStyle(
             color: AppPalette.greyMedium,
-            fontSize: SizeConfig.text(0.034),
+            fontSize: SizeConfig.text(0.032),
             fontFamily: AppFont.elMessiriRegular,
           ),
-          prefixIcon: controller.text.trim().isNotEmpty
+          prefixIcon: Icon(
+            Icons.search_rounded,
+            color: AppPalette.greyMedium,
+            size: SizeConfig.text(0.055),
+          ),
+          suffixIcon: _controller.text.trim().isNotEmpty
               ? GestureDetector(
-                  onTap: onClear,
+                  onTap: _clear,
                   child: Icon(
                     Icons.close_rounded,
                     color: AppPalette.greyMedium,
-                    size: SizeConfig.text(0.055),
+                    size: SizeConfig.text(0.05),
                   ),
                 )
               : null,
-          suffixIcon: Icon(
-            Icons.search_rounded,
-            color: AppPalette.greyMedium,
-            size: SizeConfig.text(0.05),
-          ),
           prefixIconConstraints: BoxConstraints(
             minWidth: SizeConfig.w(0.12),
             minHeight: SizeConfig.h(0.052),
@@ -73,10 +95,10 @@ class LaboratorySearchField extends StatelessWidget {
             minHeight: SizeConfig.h(0.052),
           ),
           border: InputBorder.none,
-          isDense: false,
+          isDense: true,
           contentPadding: EdgeInsets.only(
-            top: SizeConfig.h(0.002),
-            bottom: SizeConfig.h(0.010),
+            top: SizeConfig.h(0.000),
+            bottom: SizeConfig.h(0.002),
           ),
         ),
       ),

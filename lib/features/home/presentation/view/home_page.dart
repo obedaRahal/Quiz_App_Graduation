@@ -55,7 +55,6 @@ class HomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Expanded(
-                      // 🔥 مهم لتجنب overflow
                       child: CustomTextWidget(
                         "قائمة الاختبارات",
                         fontSize: titleSize,
@@ -71,10 +70,14 @@ class HomePage extends StatelessWidget {
                       textDirection: TextDirection.rtl,
                       children: [
                         GestureDetector(
-                          onTap: (){
+                          onTap: () {
                             context.read<BottomNavCubit>().changeTab(2);
                           },
-                          child: CustomTextWidget("عرض الكل", fontSize: actionSize)),
+                          child: CustomTextWidget(
+                            "عرض الكل",
+                            fontSize: actionSize,
+                          ),
+                        ),
                         SizedBox(width: SizeConfig.w(0.01)),
                         Icon(
                           Icons.keyboard_arrow_left,

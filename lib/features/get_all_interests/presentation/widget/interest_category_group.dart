@@ -4,11 +4,15 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/entities/all_interests_response_entity.dart';
 import 'package:quiz_app_grad/features/get_all_interests/presentation/widget/interest_card.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/presentation/view/tests_by_interest_page.dart';
 
 class InterestCategoryGroup extends StatelessWidget {
   final InterestCategoryEntity category;
 
-  const InterestCategoryGroup({super.key, required this.category});
+  const InterestCategoryGroup({
+    super.key,
+    required this.category,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +48,22 @@ class InterestCategoryGroup extends StatelessWidget {
             childAspectRatio: 3.2,
           ),
           itemBuilder: (context, index) {
-            return InterestCard(interest: category.interests[index]);
+            final interest = category.interests[index];
+
+            return InterestCard(
+              interest: interest,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TestsByInterestPage(
+                      interestId: interest.id,
+                      interestName: interest.name,
+                    ),
+                  ),
+                );
+              },
+            );
           },
         ),
       ],
