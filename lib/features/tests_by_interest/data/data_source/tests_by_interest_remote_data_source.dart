@@ -7,6 +7,12 @@ abstract class TestsByInterestRemoteDataSource {
     required int interestId,
     required int page,
   });
+  Future<TestsByInterestResponseModel> searchTestsByInterest({
+  required int interestId,
+  required String query,
+  required int page,
+  int perPage = 10,
+});
 }
 
 class TestsByInterestRemoteDataSourceImpl
@@ -31,4 +37,23 @@ class TestsByInterestRemoteDataSourceImpl
 
     return TestsByInterestResponseModel.fromJson(response);
   }
+  @override
+Future<TestsByInterestResponseModel> searchTestsByInterest({
+  required int interestId,
+  required String query,
+  required int page,
+  int perPage = 10,
+}) async {
+  final response = await apiConsumer.post(
+    EndPoints.searchTestByInterest,
+    data: {
+      'interest_id': interestId,
+      'q': query,
+      'page': page,
+      'per_page': perPage,
+    },
+  );
+
+  return TestsByInterestResponseModel.fromJson(response);
+}
 }

@@ -5,4 +5,10 @@ abstract class TestsByInterestRepository {
     required int interestId,
     required int page,
   });
+  Future<TestsByInterestResponseEntity> searchTestsByInterest({
+    required int interestId,
+    required String query,
+    required int page,
+    int perPage = 10,
+  });
 }

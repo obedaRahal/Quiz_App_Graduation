@@ -75,6 +75,8 @@ import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/
 import 'package:quiz_app_grad/features/tests_by_interest/data/data_source/tests_by_interest_remote_data_source.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/data/repositories/tests_by_interest_repository_impl.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/domain/repositories/tests_by_interest_repository.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/domain/use_cases/search_tests_by_interest_use_case.dart'
+    as tests_by_interest_search;
 import 'package:quiz_app_grad/features/tests_by_interest/presentation/managet/tests_by_interest_cubit/tests_by_interest_cubit.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/domain/use_cases/get_tests_by_interest_use_case.dart'
     as tests_by_interest;
@@ -220,7 +222,17 @@ void _registerDetailsOfTestFeature() {
       () => GetOtherTestDetailsOverviewUseCase(sl<DetailsOfTestRepository>()),
     );
   }
+  if (!sl.isRegistered<SubmitReportUseCase>()) {
+    sl.registerLazySingleton<SubmitReportUseCase>(
+      () => SubmitReportUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
 
+  if (!sl.isRegistered<GetTestShareLinkUseCase>()) {
+    sl.registerLazySingleton<GetTestShareLinkUseCase>(
+      () => GetTestShareLinkUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
   if (!sl.isRegistered<DetailsOfTestCubit>()) {
     sl.registerFactory<DetailsOfTestCubit>(
       () => DetailsOfTestCubit(
@@ -318,20 +330,6 @@ void _registerDetailsOfTestFeature() {
       () => DeleteFeedbackOnReviewUseCase(sl<DetailsOfTestRepository>()),
     );
   }
-
-  if (!sl.isRegistered<SubmitReportUseCase>()) {
-    sl.registerLazySingleton<SubmitReportUseCase>(
-      () => SubmitReportUseCase(sl<DetailsOfTestRepository>()),
-    );
-  }
-
-  if (!sl.isRegistered<GetTestShareLinkUseCase>()) {
-  sl.registerLazySingleton<GetTestShareLinkUseCase>(
-    () => GetTestShareLinkUseCase(
-      sl<DetailsOfTestRepository>(),
-    ),
-  );
-}
 }
 
 void _registerOnboardingFeature() {
@@ -536,24 +534,25 @@ void _registerAuthFeature() {
   sl.registerLazySingleton<LaboratoryRepository>(
     () => LaboratoryRepositoryImpl(remoteDataSource: sl()),
   );
-if (!sl.isRegistered<GetLabRecommendedTestsUseCase>()) {
-  sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
-    () => GetLabRecommendedTestsUseCase(sl<LaboratoryRepository>()),
-  );
+  if (!sl.isRegistered<GetLabRecommendedTestsUseCase>()) {
+    sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
+      () => GetLabRecommendedTestsUseCase(sl<LaboratoryRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetTestsByInterestUseCase>()) {
+    sl.registerLazySingleton<GetTestsByInterestUseCase>(
+      () => GetTestsByInterestUseCase(sl<LaboratoryRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<SearchTestsByInterestUseCase>()) {
+    sl.registerLazySingleton<SearchTestsByInterestUseCase>(
+      () => SearchTestsByInterestUseCase(sl<LaboratoryRepository>()),
+    );
+  }
 }
 
-if (!sl.isRegistered<GetTestsByInterestUseCase>()) {
-  sl.registerLazySingleton<GetTestsByInterestUseCase>(
-    () => GetTestsByInterestUseCase(sl<LaboratoryRepository>()),
-  );
-}
-
-if (!sl.isRegistered<SearchTestsByInterestUseCase>()) {
-  sl.registerLazySingleton<SearchTestsByInterestUseCase>(
-    () => SearchTestsByInterestUseCase(sl<LaboratoryRepository>()),
-  );
-}
-}
 void _registerTestsByInterestFeature() {
   if (!sl.isRegistered<TestsByInterestRemoteDataSource>()) {
     sl.registerLazySingleton<TestsByInterestRemoteDataSource>(
@@ -569,17 +568,29 @@ void _registerTestsByInterestFeature() {
 
   if (!sl.isRegistered<tests_by_interest.GetTestsByInterestUseCase>()) {
     sl.registerLazySingleton<tests_by_interest.GetTestsByInterestUseCase>(
-    () => tests_by_interest.GetTestsByInterestUseCase(
-  repository: sl<TestsByInterestRepository>(),
-),
+      () => tests_by_interest.GetTestsByInterestUseCase(
+        repository: sl<TestsByInterestRepository>(),
+      ),
     );
   }
 
+  if (!sl
+      .isRegistered<tests_by_interest_search.SearchTestsByInterestUseCase>()) {
+    sl.registerLazySingleton<
+      tests_by_interest_search.SearchTestsByInterestUseCase
+    >(
+      () => tests_by_interest_search.SearchTestsByInterestUseCase(
+        repository: sl<TestsByInterestRepository>(),
+      ),
+    );
+  }
   if (!sl.isRegistered<TestsByInterestCubit>()) {
     sl.registerFactory<TestsByInterestCubit>(
       () => TestsByInterestCubit(
         getTestsByInterestUseCase:
             sl<tests_by_interest.GetTestsByInterestUseCase>(),
+        searchTestsByInterestUseCase:
+            sl<tests_by_interest_search.SearchTestsByInterestUseCase>(),
       ),
     );
   }

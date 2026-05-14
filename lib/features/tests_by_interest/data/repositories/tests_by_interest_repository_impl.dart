@@ -5,9 +5,7 @@ import 'package:quiz_app_grad/features/tests_by_interest/domain/repositories/tes
 class TestsByInterestRepositoryImpl implements TestsByInterestRepository {
   final TestsByInterestRemoteDataSource remoteDataSource;
 
-  const TestsByInterestRepositoryImpl({
-    required this.remoteDataSource,
-  });
+  const TestsByInterestRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<TestsByInterestResponseEntity> getTestsByInterest({
@@ -17,6 +15,23 @@ class TestsByInterestRepositoryImpl implements TestsByInterestRepository {
     final response = await remoteDataSource.getTestsByInterest(
       interestId: interestId,
       page: page,
+    );
+
+    return response.toEntity();
+  }
+
+  @override
+  Future<TestsByInterestResponseEntity> searchTestsByInterest({
+    required int interestId,
+    required String query,
+    required int page,
+    int perPage = 10,
+  }) async {
+    final response = await remoteDataSource.searchTestsByInterest(
+      interestId: interestId,
+      query: query,
+      page: page,
+      perPage: perPage,
     );
 
     return response.toEntity();
