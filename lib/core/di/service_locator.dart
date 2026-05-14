@@ -72,6 +72,12 @@ import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit
 import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/data/data_source/tests_by_interest_remote_data_source.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/data/repositories/tests_by_interest_repository_impl.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/domain/repositories/tests_by_interest_repository.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/presentation/managet/tests_by_interest_cubit/tests_by_interest_cubit.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/domain/use_cases/get_tests_by_interest_use_case.dart'
+    as tests_by_interest;
 
 import '../database/api/api_consumer.dart';
 import '../database/api/dio_consumer.dart';
@@ -88,6 +94,7 @@ Future<void> initSl() async {
   _registerFilePickerFeature();
   _registerAuthFeature();
   _registerDetailsOfTestFeature();
+  _registerTestsByInterestFeature();
 }
 
 Future<void> _registerCore() async {
@@ -529,14 +536,51 @@ void _registerAuthFeature() {
   sl.registerLazySingleton<LaboratoryRepository>(
     () => LaboratoryRepositoryImpl(remoteDataSource: sl()),
   );
-
-  sl.registerLazySingleton<GetTestsByInterestUseCase>(
-    () => GetTestsByInterestUseCase(sl()),
-  );
-  sl.registerLazySingleton<SearchTestsByInterestUseCase>(
-    () => SearchTestsByInterestUseCase(sl()),
-  );
+if (!sl.isRegistered<GetLabRecommendedTestsUseCase>()) {
   sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
-    () => GetLabRecommendedTestsUseCase(sl()),
+    () => GetLabRecommendedTestsUseCase(sl<LaboratoryRepository>()),
   );
+}
+
+if (!sl.isRegistered<GetTestsByInterestUseCase>()) {
+  sl.registerLazySingleton<GetTestsByInterestUseCase>(
+    () => GetTestsByInterestUseCase(sl<LaboratoryRepository>()),
+  );
+}
+
+if (!sl.isRegistered<SearchTestsByInterestUseCase>()) {
+  sl.registerLazySingleton<SearchTestsByInterestUseCase>(
+    () => SearchTestsByInterestUseCase(sl<LaboratoryRepository>()),
+  );
+}
+}
+void _registerTestsByInterestFeature() {
+  if (!sl.isRegistered<TestsByInterestRemoteDataSource>()) {
+    sl.registerLazySingleton<TestsByInterestRemoteDataSource>(
+      () => TestsByInterestRemoteDataSourceImpl(apiConsumer: sl()),
+    );
+  }
+
+  if (!sl.isRegistered<TestsByInterestRepository>()) {
+    sl.registerLazySingleton<TestsByInterestRepository>(
+      () => TestsByInterestRepositoryImpl(remoteDataSource: sl()),
+    );
+  }
+
+  if (!sl.isRegistered<tests_by_interest.GetTestsByInterestUseCase>()) {
+    sl.registerLazySingleton<tests_by_interest.GetTestsByInterestUseCase>(
+    () => tests_by_interest.GetTestsByInterestUseCase(
+  repository: sl<TestsByInterestRepository>(),
+),
+    );
+  }
+
+  if (!sl.isRegistered<TestsByInterestCubit>()) {
+    sl.registerFactory<TestsByInterestCubit>(
+      () => TestsByInterestCubit(
+        getTestsByInterestUseCase:
+            sl<tests_by_interest.GetTestsByInterestUseCase>(),
+      ),
+    );
+  }
 }

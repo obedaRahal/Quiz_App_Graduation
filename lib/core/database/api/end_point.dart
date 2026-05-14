@@ -99,4 +99,7 @@ class EndPoints {
 
   static const String searchLabTests = '/lab/search';
   static const String labRecommendedTests = '/lab/recommended-tests';
+  
+  // Test By Interest
+  static const String testByInterest = '/home/test-by-interest';
 }

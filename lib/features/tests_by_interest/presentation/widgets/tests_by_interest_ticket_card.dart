@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/laboratory/domain/entities/test_by_interest_response_entity.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/domain/entities/tests_by_interest_response_entity.dart'
+    show TestByInterestEntity;
 
-class LaboratoryExamSessionCard extends StatelessWidget {
+class TestsByInterestTicketCard extends StatelessWidget {
   final TestByInterestEntity item;
 
-  const LaboratoryExamSessionCard({super.key, required this.item});
+  const TestsByInterestTicketCard({super.key, required this.item});
 
-  Color _difficultyColor() {
+  Color get difficultyColor {
     switch (item.difficultyLevel.trim()) {
       case 'سهل':
         return AppPalette.green;
@@ -27,77 +28,74 @@ class LaboratoryExamSessionCard extends StatelessWidget {
     return item.price.toString();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+ @override
+Widget build(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Container(
-        height: SizeConfig.h(0.17),
-        margin: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.035)),
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 8,
-              spreadRadius: 0,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: ClipPath(
-          clipper: _ExamTicketClipper(),
-          child: Container(
-            color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
-            padding: EdgeInsets.symmetric(
-              horizontal: SizeConfig.w(0.026),
-              vertical: SizeConfig.h(0.014),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: _SessionPricePanel(
-                    item: item,
-                    priceText: priceText,
-                    isDark: isDark,
-                  ),
+  return Directionality(
+    textDirection: TextDirection.rtl,
+    child: Container(
+      height: SizeConfig.h(0.17),
+      margin: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.035)),
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            spreadRadius: 0,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ClipPath(
+        clipper: _ExamTicketClipper(),
+        child: Container(
+          color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
+          padding: EdgeInsets.symmetric(
+            horizontal: SizeConfig.w(0.026),
+            vertical: SizeConfig.h(0.014),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: _PricePanel(
+                  item: item,
+                  priceText: priceText,
+                  isDark: isDark,
                 ),
-
-                SizedBox(width: SizeConfig.w(0.010)),
-
-                _DashedVerticalDivider(isDark: isDark),
-
-                SizedBox(width: SizeConfig.w(0.010)),
-
-                Expanded(
-                  flex: 7,
-                  child: _SessionInfoPanel(
-                    item: item,
-                    isDark: isDark,
-                    difficultyColor: _difficultyColor(),
-                  ),
+              ),
+              SizedBox(width: SizeConfig.w(0.010)),
+              _DashedVerticalDivider(isDark: isDark),
+              SizedBox(width: SizeConfig.w(0.010)),
+              Expanded(
+                flex: 7,
+                child: _InfoPanel(
+                  item: item,
+                  isDark: isDark,
+                  difficultyColor: difficultyColor,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
-class _SessionInfoPanel extends StatelessWidget {
+class _InfoPanel extends StatelessWidget {
   final TestByInterestEntity item;
   final bool isDark;
   final Color difficultyColor;
 
-  const _SessionInfoPanel({
+  const _InfoPanel({
     required this.item,
     required this.isDark,
     required this.difficultyColor,
   });
+
   @override
   Widget build(BuildContext context) {
     return ClipPath(
@@ -107,19 +105,15 @@ class _SessionInfoPanel extends StatelessWidget {
           horizontal: SizeConfig.w(0.035),
           vertical: SizeConfig.h(0.012),
         ),
-        decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withOpacity(0.05)
-              : const Color(0xFFF3F6FF),
-          // borderRadius: BorderRadius.circular(12),
-        ),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : const Color(0xFFF3F6FF),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Row(
               children: [
                 Expanded(
-                  flex: 5,
                   child: CustomTextWidget(
                     item.title,
                     textAlign: TextAlign.right,
@@ -130,7 +124,7 @@ class _SessionInfoPanel extends StatelessWidget {
                     color: const Color(0xFF4F7DFF),
                   ),
                 ),
-                const Spacer(),
+                SizedBox(width: SizeConfig.w(0.02)),
                 _DifficultyBadge(
                   text: item.difficultyLevel,
                   color: difficultyColor,
@@ -152,48 +146,34 @@ class _SessionInfoPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  flex: 4,
+                  flex: 5,
                   child: Row(
                     children: [
-                      _BlueTag(
-                        text: item.interests.isEmpty
-                            ? 'عام'
-                            : item.interests.first.name,
-                      ),
-
-                      SizedBox(width: SizeConfig.w(0.010)),
-
+                      if (item.interests.isNotEmpty)
+                        _BlueTag(text: item.interests[0].name),
+                      SizedBox(width: SizeConfig.w(0.008)),
                       if (item.interests.length > 1)
                         _BlueTag(text: item.interests[1].name),
                     ],
                   ),
                 ),
-
-                SizedBox(width: SizeConfig.w(0.010)),
+                SizedBox(width: SizeConfig.w(0.01)),
                 Expanded(
-                  flex: 5,
+                  flex: 6,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Expanded(
-                        flex: 3,
                         child: _FooterInfo(
                           icon: Icons.timer_outlined,
-                          iconSize: SizeConfig.text(0.032).clamp(14.0, 18.0),
-                          fontSize: SizeConfig.text(0.032).clamp(12.0, 15.0),
                           text: item.publishedAgo,
                           isDark: isDark,
                         ),
                       ),
-
-                      SizedBox(width: SizeConfig.w(0.010)),
-
+                      SizedBox(width: SizeConfig.w(0.008)),
                       Expanded(
-                        flex: 2,
                         child: _FooterInfo(
                           icon: Icons.edit_note_rounded,
-                          iconSize: SizeConfig.text(0.028).clamp(11.0, 16.0),
-                          fontSize: SizeConfig.text(0.024).clamp(9.0, 12.0),
                           text: '${item.questionCount} سؤال',
                           isDark: isDark,
                         ),
@@ -210,15 +190,15 @@ class _SessionInfoPanel extends StatelessWidget {
   }
 }
 
-class _SessionPricePanel extends StatelessWidget {
+class _PricePanel extends StatelessWidget {
   final TestByInterestEntity item;
-  final String priceText;
   final bool isDark;
+  final String priceText;
 
-  const _SessionPricePanel({
+  const _PricePanel({
     required this.item,
-    required this.priceText,
     required this.isDark,
+    required this.priceText,
   });
 
   @override
@@ -227,24 +207,18 @@ class _SessionPricePanel extends StatelessWidget {
       clipper: _InnerRightPanelClipper(),
       child: Container(
         height: double.infinity,
-        width: double.infinity,
         padding: EdgeInsets.symmetric(
           horizontal: SizeConfig.w(0.025),
           vertical: SizeConfig.h(0.012),
         ),
-        decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withOpacity(0.05)
-              : const Color(0xFFF7F7F7),
-          //borderRadius: BorderRadius.circular(12),
-        ),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : const Color(0xFFF7F7F7),
         child: Align(
           alignment: Alignment.centerLeft,
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            alignment: Alignment.centerRight,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 CustomTextWidget(
@@ -269,7 +243,6 @@ class _SessionPricePanel extends StatelessWidget {
                       ? AppPalette.textWhiteINDark
                       : const Color(0xFF26323D),
                 ),
-                SizedBox(height: SizeConfig.h(0.004)),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -295,6 +268,79 @@ class _SessionPricePanel extends StatelessWidget {
   }
 }
 
+// class _PricePanel extends StatelessWidget {
+//   final MockInterestTestItem item;
+//   final bool isDark;
+
+//   const _PricePanel({required this.item, required this.isDark});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ClipPath(
+//       clipper: _InnerRightPanelClipper(),
+//       child: Container(
+//         height: double.infinity,
+//         padding: EdgeInsets.symmetric(
+//           horizontal: SizeConfig.w(0.025),
+//           vertical: SizeConfig.h(0.012),
+//         ),
+//         color: isDark
+//             ? Colors.white.withOpacity(0.05)
+//             : const Color(0xFFF7F7F7),
+//         child: Align(
+//           alignment: Alignment.centerLeft,
+//           child: FittedBox(
+//             fit: BoxFit.scaleDown,
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.end,
+//               children: [
+//                 CustomTextWidget(
+//                   item.price.toString(),
+//                   fontSize: SizeConfig.text(0.05),
+//                   fontWeight: FontWeight.bold,
+//                   color: isDark
+//                       ? AppPalette.textWhiteINDark
+//                       : const Color(0xFF26323D),
+//                 ),
+//                 CustomTextWidget(
+//                   'ليرة سورية',
+//                   fontSize: SizeConfig.text(0.025),
+//                   color: AppPalette.greyMedium,
+//                 ),
+//                 SizedBox(height: SizeConfig.h(0.018)),
+//                 CustomTextWidget(
+//                   'التقييم',
+//                   fontSize: SizeConfig.text(0.034),
+//                   fontWeight: FontWeight.bold,
+//                   color: isDark
+//                       ? AppPalette.textWhiteINDark
+//                       : const Color(0xFF26323D),
+//                 ),
+//                 Row(
+//                   mainAxisSize: MainAxisSize.min,
+//                   children: [
+//                     CustomTextWidget(
+//                       item.rating.toStringAsFixed(1),
+//                       fontSize: SizeConfig.text(0.032),
+//                       color: AppPalette.greyMedium,
+//                     ),
+//                     SizedBox(width: SizeConfig.w(0.01)),
+//                     const Icon(
+//                       Icons.star_rounded,
+//                       color: Colors.amber,
+//                       size: 15,
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 class _DifficultyBadge extends StatelessWidget {
   final String text;
   final Color color;
@@ -305,7 +351,7 @@ class _DifficultyBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: SizeConfig.w(0.035),
+        horizontal: SizeConfig.w(0.03),
         vertical: SizeConfig.h(0.002),
       ),
       decoration: BoxDecoration(
@@ -322,6 +368,34 @@ class _DifficultyBadge extends StatelessWidget {
   }
 }
 
+// class _BlueTag extends StatelessWidget {
+//   final String text;
+
+//   const _BlueTag({required this.text});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Flexible(
+//       child: Container(
+//         padding: EdgeInsets.symmetric(
+//           horizontal: SizeConfig.w(0.018),
+//           vertical: SizeConfig.h(0.003),
+//         ),
+//         decoration: BoxDecoration(
+//           color: const Color(0xFF4F7DFF),
+//           borderRadius: BorderRadius.circular(6),
+//         ),
+//         child: CustomTextWidget(
+//           text,
+//           maxLines: 1,
+//           overflow: TextOverflow.ellipsis,
+//           fontSize: SizeConfig.text(0.022).clamp(8.0, 11.0),
+//           color: Colors.white,
+//         ),
+//       ),
+//     );
+//   }
+// }
 class _BlueTag extends StatelessWidget {
   final String text;
 
@@ -353,21 +427,15 @@ class _BlueTag extends StatelessWidget {
     );
   }
 }
-
 class _FooterInfo extends StatelessWidget {
   final IconData icon;
   final String text;
-  final double fontSize;
-  final double iconSize;
-
   final bool isDark;
 
   const _FooterInfo({
     required this.icon,
     required this.text,
     required this.isDark,
-    required this.fontSize,
-    required this.iconSize,
   });
 
   @override
@@ -382,13 +450,19 @@ class _FooterInfo extends StatelessWidget {
             text,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            fontSize: fontSize,
+            fontSize: SizeConfig.text(0.025),
             color: isDark
                 ? AppPalette.titleWhiteINDark
                 : const Color(0xFF26323D),
           ),
           SizedBox(width: SizeConfig.w(0.004)),
-          Icon(icon, size: iconSize, color: const Color(0xFF26323D)),
+          Icon(
+            icon,
+            size: SizeConfig.text(0.030),
+            color: isDark
+                ? AppPalette.titleWhiteINDark
+                : const Color(0xFF26323D),
+          ),
         ],
       ),
     );
@@ -408,6 +482,7 @@ class _DashedVerticalDivider extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final dashCount = (constraints.maxHeight / 12).floor();
+
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(
@@ -435,10 +510,7 @@ class _ExamTicketClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     const corner = 10.0;
     const topCutRadius = 8.0;
-
-    // كبّر/صغّر هذا الرقم
     final sideCutRadius = size.height * 0.15;
-
     final path = Path()..moveTo(corner, 0);
 
     final topCuts = [0.08, 0.22, 0.36, 0.50, 0.64];
@@ -481,7 +553,6 @@ class _ExamTicketClipper extends CustomClipper<Path> {
       ..quadraticBezierTo(0, 0, corner, 0)
       ..close();
 
-    // القص الجانبي اليمين
     path.addOval(
       Rect.fromCircle(
         center: Offset(size.width, size.height / 2),
@@ -489,7 +560,6 @@ class _ExamTicketClipper extends CustomClipper<Path> {
       ),
     );
 
-    // القص الجانبي اليسار
     path.addOval(
       Rect.fromCircle(
         center: Offset(0, size.height / 2),

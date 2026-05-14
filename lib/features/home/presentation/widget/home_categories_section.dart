@@ -7,6 +7,7 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_state.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/home_category_card.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/presentation/view/tests_by_interest_page.dart';
 
 class CategoriesSection extends StatelessWidget {
   final HomeState state;
@@ -79,7 +80,7 @@ class CategoriesSection extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      context.pushNamed(AppRouterName.allCategoriesPage,);
+                      context.pushNamed(AppRouterName.allCategoriesPage);
                     },
                     child: CustomTextWidget("عرض الكل", fontSize: actionSize),
                   ),
@@ -94,7 +95,7 @@ class CategoriesSection extends StatelessWidget {
             ],
           ),
         ),
-        //const SizedBox(height: 10),
+    
         SizedBox(
           height: SizeConfig.height * 0.07,
           child: ListView.separated(
@@ -104,7 +105,20 @@ class CategoriesSection extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final item = state.recommendedInterests[index];
-              return CategoryCard(item: item);
+              return CategoryCard(
+                item: item,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TestsByInterestPage(
+                        interestId: item.id,
+                        interestName: item.name,
+                      ),
+                    ),
+                  );
+                },
+              );
             },
           ),
         ),
