@@ -17,6 +17,6 @@ class UnbookmarkTestUseCase {
     debugPrint("============ UnbookmarkTestUseCase.call ============");
     debugPrint("→ params: {testId: ${params.testId}}");
 
-    return repository.unbookmarkTest(testId: params.testId);
+    return repository.unBookmarkTest(testId: params.testId);
   }
 }

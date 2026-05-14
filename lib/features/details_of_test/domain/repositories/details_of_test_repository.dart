@@ -5,10 +5,13 @@ import 'package:quiz_app_grad/features/details_of_test/domain/entities/download_
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/review_feedback_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/submit_report_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_like_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_review_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_share_link_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
 
 import '../../../../core/errors/failure.dart';
 import '../entities/other_test_details_overview_entity.dart';
@@ -33,7 +36,7 @@ abstract class DetailsOfTestRepository {
     required int testId,
   });
 
-  Future<Either<Failure, TestBookmarkActionEntity>> unbookmarkTest({
+  Future<Either<Failure, TestBookmarkActionEntity>> unBookmarkTest({
     required int testId,
   });
 
@@ -72,5 +75,16 @@ abstract class DetailsOfTestRepository {
 
   Future<Either<Failure, ReviewFeedbackActionEntity>> deleteFeedbackOnReview({
     required int reviewId,
+  });
+
+  Future<Either<Failure, SubmitReportEntity>> submitReport({
+    required ReportTargetType targetType,
+    required int targetId,
+    required String reason,
+    required String description,
+  });
+
+  Future<Either<Failure, TestShareLinkEntity>> getTestShareLink({
+    required int testId,
   });
 }

@@ -7,12 +7,16 @@ import 'package:quiz_app_grad/features/details_of_test/data/models/add_test_revi
 import 'package:quiz_app_grad/features/details_of_test/data/models/delete_test_review_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/download_test_file_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/review_feedback_action_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/submit_report_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_bookmark_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_follow_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_like_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_reviews_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_sample_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/test_share_link_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/update_test_review_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/api/api_consumer.dart';
 import '../../../../core/database/api/end_point.dart';
@@ -67,6 +71,15 @@ abstract class DetailsOfTestRemoteDataSource {
   Future<ReviewFeedbackActionModel> deleteFeedbackOnReview({
     required int reviewId,
   });
+
+  Future<SubmitReportModel> submitReport({
+    required ReportTargetType targetType,
+    required int targetId,
+    required String reason,
+    required String description,
+  });
+
+  Future<TestShareLinkModel> getTestShareLink({required int testId});
 }
 
 class DetailsOfTestRemoteDataSourceImpl
@@ -419,5 +432,61 @@ class DetailsOfTestRemoteDataSourceImpl
     debugPrint("=================================================");
 
     return ReviewFeedbackActionModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<SubmitReportModel> submitReport({
+    required ReportTargetType targetType,
+    required int targetId,
+    required String reason,
+    required String description,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.submitReport ============",
+    );
+
+    final endpoint = switch (targetType) {
+      ReportTargetType.review => EndPoints.reportReview(targetId),
+      ReportTargetType.test => EndPoints.reportTest(targetId),
+    };
+
+    final idempotencyKey = const Uuid().v4();
+
+    debugPrint("→ targetType: ${targetType.name}");
+    debugPrint("→ targetId: $targetId");
+    debugPrint("→ endpoint: $endpoint");
+    debugPrint("→ method: POST");
+    debugPrint("→ idempotencyKey: $idempotencyKey");
+    debugPrint(
+      "→ body: {reason: $reason, descriptionLength: ${description.trim().length}}",
+    );
+
+    final response = await apiConsumer.post(
+      endpoint,
+      data: {'reason': reason, 'description': description.trim()},
+      headers: {'Idempotency-Key': idempotencyKey},
+    );
+
+    debugPrint("← response (submitReport): $response");
+    debugPrint("=================================================");
+
+    return SubmitReportModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<TestShareLinkModel> getTestShareLink({required int testId}) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.getTestShareLink ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.testShareLink(testId)}");
+    debugPrint("→ method: GET");
+    debugPrint("→ params: {testId: $testId}");
+
+    final response = await apiConsumer.get(EndPoints.testShareLink(testId));
+
+    debugPrint("← response (getTestShareLink): $response");
+    debugPrint("=================================================");
+
+    return TestShareLinkModel.fromJson(response as Map<String, dynamic>);
   }
 }

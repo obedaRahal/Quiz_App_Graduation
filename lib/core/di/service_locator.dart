@@ -28,7 +28,9 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_c
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_test_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/submit_report_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookmark_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_test_use_case.dart';
@@ -233,6 +235,8 @@ void _registerDetailsOfTestFeature() {
         deleteTestReviewUseCase: sl<DeleteTestReviewUseCase>(),
         addFeedbackOnReviewUseCase: sl<AddFeedbackOnReviewUseCase>(),
         deleteFeedbackOnReviewUseCase: sl<DeleteFeedbackOnReviewUseCase>(),
+        submitReportUseCase: sl<SubmitReportUseCase>(),
+        getTestShareLinkUseCase: sl<GetTestShareLinkUseCase>(),
       ),
     );
   }
@@ -307,6 +311,20 @@ void _registerDetailsOfTestFeature() {
       () => DeleteFeedbackOnReviewUseCase(sl<DetailsOfTestRepository>()),
     );
   }
+
+  if (!sl.isRegistered<SubmitReportUseCase>()) {
+    sl.registerLazySingleton<SubmitReportUseCase>(
+      () => SubmitReportUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetTestShareLinkUseCase>()) {
+  sl.registerLazySingleton<GetTestShareLinkUseCase>(
+    () => GetTestShareLinkUseCase(
+      sl<DetailsOfTestRepository>(),
+    ),
+  );
+}
 }
 
 void _registerOnboardingFeature() {

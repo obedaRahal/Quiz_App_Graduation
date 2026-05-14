@@ -11,6 +11,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_c
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_test_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/add_test_review_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/delete_review_feedback_params.dart';
@@ -19,11 +20,14 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/d
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_overview_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_reviews_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_sample_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_test_share_link_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/review_feedback_action_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_bookmark_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_follow_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_like_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/update_test_review_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/submit_report_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookmark_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_test_use_case.dart';
@@ -48,6 +52,10 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
   final AddFeedbackOnReviewUseCase addFeedbackOnReviewUseCase;
   final DeleteFeedbackOnReviewUseCase deleteFeedbackOnReviewUseCase;
 
+  final SubmitReportUseCase submitReportUseCase;
+
+  final GetTestShareLinkUseCase getTestShareLinkUseCase;
+
   DetailsOfTestCubit({
     required this.getOtherTestDetailsOverviewUseCase,
     required this.getOtherTestDetailsSampleUseCase,
@@ -64,6 +72,8 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     required this.deleteTestReviewUseCase,
     required this.addFeedbackOnReviewUseCase,
     required this.deleteFeedbackOnReviewUseCase,
+    required this.submitReportUseCase,
+    required this.getTestShareLinkUseCase,
   }) : super(const DetailsOfTestState()) {
     debugPrint("============ DetailsOfTestCubit INIT ============");
   }
@@ -1052,6 +1062,158 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
       viewerFeedback: ReviewViewerFeedbackEntity(
         hasVoted: true,
         vote: requestedVote,
+      ),
+    );
+  }
+
+  Future<void> submitReportCommentAndTest({
+    required ReportTargetType targetType,
+    required int targetId,
+    required String reason,
+    required String description,
+  }) async {
+    debugPrint("============ DetailsOfTestCubit.submitReport ============");
+    debugPrint(
+      "→ params: {targetType: ${targetType.name}, targetId: $targetId, reason: $reason, descriptionLength: ${description.trim().length}}",
+    );
+
+    if (state.isSubmitReportLoading) {
+      debugPrint("✗ submit report already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final cleanDescription = description.trim();
+
+    if (reason.trim().isEmpty) {
+      emit(
+        state.copyWith(
+          submitReportStatus: SubmitReportStatus.failure,
+          errorTitle: "تنبيه",
+          errorMessage: "اختر سبب البلاغ أولًا",
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        submitReportStatus: SubmitReportStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await submitReportUseCase(
+      SubmitReportParams(
+        targetType: targetType,
+        targetId: targetId,
+        reason: reason,
+        description: cleanDescription,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ submitReport failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            submitReportStatus: SubmitReportStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ submitReport success");
+        debugPrint("→ title: ${response.title}");
+        debugPrint("→ message: ${response.message}");
+
+        emit(
+          state.copyWith(
+            submitReportStatus: SubmitReportStatus.success,
+            errorTitle: response.title,
+            errorMessage: response.message,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetSubmitReportState() {
+    emit(
+      state.copyWith(
+        submitReportStatus: SubmitReportStatus.initial,
+        clearError: true,
+      ),
+    );
+  }
+
+  Future<void> getTestShareLink({required int testId}) async {
+    debugPrint("============ DetailsOfTestCubit.getTestShareLink ============");
+    debugPrint("→ params: {testId: $testId}");
+
+    if (state.isShareLinkLoading) {
+      debugPrint("✗ share link already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        shareLinkStatus: TestShareLinkStatus.loading,
+        clearShareUrl: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await getTestShareLinkUseCase(
+      GetTestShareLinkParams(testId: testId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ getTestShareLink failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            shareLinkStatus: TestShareLinkStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearShareUrl: true,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ getTestShareLink success");
+        debugPrint("→ shareSlug: ${response.data.shareSlug}");
+        debugPrint("→ shareUrl: ${response.data.shareUrl}");
+
+        emit(
+          state.copyWith(
+            shareLinkStatus: TestShareLinkStatus.success,
+            shareUrl: response.data.shareUrl,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetShareLinkState() {
+    emit(
+      state.copyWith(
+        shareLinkStatus: TestShareLinkStatus.initial,
+        clearShareUrl: true,
+        clearError: true,
       ),
     );
   }

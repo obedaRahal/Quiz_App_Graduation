@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_info_details_section.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_publisher_card.dart';
 

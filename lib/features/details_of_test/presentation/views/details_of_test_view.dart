@@ -9,13 +9,18 @@ import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/test_details_playmode_section_shimmer.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/test_overview_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/details_of_test_tabs_section.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/report_reason_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_details_with_play_modes_session.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_purchase_bottom_bar.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
 import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:share_plus/share_plus.dart';
 
 class DetailsOfTestView extends StatelessWidget {
   const DetailsOfTestView({super.key});
@@ -26,11 +31,74 @@ class DetailsOfTestView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            TopPageHeader(
-              title: 'تفاصيل اختبار',
-              onBack: () => context.pop(),
-              onShare: () {
-                debugPrint('share');
+            // TopPageHeader(
+            //   title: 'تفاصيل اختبار',
+            //   onBack: () => context.pop(),
+            //   onShare: () {
+            //     debugPrint('share');
+            //   },
+            // ),
+            BlocConsumer<DetailsOfTestCubit, DetailsOfTestState>(
+              listenWhen: (previous, current) =>
+                  previous.shareLinkStatus != current.shareLinkStatus,
+              listener: (context, state) async {
+                if (state.isShareLinkSuccess) {
+                  final shareUrl = state.shareUrl;
+
+                  if (shareUrl == null || shareUrl.isEmpty) {
+                    showValidationTopSnackBar(
+                      context,
+                      title: "خطأ",
+                      message: "تعذر تجهيز رابط المشاركة",
+                      type: AppValidationSnackBarType.error,
+                    );
+
+                    context.read<DetailsOfTestCubit>().resetShareLinkState();
+                    return;
+                  }
+
+                  await Share.share(shareUrl, subject: 'مشاركة اختبار من Nerd');
+
+                  context.read<DetailsOfTestCubit>().resetShareLinkState();
+                }
+
+                if (state.isShareLinkFailure) {
+                  showValidationTopSnackBar(
+                    context,
+                    title: state.errorTitle ?? "خطأ",
+                    message: state.errorMessage ?? "تعذر مشاركة الاختبار",
+                    type: AppValidationSnackBarType.error,
+                  );
+
+                  context.read<DetailsOfTestCubit>().resetShareLinkState();
+                }
+              },
+              builder: (context, state) {
+                final overview = state.overviewDetails;
+
+                return TopPageHeader(
+                  title: 'تفاصيل اختبار',
+                  onBack: () => context.pop(),
+                  onShare: state.isShareLinkLoading
+                      ? () {}
+                      : () {
+                          debugPrint('share');
+
+                          if (overview == null) {
+                            showValidationTopSnackBar(
+                              context,
+                              title: "تنبيه",
+                              message: "لم يتم تحميل بيانات الاختبار بعد",
+                              type: AppValidationSnackBarType.hint,
+                            );
+                            return;
+                          }
+
+                          context.read<DetailsOfTestCubit>().getTestShareLink(
+                            testId: overview.data.id,
+                          );
+                        },
+                );
               },
             ),
 
@@ -50,8 +118,19 @@ class DetailsOfTestView extends StatelessWidget {
             Expanded(
               child: BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
                 builder: (context, state) {
+                  // if (state.isOverviewLoading) {
+                  //   return const Center(child: CircularProgressIndicator());
+                  // }
                   if (state.isOverviewLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const TestDetailsWithPlayModesSectionShimmer(),
+                          SizedBox(height: SizeConfig.h(0.02)),
+                          const TestOverviewTabShimmer(),
+                        ],
+                      ),
+                    );
                   }
 
                   if (state.isOverviewFailure) {
@@ -97,11 +176,21 @@ class DetailsOfTestView extends StatelessWidget {
                               testId: overview.data.id,
                             );
                           },
+                          onLikeValueTap: () {
+                            debugPrint(
+                              "like value is ${overview.data.basicInfo.likesCount}",
+                            );
+                          },
                           onBookmarkTap: () {
                             debugPrint("toggle bookmark");
                             context
                                 .read<DetailsOfTestCubit>()
                                 .toggleTestBookmark(testId: overview.data.id);
+                          },
+                          onBookmarkValueTap: () {
+                            debugPrint(
+                              "bookmark value is ${overview.data.basicInfo.bookmarksCount}",
+                            );
                           },
                         ),
 
@@ -210,7 +299,45 @@ class DetailsOfTestView extends StatelessWidget {
                             testId: overview.data.id,
                           );
                         },
-                  onReportTap: () => debugPrint("report test"),
+                  onReportTap: () {
+                    debugPrint("report test");
+                    debugPrint(
+                      'report test and test id is  => ${overview.data.id}',
+                    );
+                    showReportReasonDialog(
+                      context: context,
+                      cubit: context.read<DetailsOfTestCubit>(),
+                      title: 'الإبلاغ عن اختبار',
+                      reasons: const [
+                        ReportReasonUiModel(
+                          label:
+                              'اختبار محتواه مسيء (أخلاقيا - دينيا - اجتماعيا)',
+                        ),
+                        ReportReasonUiModel(
+                          label: 'يوجد أخطاء في طريقة صياغة السؤال',
+                        ),
+                        ReportReasonUiModel(
+                          label: 'يوجد خطأ في الاختيارات المطروحة في السؤال',
+                        ),
+                        ReportReasonUiModel(
+                          label: 'الإجابة الصحيحة لا يجب ان تكون هي الإجابة',
+                        ),
+                        ReportReasonUiModel(label: 'يوجد خطأ في الشرح'),
+                      ],
+                      descriptionHint:
+                          'صف لنا المشكلة التي تواجه هذا الاختبار بطريقة مختصرة وواضحة',
+                      onSubmit: (reason, description) {
+                        context
+                            .read<DetailsOfTestCubit>()
+                            .submitReportCommentAndTest(
+                              targetType: ReportTargetType.test,
+                              targetId: overview.data.id,
+                              reason: reason.label,
+                              description: description,
+                            );
+                      },
+                    );
+                  },
                 );
               },
             ),

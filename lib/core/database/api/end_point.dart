@@ -1,6 +1,6 @@
 class EndPoints {
-  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
-  //static const String baseUrl = 'http://10.237.223.187/api/v1/user-mobile';
+  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  static const String baseUrl = 'http://192.168.1.105/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
@@ -84,6 +84,13 @@ class EndPoints {
 
   static String deleteFeedbackOnReview(int reviewId) =>
       '$baseUrl/test/delete/feedback-on-review/$reviewId';
+
+  static String reportReview(int reviewId) =>
+      '$baseUrl/test/reports/review/$reviewId';
+
+  static String reportTest(int testId) => '$baseUrl/test/reports/$testId';
+
+  static String testShareLink(int testId) => '$baseUrl/test/share-link/$testId';
 
   // laboratory
   static String testsByInterest(int interestId) {

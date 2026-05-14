@@ -6,10 +6,13 @@ import 'package:quiz_app_grad/features/details_of_test/domain/entities/download_
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/review_feedback_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/submit_report_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_like_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_review_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_share_link_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failure.dart';
@@ -328,7 +331,7 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
   }
 
   @override
-  Future<Either<Failure, TestBookmarkActionEntity>> unbookmarkTest({
+  Future<Either<Failure, TestBookmarkActionEntity>> unBookmarkTest({
     required int testId,
   }) async {
     debugPrint(
@@ -776,6 +779,117 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
 
       return Left(
         ServerFailure(title: 'حدث خطأ', message: 'تعذر إزالة رأيك عن المراجعة'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, SubmitReportEntity>> submitReport({
+    required ReportTargetType targetType,
+    required int targetId,
+    required String reason,
+    required String description,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.submitReport ============",
+    );
+    debugPrint(
+      "→ params: {targetType: ${targetType.name}, targetId: $targetId, reason: $reason, descriptionLength: ${description.trim().length}}",
+    );
+
+    try {
+      debugPrint("→ calling remoteDataSource.submitReport");
+
+      final model = await remoteDataSource.submitReport(
+        targetType: targetType,
+        targetId: targetId,
+        reason: reason,
+        description: description,
+      );
+
+      debugPrint("← remoteDataSource.submitReport success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.submitReport ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.submitReport CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.submitReport Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر إرسال البلاغ'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, TestShareLinkEntity>> getTestShareLink({
+    required int testId,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.getTestShareLink ============",
+    );
+    debugPrint("→ params: {testId: $testId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.getTestShareLink");
+
+      final model = await remoteDataSource.getTestShareLink(testId: testId);
+
+      debugPrint("← remoteDataSource.getTestShareLink success");
+      debugPrint("→ shareUrl: ${model.data.shareUrl}");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.getTestShareLink ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.getTestShareLink CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.getTestShareLink Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر جلب رابط المشاركة'),
       );
     }
   }

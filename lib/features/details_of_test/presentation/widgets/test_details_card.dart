@@ -18,7 +18,9 @@ class TestDetailsCard extends StatelessWidget {
   final bool hasLiked;
   final bool hasBookmarked;
   final VoidCallback? onLikeTap;
+  final VoidCallback? onLikeValueTap;
   final VoidCallback? onBookmarkTap;
+  final VoidCallback? onBookmarkValueTap;
 
   const TestDetailsCard({
     super.key,
@@ -32,7 +34,10 @@ class TestDetailsCard extends StatelessWidget {
     required this.hasLiked,
     required this.hasBookmarked,
     this.onLikeTap,
+    this.onLikeValueTap,
     this.onBookmarkTap,
+    this.onBookmarkValueTap
+    
   });
 
   Color _difficultyColor(String difficulty) {
@@ -120,13 +125,13 @@ class TestDetailsCard extends StatelessWidget {
                 ),
 
                 if (!isFree)
-                CustomTextWidget(
-                  "ليرة سورية",
-                  fontSize: SizeConfig.text(0.028),
-                  color: AppPalette.greyMedium,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                  CustomTextWidget(
+                    "ليرة سورية",
+                    fontSize: SizeConfig.text(0.028),
+                    color: AppPalette.greyMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
               ],
             ),
           ),
@@ -184,7 +189,8 @@ class TestDetailsCard extends StatelessWidget {
                       icon: FontAwesomeIcons.bookmark,
                       isActive: hasBookmarked,
                       activeColor: AppPalette.primary,
-                      onTap: onBookmarkTap,
+                      onIconTap: onBookmarkTap,
+                      onValueTap: onBookmarkValueTap,
                     ),
                     SizedBox(width: SizeConfig.w(0.025)),
 
@@ -199,7 +205,8 @@ class TestDetailsCard extends StatelessWidget {
                       icon: FontAwesomeIcons.heart,
                       isActive: hasLiked,
                       activeColor: AppPalette.red,
-                      onTap: onLikeTap,
+                      onIconTap: onLikeTap,
+                      onValueTap: onLikeValueTap,
                     ),
                   ],
                 ),
@@ -244,14 +251,16 @@ class _TestInfoCounter extends StatelessWidget {
   final FaIconData icon;
   final bool isActive;
   final Color? activeColor;
-  final VoidCallback? onTap;
+  final VoidCallback? onIconTap;
+  final VoidCallback? onValueTap;
 
   const _TestInfoCounter({
     required this.value,
     required this.icon,
     this.isActive = false,
     this.activeColor,
-    this.onTap,
+    this.onIconTap,
+    this.onValueTap,
   });
 
   @override
@@ -262,26 +271,41 @@ class _TestInfoCounter extends StatelessWidget {
         ? activeColor ?? appColors.primaryToPrimaryDark
         : AppPalette.greyMedium;
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.w(0.006),
-          vertical: SizeConfig.h(0.004),
-        ),
-        child: Row(
-          children: [
-            CustomTextWidget(
-              value,
-              fontSize: SizeConfig.text(0.035),
-              color: color,
-              fontFamily: AppFont.elMessiriBold,
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.w(0.006),
+        vertical: SizeConfig.h(0.004),
+      ),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: onValueTap,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.w(0.006),
+                vertical: SizeConfig.h(0.004),
+              ),
+              child: CustomTextWidget(
+                value,
+                fontSize: SizeConfig.text(0.035),
+                color: color,
+                fontFamily: AppFont.elMessiriBold,
+              ),
             ),
-            SizedBox(width: SizeConfig.w(0.01)),
-            FaIcon(icon, size: SizeConfig.h(0.022), color: color),
-          ],
-        ),
+          ),
+          SizedBox(width: SizeConfig.w(0.01)),
+          InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: onIconTap,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.w(0.006),
+                vertical: SizeConfig.h(0.004),
+              ),
+              child: FaIcon(icon, size: SizeConfig.h(0.022), color: color),
+            ),
+          ),
+        ],
       ),
     );
   }

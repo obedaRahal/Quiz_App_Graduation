@@ -25,6 +25,10 @@ class AppImage {
   static String get intro2 => '$_baseImageLight/intro2light.png';
   static String get intro3 => '$_baseImageLight/intro3light.svg';
 
+  /////////// common images //////////////
+  static String get emptyDataLight => '$_baseImageLight/emptyDataLight.svg';
+  static String get emptyDataDark => '$_baseImageDark/emptyDataDark.svg';
+
   /////////// onboardoing ////////////
   static String get number1Onboarding => '$_baseIcon/number1.svg';
   static String get number2Onboarding => '$_baseIcon/number2.svg';
@@ -34,15 +38,14 @@ class AppImage {
   static String get onbardingdowncheck =>
       '$_baseImageLight/onboardingdowncheck.png';
 
-      //////////////// details of test
-        static String get layersIcon => '$_baseIcon/layers.svg';
-        static String get muscleIcon => '$_baseIcon/muscle.svg';
-        static String get verifyCheck => '$_baseIcon/verifyCheck.svg';
-        static String get downmark => '$_baseIcon/downmark.svg';
-        static String get numberofquestion => '$_baseIcon/numberofquestion.svg';
-        static String get timer => '$_baseIcon/timer.svg';
+  //////////////// details of test
+  static String get layersIcon => '$_baseIcon/layers.svg';
+  static String get muscleIcon => '$_baseIcon/muscle.svg';
+  static String get verifyCheck => '$_baseIcon/verifyCheck.svg';
+  static String get downmark => '$_baseIcon/downmark.svg';
+  static String get numberofquestion => '$_baseIcon/numberofquestion.svg';
+  static String get timer => '$_baseIcon/timer.svg';
 
-      
   /////////////////////////////////////////////////////////////////
   ////////////////////// darkkkk image ////////////////////////////
   //////////////////////////////////////////////////////////////
@@ -58,9 +61,9 @@ class AppImage {
   static String get forgetPasswordPng3 => '$_baseImageLight/Group 58@2x.png';
 
   /////////// Home /////////////
-  static String get homeProfilePhotofFemale => '$_baseImageLight/homeprofilephoto.svg';
+  static String get homeProfilePhotofFemale =>
+      '$_baseImageLight/homeprofilephoto.svg';
   static String get homeProfilePhotofMale => '$_baseImageLight/Group 180.svg';
-
 
   static String get mind1 => '$_baseImageLight/brain1.svg';
   static String get mind2 => '$_baseImageLight/_x31__17_.svg';

@@ -18,6 +18,7 @@ abstract class ApiConsumer {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
     Options? options,
+    Map<String, String>? headers,
   });
 
   Future<dynamic> put(
@@ -48,5 +49,6 @@ abstract class ApiConsumer {
     Map<String, dynamic>? queryParameters,
     CancelToken? cancelToken,
     Options? options,
+    Map<String, String>? headers,
   });
 }

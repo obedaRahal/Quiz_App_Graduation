@@ -29,6 +29,10 @@ enum DeleteTestReviewStatus { initial, loading, success, failure }
 
 enum ReviewFeedbackActionStatus { initial, loading, success, failure }
 
+enum SubmitReportStatus { initial, loading, success, failure }
+
+enum TestShareLinkStatus { initial, loading, success, failure }
+
 class DetailsOfTestState {
   //  for UI ////
   final DetailsOfTestTab selectedTab;
@@ -70,6 +74,11 @@ class DetailsOfTestState {
   final ReviewFeedbackActionStatus reviewFeedbackStatus;
   final int? activeFeedbackReviewId;
 
+  final SubmitReportStatus submitReportStatus;
+
+  final TestShareLinkStatus shareLinkStatus;
+  final String? shareUrl;
+
   const DetailsOfTestState({
     this.selectedTab = DetailsOfTestTab.overview,
     this.selectedSampleAnswers = const {},
@@ -105,6 +114,11 @@ class DetailsOfTestState {
 
     this.reviewFeedbackStatus = ReviewFeedbackActionStatus.initial,
     this.activeFeedbackReviewId,
+
+    this.submitReportStatus = SubmitReportStatus.initial,
+
+    this.shareLinkStatus = TestShareLinkStatus.initial,
+    this.shareUrl,
   });
 
   bool get canSubmitDraftReview =>
@@ -127,6 +141,12 @@ class DetailsOfTestState {
       reviewsStatus == DetailsOfTestReviewsStatus.success;
   bool get isReviewsFailure =>
       reviewsStatus == DetailsOfTestReviewsStatus.failure;
+  bool get isInitialReviewsLoading =>
+      reviewsStatus == DetailsOfTestReviewsStatus.loading &&
+      reviewsDetails == null;
+  bool get isFilteringReviewsLoading =>
+      reviewsStatus == DetailsOfTestReviewsStatus.loading &&
+      reviewsDetails != null;
 
   bool get isLikeActionLoading =>
       likeActionStatus == TestLikeActionStatus.loading;
@@ -160,6 +180,18 @@ class DetailsOfTestState {
 
   bool get isReviewFeedbackLoading =>
       reviewFeedbackStatus == ReviewFeedbackActionStatus.loading;
+
+  bool get isSubmitReportLoading =>
+      submitReportStatus == SubmitReportStatus.loading;
+  bool get isSubmitReportSuccess =>
+      submitReportStatus == SubmitReportStatus.success;
+  bool get isSubmitReportFailure =>
+      submitReportStatus == SubmitReportStatus.failure;
+
+
+  bool get isShareLinkLoading => shareLinkStatus == TestShareLinkStatus.loading;
+  bool get isShareLinkSuccess => shareLinkStatus == TestShareLinkStatus.success;
+  bool get isShareLinkFailure => shareLinkStatus == TestShareLinkStatus.failure;
 
   DetailsOfTestState copyWith({
     //  for UI ////
@@ -201,6 +233,12 @@ class DetailsOfTestState {
     ReviewFeedbackActionStatus? reviewFeedbackStatus,
     int? activeFeedbackReviewId,
     bool clearActiveFeedbackReviewId = false,
+
+    SubmitReportStatus? submitReportStatus,
+
+    TestShareLinkStatus? shareLinkStatus,
+    String? shareUrl,
+    bool clearShareUrl = false,
   }) {
     return DetailsOfTestState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -243,6 +281,11 @@ class DetailsOfTestState {
       activeFeedbackReviewId: clearActiveFeedbackReviewId
           ? null
           : activeFeedbackReviewId ?? this.activeFeedbackReviewId,
+
+      submitReportStatus: submitReportStatus ?? this.submitReportStatus,
+
+      shareLinkStatus: shareLinkStatus ?? this.shareLinkStatus,
+      shareUrl: clearShareUrl ? null : shareUrl ?? this.shareUrl,
     );
   }
 }

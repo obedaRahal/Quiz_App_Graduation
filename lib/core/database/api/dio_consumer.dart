@@ -27,7 +27,9 @@ class DioConsumer extends ApiConsumer {
     this.clearSession,
   }) {
     dio.options = dio.options.copyWith(
-      baseUrl: dio.options.baseUrl.isEmpty ? EndPoints.baseUrl : dio.options.baseUrl,
+      baseUrl: dio.options.baseUrl.isEmpty
+          ? EndPoints.baseUrl
+          : dio.options.baseUrl,
       receiveDataWhenStatusError: true,
     );
 
@@ -71,10 +73,15 @@ class DioConsumer extends ApiConsumer {
           final requestOptions = error.requestOptions;
 
           final requiresAuth = requestOptions.extra['requiresAuth'] != false;
-          final isRefreshRequest = requestOptions.path.contains(EndPoints.refreshToken);
+          final isRefreshRequest = requestOptions.path.contains(
+            EndPoints.refreshToken,
+          );
           final alreadyRetried = requestOptions.extra['retried'] == true;
 
-          if (!requiresAuth || isRefreshRequest || alreadyRetried || statusCode != 401) {
+          if (!requiresAuth ||
+              isRefreshRequest ||
+              alreadyRetried ||
+              statusCode != 401) {
             handler.next(error);
             return;
           }
@@ -165,10 +172,7 @@ class DioConsumer extends ApiConsumer {
       headers: headers,
       responseType: requestOptions.responseType,
       contentType: requestOptions.contentType,
-      extra: {
-        ...requestOptions.extra,
-        'retried': true,
-      },
+      extra: {...requestOptions.extra, 'retried': true},
       receiveTimeout: requestOptions.receiveTimeout,
       sendTimeout: requestOptions.sendTimeout,
       validateStatus: requestOptions.validateStatus,
@@ -226,6 +230,7 @@ class DioConsumer extends ApiConsumer {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
     Options? options,
+    Map<String, String>? headers,
   }) async {
     try {
       final response = await dio.post(
@@ -304,6 +309,7 @@ class DioConsumer extends ApiConsumer {
     Map<String, dynamic>? queryParameters,
     CancelToken? cancelToken,
     Options? options,
+    Map<String, String>? headers,
   }) async {
     try {
       final response = await dio.delete(

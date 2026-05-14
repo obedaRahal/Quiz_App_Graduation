@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
+import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/review_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/my_published_review_card.dart';
 
 class ReviewsSection extends StatelessWidget {
@@ -19,6 +22,8 @@ class ReviewsSection extends StatelessWidget {
   final bool isFeedbackLoading;
   final int? activeFeedbackReviewId;
 
+  final bool isLoading;
+
   const ReviewsSection({
     super.key,
     required this.selectedFilter,
@@ -32,6 +37,8 @@ class ReviewsSection extends StatelessWidget {
 
     required this.isFeedbackLoading,
     required this.activeFeedbackReviewId,
+
+    required this.isLoading,
   });
 
   @override
@@ -53,14 +60,30 @@ class ReviewsSection extends StatelessWidget {
           onChanged: onFilterChanged,
         ),
         SizedBox(height: SizeConfig.h(0.02)),
-        if (reviews.isEmpty)
+        if (isLoading)
+          const ReviewsSectionShimmer(isThereHeader: false)
+        else if (reviews.isEmpty)
           Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.03)),
-              child: CustomTextWidget(
-                'لا توجد مراجعات مطابقة حاليًا',
-                color: appColors.greyMediumTogrey,
-                textAlign: TextAlign.center,
+              child: Column(
+                children: [
+                  ThemedAppImage(
+                    lightPath: AppImage.emptyDataLight,
+                    darkPath: AppImage.emptyDataDark,
+                  ),
+                  CustomTextWidget(
+                    'لا توجد مراجعات',
+                    color: appColors.blackTogreyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  CustomTextWidget(
+                    'لم يتم القيام بأية مراجعة بعد من هذا التقيمم على الاختبار',
+                    color: appColors.blackToGreyLightDark,
+                    textAlign: TextAlign.center,
+                    fontSize: SizeConfig.text(0.035),
+                  ),
+                ],
               ),
             ),
           )

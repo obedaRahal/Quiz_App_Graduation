@@ -10,6 +10,8 @@ import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_overview_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/review_tab_shimmer.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/sample_test_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_overview_tap.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/review_tab.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/sample_tab/sample_test_tap.dart';
@@ -26,7 +28,7 @@ class DetailsOfTestTabsSection extends StatelessWidget {
 
   static const tabs = [
     _DetailsTabItem(title: 'نظرة عامة', tab: DetailsOfTestTab.overview),
-    _DetailsTabItem(title: 'عينة من الاختبار', tab: DetailsOfTestTab.sample),
+    _DetailsTabItem(title: 'عامة من الاختبار', tab: DetailsOfTestTab.sample),
     _DetailsTabItem(title: 'المراجعات', tab: DetailsOfTestTab.reviews),
   ];
 
@@ -214,7 +216,8 @@ class _SampleTabBlocContent extends StatelessWidget {
           previous.errorMessage != current.errorMessage,
       builder: (context, state) {
         if (state.isSampleLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const SampleTestTabShimmer();
+          //Center(child: CircularProgressIndicator());
         }
 
         if (state.isSampleFailure) {
@@ -288,7 +291,7 @@ class _ReviewsTabBlocContent extends StatelessWidget {
         if (state.isDeleteReviewSuccess) {
           showValidationTopSnackBar(
             context,
-            title: state.errorTitle ??  "! تمت العملية بنجاح",
+            title: state.errorTitle ?? "! تمت العملية بنجاح",
             message: state.errorMessage ?? "تم حذف تقييمك بنجاح",
             type: AppValidationSnackBarType.success,
           );
@@ -316,11 +319,32 @@ class _ReviewsTabBlocContent extends StatelessWidget {
           previous.updateReviewStatus != current.updateReviewStatus ||
           previous.deleteReviewStatus != current.deleteReviewStatus,
       builder: (context, state) {
-        if (state.isReviewsLoading) {
-          return const Center(child: CircularProgressIndicator());
+        // if (state.isReviewsLoading) {
+        //   return const Center(child: CircularProgressIndicator());
+        // }
+
+        // if (state.isReviewsFailure) {
+        //   return Center(
+        //     child: CustomTextWidget(
+        //       state.errorMessage ?? 'حدث خطأ أثناء جلب المراجعات',
+        //       color: AppPalette.red,
+        //       textAlign: TextAlign.center,
+        //     ),
+        //   );
+        // }
+
+        // final reviews = state.reviewsDetails;
+
+        // if (reviews == null) {
+        //   return const SizedBox.shrink();
+        // }
+        final reviews = state.reviewsDetails;
+
+        if (state.isInitialReviewsLoading) {
+          return const ReviewTabShimmer();
         }
 
-        if (state.isReviewsFailure) {
+        if (state.isReviewsFailure && reviews == null) {
           return Center(
             child: CustomTextWidget(
               state.errorMessage ?? 'حدث خطأ أثناء جلب المراجعات',
@@ -329,8 +353,6 @@ class _ReviewsTabBlocContent extends StatelessWidget {
             ),
           );
         }
-
-        final reviews = state.reviewsDetails;
 
         if (reviews == null) {
           return const SizedBox.shrink();

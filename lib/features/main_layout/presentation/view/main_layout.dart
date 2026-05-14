@@ -28,64 +28,66 @@ class MainLayoutBody extends StatelessWidget {
           previous.currentIndex != current.currentIndex,
       builder: (context, state) {
         return Scaffold(
-          body: IndexedStack(
-            index: state.currentIndex,
-            children: [
-              BlocProvider(
-                create: (_) => HomeCubit(
-                  getRecommendedTestsUseCase: sl<GetRecommendedTestsUseCase>(),
-                  getRecommendedInterestsUseCase:
-                      sl<GetRecommendedInterestsUseCase>(),
-                  getRecommendedUsersUseCase: sl<GetRecommendedUsersUseCase>(),
-                )..getHomeData(),
-                child: const HomePage(),
-              ),
-              const Center(child: Text('المكتبة')),
-              // const Center(child: Text('المختبر')),
-              // Center(
-              //   child: InkWell(
-              //     onTap: () {
-              //       //context.pushNamed(AppRouterName.detailsOfTest);
-              //       context.pushNamed(
-              //         AppRouterName.detailsOfTest,
-              //         extra: DetailsOfTestRouteArgs(testId: 4),
-              //       );
-              //     },
-              //     child: Text("details of test"),
-              //   ),
-              // ),
-              BlocProvider(
-                create: (_) =>
-                    LaboratoryCubit(
-                        getTestsByInterestUseCase:
-                            sl<GetTestsByInterestUseCase>(),
-                        searchTestsByInterestUseCase:
-                            sl<SearchTestsByInterestUseCase>(),
-                        getLabRecommendedTestsUseCase:
-                            sl<GetLabRecommendedTestsUseCase>(),
-                      )
-                      ..initScrollListener()
-                      
-                      ..getInitialLabTests(tab: 'trending'),
-                child: const LaboratoryPage(),
-              ),
-
-              Center(
-                child: InkWell(
-                  onTap: () {
-                    //context.pushNamed(AppRouterName.detailsOfTest);
-                    context.pushNamed(
-                      AppRouterName.detailsOfTest,
-                      extra: DetailsOfTestRouteArgs(testId: 4),
-                    );
-                  },
-                  child: Text("details of test"),
+          body: SafeArea(
+            child: IndexedStack(
+              index: state.currentIndex,
+              children: [
+                BlocProvider(
+                  create: (_) => HomeCubit(
+                    getRecommendedTestsUseCase: sl<GetRecommendedTestsUseCase>(),
+                    getRecommendedInterestsUseCase:
+                        sl<GetRecommendedInterestsUseCase>(),
+                    getRecommendedUsersUseCase: sl<GetRecommendedUsersUseCase>(),
+                  )..getHomeData(),
+                  child: const HomePage(),
                 ),
-              ),
-              //const Center(child: Text('الخطة')),
-
-              
-            ],
+                const Center(child: Text('المكتبة')),
+                // const Center(child: Text('المختبر')),
+                // Center(
+                //   child: InkWell(
+                //     onTap: () {
+                //       //context.pushNamed(AppRouterName.detailsOfTest);
+                //       context.pushNamed(
+                //         AppRouterName.detailsOfTest,
+                //         extra: DetailsOfTestRouteArgs(testId: 4),
+                //       );
+                //     },
+                //     child: Text("details of test"),
+                //   ),
+                // ),
+                BlocProvider(
+                  create: (_) =>
+                      LaboratoryCubit(
+                          getTestsByInterestUseCase:
+                              sl<GetTestsByInterestUseCase>(),
+                          searchTestsByInterestUseCase:
+                              sl<SearchTestsByInterestUseCase>(),
+                          getLabRecommendedTestsUseCase:
+                              sl<GetLabRecommendedTestsUseCase>(),
+                        )
+                        ..initScrollListener()
+                        
+                        ..getInitialLabTests(tab: 'trending'),
+                  child: const LaboratoryPage(),
+                ),
+            
+                Center(
+                  child: InkWell(
+                    onTap: () {
+                      //context.pushNamed(AppRouterName.detailsOfTest);
+                      context.pushNamed(
+                        AppRouterName.detailsOfTest,
+                        extra: DetailsOfTestRouteArgs(testId: 4),
+                      );
+                    },
+                    child: Text("details of test"),
+                  ),
+                ),
+                //const Center(child: Text('الخطة')),
+            
+                
+              ],
+            ),
           ),
           bottomNavigationBar: const CustomBottomNavBar(),
         );

@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/report_reason_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/all_reviews_section.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/my_published_review_section.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/rate_test_section.dart';
@@ -48,6 +50,10 @@ class ReviewTab extends StatelessWidget {
       ),
     );
 
+    final isFilteringReviewsLoading = context.select(
+      (DetailsOfTestCubit cubit) => cubit.state.isFilteringReviewsLoading,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -60,24 +66,6 @@ class ReviewTab extends StatelessWidget {
 
         CustomDivider(height: 30, thickness: 3),
 
-        // if (myReview == null) ...[
-        //   RateTestSection(
-        //     testId: testId,
-        //     canSubmitReview: canInteractWithReviews,
-        //   ),
-        //   CustomDivider(height: 30, thickness: 3),
-        // ] else ...[
-        //   MyPublishedReviewSection(
-        //     review: ReviewUiMapper.mapMyReview(myReview),
-        //     onEdit: () {
-        //       debugPrint('edit my review => ${myReview.id}');
-        //     },
-        //     onDelete: () {
-        //       debugPrint('delete my review => ${myReview.id}');
-        //     },
-        //   ),
-        //   CustomDivider(height: 30, thickness: 3),
-        // ],
         BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
           buildWhen: (previous, current) =>
               previous.isEditingMyReview != current.isEditingMyReview ||
@@ -156,9 +144,35 @@ class ReviewTab extends StatelessWidget {
           reviews: publicReviews,
           canInteractWithReviews: canInteractWithReviews,
           isFeedbackLoading: isFeedbackLoading,
+          isLoading: isFilteringReviewsLoading,
           activeFeedbackReviewId: activeFeedbackReviewId,
           onReportReview: (reviewId) {
-            debugPrint('report review => $reviewId');
+            showReportReasonDialog(
+              context: context,
+              cubit: context.read<DetailsOfTestCubit>(),
+              title: 'الإبلاغ عن تعليق',
+              reasons: const [
+                ReportReasonUiModel(
+                  label: 'تعليق مسيئ (أخلاقيا - دينيا - اجتماعيا)',
+                ),
+                ReportReasonUiModel(
+                  label: 'مضايقة او إساءة شخصية',
+                ),
+                ReportReasonUiModel(
+                  label: 'تعليق لا علاقة له بموضوع الاختبار (غير موضوعي)',
+                ),
+              ],
+              descriptionHint:
+                  'صف لنا المشكلة التي تواجه هذا التعليق بطريقة مختصرة وواضحة',
+              onSubmit: (reason, description) {
+                context.read<DetailsOfTestCubit>().submitReportCommentAndTest(
+                  targetType: ReportTargetType.review,
+                  targetId: reviewId,
+                  reason: reason.label,
+                  description: description,
+                );
+              },
+            );
           },
           onHelpfulYes: (reviewId) {
             debugPrint('helpful yes => $reviewId');
@@ -186,20 +200,6 @@ class ReviewTab extends StatelessWidget {
               vote: false,
             );
           },
-          // onHelpfulYes: (reviewId) {
-          //   debugPrint('helpful yes => $reviewId');
-          //   if (!canInteractWithReviews) {
-          //     _showPurchaseRequiredSnackBar(context);
-          //     return;
-          //   }
-          // },
-          // onHelpfulNo: (reviewId) {
-          //   debugPrint('helpful no => $reviewId');
-          //   if (!canInteractWithReviews) {
-          //     _showPurchaseRequiredSnackBar(context);
-          //     return;
-          //   }
-          // },
         ),
       ],
     );

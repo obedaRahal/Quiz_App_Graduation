@@ -16,7 +16,9 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
   final bool hasLiked;
   final bool hasBookmarked;
   final VoidCallback? onLikeTap;
+  final VoidCallback? onLikeValueTap;
   final VoidCallback? onBookmarkTap;
+  final VoidCallback? onBookmarkValueTap;
 
   const TestDetailsWithPlayModesSection({
     super.key,
@@ -31,7 +33,9 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
     required this.hasLiked,
     required this.hasBookmarked,
     this.onLikeTap,
+    this.onLikeValueTap,
     this.onBookmarkTap,
+    this.onBookmarkValueTap
   });
 
   @override
@@ -65,7 +69,9 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                   hasLiked: hasLiked,
                   hasBookmarked: hasBookmarked,
                   onLikeTap: onLikeTap,
+                  onLikeValueTap:onLikeValueTap ,
                   onBookmarkTap: onBookmarkTap,
+                  onBookmarkValueTap: onBookmarkValueTap,
                 ),
               ),
             ),
