@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
@@ -30,319 +29,442 @@ class DetailsOfTestView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            // TopPageHeader(
-            //   title: 'تفاصيل اختبار',
-            //   onBack: () => context.pop(),
-            //   onShare: () {
-            //     debugPrint('share');
-            //   },
-            // ),
-            BlocConsumer<DetailsOfTestCubit, DetailsOfTestState>(
-              listenWhen: (previous, current) =>
-                  previous.shareLinkStatus != current.shareLinkStatus,
-              listener: (context, state) async {
-                if (state.isShareLinkSuccess) {
-                  final shareUrl = state.shareUrl;
+        child: BlocListener<DetailsOfTestCubit, DetailsOfTestState>(
+          listenWhen: (previous, current) =>
+              previous.likeActionStatus != current.likeActionStatus ||
+              previous.bookmarkActionStatus != current.bookmarkActionStatus ||
+              previous.followActionStatus != current.followActionStatus,
+          listener: (context, state) {
+            if (state.isLikeActionFailure) {
+              showValidationTopSnackBar(
+                context,
+                title: state.errorTitle ?? "خطأ",
+                message: state.errorMessage ?? "تعذر تنفيذ عملية الإعجاب",
+                type: AppValidationSnackBarType.error,
+              );
 
-                  if (shareUrl == null || shareUrl.isEmpty) {
-                    showValidationTopSnackBar(
-                      context,
-                      title: "خطأ",
-                      message: "تعذر تجهيز رابط المشاركة",
-                      type: AppValidationSnackBarType.error,
-                    );
+              context
+                  .read<DetailsOfTestCubit>()
+                  .resetLikeBookmarkFollowActionsState();
+              return;
+            }
 
-                    context.read<DetailsOfTestCubit>().resetShareLinkState();
-                    return;
-                  }
+            if (state.isBookmarkActionFailure) {
+              showValidationTopSnackBar(
+                context,
+                title: state.errorTitle ?? "خطأ",
+                message: state.errorMessage ?? "تعذر تنفيذ عملية الحفظ",
+                type: AppValidationSnackBarType.error,
+              );
 
-                  await Share.share(shareUrl, subject: 'مشاركة اختبار من Nerd');
+              context
+                  .read<DetailsOfTestCubit>()
+                  .resetLikeBookmarkFollowActionsState();
+              return;
+            }
 
-                  context.read<DetailsOfTestCubit>().resetShareLinkState();
-                }
+            if (state.isFollowActionFailure) {
+              showValidationTopSnackBar(
+                context,
+                title: state.errorTitle ?? "خطأ",
+                message: state.errorMessage ?? "تعذر تنفيذ عملية المتابعة",
+                type: AppValidationSnackBarType.error,
+              );
 
-                if (state.isShareLinkFailure) {
-                  showValidationTopSnackBar(
-                    context,
-                    title: state.errorTitle ?? "خطأ",
-                    message: state.errorMessage ?? "تعذر مشاركة الاختبار",
-                    type: AppValidationSnackBarType.error,
-                  );
+              context
+                  .read<DetailsOfTestCubit>()
+                  .resetLikeBookmarkFollowActionsState();
+              return;
+            }
+          },
+          child: Scaffold(
+            body: SafeArea(
+              child: Column(
+                children: [
+                  BlocConsumer<DetailsOfTestCubit, DetailsOfTestState>(
+                    listenWhen: (previous, current) =>
+                        previous.shareLinkStatus != current.shareLinkStatus,
+                    listener: (context, state) async {
+                      if (state.isShareLinkSuccess) {
+                        final shareUrl = state.shareUrl;
 
-                  context.read<DetailsOfTestCubit>().resetShareLinkState();
-                }
-              },
-              builder: (context, state) {
-                final overview = state.overviewDetails;
-
-                return TopPageHeader(
-                  title: 'تفاصيل اختبار',
-                  onBack: () => safeBackToHome(context),
-                  onShare: state.isShareLinkLoading
-                      ? () {}
-                      : () {
-                          debugPrint('share');
-
-                          if (overview == null) {
-                            showValidationTopSnackBar(
-                              context,
-                              title: "تنبيه",
-                              message: "لم يتم تحميل بيانات الاختبار بعد",
-                              type: AppValidationSnackBarType.hint,
-                            );
-                            return;
-                          }
-
-                          context.read<DetailsOfTestCubit>().getTestShareLink(
-                            testId: overview.data.id,
+                        if (shareUrl == null || shareUrl.isEmpty) {
+                          showValidationTopSnackBar(
+                            context,
+                            title: "خطأ",
+                            message: "تعذر تجهيز رابط المشاركة",
+                            type: AppValidationSnackBarType.error,
                           );
-                        },
-                );
-              },
-            ),
 
-            SizedBox(height: SizeConfig.h(0.015)),
-            CustomButtonWidget(
-              onTap: () {
-                debugPrint("change mode ");
-                context.read<ThemeCubit>().toggleTheme();
-              },
-              child: ThemedAppImage(
-                darkPath: AppImage.logoDark,
-                lightPath: AppImage.logoLight,
-              ),
-            ),
-            SizedBox(height: SizeConfig.h(0.015)),
+                          context
+                              .read<DetailsOfTestCubit>()
+                              .resetShareLinkState();
+                          return;
+                        }
 
-            Expanded(
-              child: BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
-                builder: (context, state) {
-                  // if (state.isOverviewLoading) {
-                  //   return const Center(child: CircularProgressIndicator());
-                  // }
-                  if (state.isOverviewLoading) {
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          const TestDetailsWithPlayModesSectionShimmer(),
-                          SizedBox(height: SizeConfig.h(0.02)),
-                          const TestOverviewTabShimmer(),
-                        ],
-                      ),
-                    );
-                  }
+                        await Share.share(
+                          shareUrl,
+                          subject: 'مشاركة اختبار من Nerd',
+                        );
 
-                  if (state.isOverviewFailure) {
-                    return Center(
-                      child: CustomTextWidget(
-                        state.errorMessage ?? 'حدث خطأ أثناء جلب التفاصيل',
-                        color: AppPalette.red,
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  }
+                        context
+                            .read<DetailsOfTestCubit>()
+                            .resetShareLinkState();
+                      }
 
-                  final overview = state.overviewDetails;
-
-                  if (overview == null) {
-                    return const SizedBox.shrink();
-                  }
-
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        SizedBox(height: SizeConfig.h(0.015)),
-                        TestDetailsWithPlayModesSection(
-                          title: overview.data.basicInfo.title,
-                          description: overview.data.basicInfo.description,
-                          difficultyLevel:
-                              overview.data.basicInfo.difficultyLevel,
-                          price: overview.data.basicInfo.price,
-                          likesCount: overview.data.basicInfo.likesCount,
-                          reviewsCount: overview.data.basicInfo.reviewsCount,
-                          bookmarksCount:
-                              overview.data.basicInfo.bookmarksCount,
-                          hasLiked:
-                              overview.data.extraInfo.viewerContext.hasLiked,
-                          hasBookmarked: overview
-                              .data
-                              .extraInfo
-                              .viewerContext
-                              .hasBookmarked,
-                          onLikeTap: () {
-                            debugPrint("toggle like");
-                            context.read<DetailsOfTestCubit>().toggleTestLike(
-                              testId: overview.data.id,
-                            );
-                          },
-                          onLikeValueTap: () {
-                            debugPrint(
-                              "like value is ${overview.data.basicInfo.likesCount}",
-                            );
-                          },
-                          onBookmarkTap: () {
-                            debugPrint("toggle bookmark");
-                            context
-                                .read<DetailsOfTestCubit>()
-                                .toggleTestBookmark(testId: overview.data.id);
-                          },
-                          onBookmarkValueTap: () {
-                            debugPrint(
-                              "bookmark value is ${overview.data.basicInfo.bookmarksCount}",
-                            );
-                          },
-                        ),
-
-                        SizedBox(height: SizeConfig.h(0.035)),
-
-                        DetailsOfTestTabsSection(
-                          overview: overview,
-                          testId: overview.data.id,
-                        ),
-
-                        SizedBox(height: SizeConfig.h(0.02)),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            BlocConsumer<DetailsOfTestCubit, DetailsOfTestState>(
-              listenWhen: (previous, current) =>
-                  previous.downloadStatus != current.downloadStatus,
-              listener: (context, state) {
-                if (state.downloadStatus == DownloadTestFileStatus.loading) {
-                  showValidationTopSnackBar(
-                    context,
-                    title: "تحميل",
-                    message: "جاري تحميل ملف الاختبار...",
-                    type: AppValidationSnackBarType.hint,
-                  );
-                }
-
-                if (state.downloadStatus == DownloadTestFileStatus.success) {
-                  showValidationTopSnackBar(
-                    context,
-                    title: "تم تحميل",
-                    message: "تم حفظ ملف الاختبار بنجاح",
-                    type: AppValidationSnackBarType.success,
-                    actionText: 'عرض الاختبار',
-                    onActionTap: () async {
-                      debugPrint('show pdf');
-                      final filePath = state.downloadedFilePath;
-
-                      if (filePath == null || filePath.isEmpty) {
-                        debugPrint('✗ downloadedFilePath is null');
-
+                      if (state.isShareLinkFailure) {
                         showValidationTopSnackBar(
                           context,
-                          title: "خطأ",
-                          message: "تعذر العثور على ملف الاختبار",
+                          title: state.errorTitle ?? "خطأ",
+                          message: state.errorMessage ?? "تعذر مشاركة الاختبار",
                           type: AppValidationSnackBarType.error,
                         );
 
-                        return;
-                      }
-
-                      debugPrint(
-                        "============ Open Downloaded PDF ============",
-                      );
-                      debugPrint("→ filePath: $filePath");
-
-                      final result = await OpenFilex.open(filePath);
-
-                      debugPrint("→ open result type: ${result.type}");
-                      debugPrint("→ open result message: ${result.message}");
-                      debugPrint(
-                        "=============================================",
-                      );
-                    },
-                  );
-                }
-
-                if (state.downloadStatus == DownloadTestFileStatus.failure) {
-                  showValidationTopSnackBar(
-                    context,
-                    title: state.errorTitle ?? "خطأ",
-                    message: state.errorMessage ?? "تعذر تحميل ملف الاختبار",
-                    type: AppValidationSnackBarType.error,
-                  );
-                }
-              },
-              builder: (context, state) {
-                final overview = state.overviewDetails;
-
-                if (overview == null) {
-                  return const SizedBox.shrink();
-                }
-
-                return TestPurchaseBottomBar(
-                  reviewStatus: overview.data.extraInfo.reviewStatus,
-                  isFree: overview.data.extraInfo.viewerContext.isFree,
-                  hasPurchased:
-                      overview.data.extraInfo.viewerContext.hasPurchased,
-                  canPurchase:
-                      overview.data.extraInfo.viewerContext.canPurchase,
-                  canDownload:
-                      overview.data.extraInfo.viewerContext.canDownload,
-                  canReport: overview.data.extraInfo.viewerContext.canReport,
-                  onBuyTap: () {
-                    debugPrint("buy now");
-                  },
-                  onDownloadTap: state.isDownloadLoading
-                      ? () {}
-                      : () {
-                          debugPrint("download now");
-                          context.read<DetailsOfTestCubit>().downloadTestFile(
-                            testId: overview.data.id,
-                          );
-                        },
-                  onReportTap: () {
-                    debugPrint("report test");
-                    debugPrint(
-                      'report test and test id is  => ${overview.data.id}',
-                    );
-                    showReportReasonDialog(
-                      context: context,
-                      cubit: context.read<DetailsOfTestCubit>(),
-                      title: 'الإبلاغ عن اختبار',
-                      reasons: const [
-                        ReportReasonUiModel(
-                          label:
-                              'اختبار محتواه مسيء (أخلاقيا - دينيا - اجتماعيا)',
-                        ),
-                        ReportReasonUiModel(
-                          label: 'يوجد أخطاء في طريقة صياغة السؤال',
-                        ),
-                        ReportReasonUiModel(
-                          label: 'يوجد خطأ في الاختيارات المطروحة في السؤال',
-                        ),
-                        ReportReasonUiModel(
-                          label: 'الإجابة الصحيحة لا يجب ان تكون هي الإجابة',
-                        ),
-                        ReportReasonUiModel(label: 'يوجد خطأ في الشرح'),
-                      ],
-                      descriptionHint:
-                          'صف لنا المشكلة التي تواجه هذا الاختبار بطريقة مختصرة وواضحة',
-                      onSubmit: (reason, description) {
                         context
                             .read<DetailsOfTestCubit>()
-                            .submitReportCommentAndTest(
-                              targetType: ReportTargetType.test,
-                              targetId: overview.data.id,
-                              reason: reason.label,
-                              description: description,
-                            );
+                            .resetShareLinkState();
+                      }
+                    },
+                    builder: (context, state) {
+                      final overview = state.overviewDetails;
+
+                      return TopPageHeader(
+                        title: 'تفاصيل اختبار',
+                        onBack: () => safeBackToHome(context),
+                        onShare: state.isShareLinkLoading
+                            ? () {}
+                            : () {
+                                debugPrint('share');
+
+                                if (overview == null) {
+                                  showValidationTopSnackBar(
+                                    context,
+                                    title: "تنبيه",
+                                    message: "لم يتم تحميل بيانات الاختبار بعد",
+                                    type: AppValidationSnackBarType.hint,
+                                  );
+                                  return;
+                                }
+
+                                context
+                                    .read<DetailsOfTestCubit>()
+                                    .getTestShareLink(testId: overview.data.id);
+                              },
+                      );
+                    },
+                  ),
+
+                  SizedBox(height: SizeConfig.h(0.015)),
+                  CustomButtonWidget(
+                    onTap: () {
+                      debugPrint("change mode ");
+                      context.read<ThemeCubit>().toggleTheme();
+                    },
+                    child: ThemedAppImage(
+                      darkPath: AppImage.logoDark,
+                      lightPath: AppImage.logoLight,
+                    ),
+                  ),
+                  SizedBox(height: SizeConfig.h(0.015)),
+
+                  Expanded(
+                    child: BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
+                      builder: (context, state) {
+                        // if (state.isOverviewLoading) {
+                        //   return const Center(child: CircularProgressIndicator());
+                        // }
+                        if (state.isOverviewLoading) {
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                const TestDetailsWithPlayModesSectionShimmer(),
+                                SizedBox(height: SizeConfig.h(0.02)),
+                                const TestOverviewTabShimmer(),
+                              ],
+                            ),
+                          );
+                        }
+
+                        if (state.isOverviewFailure) {
+                          return Center(
+                            child: CustomTextWidget(
+                              state.errorMessage ??
+                                  'حدث خطأ أثناء جلب التفاصيل',
+                              color: AppPalette.red,
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        }
+
+                        final overview = state.overviewDetails;
+
+                        if (overview == null) {
+                          return const SizedBox.shrink();
+                        }
+
+                        return NotificationListener<ScrollNotification>(
+                          onNotification: (notification) {
+                            if (notification.metrics.maxScrollExtent <= 0) {
+                              return false;
+                            }
+
+                            final cubit = context.read<DetailsOfTestCubit>();
+                            final currentState = cubit.state;
+
+                            final isReviewsTab =
+                                currentState.selectedTab ==
+                                DetailsOfTestTab.reviews;
+
+                            final reviewsDetails = currentState.reviewsDetails;
+
+                            final hasMorePages =
+                                reviewsDetails?.data.meta.hasMorePages ?? false;
+
+                            final isAfterThreshold =
+                                notification.metrics.pixels >=
+                                notification.metrics.maxScrollExtent * 0.80;
+
+                            if (isReviewsTab &&
+                                isAfterThreshold &&
+                                hasMorePages &&
+                                !currentState.isReviewsLoadMoreLoading &&
+                                !currentState.isFilteringReviewsLoading) {
+                              debugPrint(
+                                "============ Reviews Load More Trigger ============",
+                              );
+                              debugPrint(
+                                "→ current page: ${reviewsDetails?.data.meta.currentPage}",
+                              );
+                              debugPrint("→ hasMorePages: $hasMorePages");
+                              debugPrint(
+                                "===================================================",
+                              );
+
+                              cubit.getOtherTestDetailsReviews(
+                                testId: overview.data.id,
+                                rating: currentState.selectedRatingFilter,
+                                loadMore: true,
+                              );
+                            }
+
+                            return false;
+                          },
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                SizedBox(height: SizeConfig.h(0.015)),
+                                TestDetailsWithPlayModesSection(
+                                  title: overview.data.basicInfo.title,
+                                  description:
+                                      overview.data.basicInfo.description,
+                                  difficultyLevel:
+                                      overview.data.basicInfo.difficultyLevel,
+                                  price: overview.data.basicInfo.price,
+                                  likesCount:
+                                      overview.data.basicInfo.likesCount,
+                                  reviewsCount:
+                                      overview.data.basicInfo.reviewsCount,
+                                  bookmarksCount:
+                                      overview.data.basicInfo.bookmarksCount,
+                                  hasLiked: overview
+                                      .data
+                                      .extraInfo
+                                      .viewerContext
+                                      .hasLiked,
+                                  hasBookmarked: overview
+                                      .data
+                                      .extraInfo
+                                      .viewerContext
+                                      .hasBookmarked,
+                                  onLikeTap: () {
+                                    debugPrint("toggle like");
+                                    context
+                                        .read<DetailsOfTestCubit>()
+                                        .toggleTestLike(
+                                          testId: overview.data.id,
+                                        );
+                                  },
+                                  onLikeValueTap: () {
+                                    debugPrint(
+                                      "like value is ${overview.data.basicInfo.likesCount}",
+                                    );
+                                  },
+                                  onBookmarkTap: () {
+                                    debugPrint("toggle bookmark");
+                                    context
+                                        .read<DetailsOfTestCubit>()
+                                        .toggleTestBookmark(
+                                          testId: overview.data.id,
+                                        );
+                                  },
+                                  onBookmarkValueTap: () {
+                                    debugPrint(
+                                      "bookmark value is ${overview.data.basicInfo.bookmarksCount}",
+                                    );
+                                  },
+                                ),
+
+                                SizedBox(height: SizeConfig.h(0.035)),
+
+                                DetailsOfTestTabsSection(
+                                  overview: overview,
+                                  testId: overview.data.id,
+                                ),
+
+                                SizedBox(height: SizeConfig.h(0.02)),
+                              ],
+                            ),
+                          ),
+                        );
                       },
-                    );
-                  },
-                );
-              },
+                    ),
+                  ),
+
+                  BlocConsumer<DetailsOfTestCubit, DetailsOfTestState>(
+                    listenWhen: (previous, current) =>
+                        previous.downloadStatus != current.downloadStatus,
+                    listener: (context, state) {
+                      if (state.downloadStatus ==
+                          DownloadTestFileStatus.loading) {
+                        showValidationTopSnackBar(
+                          context,
+                          title: "تحميل",
+                          message: "جاري تحميل ملف الاختبار...",
+                          type: AppValidationSnackBarType.hint,
+                        );
+                      }
+
+                      if (state.downloadStatus ==
+                          DownloadTestFileStatus.success) {
+                        showValidationTopSnackBar(
+                          context,
+                          title: "تم تحميل",
+                          message: "تم حفظ ملف الاختبار بنجاح",
+                          type: AppValidationSnackBarType.success,
+                          actionText: 'عرض الاختبار',
+                          onActionTap: () async {
+                            debugPrint('show pdf');
+                            final filePath = state.downloadedFilePath;
+
+                            if (filePath == null || filePath.isEmpty) {
+                              debugPrint('✗ downloadedFilePath is null');
+
+                              showValidationTopSnackBar(
+                                context,
+                                title: "خطأ",
+                                message: "تعذر العثور على ملف الاختبار",
+                                type: AppValidationSnackBarType.error,
+                              );
+
+                              return;
+                            }
+
+                            debugPrint(
+                              "============ Open Downloaded PDF ============",
+                            );
+                            debugPrint("→ filePath: $filePath");
+
+                            final result = await OpenFilex.open(filePath);
+
+                            debugPrint("→ open result type: ${result.type}");
+                            debugPrint(
+                              "→ open result message: ${result.message}",
+                            );
+                            debugPrint(
+                              "=============================================",
+                            );
+                          },
+                        );
+                      }
+
+                      if (state.downloadStatus ==
+                          DownloadTestFileStatus.failure) {
+                        showValidationTopSnackBar(
+                          context,
+                          title: state.errorTitle ?? "خطأ",
+                          message:
+                              state.errorMessage ?? "تعذر تحميل ملف الاختبار",
+                          type: AppValidationSnackBarType.error,
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      final overview = state.overviewDetails;
+
+                      if (overview == null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return TestPurchaseBottomBar(
+                        reviewStatus: overview.data.extraInfo.reviewStatus,
+                        isFree: overview.data.extraInfo.viewerContext.isFree,
+                        hasPurchased:
+                            overview.data.extraInfo.viewerContext.hasPurchased,
+                        canPurchase:
+                            overview.data.extraInfo.viewerContext.canPurchase,
+                        canDownload:
+                            overview.data.extraInfo.viewerContext.canDownload,
+                        canReport:
+                            overview.data.extraInfo.viewerContext.canReport,
+                        onBuyTap: () {
+                          debugPrint("buy now");
+                        },
+                        onDownloadTap: state.isDownloadLoading
+                            ? () {}
+                            : () {
+                                debugPrint("download now");
+                                context
+                                    .read<DetailsOfTestCubit>()
+                                    .downloadTestFile(testId: overview.data.id);
+                              },
+                        onReportTap: () {
+                          debugPrint("report test");
+                          debugPrint(
+                            'report test and test id is  => ${overview.data.id}',
+                          );
+                          showReportReasonDialog(
+                            context: context,
+                            cubit: context.read<DetailsOfTestCubit>(),
+                            title: 'الإبلاغ عن اختبار',
+                            reasons: const [
+                              ReportReasonUiModel(
+                                label:
+                                    'اختبار محتواه مسيء (أخلاقيا - دينيا - اجتماعيا)',
+                              ),
+                              ReportReasonUiModel(
+                                label: 'يوجد أخطاء في طريقة صياغة السؤال',
+                              ),
+                              ReportReasonUiModel(
+                                label:
+                                    'يوجد خطأ في الاختيارات المطروحة في السؤال',
+                              ),
+                              ReportReasonUiModel(
+                                label:
+                                    'الإجابة الصحيحة لا يجب ان تكون هي الإجابة',
+                              ),
+                              ReportReasonUiModel(label: 'يوجد خطأ في الشرح'),
+                            ],
+                            descriptionHint:
+                                'صف لنا المشكلة التي تواجه هذا الاختبار بطريقة مختصرة وواضحة',
+                            onSubmit: (reason, description) {
+                              context
+                                  .read<DetailsOfTestCubit>()
+                                  .submitReportCommentAndTest(
+                                    targetType: ReportTargetType.test,
+                                    targetId: overview.data.id,
+                                    reason: reason.label,
+                                    description: description,
+                                  );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );

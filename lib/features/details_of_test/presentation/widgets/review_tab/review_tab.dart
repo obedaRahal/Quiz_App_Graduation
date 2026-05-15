@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
+import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/review_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/report_reason_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/all_reviews_section.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/my_published_review_section.dart';
@@ -52,6 +54,10 @@ class ReviewTab extends StatelessWidget {
 
     final isFilteringReviewsLoading = context.select(
       (DetailsOfTestCubit cubit) => cubit.state.isFilteringReviewsLoading,
+    );
+
+    final isReviewsLoadMoreLoading = context.select(
+      (DetailsOfTestCubit cubit) => cubit.state.isReviewsLoadMoreLoading,
     );
 
     return Column(
@@ -137,6 +143,8 @@ class ReviewTab extends StatelessWidget {
             context.read<DetailsOfTestCubit>().getOtherTestDetailsReviews(
               testId: testId,
               rating: rating,
+              page: 1,
+              loadMore: false,
             );
 
             debugPrint('filter => $rating');
@@ -155,9 +163,7 @@ class ReviewTab extends StatelessWidget {
                 ReportReasonUiModel(
                   label: 'تعليق مسيئ (أخلاقيا - دينيا - اجتماعيا)',
                 ),
-                ReportReasonUiModel(
-                  label: 'مضايقة او إساءة شخصية',
-                ),
+                ReportReasonUiModel(label: 'مضايقة او إساءة شخصية'),
                 ReportReasonUiModel(
                   label: 'تعليق لا علاقة له بموضوع الاختبار (غير موضوعي)',
                 ),
@@ -201,6 +207,11 @@ class ReviewTab extends StatelessWidget {
             );
           },
         ),
+
+        if (isReviewsLoadMoreLoading) ...[
+          SizedBox(height: SizeConfig.h(0.018)),
+          const Center(child: ReviewsSectionShimmer()),
+        ],
       ],
     );
   }

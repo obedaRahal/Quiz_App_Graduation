@@ -11,6 +11,8 @@ enum DetailsOfTestSampleStatus { initial, loading, success, failure }
 
 enum DetailsOfTestReviewsStatus { initial, loading, success, failure }
 
+enum ReviewsLoadMoreStatus { initial, loading, success, failure }
+
 enum TestLikeActionStatus { initial, loading, success, failure }
 
 enum TestBookmarkActionStatus { initial, loading, success, failure }
@@ -55,6 +57,7 @@ class DetailsOfTestState {
   final DetailsOfTestReviewsStatus reviewsStatus;
   final OtherTestDetailsReviewsEntity? reviewsDetails;
   final String selectedRatingFilter;
+  final ReviewsLoadMoreStatus reviewsLoadMoreStatus;
 
   final TestLikeActionStatus likeActionStatus;
   final TestBookmarkActionStatus bookmarkActionStatus;
@@ -101,6 +104,7 @@ class DetailsOfTestState {
     this.reviewsStatus = DetailsOfTestReviewsStatus.initial,
     this.reviewsDetails,
     this.selectedRatingFilter = 'all',
+    this.reviewsLoadMoreStatus = ReviewsLoadMoreStatus.initial,
 
     this.likeActionStatus = TestLikeActionStatus.initial,
     this.bookmarkActionStatus = TestBookmarkActionStatus.initial,
@@ -157,15 +161,33 @@ class DetailsOfTestState {
   bool get isFilteringReviewsLoading =>
       reviewsStatus == DetailsOfTestReviewsStatus.loading &&
       reviewsDetails != null;
+  bool get isReviewsLoadMoreLoading =>
+      reviewsLoadMoreStatus == ReviewsLoadMoreStatus.loading;
+  bool get isReviewsLoadMoreSuccess =>
+      reviewsLoadMoreStatus == ReviewsLoadMoreStatus.success;
+  bool get isReviewsLoadMoreFailure =>
+      reviewsLoadMoreStatus == ReviewsLoadMoreStatus.failure;
 
   bool get isLikeActionLoading =>
       likeActionStatus == TestLikeActionStatus.loading;
-
   bool get isBookmarkActionLoading =>
       bookmarkActionStatus == TestBookmarkActionStatus.loading;
-
   bool get isFollowActionLoading =>
       followActionStatus == FollowActionStatus.loading;
+
+  bool get isLikeActionFailure =>
+      likeActionStatus == TestLikeActionStatus.failure;
+  bool get isBookmarkActionFailure =>
+      bookmarkActionStatus == TestBookmarkActionStatus.failure;
+  bool get isFollowActionFailure =>
+      followActionStatus == FollowActionStatus.failure;
+
+  bool get isLikeActionSuccess =>
+      likeActionStatus == TestLikeActionStatus.success;
+  bool get isBookmarkActionSuccess =>
+      bookmarkActionStatus == TestBookmarkActionStatus.success;
+  bool get isFollowActionSuccess =>
+      followActionStatus == FollowActionStatus.success;
 
   bool get isDownloadLoading =>
       downloadStatus == DownloadTestFileStatus.loading;
@@ -190,6 +212,10 @@ class DetailsOfTestState {
 
   bool get isReviewFeedbackLoading =>
       reviewFeedbackStatus == ReviewFeedbackActionStatus.loading;
+  bool get isReviewFeedbackSuccess =>
+      reviewFeedbackStatus == ReviewFeedbackActionStatus.success;
+  bool get isReviewFeedbackFailure =>
+      reviewFeedbackStatus == ReviewFeedbackActionStatus.failure;
 
   bool get isSubmitReportLoading =>
       submitReportStatus == SubmitReportStatus.loading;
@@ -228,6 +254,7 @@ class DetailsOfTestState {
     DetailsOfTestReviewsStatus? reviewsStatus,
     OtherTestDetailsReviewsEntity? reviewsDetails,
     String? selectedRatingFilter,
+    ReviewsLoadMoreStatus? reviewsLoadMoreStatus,
 
     TestLikeActionStatus? likeActionStatus,
     TestBookmarkActionStatus? bookmarkActionStatus,
@@ -279,6 +306,8 @@ class DetailsOfTestState {
       reviewsStatus: reviewsStatus ?? this.reviewsStatus,
       reviewsDetails: reviewsDetails ?? this.reviewsDetails,
       selectedRatingFilter: selectedRatingFilter ?? this.selectedRatingFilter,
+      reviewsLoadMoreStatus:
+          reviewsLoadMoreStatus ?? this.reviewsLoadMoreStatus,
 
       likeActionStatus: likeActionStatus ?? this.likeActionStatus,
       bookmarkActionStatus: bookmarkActionStatus ?? this.bookmarkActionStatus,

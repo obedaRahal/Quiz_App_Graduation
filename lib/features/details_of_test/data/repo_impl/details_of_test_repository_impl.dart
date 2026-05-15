@@ -133,11 +133,12 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
   getOtherTestDetailsReviews({
     required int testId,
     required String rating,
+    required int page,
   }) async {
     debugPrint(
       "============ DetailsOfTestRepositoryImpl.getOtherTestDetailsReviews ============",
     );
-    debugPrint("→ params: {testId: $testId, rating: $rating}");
+    debugPrint("→ params: {testId: $testId, rating: $rating, page: $page}");
 
     try {
       debugPrint("→ calling remoteDataSource.getOtherTestDetailsReviews");
@@ -145,6 +146,7 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
       final model = await remoteDataSource.getOtherTestDetailsReviews(
         testId: testId,
         rating: rating,
+        page: page,
       );
 
       debugPrint("← remoteDataSource.getOtherTestDetailsReviews success");

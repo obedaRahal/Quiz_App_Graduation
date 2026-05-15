@@ -258,25 +258,119 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
   }
 
   ////////////////////  REVIEWS API ///////////////////////
+  // Future<void> getOtherTestDetailsReviews({
+  //   required int testId,
+  //   String rating = 'all',
+  //   int page = 1,
+  // }) async {
+  //   debugPrint(
+  //     "============ DetailsOfTestCubit.getOtherTestDetailsReviews ============",
+  //   );
+  //   debugPrint("→ params: {testId: $testId, rating: $rating}");
+
+  //   emit(
+  //     state.copyWith(
+  //       reviewsStatus: DetailsOfTestReviewsStatus.loading,
+  //       selectedRatingFilter: rating,
+  //       clearError: true,
+  //     ),
+  //   );
+
+  //   final result = await getOtherTestDetailsReviewsUseCase(
+  //     GetOtherTestDetailsReviewsParams(
+  //       testId: testId,
+  //       rating: rating,
+  //       page: page,
+  //     ),
+  //   );
+
+  //   result.fold(
+  //     (failure) {
+  //       debugPrint("✗ reviews failure title: ${failure.title}");
+  //       debugPrint("✗ reviews failure message: ${failure.message}");
+
+  //       emit(
+  //         state.copyWith(
+  //           reviewsStatus: DetailsOfTestReviewsStatus.failure,
+  //           errorTitle: failure.title,
+  //           errorMessage: failure.message,
+  //         ),
+  //       );
+  //     },
+  //     (response) {
+  //       debugPrint("✓ reviews loaded successfully");
+  //       debugPrint("→ average rating: ${response.data.summary.averageRating}");
+  //       debugPrint("→ reviews count: ${response.data.reviews.length}");
+  //       debugPrint("→ selected filter: $rating");
+
+  //       emit(
+  //         state.copyWith(
+  //           reviewsStatus: DetailsOfTestReviewsStatus.success,
+  //           reviewsDetails: response,
+  //           selectedRatingFilter: rating,
+  //           clearError: true,
+  //         ),
+  //       );
+  //     },
+  //   );
+
+  //   debugPrint("=================================================");
+  // }
   Future<void> getOtherTestDetailsReviews({
     required int testId,
     String rating = 'all',
+    int page = 1,
+    bool loadMore = false,
   }) async {
     debugPrint(
       "============ DetailsOfTestCubit.getOtherTestDetailsReviews ============",
     );
-    debugPrint("→ params: {testId: $testId, rating: $rating}");
-
-    emit(
-      state.copyWith(
-        reviewsStatus: DetailsOfTestReviewsStatus.loading,
-        selectedRatingFilter: rating,
-        clearError: true,
-      ),
+    debugPrint(
+      "→ params: {testId: $testId, rating: $rating, page: $page, loadMore: $loadMore}",
     );
 
+    final currentReviewsDetails = state.reviewsDetails;
+
+    if (loadMore) {
+      if (state.isReviewsLoadMoreLoading || state.isReviewsLoading) {
+        debugPrint("✗ reviews load more already loading");
+        debugPrint("=================================================");
+        return;
+      }
+
+      final meta = currentReviewsDetails?.data.meta;
+
+      if (meta == null || !meta.hasMorePages) {
+        debugPrint("✗ no more review pages");
+        debugPrint("=================================================");
+        return;
+      }
+
+      page = meta.currentPage + 1;
+
+      emit(
+        state.copyWith(
+          reviewsLoadMoreStatus: ReviewsLoadMoreStatus.loading,
+          clearError: true,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          reviewsStatus: DetailsOfTestReviewsStatus.loading,
+          reviewsLoadMoreStatus: ReviewsLoadMoreStatus.initial,
+          selectedRatingFilter: rating,
+          clearError: true,
+        ),
+      );
+    }
+
     final result = await getOtherTestDetailsReviewsUseCase(
-      GetOtherTestDetailsReviewsParams(testId: testId, rating: rating),
+      GetOtherTestDetailsReviewsParams(
+        testId: testId,
+        rating: rating,
+        page: page,
+      ),
     );
 
     result.fold(
@@ -284,23 +378,64 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
         debugPrint("✗ reviews failure title: ${failure.title}");
         debugPrint("✗ reviews failure message: ${failure.message}");
 
-        emit(
-          state.copyWith(
-            reviewsStatus: DetailsOfTestReviewsStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
-          ),
-        );
+        if (loadMore) {
+          emit(
+            state.copyWith(
+              reviewsLoadMoreStatus: ReviewsLoadMoreStatus.failure,
+              errorTitle: failure.title,
+              errorMessage: failure.message,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              reviewsStatus: DetailsOfTestReviewsStatus.failure,
+              errorTitle: failure.title,
+              errorMessage: failure.message,
+            ),
+          );
+        }
       },
       (response) {
         debugPrint("✓ reviews loaded successfully");
         debugPrint("→ average rating: ${response.data.summary.averageRating}");
-        debugPrint("→ reviews count: ${response.data.reviews.length}");
+        debugPrint("→ new reviews count: ${response.data.reviews.length}");
         debugPrint("→ selected filter: $rating");
+        debugPrint("→ page: ${response.data.meta.currentPage}");
+        debugPrint("→ hasMorePages: ${response.data.meta.hasMorePages}");
+
+        if (loadMore && currentReviewsDetails != null) {
+          final oldReviews = currentReviewsDetails.data.reviews;
+          final newReviews = response.data.reviews;
+
+          final mergedReviews = [...oldReviews, ...newReviews];
+
+          final mergedResponse = response.copyWith(
+            data: response.data.copyWith(
+              summary: response.data.summary,
+              myReview: response.data.myReview,
+              reviews: mergedReviews,
+              meta: response.data.meta,
+            ),
+          );
+
+          emit(
+            state.copyWith(
+              reviewsStatus: DetailsOfTestReviewsStatus.success,
+              reviewsLoadMoreStatus: ReviewsLoadMoreStatus.success,
+              reviewsDetails: mergedResponse,
+              selectedRatingFilter: rating,
+              clearError: true,
+            ),
+          );
+
+          return;
+        }
 
         emit(
           state.copyWith(
             reviewsStatus: DetailsOfTestReviewsStatus.success,
+            reviewsLoadMoreStatus: ReviewsLoadMoreStatus.initial,
             reviewsDetails: response,
             selectedRatingFilter: rating,
             clearError: true,
@@ -310,6 +445,15 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     );
 
     debugPrint("=================================================");
+  }
+
+  void resetReviewsLoadMoreState() {
+    emit(
+      state.copyWith(
+        reviewsLoadMoreStatus: ReviewsLoadMoreStatus.initial,
+        clearError: true,
+      ),
+    );
   }
 
   ////////////////////// LIKE API //////////////////////
@@ -603,6 +747,17 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     );
 
     debugPrint("=================================================");
+  }
+
+  void resetLikeBookmarkFollowActionsState() {
+    emit(
+      state.copyWith(
+        likeActionStatus: TestLikeActionStatus.initial,
+        bookmarkActionStatus: TestBookmarkActionStatus.initial,
+        followActionStatus: FollowActionStatus.initial,
+        clearError: true,
+      ),
+    );
   }
 
   /////////////////////////////   DOWNLOAD API //////////////////
@@ -1032,6 +1187,16 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     );
 
     debugPrint("=================================================");
+  }
+
+  void resetReviewFeedbackState() {
+    emit(
+      state.copyWith(
+        reviewFeedbackStatus: ReviewFeedbackActionStatus.initial,
+        clearActiveFeedbackReviewId: true,
+        clearError: true,
+      ),
+    );
   }
 
   TestReviewEntity _buildUpdatedReviewAfterFeedback({

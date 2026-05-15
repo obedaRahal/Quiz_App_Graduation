@@ -25,7 +25,11 @@ abstract class DetailsOfTestRepository {
   getOtherTestDetailsSample({required int testId});
 
   Future<Either<Failure, OtherTestDetailsReviewsEntity>>
-  getOtherTestDetailsReviews({required int testId, required String rating});
+  getOtherTestDetailsReviews({
+    required int testId,
+    required String rating,
+    required int page,
+  });
 
   Future<Either<Failure, TestLikeActionEntity>> likeTest({required int testId});
 

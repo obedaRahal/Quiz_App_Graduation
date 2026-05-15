@@ -264,7 +264,10 @@ class _ReviewsTabBlocContent extends StatelessWidget {
     return BlocConsumer<DetailsOfTestCubit, DetailsOfTestState>(
       listenWhen: (previous, current) =>
           previous.updateReviewStatus != current.updateReviewStatus ||
-          previous.deleteReviewStatus != current.deleteReviewStatus,
+          previous.deleteReviewStatus != current.deleteReviewStatus ||
+          previous.reviewFeedbackStatus != current.reviewFeedbackStatus ||
+          previous.reviewsLoadMoreStatus != current.reviewsLoadMoreStatus ||
+          previous.reviewsLoadMoreStatus != current.reviewsLoadMoreStatus,
       listener: (context, state) {
         if (state.isUpdateReviewSuccess) {
           showValidationTopSnackBar(
@@ -273,7 +276,6 @@ class _ReviewsTabBlocContent extends StatelessWidget {
             message: state.errorMessage ?? "تم تعديل تقييمك بنجاح",
             type: AppValidationSnackBarType.success,
           );
-
           context.read<DetailsOfTestCubit>().resetUpdateReviewState();
         }
 
@@ -284,7 +286,6 @@ class _ReviewsTabBlocContent extends StatelessWidget {
             message: state.errorMessage ?? "تعذر تعديل التقييم",
             type: AppValidationSnackBarType.error,
           );
-
           context.read<DetailsOfTestCubit>().resetUpdateReviewState();
         }
 
@@ -295,7 +296,6 @@ class _ReviewsTabBlocContent extends StatelessWidget {
             message: state.errorMessage ?? "تم حذف تقييمك بنجاح",
             type: AppValidationSnackBarType.success,
           );
-
           context.read<DetailsOfTestCubit>().resetDeleteReviewState();
         }
 
@@ -306,18 +306,42 @@ class _ReviewsTabBlocContent extends StatelessWidget {
             message: state.errorMessage ?? "تعذر حذف التقييم",
             type: AppValidationSnackBarType.error,
           );
-
           context.read<DetailsOfTestCubit>().resetDeleteReviewState();
+        }
+
+        if (state.isReviewFeedbackFailure) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? "خطأ",
+            message: state.errorMessage ?? "تعذر تسجيل رأيك على المراجعة",
+            type: AppValidationSnackBarType.error,
+          );
+
+          context.read<DetailsOfTestCubit>().resetReviewFeedbackState();
+        }
+
+        if (state.isReviewsLoadMoreFailure) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? "خطأ",
+            message: state.errorMessage ?? "تعذر تحميل المزيد من المراجعات",
+            type: AppValidationSnackBarType.error,
+          );
+
+          context.read<DetailsOfTestCubit>().resetReviewsLoadMoreState();
         }
       },
       buildWhen: (previous, current) =>
           previous.reviewsStatus != current.reviewsStatus ||
+          previous.reviewsLoadMoreStatus != current.reviewsLoadMoreStatus ||
           previous.reviewsDetails != current.reviewsDetails ||
           previous.selectedRatingFilter != current.selectedRatingFilter ||
           previous.errorMessage != current.errorMessage ||
           previous.isEditingMyReview != current.isEditingMyReview ||
           previous.updateReviewStatus != current.updateReviewStatus ||
-          previous.deleteReviewStatus != current.deleteReviewStatus,
+          previous.deleteReviewStatus != current.deleteReviewStatus ||
+          previous.reviewFeedbackStatus != current.reviewFeedbackStatus ||
+          previous.activeFeedbackReviewId != current.activeFeedbackReviewId,
       builder: (context, state) {
         // if (state.isReviewsLoading) {
         //   return const Center(child: CircularProgressIndicator());

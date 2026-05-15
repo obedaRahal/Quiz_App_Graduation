@@ -35,7 +35,9 @@ abstract class DetailsOfTestRemoteDataSource {
   Future<OtherTestDetailsReviewsModel> getOtherTestDetailsReviews({
     required int testId,
     required String rating,
+    required int page,
   });
+
   Future<TestLikeActionModel> likeTest({required int testId});
 
   Future<TestLikeActionModel> unlikeTest({required int testId});
@@ -145,19 +147,23 @@ class DetailsOfTestRemoteDataSourceImpl
   Future<OtherTestDetailsReviewsModel> getOtherTestDetailsReviews({
     required int testId,
     required String rating,
+    required int page,
   }) async {
     debugPrint(
       "============ DetailsOfTestRemoteDataSourceImpl.getOtherTestDetailsReviews ============",
     );
-    debugPrint(
-      "→ endpoint: ${EndPoints.otherTestDetailsReviews(testId: testId, rating: rating)}",
-    );
-    debugPrint("→ method: GET");
-    debugPrint("→ params: {testId: $testId, rating: $rating}");
 
-    final response = await apiConsumer.get(
-      EndPoints.otherTestDetailsReviews(testId: testId, rating: rating),
+    final endpoint = EndPoints.otherTestDetailsReviews(
+      testId: testId,
+      rating: rating,
+      page: page,
     );
+
+    debugPrint("→ endpoint: $endpoint");
+    debugPrint("→ method: GET");
+    debugPrint("→ params: {testId: $testId, rating: $rating, page: $page}");
+
+    final response = await apiConsumer.get(endpoint);
 
     debugPrint("← response (getOtherTestDetailsReviews): $response");
     debugPrint("=================================================");

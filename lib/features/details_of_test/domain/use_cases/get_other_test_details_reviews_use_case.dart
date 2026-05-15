@@ -18,12 +18,13 @@ class GetOtherTestDetailsReviewsUseCase {
       "============ GetOtherTestDetailsReviewsUseCase.call ============",
     );
     debugPrint(
-      "→ params: {testId: ${params.testId}, rating: ${params.rating}}",
+      "→ params: {testId: ${params.testId}, rating: ${params.rating}, page: ${params.page}}",
     );
 
     return repository.getOtherTestDetailsReviews(
       testId: params.testId,
       rating: params.rating,
+      page: params.page,
     );
   }
 }

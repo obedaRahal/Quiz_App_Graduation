@@ -48,8 +48,10 @@ class EndPoints {
   static String otherTestDetailsReviews({
     required int testId,
     required String rating,
-  }) => '$baseUrl/test/test-details/reviews/$testId?rating=$rating';
+    required int page,
+  }) => '$baseUrl/test/test-details/reviews/$testId?rating=$rating&page=$page';
 
+  
   static String otherTestDetailsLike(int testId) =>
       '$baseUrl/test/like/$testId';
 
