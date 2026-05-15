@@ -7,6 +7,7 @@ import 'package:quiz_app_grad/features/details_of_test/data/models/add_test_revi
 import 'package:quiz_app_grad/features/details_of_test/data/models/delete_test_review_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/download_test_file_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/review_feedback_action_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/shared_test_link_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/submit_report_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_bookmark_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_follow_action_model.dart';
@@ -80,6 +81,8 @@ abstract class DetailsOfTestRemoteDataSource {
   });
 
   Future<TestShareLinkModel> getTestShareLink({required int testId});
+
+  Future<SharedTestLinkModel> getSharedTestLink({required String slug});
 }
 
 class DetailsOfTestRemoteDataSourceImpl
@@ -488,5 +491,22 @@ class DetailsOfTestRemoteDataSourceImpl
     debugPrint("=================================================");
 
     return TestShareLinkModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<SharedTestLinkModel> getSharedTestLink({required String slug}) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.getSharedTestLink ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.sharedTestLink(slug)}");
+    debugPrint("→ method: GET");
+    debugPrint("→ params: {slug: $slug}");
+
+    final response = await apiConsumer.get(EndPoints.sharedTestLink(slug));
+
+    debugPrint("← response (getSharedTestLink): $response");
+    debugPrint("=================================================");
+
+    return SharedTestLinkModel.fromJson(response as Map<String, dynamic>);
   }
 }

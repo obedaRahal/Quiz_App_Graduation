@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/entities/download_
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/review_feedback_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/shared_test_link_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/submit_report_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
@@ -86,5 +87,9 @@ abstract class DetailsOfTestRepository {
 
   Future<Either<Failure, TestShareLinkEntity>> getTestShareLink({
     required int testId,
+  });
+
+  Future<Either<Failure, SharedTestLinkEntity>> getSharedTestLink({
+    required String slug,
   });
 }

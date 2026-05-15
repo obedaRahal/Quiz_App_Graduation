@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:quiz_app_grad/core/database/api/token_refresh_service.dart';
+import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/core/services/file_picker_service_impl.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picker_service.dart';
 import 'package:quiz_app_grad/features/auth/data/datasource/auth_remote_data_source.dart';
@@ -28,6 +29,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_c
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_shared_test_link_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_test_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/submit_report_use_case.dart';
@@ -63,12 +65,12 @@ import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_educat
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_graduate_academic_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_school_stage_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_user_interests_use_case.dart';
-import 'package:quiz_app_grad/features/settimgs/data/data_source/theme_local_data_source.dart';
-import 'package:quiz_app_grad/features/settimgs/data/repository_impl/theme_repository_impl.dart';
-import 'package:quiz_app_grad/features/settimgs/domain/repositories/theme_repository.dart';
-import 'package:quiz_app_grad/features/settimgs/domain/use_cases/get_theme_mode_use_case.dart';
-import 'package:quiz_app_grad/features/settimgs/domain/use_cases/set_theme_mode_use_case.dart';
-import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
+import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repository_impl.dart';
+import 'package:quiz_app_grad/features/settings/domain/repositories/theme_repository.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/get_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/set_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
@@ -121,19 +123,6 @@ Future<void> _registerCore() async {
     );
   }
 
-  // if (!sl.isRegistered<ApiConsumer>()) {
-  //   sl.registerLazySingleton<ApiConsumer>(
-  //     () => DioConsumer(
-  //       dio: sl<Dio>(),
-  //       getAccessToken: TokenStorage.getAccessToken,
-  //       clearSession: () async {
-  //         await TokenStorage.clear();
-  //         sl<AuthSession>().markUnauthenticated();
-  //       },
-  //     ),
-  //   );
-  // }
-
   if (!sl.isRegistered<ApiConsumer>()) {
     sl.registerLazySingleton<ApiConsumer>(
       () => DioConsumer(
@@ -163,6 +152,10 @@ Future<void> _registerCore() async {
       ),
       instanceName: 'refresh_dio',
     );
+  }
+
+  if (!sl.isRegistered<DeepLinkService>()) {
+    sl.registerLazySingleton<DeepLinkService>(() => DeepLinkService());
   }
 }
 
@@ -244,6 +237,7 @@ void _registerDetailsOfTestFeature() {
         deleteFeedbackOnReviewUseCase: sl<DeleteFeedbackOnReviewUseCase>(),
         submitReportUseCase: sl<SubmitReportUseCase>(),
         getTestShareLinkUseCase: sl<GetTestShareLinkUseCase>(),
+        getSharedTestLinkUseCase: sl<GetSharedTestLinkUseCase>(),
       ),
     );
   }
@@ -326,12 +320,16 @@ void _registerDetailsOfTestFeature() {
   }
 
   if (!sl.isRegistered<GetTestShareLinkUseCase>()) {
-  sl.registerLazySingleton<GetTestShareLinkUseCase>(
-    () => GetTestShareLinkUseCase(
-      sl<DetailsOfTestRepository>(),
-    ),
-  );
-}
+    sl.registerLazySingleton<GetTestShareLinkUseCase>(
+      () => GetTestShareLinkUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetSharedTestLinkUseCase>()) {
+    sl.registerLazySingleton<GetSharedTestLinkUseCase>(
+      () => GetSharedTestLinkUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
 }
 
 void _registerOnboardingFeature() {
@@ -536,24 +534,25 @@ void _registerAuthFeature() {
   sl.registerLazySingleton<LaboratoryRepository>(
     () => LaboratoryRepositoryImpl(remoteDataSource: sl()),
   );
-if (!sl.isRegistered<GetLabRecommendedTestsUseCase>()) {
-  sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
-    () => GetLabRecommendedTestsUseCase(sl<LaboratoryRepository>()),
-  );
+  if (!sl.isRegistered<GetLabRecommendedTestsUseCase>()) {
+    sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
+      () => GetLabRecommendedTestsUseCase(sl<LaboratoryRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetTestsByInterestUseCase>()) {
+    sl.registerLazySingleton<GetTestsByInterestUseCase>(
+      () => GetTestsByInterestUseCase(sl<LaboratoryRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<SearchTestsByInterestUseCase>()) {
+    sl.registerLazySingleton<SearchTestsByInterestUseCase>(
+      () => SearchTestsByInterestUseCase(sl<LaboratoryRepository>()),
+    );
+  }
 }
 
-if (!sl.isRegistered<GetTestsByInterestUseCase>()) {
-  sl.registerLazySingleton<GetTestsByInterestUseCase>(
-    () => GetTestsByInterestUseCase(sl<LaboratoryRepository>()),
-  );
-}
-
-if (!sl.isRegistered<SearchTestsByInterestUseCase>()) {
-  sl.registerLazySingleton<SearchTestsByInterestUseCase>(
-    () => SearchTestsByInterestUseCase(sl<LaboratoryRepository>()),
-  );
-}
-}
 void _registerTestsByInterestFeature() {
   if (!sl.isRegistered<TestsByInterestRemoteDataSource>()) {
     sl.registerLazySingleton<TestsByInterestRemoteDataSource>(
@@ -569,9 +568,9 @@ void _registerTestsByInterestFeature() {
 
   if (!sl.isRegistered<tests_by_interest.GetTestsByInterestUseCase>()) {
     sl.registerLazySingleton<tests_by_interest.GetTestsByInterestUseCase>(
-    () => tests_by_interest.GetTestsByInterestUseCase(
-  repository: sl<TestsByInterestRepository>(),
-),
+      () => tests_by_interest.GetTestsByInterestUseCase(
+        repository: sl<TestsByInterestRepository>(),
+      ),
     );
   }
 

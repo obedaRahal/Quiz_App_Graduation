@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/entities/download_
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/review_feedback_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/shared_test_link_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/submit_report_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
@@ -890,6 +891,58 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
 
       return Left(
         ServerFailure(title: 'حدث خطأ', message: 'تعذر جلب رابط المشاركة'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, SharedTestLinkEntity>> getSharedTestLink({
+    required String slug,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.getSharedTestLink ============",
+    );
+    debugPrint("→ params: {slug: $slug}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.getSharedTestLink");
+
+      final model = await remoteDataSource.getSharedTestLink(slug: slug);
+
+      debugPrint("← remoteDataSource.getSharedTestLink success");
+      debugPrint("→ testId: ${model.data.testId}");
+      debugPrint("→ isOwner: ${model.data.isOwner}");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.getSharedTestLink ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.getSharedTestLink CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.getSharedTestLink Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر فتح رابط الاختبار'),
       );
     }
   }

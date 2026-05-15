@@ -33,6 +33,8 @@ enum SubmitReportStatus { initial, loading, success, failure }
 
 enum TestShareLinkStatus { initial, loading, success, failure }
 
+enum SharedTestLinkStatus { initial, loading, success, failure }
+
 class DetailsOfTestState {
   //  for UI ////
   final DetailsOfTestTab selectedTab;
@@ -79,6 +81,10 @@ class DetailsOfTestState {
   final TestShareLinkStatus shareLinkStatus;
   final String? shareUrl;
 
+  final SharedTestLinkStatus sharedTestLinkStatus;
+  final int? sharedTestId;
+  final bool? sharedTestIsOwner;
+
   const DetailsOfTestState({
     this.selectedTab = DetailsOfTestTab.overview,
     this.selectedSampleAnswers = const {},
@@ -119,6 +125,10 @@ class DetailsOfTestState {
 
     this.shareLinkStatus = TestShareLinkStatus.initial,
     this.shareUrl,
+
+    this.sharedTestLinkStatus = SharedTestLinkStatus.initial,
+    this.sharedTestId,
+    this.sharedTestIsOwner,
   });
 
   bool get canSubmitDraftReview =>
@@ -188,10 +198,16 @@ class DetailsOfTestState {
   bool get isSubmitReportFailure =>
       submitReportStatus == SubmitReportStatus.failure;
 
-
   bool get isShareLinkLoading => shareLinkStatus == TestShareLinkStatus.loading;
   bool get isShareLinkSuccess => shareLinkStatus == TestShareLinkStatus.success;
   bool get isShareLinkFailure => shareLinkStatus == TestShareLinkStatus.failure;
+
+  bool get isSharedTestLinkLoading =>
+      sharedTestLinkStatus == SharedTestLinkStatus.loading;
+  bool get isSharedTestLinkSuccess =>
+      sharedTestLinkStatus == SharedTestLinkStatus.success;
+  bool get isSharedTestLinkFailure =>
+      sharedTestLinkStatus == SharedTestLinkStatus.failure;
 
   DetailsOfTestState copyWith({
     //  for UI ////
@@ -239,6 +255,11 @@ class DetailsOfTestState {
     TestShareLinkStatus? shareLinkStatus,
     String? shareUrl,
     bool clearShareUrl = false,
+
+    SharedTestLinkStatus? sharedTestLinkStatus,
+    int? sharedTestId,
+    bool? sharedTestIsOwner,
+    bool clearSharedTestLink = false,
   }) {
     return DetailsOfTestState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -286,6 +307,16 @@ class DetailsOfTestState {
 
       shareLinkStatus: shareLinkStatus ?? this.shareLinkStatus,
       shareUrl: clearShareUrl ? null : shareUrl ?? this.shareUrl,
+
+      sharedTestLinkStatus: sharedTestLinkStatus ?? this.sharedTestLinkStatus,
+
+      sharedTestId: clearSharedTestLink
+          ? null
+          : sharedTestId ?? this.sharedTestId,
+
+      sharedTestIsOwner: clearSharedTestLink
+          ? null
+          : sharedTestIsOwner ?? this.sharedTestIsOwner,
     );
   }
 }

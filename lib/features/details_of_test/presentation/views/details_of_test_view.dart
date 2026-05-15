@@ -9,6 +9,7 @@ import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/core/utils/safe_back_to_home.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
@@ -19,7 +20,7 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/repo
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_details_with_play_modes_session.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_purchase_bottom_bar.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
-import 'package:quiz_app_grad/features/settimgs/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:share_plus/share_plus.dart';
 
 class DetailsOfTestView extends StatelessWidget {
@@ -78,7 +79,7 @@ class DetailsOfTestView extends StatelessWidget {
 
                 return TopPageHeader(
                   title: 'تفاصيل اختبار',
-                  onBack: () => context.pop(),
+                  onBack: () => safeBackToHome(context),
                   onShare: state.isShareLinkLoading
                       ? () {}
                       : () {

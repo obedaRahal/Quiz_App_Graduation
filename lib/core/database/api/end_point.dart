@@ -92,6 +92,8 @@ class EndPoints {
 
   static String testShareLink(int testId) => '$baseUrl/test/share-link/$testId';
 
+  static String sharedTestLink(String slug) => '$baseUrl/test/shared/$slug';
+
   // laboratory
   static String testsByInterest(int interestId) {
     return '/home/test-by-interest/$interestId';
@@ -99,7 +101,7 @@ class EndPoints {
 
   static const String searchLabTests = '/lab/search';
   static const String labRecommendedTests = '/lab/recommended-tests';
-  
+
   // Test By Interest
   static const String testByInterest = '/home/test-by-interest';
 }

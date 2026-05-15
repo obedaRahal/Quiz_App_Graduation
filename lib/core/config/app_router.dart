@@ -1,15 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
-import 'package:quiz_app_grad/core/database/api/dio_consumer.dart';
-import 'package:quiz_app_grad/core/database/api/end_point.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
-import 'package:quiz_app_grad/features/auth/data/datasource/auth_remote_data_source.dart';
-import 'package:quiz_app_grad/features/auth/data/repositories/auth_repo_impl.dart';
-import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
@@ -22,7 +16,7 @@ import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
-import 'package:quiz_app_grad/features/get_all_interests/data/models/get_all_interests_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/views/shared_test_redirect_view.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
 import 'package:quiz_app_grad/features/get_all_interests/presentation/managet/all_categories_cubit/all_interests_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/presentation/view/get_all_categories.dart';
@@ -60,9 +54,38 @@ class AppRouter {
 
     router = GoRouter(
       initialLocation: AppRouterPath.splash,
+      overridePlatformDefaultLocation: true,
       refreshListenable: authSession,
       redirect: _handleRedirect,
       routes: [
+        GoRoute(
+          path: AppRouterPath.sharedTestRedirect,
+          name: AppRouterName.sharedTestRedirect,
+          pageBuilder: (context, state) {
+            final slug = state.pathParameters['slug'] ?? '';
+
+            debugPrint("============ SharedTestRedirect Route ============");
+            debugPrint("→ received slug: $slug");
+            debugPrint("=================================================");
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider(
+                create: (_) {
+                  final cubit = sl<DetailsOfTestCubit>();
+
+                  if (slug.trim().isNotEmpty) {
+                    cubit.getSharedTestLink(slug: slug);
+                  }
+
+                  return cubit;
+                },
+                child: SharedTestRedirectView(slug: slug),
+              ),
+            );
+          },
+        ),
+
         GoRoute(
           path: AppRouterPath.splash,
           name: AppRouterName.splash,
@@ -256,13 +279,6 @@ class AppRouter {
           },
         ),
 
-        // GoRoute(
-        //   path: AppRouterPath.detailsOfTest,
-        //   name: AppRouterName.detailsOfTest,
-        //   builder: (context, state) {
-        //     return const DetailsOfTestView();
-        //   },
-        // ),
         GoRoute(
           path: AppRouterPath.laboratoryPage,
           name: AppRouterName.laboratoryPage,
@@ -315,8 +331,33 @@ class AppRouter {
   }
 
   static String? _handleRedirect(BuildContext context, GoRouterState state) {
+    final uri = state.uri;
+
+    if (uri.scheme == 'nerd' && uri.host == 'tests') {
+      final slug = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : '';
+
+      debugPrint("============ Router Deep Link Redirect ============");
+      debugPrint("→ original uri: $uri");
+      debugPrint("→ slug: $slug");
+      debugPrint("===================================================");
+
+      if (slug.isNotEmpty) {
+        return AppRouterPath.sharedTestRedirectPath(slug);
+      }
+    }
+
     final currentLocation = state.matchedLocation;
     final status = sl<AuthSession>().status;
+
+    debugPrint("============ Router Redirect ============");
+    debugPrint("→ matchedLocation: ${state.matchedLocation}");
+    debugPrint("→ uri: ${state.uri}");
+    debugPrint("→ authStatus: $status");
+    debugPrint("=========================================");
+
+    if (currentLocation == AppRouterPath.sharedTestRedirect) {
+      return null;
+    }
 
     switch (status) {
       case AuthSessionStatus.unknown:
@@ -351,6 +392,8 @@ class AppRouter {
     AppRouterPath.home,
     AppRouterPath.mainLayout,
     AppRouterPath.detailsOfTest,
+
+    AppRouterPath.sharedTestRedirect,
   };
 
   static const Set<String> _authBlockedRoutes = {

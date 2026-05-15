@@ -3,7 +3,6 @@ abstract class AppRouterName {
   static const welcome = 'welcome';
   static const intro = 'intro';
 
-
   static const login = 'loginPage';
   static const register = 'registerPage';
   static const verifyEmail = 'verifyEmailPage';
@@ -15,16 +14,18 @@ abstract class AppRouterName {
   static const home = 'homePage';
   static const mainLayout = 'mainLayout';
   static const detailsOfTest = 'detailsOfTest';
+  static const String sharedTestRedirect = '/shared-test/:slug';
   static const allCategoriesPage = 'allCategoriesPage';
   static const laboratoryPage = 'laboratoryPage';
-
 }
 
 abstract class AppRouterPath {
+  static String sharedTestRedirectPath(String slug) => '/shared-test/$slug';
+
   static const splash = '/';
   static const welcome = '/welcome';
   static const intro = '/intro';
-  
+
   static const login = '/loginPage';
   static const register = '/registerPage';
   static const verifyEmail = '/verifyEmailPage';
@@ -38,8 +39,7 @@ abstract class AppRouterPath {
   static const home = '/homePage';
   static const mainLayout = '/mainLayout';
   static const detailsOfTest = '/detailsOfTest';
+  static const String sharedTestRedirect = '/shared-test/:slug';
   static const allCategoriesPage = '/allCategoriesPage';
   static const laboratoryPage = '/laboratoryPage';
-
-
 }

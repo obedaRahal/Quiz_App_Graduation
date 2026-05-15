@@ -11,6 +11,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_c
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_shared_test_link_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_test_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/add_test_review_params.dart';
@@ -20,6 +21,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/d
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_overview_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_reviews_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_other_test_details_sample_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_shared_test_link_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_test_share_link_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/review_feedback_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
@@ -56,6 +58,8 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
 
   final GetTestShareLinkUseCase getTestShareLinkUseCase;
 
+  final GetSharedTestLinkUseCase getSharedTestLinkUseCase;
+
   DetailsOfTestCubit({
     required this.getOtherTestDetailsOverviewUseCase,
     required this.getOtherTestDetailsSampleUseCase,
@@ -74,6 +78,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     required this.deleteFeedbackOnReviewUseCase,
     required this.submitReportUseCase,
     required this.getTestShareLinkUseCase,
+    required this.getSharedTestLinkUseCase,
   }) : super(const DetailsOfTestState()) {
     debugPrint("============ DetailsOfTestCubit INIT ============");
   }
@@ -1213,6 +1218,88 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
       state.copyWith(
         shareLinkStatus: TestShareLinkStatus.initial,
         clearShareUrl: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  Future<void> getSharedTestLink({required String slug}) async {
+    debugPrint(
+      "============ DetailsOfTestCubit.getSharedTestLink ============",
+    );
+    debugPrint("→ params: {slug: $slug}");
+
+    if (state.isSharedTestLinkLoading) {
+      debugPrint("✗ shared test link already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final cleanSlug = slug.trim();
+
+    if (cleanSlug.isEmpty) {
+      emit(
+        state.copyWith(
+          sharedTestLinkStatus: SharedTestLinkStatus.failure,
+          errorTitle: "خطأ",
+          errorMessage: "رابط الاختبار غير صالح",
+          clearSharedTestLink: true,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        sharedTestLinkStatus: SharedTestLinkStatus.loading,
+        clearSharedTestLink: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await getSharedTestLinkUseCase(
+      GetSharedTestLinkParams(slug: cleanSlug),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ getSharedTestLink failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            sharedTestLinkStatus: SharedTestLinkStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearSharedTestLink: true,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ getSharedTestLink success");
+        debugPrint("→ testId: ${response.data.testId}");
+        debugPrint("→ isOwner: ${response.data.isOwner}");
+
+        emit(
+          state.copyWith(
+            sharedTestLinkStatus: SharedTestLinkStatus.success,
+            sharedTestId: response.data.testId,
+            sharedTestIsOwner: response.data.isOwner,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetSharedTestLinkState() {
+    emit(
+      state.copyWith(
+        sharedTestLinkStatus: SharedTestLinkStatus.initial,
+        clearSharedTestLink: true,
         clearError: true,
       ),
     );
