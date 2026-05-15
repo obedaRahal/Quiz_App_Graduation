@@ -4,10 +4,7 @@ class TestsByInterestResponseModel {
   final List<TestByInterestModel> tests;
   final TestsByInterestMetaModel meta;
 
-  const TestsByInterestResponseModel({
-    required this.tests,
-    required this.meta,
-  });
+  const TestsByInterestResponseModel({required this.tests, required this.meta});
 
   factory TestsByInterestResponseModel.fromJson(Map<String, dynamic> json) {
     return TestsByInterestResponseModel(
@@ -49,21 +46,24 @@ class TestByInterestModel {
     required this.publishedAgo,
   });
 
- factory TestByInterestModel.fromJson(Map<String, dynamic> json) {
-  return TestByInterestModel(
-    id: int.tryParse(json['id'].toString()) ?? 0,
-    title: json['title']?.toString() ?? '',
-    description: json['description']?.toString() ?? '',
-    interests: (json['interests'] as List? ?? [])
-        .map((item) => TestInterestModel.fromJson(item))
-        .toList(),
-    questionCount: int.tryParse(json['question_count'].toString()) ?? 0,
-    difficultyLevel: json['difficulty_level']?.toString() ?? '',
-    price: num.tryParse(json['price'].toString()) ?? 0,
-    averageRating: double.tryParse(json['average_rating'].toString()) ?? 0.0,
-    publishedAgo: json['published_ago']?.toString() ?? '',
-  );
-}
+  factory TestByInterestModel.fromJson(Map<String, dynamic> json) {
+    return TestByInterestModel(
+      id: int.tryParse(json['id'].toString()) ?? 0,
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      interests: (json['interests'] as List? ?? [])
+          .map((item) => TestInterestModel.fromJson(item))
+          .toList(),
+      questionCount: int.tryParse(json['question_count'].toString()) ?? 0,
+      difficultyLevel: json['difficulty_level']?.toString() ?? '',
+      price: num.tryParse(json['price'].toString()) ?? 0,
+      averageRating: double.tryParse(json['average_rating'].toString()) ?? 0.0,
+      publishedAgo:
+          json['published_ago']?.toString() ??
+          json['published_at']?.toString() ??
+          '',
+    );
+  }
 
   TestByInterestEntity toEntity() {
     return TestByInterestEntity(
@@ -84,22 +84,16 @@ class TestInterestModel {
   final int id;
   final String name;
 
-  const TestInterestModel({
-    required this.id,
-    required this.name,
-  });
+  const TestInterestModel({required this.id, required this.name});
 
- factory TestInterestModel.fromJson(Map<String, dynamic> json) {
-  return TestInterestModel(
-    id: int.tryParse(json['id'].toString()) ?? 0,
-    name: json['name']?.toString() ?? '',
-  );
-}
-  TestInterestEntity toEntity() {
-    return TestInterestEntity(
-      id: id,
-      name: name,
+  factory TestInterestModel.fromJson(Map<String, dynamic> json) {
+    return TestInterestModel(
+      id: int.tryParse(json['id'].toString()) ?? 0,
+      name: json['name']?.toString() ?? '',
     );
+  }
+  TestInterestEntity toEntity() {
+    return TestInterestEntity(id: id, name: name);
   }
 }
 
@@ -118,15 +112,15 @@ class TestsByInterestMetaModel {
     required this.hasMorePages,
   });
 
- factory TestsByInterestMetaModel.fromJson(Map<String, dynamic> json) {
-  return TestsByInterestMetaModel(
-    currentPage: int.tryParse(json['current_page'].toString()) ?? 1,
-    perPage: int.tryParse(json['per_page'].toString()) ?? 10,
-    total: int.tryParse(json['total'].toString()) ?? 0,
-    lastPage: int.tryParse(json['last_page'].toString()) ?? 1,
-    hasMorePages: json['has_more_pages'] == true,
-  );
-}
+  factory TestsByInterestMetaModel.fromJson(Map<String, dynamic> json) {
+    return TestsByInterestMetaModel(
+      currentPage: int.tryParse(json['current_page'].toString()) ?? 1,
+      perPage: int.tryParse(json['per_page'].toString()) ?? 10,
+      total: int.tryParse(json['total'].toString()) ?? 0,
+      lastPage: int.tryParse(json['last_page'].toString()) ?? 1,
+      hasMorePages: json['has_more_pages'] == true,
+    );
+  }
 
   TestsByInterestMetaEntity toEntity() {
     return TestsByInterestMetaEntity(
