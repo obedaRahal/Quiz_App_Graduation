@@ -342,8 +342,6 @@ void _registerDetailsOfTestFeature() {
       () => GetSharedTestLinkUseCase(sl<DetailsOfTestRepository>()),
     );
   }
-    );
-  }
 }
 
 void _registerOnboardingFeature() {
