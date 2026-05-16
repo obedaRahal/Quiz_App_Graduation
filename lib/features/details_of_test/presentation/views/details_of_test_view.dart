@@ -4,14 +4,18 @@ import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/core/utils/safe_back_to_home.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
-import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
-import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/bottom_sheets/test_interaction_users_bottom_sheet.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_state.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_cubit.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/test_details_playmode_section_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/test_overview_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/details_of_test_tabs_section.dart';
@@ -288,6 +292,14 @@ class DetailsOfTestView extends StatelessWidget {
                                     debugPrint(
                                       "like value is ${overview.data.basicInfo.likesCount}",
                                     );
+                                    showTestInteractionUsersBottomSheet(
+                                      context: context,
+                                      testId: overview.data.id,
+                                      type: TestInteractionUsersType.likes,
+                                      cubit: sl<TestInteractionUsersCubit>(),
+                                      title: 'الإعجابات',
+                                      searchHint: 'ابحث عن مستخدم',
+                                    );
                                   },
                                   onBookmarkTap: () {
                                     debugPrint("toggle bookmark");
@@ -300,6 +312,14 @@ class DetailsOfTestView extends StatelessWidget {
                                   onBookmarkValueTap: () {
                                     debugPrint(
                                       "bookmark value is ${overview.data.basicInfo.bookmarksCount}",
+                                    );
+                                    showTestInteractionUsersBottomSheet(
+                                      context: context,
+                                      testId: overview.data.id,
+                                      type: TestInteractionUsersType.bookmarks,
+                                      cubit: sl<TestInteractionUsersCubit>(),
+                                      title: 'قام بحفظه',
+                                      searchHint: 'ابحث عن مستخدم',
                                     );
                                   },
                                 ),

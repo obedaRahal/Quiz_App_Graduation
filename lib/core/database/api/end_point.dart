@@ -1,3 +1,5 @@
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
+
 class EndPoints {
   //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   static const String baseUrl = 'http://localhost/api/v1/user-mobile';
@@ -51,7 +53,6 @@ class EndPoints {
     required int page,
   }) => '$baseUrl/test/test-details/reviews/$testId?rating=$rating&page=$page';
 
-  
   static String otherTestDetailsLike(int testId) =>
       '$baseUrl/test/like/$testId';
 
@@ -95,6 +96,37 @@ class EndPoints {
   static String testShareLink(int testId) => '$baseUrl/test/share-link/$testId';
 
   static String sharedTestLink(String slug) => '$baseUrl/test/shared/$slug';
+
+  //  get list of likes and bookmarks on TEST
+  static String testInteractionUsers({
+    required int testId,
+    required TestInteractionUsersType type,
+    String search = '',
+    String? cursor,
+  }) {
+    final query = <String, String>{};
+
+    if (search.trim().isNotEmpty) {
+      query['search'] = search.trim();
+    }
+
+    if (cursor != null && cursor.trim().isNotEmpty) {
+      query['cursor'] = cursor.trim();
+    }
+
+    final queryString = query.entries
+        .map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value)}')
+        .join('&');
+
+    final path = switch (type) {
+      TestInteractionUsersType.likes => 'like-list',
+      TestInteractionUsersType.bookmarks => 'bookmark-list',
+    };
+
+    final base = '$baseUrl/test/$path/$testId';
+
+    return queryString.isEmpty ? base : '$base?$queryString';
+  }
 
   // laboratory
   static String testsByInterest(int interestId) {

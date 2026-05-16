@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/add_test_review_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_interaction_users_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/delete_test_review_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/download_test_file_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
@@ -13,6 +14,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_like
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_review_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_share_link_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
 
 import '../../../../core/errors/failure.dart';
 import '../entities/other_test_details_overview_entity.dart';
@@ -95,5 +97,12 @@ abstract class DetailsOfTestRepository {
 
   Future<Either<Failure, SharedTestLinkEntity>> getSharedTestLink({
     required String slug,
+  });
+
+  Future<Either<Failure, TestInteractionUsersEntity>> getTestInteractionUsers({
+    required int testId,
+    required TestInteractionUsersType type,
+    String search = '',
+    String? cursor,
   });
 }

@@ -10,10 +10,12 @@ import 'package:quiz_app_grad/features/details_of_test/domain/entities/shared_te
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/submit_report_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_interaction_users_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_like_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_review_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_share_link_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failure.dart';
@@ -945,6 +947,69 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
 
       return Left(
         ServerFailure(title: 'حدث خطأ', message: 'تعذر فتح رابط الاختبار'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, TestInteractionUsersEntity>> getTestInteractionUsers({
+    required int testId,
+    required TestInteractionUsersType type,
+    String search = '',
+    String? cursor,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.getTestInteractionUsers ============",
+    );
+    debugPrint(
+      "→ params: {testId: $testId, type: $type, search: $search, cursor: $cursor}",
+    );
+
+    try {
+      debugPrint("→ calling remoteDataSource.getTestInteractionUsers");
+
+      final model = await remoteDataSource.getTestInteractionUsers(
+        testId: testId,
+        type: type,
+        search: search,
+        cursor: cursor,
+      );
+
+      debugPrint("← remoteDataSource.getTestInteractionUsers success");
+      debugPrint("→ users count: ${model.users.length}");
+      debugPrint("→ hasMorePages: ${model.meta.hasMorePages}");
+      debugPrint("→ nextCursor: ${model.meta.nextCursor}");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.getTestInteractionUsers ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.getTestInteractionUsers CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.getTestInteractionUsers Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر جلب قائمة المستخدمين'),
       );
     }
   }

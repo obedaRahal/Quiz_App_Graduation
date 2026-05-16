@@ -30,6 +30,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_othe
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_shared_test_link_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_test_interaction_users_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_test_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/submit_report_use_case.dart';
@@ -37,7 +38,8 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookma
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/update_test_review_use_case.dart';
-import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_cubit.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/data_source/all_interests_remote_data_source.dart';
 import 'package:quiz_app_grad/features/get_all_interests/data/repositories/all_interests_repository_impl.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/repositories/all_interests_repository.dart';
@@ -342,6 +344,21 @@ void _registerDetailsOfTestFeature() {
       () => GetSharedTestLinkUseCase(sl<DetailsOfTestRepository>()),
     );
   }
+
+  if (!sl.isRegistered<TestInteractionUsersCubit>()) {
+    sl.registerFactory<TestInteractionUsersCubit>(
+      () => TestInteractionUsersCubit(
+        getTestInteractionUsersUseCase: sl<GetTestInteractionUsersUseCase>(),
+        followCreatorUseCase: sl<FollowCreatorUseCase>(),
+        unfollowCreatorUseCase: sl<UnfollowCreatorUseCase>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<GetTestInteractionUsersUseCase>()) {
+    sl.registerLazySingleton<GetTestInteractionUsersUseCase>(
+      () => GetTestInteractionUsersUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
 }
 
 void _registerOnboardingFeature() {
@@ -546,23 +563,23 @@ void _registerAuthFeature() {
   sl.registerLazySingleton<LaboratoryRepository>(
     () => LaboratoryRepositoryImpl(remoteDataSource: sl()),
   );
-    if (!sl.isRegistered<GetLabRecommendedTestsUseCase>()) {
-      sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
-        () => GetLabRecommendedTestsUseCase(sl<LaboratoryRepository>()),
-      );
-    }
+  if (!sl.isRegistered<GetLabRecommendedTestsUseCase>()) {
+    sl.registerLazySingleton<GetLabRecommendedTestsUseCase>(
+      () => GetLabRecommendedTestsUseCase(sl<LaboratoryRepository>()),
+    );
+  }
 
-    if (!sl.isRegistered<GetTestsByInterestUseCase>()) {
-      sl.registerLazySingleton<GetTestsByInterestUseCase>(
-        () => GetTestsByInterestUseCase(sl<LaboratoryRepository>()),
-      );
-    }
+  if (!sl.isRegistered<GetTestsByInterestUseCase>()) {
+    sl.registerLazySingleton<GetTestsByInterestUseCase>(
+      () => GetTestsByInterestUseCase(sl<LaboratoryRepository>()),
+    );
+  }
 
-    if (!sl.isRegistered<SearchTestsByInterestUseCase>()) {
-      sl.registerLazySingleton<SearchTestsByInterestUseCase>(
-        () => SearchTestsByInterestUseCase(sl<LaboratoryRepository>()),
-      );
-    }
+  if (!sl.isRegistered<SearchTestsByInterestUseCase>()) {
+    sl.registerLazySingleton<SearchTestsByInterestUseCase>(
+      () => SearchTestsByInterestUseCase(sl<LaboratoryRepository>()),
+    );
+  }
 }
 
 void _registerTestsByInterestFeature() {
@@ -580,9 +597,9 @@ void _registerTestsByInterestFeature() {
 
   if (!sl.isRegistered<tests_by_interest.GetTestsByInterestUseCase>()) {
     sl.registerLazySingleton<tests_by_interest.GetTestsByInterestUseCase>(
-        () => tests_by_interest.GetTestsByInterestUseCase(
-              repository: sl<TestsByInterestRepository>(),
-            ),
+      () => tests_by_interest.GetTestsByInterestUseCase(
+        repository: sl<TestsByInterestRepository>(),
+      ),
     );
   }
 

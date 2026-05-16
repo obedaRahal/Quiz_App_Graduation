@@ -34,7 +34,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookma
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/update_test_review_use_case.dart';
-import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit_state.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_state.dart';
 
 class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
   final GetOtherTestDetailsOverviewUseCase getOtherTestDetailsOverviewUseCase;

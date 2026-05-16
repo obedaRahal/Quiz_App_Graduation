@@ -11,12 +11,14 @@ import 'package:quiz_app_grad/features/details_of_test/data/models/shared_test_l
 import 'package:quiz_app_grad/features/details_of_test/data/models/submit_report_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_bookmark_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_follow_action_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/test_interaction_users_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_like_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_reviews_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_sample_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_share_link_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/update_test_review_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/api/api_consumer.dart';
@@ -83,8 +85,14 @@ abstract class DetailsOfTestRemoteDataSource {
   });
 
   Future<TestShareLinkModel> getTestShareLink({required int testId});
-
   Future<SharedTestLinkModel> getSharedTestLink({required String slug});
+
+  Future<TestInteractionUsersModel> getTestInteractionUsers({
+    required int testId,
+    required TestInteractionUsersType type,
+    String search = '',
+    String? cursor,
+  });
 }
 
 class DetailsOfTestRemoteDataSourceImpl
@@ -514,5 +522,37 @@ class DetailsOfTestRemoteDataSourceImpl
     debugPrint("=================================================");
 
     return SharedTestLinkModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<TestInteractionUsersModel> getTestInteractionUsers({
+    required int testId,
+    required TestInteractionUsersType type,
+    String search = '',
+    String? cursor,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.getTestInteractionUsers ============",
+    );
+
+    final endpoint = EndPoints.testInteractionUsers(
+      testId: testId,
+      type: type,
+      search: search,
+      cursor: cursor,
+    );
+
+    debugPrint("→ endpoint: $endpoint");
+    debugPrint("→ method: GET");
+    debugPrint(
+      "→ params: {testId: $testId, type: $type, search: $search, cursor: $cursor}",
+    );
+
+    final response = await apiConsumer.get(endpoint);
+
+    debugPrint("← response (getTestInteractionUsers): $response");
+    debugPrint("=================================================");
+
+    return TestInteractionUsersModel.fromJson(response as Map<String, dynamic>);
   }
 }
