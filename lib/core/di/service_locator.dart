@@ -22,6 +22,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/repositories/detai
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_feedback_on_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/create_stripe_checkout_session_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/delete_feedback_on_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/delete_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/download_test_file_use_case.dart';
@@ -252,6 +253,8 @@ void _registerDetailsOfTestFeature() {
         submitReportUseCase: sl<SubmitReportUseCase>(),
         getTestShareLinkUseCase: sl<GetTestShareLinkUseCase>(),
         getSharedTestLinkUseCase: sl<GetSharedTestLinkUseCase>(),
+        createStripeCheckoutSessionUseCase:
+            sl<CreateStripeCheckoutSessionUseCase>(),
       ),
     );
   }
@@ -357,6 +360,12 @@ void _registerDetailsOfTestFeature() {
   if (!sl.isRegistered<GetTestInteractionUsersUseCase>()) {
     sl.registerLazySingleton<GetTestInteractionUsersUseCase>(
       () => GetTestInteractionUsersUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<CreateStripeCheckoutSessionUseCase>()) {
+    sl.registerLazySingleton<CreateStripeCheckoutSessionUseCase>(
+      () => CreateStripeCheckoutSessionUseCase(sl<DetailsOfTestRepository>()),
     );
   }
 }

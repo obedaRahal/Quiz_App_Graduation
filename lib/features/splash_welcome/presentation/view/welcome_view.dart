@@ -58,7 +58,7 @@ class WelcomeViewBody extends StatelessWidget {
             ),
     
             Positioned(
-              top: 10,
+              top: SizeConfig.h(0.035),
               right: 10,
               child: CustomButtonWidget(
                 onTap: () {

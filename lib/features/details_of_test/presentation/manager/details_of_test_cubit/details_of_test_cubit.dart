@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_tes
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_feedback_on_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/bookmark_test_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/create_stripe_checkout_session_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/delete_feedback_on_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/delete_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/download_test_file_use_case.dart';
@@ -15,6 +16,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_shar
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_test_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/like_test_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/add_test_review_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/create_stripe_checkout_session_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/delete_review_feedback_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/delete_test_review_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/download_test_file_params.dart';
@@ -49,16 +51,13 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
   final DownloadTestFileUseCase downloadTestFileUseCase;
   final AddTestReviewUseCase addTestReviewUseCase;
   final UpdateTestReviewUseCase updateTestReviewUseCase;
-
   final DeleteTestReviewUseCase deleteTestReviewUseCase;
   final AddFeedbackOnReviewUseCase addFeedbackOnReviewUseCase;
   final DeleteFeedbackOnReviewUseCase deleteFeedbackOnReviewUseCase;
-
   final SubmitReportUseCase submitReportUseCase;
-
   final GetTestShareLinkUseCase getTestShareLinkUseCase;
-
   final GetSharedTestLinkUseCase getSharedTestLinkUseCase;
+  final CreateStripeCheckoutSessionUseCase createStripeCheckoutSessionUseCase;
 
   DetailsOfTestCubit({
     required this.getOtherTestDetailsOverviewUseCase,
@@ -79,6 +78,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     required this.submitReportUseCase,
     required this.getTestShareLinkUseCase,
     required this.getSharedTestLinkUseCase,
+    required this.createStripeCheckoutSessionUseCase,
   }) : super(const DetailsOfTestState()) {
     debugPrint("============ DetailsOfTestCubit INIT ============");
   }
@@ -1241,6 +1241,7 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     required int targetId,
     required String reason,
     required String description,
+    int? testId,
   }) async {
     debugPrint("============ DetailsOfTestCubit.submitReport ============");
     debugPrint(
@@ -1301,6 +1302,31 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
         debugPrint("→ title: ${response.title}");
         debugPrint("→ message: ${response.message}");
 
+        if (response.isStatusChanged) {
+          if (targetType == ReportTargetType.test) {
+            _markTestAsReportedLocally();
+          }
+
+          if (targetType == ReportTargetType.review) {
+            _decrementReviewsCountLocally();
+
+            getOtherTestDetailsReviews(
+              testId: testId ?? 0,
+              rating: state.selectedRatingFilter,
+              page: 1,
+              loadMore: false,
+            );
+          }
+        }
+
+        emit(
+          state.copyWith(
+            submitReportStatus: SubmitReportStatus.success,
+            errorTitle: response.title,
+            errorMessage: response.title,
+          ),
+        );
+
         emit(
           state.copyWith(
             submitReportStatus: SubmitReportStatus.success,
@@ -1323,6 +1349,37 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
     );
   }
 
+  void _markTestAsReportedLocally() {
+    final overview = state.overviewDetails;
+    if (overview == null) return;
+
+    final updatedOverview = overview.copyWith(
+      data: overview.data.copyWith(
+        extraInfo: overview.data.extraInfo.copyWith(reviewStatus: 'مبلغ عنه'),
+      ),
+    );
+
+    emit(state.copyWith(overviewDetails: updatedOverview));
+  }
+
+  void _decrementReviewsCountLocally() {
+    final overview = state.overviewDetails;
+    if (overview == null) return;
+
+    final currentCount = overview.data.basicInfo.reviewsCount;
+
+    final updatedOverview = overview.copyWith(
+      data: overview.data.copyWith(
+        basicInfo: overview.data.basicInfo.copyWith(
+          reviewsCount: (currentCount - 1).clamp(0, 999999999),
+        ),
+      ),
+    );
+
+    emit(state.copyWith(overviewDetails: updatedOverview));
+  }
+
+  // share link api
   Future<void> getTestShareLink({required int testId}) async {
     debugPrint("============ DetailsOfTestCubit.getTestShareLink ============");
     debugPrint("→ params: {testId: $testId}");
@@ -1465,6 +1522,80 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
       state.copyWith(
         sharedTestLinkStatus: SharedTestLinkStatus.initial,
         clearSharedTestLink: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  //////////////// payment API
+  Future<void> createStripeCheckoutSession({required int testId}) async {
+    debugPrint(
+      "============ DetailsOfTestCubit.createStripeCheckoutSession ============",
+    );
+    debugPrint("→ params: {testId: $testId}");
+
+    if (state.isStripeCheckoutLoading) {
+      debugPrint("✗ stripe checkout already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        stripeCheckoutStatus: StripeCheckoutSessionStatus.loading,
+        clearStripeCheckout: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await createStripeCheckoutSessionUseCase(
+      CreateStripeCheckoutSessionParams(testId: testId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ createStripeCheckoutSession failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            stripeCheckoutStatus: StripeCheckoutSessionStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ createStripeCheckoutSession success");
+        debugPrint("→ purchaseId: ${response.purchaseId}");
+        debugPrint("→ checkoutUrl: ${response.checkoutUrl}");
+
+        emit(
+          state.copyWith(
+            stripeCheckoutStatus: StripeCheckoutSessionStatus.success,
+            stripeCheckoutUrl: response.checkoutUrl,
+            stripePurchaseId: response.purchaseId,
+            errorTitle: response.title,
+            errorMessage: response.title,
+          ),
+        );
+        debugPrint("→ paymentAttemptId: ${response.paymentAttemptId}");
+        debugPrint(
+          "→ reusedExistingSession: ${response.reusedExistingSession}",
+        );
+        debugPrint("→ expiresAt: ${response.expiresAt}");
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetStripeCheckoutState() {
+    emit(
+      state.copyWith(
+        stripeCheckoutStatus: StripeCheckoutSessionStatus.initial,
+        clearStripeCheckout: true,
         clearError: true,
       ),
     );

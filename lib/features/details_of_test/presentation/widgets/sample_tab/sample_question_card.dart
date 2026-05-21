@@ -73,7 +73,7 @@ class SampleQuestionCard extends StatelessWidget {
                   },
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.w(0.03),
+                      horizontal: SizeConfig.w(0.0),
                     ),
                     child: FaIcon(
                       FontAwesomeIcons.lightbulb,
@@ -129,7 +129,7 @@ class _QuestionHeader extends StatelessWidget {
         CustomTextWidget(
           "السؤال",
           color: appColors.primaryToPrimaryDark,
-          //fontFamily: AppFont.elMessiriSemiBold,
+          fontFamily: AppFont.elMessiriSemiBold,
           fontSize: SizeConfig.text(0.035),
         ),
         CustomBackgroundWithChild(

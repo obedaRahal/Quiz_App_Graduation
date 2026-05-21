@@ -7,6 +7,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_tes
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_sample_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/review_feedback_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/shared_test_link_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/stripe_checkout_session_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/submit_report_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
@@ -1010,6 +1011,58 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
 
       return Left(
         ServerFailure(title: 'حدث خطأ', message: 'تعذر جلب قائمة المستخدمين'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, StripeCheckoutSessionEntity>>
+  createStripeCheckoutSession({required int testId}) async {
+    debugPrint(
+      "============ DetailsOfTestRepositoryImpl.createStripeCheckoutSession ============",
+    );
+    debugPrint("→ params: {testId: $testId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.createStripeCheckoutSession");
+
+      final model = await remoteDataSource.createStripeCheckoutSession(
+        testId: testId,
+      );
+
+      debugPrint("← remoteDataSource.createStripeCheckoutSession success");
+      debugPrint("→ checkoutUrl: ${model.data.checkoutUrl}");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.createStripeCheckoutSession ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.createStripeCheckoutSession CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ DetailsOfTestRepositoryImpl.createStripeCheckoutSession Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر إنشاء جلسة الدفع'),
       );
     }
   }

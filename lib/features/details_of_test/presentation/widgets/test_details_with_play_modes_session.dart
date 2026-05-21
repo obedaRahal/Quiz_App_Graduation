@@ -42,9 +42,9 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final detailsHeight = SizeConfig.h(0.21);
+    final detailsHeight = SizeConfig.h(0.24);
     final playCardHeight = SizeConfig.h(0.15);
-    final overlapSpace = SizeConfig.h(0.04);
+    final overlapSpace = SizeConfig.h(0.09);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
@@ -78,8 +78,8 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
 
             Positioned(
               top: detailsHeight - overlapSpace,
-              left: SizeConfig.w(0.2),
-              right: 0,
+              left: SizeConfig.w(0.25),
+              right: SizeConfig.w(0.02),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [

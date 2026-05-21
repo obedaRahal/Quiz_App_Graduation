@@ -1,7 +1,7 @@
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
 
 class EndPoints {
-  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  //static const String baseUrl = 'http://192.168.137.135/api/v1/user-mobile';
   static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -127,6 +127,9 @@ class EndPoints {
 
     return queryString.isEmpty ? base : '$base?$queryString';
   }
+
+  static String createStripeCheckoutSession({required int testId}) =>
+      '$baseUrl/test/payments/stripe/$testId';
 
   // laboratory
   static String testsByInterest(int interestId) {
