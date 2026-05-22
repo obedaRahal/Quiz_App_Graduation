@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:quiz_app_grad/core/database/api/token_refresh_service.dart';
 import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/core/services/file_picker_service_impl.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picker_service.dart';
@@ -77,6 +76,7 @@ import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit
 import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/data/data_source/tests_by_interest_remote_data_source.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/data/repositories/tests_by_interest_repository_impl.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/domain/repositories/tests_by_interest_repository.dart';
@@ -102,6 +102,7 @@ Future<void> initSl() async {
   _registerAuthFeature();
   _registerDetailsOfTestFeature();
   _registerTestsByInterestFeature();
+  _registerTestPlayModeFeature();
 }
 
 Future<void> _registerCore() async {
@@ -367,6 +368,12 @@ void _registerDetailsOfTestFeature() {
     sl.registerLazySingleton<CreateStripeCheckoutSessionUseCase>(
       () => CreateStripeCheckoutSessionUseCase(sl<DetailsOfTestRepository>()),
     );
+  }
+}
+
+void _registerTestPlayModeFeature() {
+  if (!sl.isRegistered<TestPlayModesCubit>()) {
+    sl.registerFactory<TestPlayModesCubit>(() => TestPlayModesCubit());
   }
 }
 

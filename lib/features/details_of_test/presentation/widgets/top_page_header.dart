@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class TopPageHeader extends StatelessWidget {
   final String title;
   final VoidCallback onBack;
-  final VoidCallback onShare;
+  final VoidCallback onIconTap;
+  final IconData icon;
 
   const TopPageHeader({
     super.key,
     required this.title,
     required this.onBack,
-    required this.onShare,
+    required this.onIconTap,
+    required this.icon
   });
 
   @override
@@ -40,7 +41,7 @@ class TopPageHeader extends StatelessWidget {
               ),
             ),
           ),
-          _HeaderActionButton(icon: Icons.ios_share, onTap: onShare),
+          _HeaderActionButton(icon: icon, onTap: onIconTap),
         ],
       ),
     );

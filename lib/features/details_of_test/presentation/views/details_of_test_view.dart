@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -275,7 +277,8 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                       return TopPageHeader(
                         title: 'تفاصيل اختبار',
                         onBack: () => safeBackToHome(context),
-                        onShare: state.isShareLinkLoading
+                        icon: Icons.ios_share,
+                        onIconTap: state.isShareLinkLoading
                             ? () {}
                             : () {
                                 debugPrint('share');
@@ -460,6 +463,12 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                       cubit: sl<TestInteractionUsersCubit>(),
                                       title: 'قام بحفظه',
                                       searchHint: 'ابحث عن مستخدم',
+                                    );
+                                  },
+                                  onMcqModeTap: () {
+                                    debugPrint("go to MCQ MODE");
+                                    context.pushNamed(
+                                      AppRouterName.mcqTestSessionView,
                                     );
                                   },
                                 ),

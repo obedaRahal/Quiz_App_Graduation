@@ -54,6 +54,11 @@ abstract class AppPalette {
   //static const green = Color(0xff15D623);
   static const greenSoft = Color(0xffE3FFE5);
 
+  // play mode
+    static const blueDark = Color(0xff35519C);
+    static const blueLight = Color(0xff5583FF);
+
+
 
 
 

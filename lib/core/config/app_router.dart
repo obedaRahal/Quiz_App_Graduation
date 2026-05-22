@@ -43,6 +43,8 @@ import 'package:quiz_app_grad/features/onboarding/presentation/models/onboarding
 import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/views/mcq_test_session_view.dart';
 
 class AppRouter {
   AppRouter._();
@@ -322,6 +324,26 @@ class AppRouter {
                   return cubit;
                 },
                 child: const DetailsOfTestView(),
+              ),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.mcqTestSessionView,
+          name: AppRouterName.mcqTestSessionView,
+          pageBuilder: (context, state) {
+            debugPrint("============ mcqTestSessionView Route ============");
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider(
+                //lazy: false,
+                create: (_) {
+                  final cubit = sl<TestPlayModesCubit>();
+                  return cubit;
+                },
+                child: const McqTestSessionView(),
               ),
             );
           },

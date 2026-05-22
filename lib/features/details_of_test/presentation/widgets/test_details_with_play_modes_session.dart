@@ -19,6 +19,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
   final VoidCallback? onLikeValueTap;
   final VoidCallback? onBookmarkTap;
   final VoidCallback? onBookmarkValueTap;
+  final void Function() onMcqModeTap;
 
   const TestDetailsWithPlayModesSection({
     super.key,
@@ -35,7 +36,9 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
     this.onLikeTap,
     this.onLikeValueTap,
     this.onBookmarkTap,
-    this.onBookmarkValueTap
+    this.onBookmarkValueTap,
+
+    required this.onMcqModeTap
   });
 
   @override
@@ -99,7 +102,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                     shadowColor: isDark
                         ? AppPalette.black
                         : AppPalette.circleContainer3,
-                    onTap: () => debugPrint("mcq"),
+                    onTap: onMcqModeTap,
                   ),
                   PlayModeCard(
                     title: "بطاقات الاستذكار",
