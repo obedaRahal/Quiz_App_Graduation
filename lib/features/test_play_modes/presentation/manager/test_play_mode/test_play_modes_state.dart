@@ -7,6 +7,8 @@ enum McqQuestionPhase { idle, selected, checked }
 
 enum TestPlaySessionStatus { playing, completed }
 
+enum TestVoiceAssistantStatus { initial, speaking, stopped, failure }
+
 class TestPlayModesState {
   final TestPlayContentStatus contentStatus;
   final TestPlayContentEntity? content;
@@ -22,6 +24,9 @@ class TestPlayModesState {
   final int elapsedSeconds;
   final TestPlaySessionStatus sessionStatus;
 
+  final TestVoiceAssistantStatus voiceStatus;
+  final String? voiceErrorMessage;
+
   const TestPlayModesState({
     this.contentStatus = TestPlayContentStatus.initial,
     this.content,
@@ -33,6 +38,9 @@ class TestPlayModesState {
     this.answersByQuestionId = const {},
     this.elapsedSeconds = 0,
     this.sessionStatus = TestPlaySessionStatus.playing,
+
+    this.voiceStatus = TestVoiceAssistantStatus.initial,
+    this.voiceErrorMessage,
   });
 
   bool get isContentLoading => contentStatus == TestPlayContentStatus.loading;
@@ -50,6 +58,9 @@ class TestPlayModesState {
   List<TestPlayQuestionEntity> get questions => test?.questions ?? const [];
 
   int get totalQuestions => questions.length;
+
+  bool get isVoiceSpeaking => voiceStatus == TestVoiceAssistantStatus.speaking;
+  bool get isVoiceFailure => voiceStatus == TestVoiceAssistantStatus.failure;
 
   TestPlayQuestionEntity? get currentQuestion {
     if (questions.isEmpty) return null;
@@ -129,6 +140,10 @@ class TestPlayModesState {
 
     int? elapsedSeconds,
     TestPlaySessionStatus? sessionStatus,
+
+    TestVoiceAssistantStatus? voiceStatus,
+    String? voiceErrorMessage,
+    bool clearVoiceError = false,
   }) {
     return TestPlayModesState(
       contentStatus: contentStatus ?? this.contentStatus,
@@ -143,6 +158,11 @@ class TestPlayModesState {
       answersByQuestionId: answersByQuestionId ?? this.answersByQuestionId,
       elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
       sessionStatus: sessionStatus ?? this.sessionStatus,
+
+      voiceStatus: voiceStatus ?? this.voiceStatus,
+      voiceErrorMessage: clearVoiceError
+          ? null
+          : voiceErrorMessage ?? this.voiceErrorMessage,
     );
   }
 }

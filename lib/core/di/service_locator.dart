@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:quiz_app_grad/core/services/accessibility/test_voice_assistant_service.dart';
 import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/core/services/file_picker_service_impl.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picker_service.dart';
@@ -109,11 +110,6 @@ Future<void> _registerCore() async {
   if (!sl.isRegistered<AuthSession>()) {
     sl.registerLazySingleton<AuthSession>(() => AuthSession());
   }
-  //   if (!sl.isRegistered<TokenRefreshService>()) {
-  //   sl.registerLazySingleton<TokenRefreshService>(
-  //     () => TokenRefreshService(dio: sl<Dio>()),
-  //   );
-  // }
 
   if (!sl.isRegistered<Dio>()) {
     sl.registerLazySingleton<Dio>(
@@ -163,6 +159,10 @@ Future<void> _registerCore() async {
   if (!sl.isRegistered<DeepLinkService>()) {
     sl.registerLazySingleton<DeepLinkService>(() => DeepLinkService());
   }
+
+  sl.registerLazySingleton<TestVoiceAssistantService>(
+    () => TestVoiceAssistantService(),
+  );
 }
 
 void _registerThemeFeature() {
@@ -373,7 +373,9 @@ void _registerDetailsOfTestFeature() {
 
 void _registerTestPlayModeFeature() {
   if (!sl.isRegistered<TestPlayModesCubit>()) {
-    sl.registerFactory<TestPlayModesCubit>(() => TestPlayModesCubit());
+    sl.registerFactory<TestPlayModesCubit>(
+      () => TestPlayModesCubit(voiceAssistantService: sl()),
+    );
   }
 }
 

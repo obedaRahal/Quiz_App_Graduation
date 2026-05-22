@@ -6,11 +6,12 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_hint_play_mode.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
-import 'package:quiz_app_grad/features/test_play_modes/presentation/views/mcq_bottom_action_section.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/mcq/mcq_bottom_action_section.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/mcq/mcq_question_card.dart';
 
 class McqTestSessionView extends StatefulWidget {
@@ -36,6 +37,7 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
 
   void _onSoundTap() {
     debugPrint('sound');
+    context.read<TestPlayModesCubit>().toggleVoiceAssistantForCurrentQuestion();
   }
 
   void _onSelectOption(int optionId) {
@@ -68,7 +70,20 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
 
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<TestPlayModesCubit, TestPlayModesState>(
+        child: BlocConsumer<TestPlayModesCubit, TestPlayModesState>(
+          listenWhen: (previous, current) =>
+              previous.voiceStatus != current.voiceStatus ||
+              previous.voiceErrorMessage != current.voiceErrorMessage,
+          listener: (context, state) {
+            if (state.isVoiceFailure) {
+              showValidationTopSnackBar(
+                context,
+                title: 'خطأ',
+                message: state.voiceErrorMessage ?? 'تعذر تشغيل المساعد الصوتي',
+                type: AppValidationSnackBarType.error,
+              );
+            }
+          },
           builder: (context, state) {
             if (state.isContentLoading) {
               return const Center(child: CircularProgressIndicator());
@@ -95,7 +110,9 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
                 TopPageHeader(
                   title: 'جلسة امتحانية أولى',
                   onBack: _onBackTap,
-                  icon: Icons.volume_up_outlined,
+                  icon: state.isVoiceSpeaking
+                      ? Icons.stop_circle_outlined
+                      : Icons.volume_up_outlined,
                   onIconTap: _onSoundTap,
                 ),
 

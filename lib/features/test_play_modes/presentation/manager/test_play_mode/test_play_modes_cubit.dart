@@ -2,15 +2,22 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/services/accessibility/test_voice_assistant_service.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_answer_record_entity.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_content_entity.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
 
 class TestPlayModesCubit extends Cubit<TestPlayModesState> {
   Timer? _sessionTimer;
+  final TestVoiceAssistantService voiceAssistantService;
+  Timer? _voiceAutoStopTimer;
 
-  TestPlayModesCubit() : super(const TestPlayModesState()) {
+  TestPlayModesCubit({required this.voiceAssistantService})
+    : super(const TestPlayModesState()) {
     debugPrint("============ TestPlayModesCubit INIT ============");
+    voiceAssistantService.onCompleted = _handleVoiceCompleted;
+    voiceAssistantService.onCancelled = _handleVoiceStopped;
+    voiceAssistantService.onError = _handleVoiceError;
   }
 
   void loadMockTestContent() {
@@ -404,10 +411,245 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     );
   }
 
+  Future<void> toggleVoiceAssistantForCurrentQuestion() async {
+    debugPrint(
+      "============ TestPlayModesCubit.toggleVoiceAssistantForCurrentQuestion ============",
+    );
+
+    if (state.isVoiceSpeaking) {
+      await stopVoiceAssistant();
+      debugPrint("✓ voice stopped");
+      debugPrint("=================================================");
+      return;
+    }
+
+    await speakCurrentQuestion();
+  }
+
+  Future<void> speakCurrentQuestion() async {
+    debugPrint(
+      "============ TestPlayModesCubit.speakCurrentQuestion ============",
+    );
+
+    final question = state.currentQuestion;
+
+    if (question == null) {
+      debugPrint("✗ currentQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    try {
+      emit(
+        state.copyWith(
+          voiceStatus: TestVoiceAssistantStatus.speaking,
+          clearVoiceError: true,
+        ),
+      );
+
+      final text = _buildCurrentQuestionVoiceText();
+
+      await voiceAssistantService.speak(text);
+      debugPrint("✓ current question speaking started");
+
+      //_scheduleVoiceAutoStop(text);
+
+      // emit(
+      //   state.copyWith(
+      //     voiceStatus: TestVoiceAssistantStatus.stopped,
+      //     clearVoiceError: true,
+      //   ),
+      // );
+
+      debugPrint("✓ current question spoken");
+    } catch (error) {
+      debugPrint("✗ speakCurrentQuestion error: $error");
+
+      emit(
+        state.copyWith(
+          voiceStatus: TestVoiceAssistantStatus.failure,
+          voiceErrorMessage: "تعذر تشغيل المساعد الصوتي",
+        ),
+      );
+    }
+
+    debugPrint("=================================================");
+  }
+
+  void _scheduleVoiceAutoStop(String text) {
+    _voiceAutoStopTimer?.cancel();
+
+    final wordsCount = text.trim().split(RegExp(r'\s+')).length;
+
+    final estimatedSeconds = (wordsCount / 2.2).ceil().clamp(4, 45);
+
+    debugPrint("============ Voice Auto Stop Scheduled ============");
+    debugPrint("→ wordsCount: $wordsCount");
+    debugPrint("→ estimatedSeconds: $estimatedSeconds");
+    debugPrint("===================================================");
+
+    _voiceAutoStopTimer = Timer(Duration(seconds: estimatedSeconds), () {
+      if (isClosed) return;
+
+      emit(
+        state.copyWith(
+          voiceStatus: TestVoiceAssistantStatus.stopped,
+          clearVoiceError: true,
+        ),
+      );
+    });
+  }
+
+  Future<void> stopVoiceAssistant() async {
+    debugPrint(
+      "============ TestPlayModesCubit.stopVoiceAssistant ============",
+    );
+    try {
+      _voiceAutoStopTimer?.cancel();
+      _voiceAutoStopTimer = null;
+      await voiceAssistantService.stop();
+
+      emit(
+        state.copyWith(
+          voiceStatus: TestVoiceAssistantStatus.stopped,
+          clearVoiceError: true,
+        ),
+      );
+    } catch (error) {
+      debugPrint("✗ stopVoiceAssistant error: $error");
+
+      emit(
+        state.copyWith(
+          voiceStatus: TestVoiceAssistantStatus.failure,
+          voiceErrorMessage: "تعذر إيقاف المساعد الصوتي",
+        ),
+      );
+    }
+
+    debugPrint("=================================================");
+  }
+
+  String _buildCurrentQuestionVoiceText() {
+    final question = state.currentQuestion;
+    if (question == null) return '';
+
+    final buffer = StringBuffer();
+
+    buffer.writeln(
+      'السؤال رقم ${state.currentQuestionNumber} من ${state.totalQuestions}.',
+    );
+    buffer.writeln(question.questionText);
+
+    for (final option in question.options) {
+      buffer.writeln(
+        '${_arabicOptionName(option.position)}. ${option.optionText}',
+      );
+    }
+
+    if (state.selectedOptionId != null && !state.isMcqChecked) {
+      TestPlayOptionEntity? selectedOption;
+
+      for (final option in question.options) {
+        if (option.optionId == state.selectedOptionId) {
+          selectedOption = option;
+          break;
+        }
+      }
+
+      if (selectedOption != null) {
+        buffer.writeln(
+          'لقد اخترت ${_arabicOptionName(selectedOption.position)}.',
+        );
+        buffer.writeln('اضغط على زر التحقق لمعرفة النتيجة.');
+      }
+    }
+
+    if (state.isMcqChecked) {
+      final record = state.currentAnswerRecord;
+
+      if (record?.isCorrect == true) {
+        buffer.writeln('إجابة صحيحة.');
+      } else {
+        final correctOption = question.correctOption;
+        buffer.writeln('إجابة خاطئة.');
+
+        if (correctOption != null) {
+          buffer.writeln(
+            'الإجابة الصحيحة هي ${_arabicOptionName(correctOption.position)}. ${correctOption.optionText}',
+          );
+        }
+      }
+
+      if (state.hasHint) {
+        buffer.writeln('يمكنك الضغط على زر لماذا لسماع التوضيح.');
+      }
+
+      buffer.writeln('اضغط التالي للانتقال إلى السؤال التالي.');
+    }
+
+    return buffer.toString();
+  }
+
+  String _arabicOptionName(int position) {
+    switch (position) {
+      case 1:
+        return 'الخيار الأول';
+      case 2:
+        return 'الخيار الثاني';
+      case 3:
+        return 'الخيار الثالث';
+      case 4:
+        return 'الخيار الرابع';
+      case 5:
+        return 'الخيار الخامس';
+      default:
+        return 'الخيار رقم $position';
+    }
+  }
+
+  void _handleVoiceCompleted() {
+    if (isClosed) return;
+
+    emit(
+      state.copyWith(
+        voiceStatus: TestVoiceAssistantStatus.stopped,
+        clearVoiceError: true,
+      ),
+    );
+  }
+
+  void _handleVoiceStopped() {
+    if (isClosed) return;
+
+    emit(
+      state.copyWith(
+        voiceStatus: TestVoiceAssistantStatus.stopped,
+        clearVoiceError: true,
+      ),
+    );
+  }
+
+  void _handleVoiceError() {
+    if (isClosed) return;
+
+    emit(
+      state.copyWith(
+        voiceStatus: TestVoiceAssistantStatus.failure,
+        voiceErrorMessage: 'تعذر تشغيل المساعد الصوتي',
+      ),
+    );
+  }
+
   @override
-  Future<void> close() {
+  Future<void> close() async {
     debugPrint("============ TestPlayModesCubit CLOSE ============");
     _stopSessionTimer();
+    _voiceAutoStopTimer?.cancel();
+
+    voiceAssistantService.onCompleted = null;
+    voiceAssistantService.onCancelled = null;
+    voiceAssistantService.onError = null;
+    await voiceAssistantService.dispose();
     return super.close();
   }
 }
