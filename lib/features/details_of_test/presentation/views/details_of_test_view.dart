@@ -26,6 +26,7 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_purchase_bottom_bar.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -469,6 +470,9 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                     debugPrint("go to MCQ MODE");
                                     context.pushNamed(
                                       AppRouterName.mcqTestSessionView,
+                                      extra: TestPlayModesRouteArgs(
+                                        testId: overview.data.id,
+                                      ),
                                     );
                                   },
                                 ),

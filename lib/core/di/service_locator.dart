@@ -77,6 +77,11 @@ import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit
 import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/data_sources/test_play_modes_remote_data_source.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/repo_impl/test_play_modes_repository_impl.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/services/mcq_result_pdf_service.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/repositories/test_play_modes_repository.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/get_test_play_content_use_case.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/data/data_source/tests_by_interest_remote_data_source.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/data/repositories/tests_by_interest_repository_impl.dart';
@@ -160,9 +165,15 @@ Future<void> _registerCore() async {
     sl.registerLazySingleton<DeepLinkService>(() => DeepLinkService());
   }
 
-  sl.registerLazySingleton<TestVoiceAssistantService>(
-    () => TestVoiceAssistantService(),
-  );
+  if (!sl.isRegistered<TestVoiceAssistantService>()) {
+    sl.registerLazySingleton<TestVoiceAssistantService>(
+      () => TestVoiceAssistantService(),
+    );
+  }
+
+  if (!sl.isRegistered<McqResultPdfService>()) {
+    sl.registerLazySingleton<McqResultPdfService>(() => McqResultPdfService());
+  }
 }
 
 void _registerThemeFeature() {
@@ -374,8 +385,40 @@ void _registerDetailsOfTestFeature() {
 void _registerTestPlayModeFeature() {
   if (!sl.isRegistered<TestPlayModesCubit>()) {
     sl.registerFactory<TestPlayModesCubit>(
-      () => TestPlayModesCubit(voiceAssistantService: sl()),
+      () => TestPlayModesCubit(
+        voiceAssistantService: sl(),
+        mcqResultPdfService: sl(),
+        getTestPlayContentUseCase: sl<GetTestPlayContentUseCase>(),
+      ),
     );
+
+    if (!sl.isRegistered<TestPlayModesRemoteDataSource>()) {
+      sl.registerLazySingleton<TestPlayModesRemoteDataSource>(
+        () => TestPlayModesRemoteDataSourceImpl(apiConsumer: sl()),
+      );
+    }
+
+    if (!sl.isRegistered<TestPlayModesRepository>()) {
+      sl.registerLazySingleton<TestPlayModesRepository>(
+        () => TestPlayModesRepositoryImpl(remoteDataSource: sl()),
+      );
+    }
+
+    if (!sl.isRegistered<GetTestPlayContentUseCase>()) {
+      sl.registerLazySingleton<GetTestPlayContentUseCase>(
+        () => GetTestPlayContentUseCase(sl<TestPlayModesRepository>()),
+      );
+    }
+
+    if (!sl.isRegistered<TestPlayModesCubit>()) {
+      sl.registerFactory<TestPlayModesCubit>(
+        () => TestPlayModesCubit(
+          voiceAssistantService: sl(),
+          mcqResultPdfService: sl(),
+          getTestPlayContentUseCase: sl(),
+        ),
+      );
+    }
   }
 }
 

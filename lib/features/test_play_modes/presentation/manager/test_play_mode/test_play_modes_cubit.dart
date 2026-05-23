@@ -3,17 +3,24 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/services/accessibility/test_voice_assistant_service.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/services/mcq_result_pdf_service.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_answer_record_entity.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_content_entity.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/get_test_play_content_use_case.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/params/get_test_play_content_params.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
 
 class TestPlayModesCubit extends Cubit<TestPlayModesState> {
   Timer? _sessionTimer;
   final TestVoiceAssistantService voiceAssistantService;
-  Timer? _voiceAutoStopTimer;
+  final McqResultPdfService mcqResultPdfService;
+  final GetTestPlayContentUseCase getTestPlayContentUseCase;
 
-  TestPlayModesCubit({required this.voiceAssistantService})
-    : super(const TestPlayModesState()) {
+  TestPlayModesCubit({
+    required this.voiceAssistantService,
+    required this.mcqResultPdfService,
+    required this.getTestPlayContentUseCase,
+  }) : super(const TestPlayModesState()) {
     debugPrint("============ TestPlayModesCubit INIT ============");
     voiceAssistantService.onCompleted = _handleVoiceCompleted;
     voiceAssistantService.onCancelled = _handleVoiceStopped;
@@ -355,56 +362,6 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
                 ),
               ],
             ),
-
-            TestPlayQuestionEntity(
-              questionId: 4,
-              position: 4,
-              questionText:
-                  "ما الهدف الأساسي من توظيف الذكاء الاصطناعي في سؤال موجه بدرجة صعب؟",
-              hintText:
-                  "فكّر بالهدف التعليمي وليس فقط بالكلمات الموجودة في السؤال.",
-              options: [
-                TestPlayOptionEntity(
-                  optionId: 7,
-                  position: 1,
-                  optionText:
-                      "تحليل المعطيات أولًا ثم اختيار الإجراء الذي يحقق الهدف التعليمي بدقة.",
-                  isCorrect: true,
-                ),
-                TestPlayOptionEntity(
-                  optionId: 8,
-                  position: 2,
-                  optionText:
-                      "تجاهل المعطيات الأساسية والتركيز على كلمة واحدة.",
-                  isCorrect: false,
-                ),
-              ],
-            ),
-
-            TestPlayQuestionEntity(
-              questionId: 5,
-              position: 5,
-              questionText:
-                  "ما الهدف الأساسي من توظيف الذكاء الاصطناعي في سؤال موجه بدرجة صعب؟",
-              hintText:
-                  "فكّر بالهدف التعليمي وليس فقط بالكلمات الموجودة في السؤال.",
-              options: [
-                TestPlayOptionEntity(
-                  optionId: 7,
-                  position: 1,
-                  optionText:
-                      "تحليل المعطيات أولًا ثم اختيار الإجراء الذي يحقق الهدف التعليمي بدقة.",
-                  isCorrect: true,
-                ),
-                TestPlayOptionEntity(
-                  optionId: 8,
-                  position: 2,
-                  optionText:
-                      "تجاهل المعطيات الأساسية والتركيز على كلمة واحدة.",
-                  isCorrect: false,
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -476,37 +433,11 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     debugPrint("=================================================");
   }
 
-  void _scheduleVoiceAutoStop(String text) {
-    _voiceAutoStopTimer?.cancel();
-
-    final wordsCount = text.trim().split(RegExp(r'\s+')).length;
-
-    final estimatedSeconds = (wordsCount / 2.2).ceil().clamp(4, 45);
-
-    debugPrint("============ Voice Auto Stop Scheduled ============");
-    debugPrint("→ wordsCount: $wordsCount");
-    debugPrint("→ estimatedSeconds: $estimatedSeconds");
-    debugPrint("===================================================");
-
-    _voiceAutoStopTimer = Timer(Duration(seconds: estimatedSeconds), () {
-      if (isClosed) return;
-
-      emit(
-        state.copyWith(
-          voiceStatus: TestVoiceAssistantStatus.stopped,
-          clearVoiceError: true,
-        ),
-      );
-    });
-  }
-
   Future<void> stopVoiceAssistant() async {
     debugPrint(
       "============ TestPlayModesCubit.stopVoiceAssistant ============",
     );
     try {
-      _voiceAutoStopTimer?.cancel();
-      _voiceAutoStopTimer = null;
       await voiceAssistantService.stop();
 
       emit(
@@ -640,12 +571,161 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     );
   }
 
+  Future<void> downloadMcqResultPdf() async {
+    debugPrint(
+      "============ TestPlayModesCubit.downloadMcqResultPdf ============",
+    );
+
+    final test = state.test;
+
+    if (test == null) {
+      debugPrint("✗ test is null, cannot generate pdf");
+
+      emit(
+        state.copyWith(
+          mcqResultPdfStatus: McqResultPdfStatus.failure,
+          errorTitle: "خطأ",
+          errorMessage: "لا توجد بيانات كافية لإنشاء ملف النتيجة",
+          clearGeneratedMcqResultPdfPath: true,
+        ),
+      );
+
+      return;
+    }
+
+    if (state.isMcqResultPdfLoading) {
+      debugPrint("✗ pdf generation already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        mcqResultPdfStatus: McqResultPdfStatus.loading,
+        clearGeneratedMcqResultPdfPath: true,
+        clearError: true,
+      ),
+    );
+
+    try {
+      final filePath = await mcqResultPdfService.generateMcqResultPdf(
+        test: test,
+        answersByQuestionId: state.answersByQuestionId,
+        correctAnswersCount: state.correctAnswersCount,
+        wrongAnswersCount: state.wrongAnswersCount,
+        scorePercentage: state.scorePercentage,
+        elapsedSeconds: state.elapsedSeconds,
+        hasPassed: state.hasPassed,
+      );
+
+      debugPrint("✓ mcq result pdf generated");
+      debugPrint("→ filePath: $filePath");
+
+      emit(
+        state.copyWith(
+          mcqResultPdfStatus: McqResultPdfStatus.success,
+          generatedMcqResultPdfPath: filePath,
+          clearError: true,
+        ),
+      );
+    } catch (error) {
+      debugPrint("✗ downloadMcqResultPdf error: $error");
+
+      emit(
+        state.copyWith(
+          mcqResultPdfStatus: McqResultPdfStatus.failure,
+          errorTitle: "خطأ",
+          errorMessage: "تعذر إنشاء ملف نتيجة الاختبار",
+          clearGeneratedMcqResultPdfPath: true,
+        ),
+      );
+    }
+
+    debugPrint("=================================================");
+  }
+
+  void resetMcqResultPdfState() {
+    emit(
+      state.copyWith(
+        mcqResultPdfStatus: McqResultPdfStatus.initial,
+        clearGeneratedMcqResultPdfPath: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  Future<void> getTestPlayContent({required int testId}) async {
+    debugPrint(
+      "============ TestPlayModesCubit.getTestPlayContent ============",
+    );
+    debugPrint("→ params: {testId: $testId}");
+
+    _stopSessionTimer();
+    await stopVoiceAssistant();
+
+    emit(
+      state.copyWith(
+        contentStatus: TestPlayContentStatus.loading,
+        clearError: true,
+        clearSelectedOption: true,
+        answersByQuestionId: {},
+        elapsedSeconds: 0,
+        currentQuestionIndex: 0,
+        mcqQuestionPhase: McqQuestionPhase.idle,
+        sessionStatus: TestPlaySessionStatus.playing,
+      ),
+    );
+
+    final result = await getTestPlayContentUseCase(
+      GetTestPlayContentParams(testId: testId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ getTestPlayContent failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+        debugPrint("=================================================");
+
+        emit(
+          state.copyWith(
+            contentStatus: TestPlayContentStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ getTestPlayContent success");
+        debugPrint("→ title: ${response.title}");
+        debugPrint("→ test title: ${response.data.test.title}");
+        debugPrint("→ questions count: ${response.data.test.questions.length}");
+
+        emit(
+          state.copyWith(
+            contentStatus: TestPlayContentStatus.success,
+            content: response,
+            currentQuestionIndex: 0,
+            clearSelectedOption: true,
+            mcqQuestionPhase: McqQuestionPhase.idle,
+            answersByQuestionId: {},
+            elapsedSeconds: 0,
+            sessionStatus: TestPlaySessionStatus.playing,
+            clearError: true,
+          ),
+        );
+
+        _startSessionTimer();
+
+        debugPrint("=================================================");
+      },
+    );
+  }
+
   @override
   Future<void> close() async {
     debugPrint("============ TestPlayModesCubit CLOSE ============");
     _stopSessionTimer();
-    _voiceAutoStopTimer?.cancel();
-
     voiceAssistantService.onCompleted = null;
     voiceAssistantService.onCancelled = null;
     voiceAssistantService.onError = null;

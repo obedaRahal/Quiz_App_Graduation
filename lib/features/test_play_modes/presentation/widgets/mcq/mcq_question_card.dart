@@ -57,7 +57,7 @@ class McqQuestionCard extends StatelessWidget {
           child: CustomBackgroundWithChild(
             key: ValueKey(question.questionId), // أو question.position
             width: double.infinity,
-            backgroundColor: isDark ? AppPalette.black : AppPalette.white,
+            backgroundColor: appColors.whiteToblack,
             borderRadius: BorderRadius.circular(30),
             border: Border.all(color: _cardBorderColor(context), width: 2.2),
             padding: EdgeInsetsDirectional.only(
@@ -87,7 +87,7 @@ class McqQuestionCard extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: CustomBackgroundWithChild(
-                    backgroundColor: AppPalette.primarySoft,
+                    backgroundColor: appColors.primarySoftTogreyLightDark,
                     childHorizontalPad: SizeConfig.w(0.015),
                     childVerticalPad: SizeConfig.h(0.002),
                     borderRadius: BorderRadius.circular(20),
@@ -218,7 +218,7 @@ class _McqQuestionHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CustomBackgroundWithChild(
-          backgroundColor: AppPalette.primarySoft,
+          backgroundColor: appColors.primarySoftTogreyLightDark,
           childHorizontalPad: SizeConfig.w(0.015),
           childVerticalPad: SizeConfig.h(0.002),
           borderRadius: BorderRadius.circular(20),
@@ -374,7 +374,7 @@ class _McqOptionItem extends StatelessWidget {
     }
 
     return _McqOptionStyle(
-      backgroundColor: AppPalette.white,
+      backgroundColor: appColors.whiteToblack,
       borderColor: appColors.borderFieldColorNLightToborderFieldColorNDark,
       textColor: AppPalette.greyMedium,
     );

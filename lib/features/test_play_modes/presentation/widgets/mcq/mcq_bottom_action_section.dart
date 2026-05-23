@@ -66,7 +66,7 @@ class _CheckAnswerButton extends StatelessWidget {
           ),
           child: CustomTextWidget(
             'التحقق من الإجابة',
-            color: isEnabled ? AppPalette.white : AppPalette.greyMedium,
+            color: isEnabled ? appColors.whiteToblack : AppPalette.grey2Dark,
             fontSize: SizeConfig.text(0.035),
             fontFamily: AppFont.elMessiriBold,
           ),
@@ -126,7 +126,7 @@ class _CheckedAnswerActions extends StatelessWidget {
               ],
               Expanded(
                 flex: 3,
-                child: _McqFilledActionButton(
+                child: McqFilledActionButton(
                   title: 'التالي',
                   color: mainColor,
                   onTap: onNextQuestion,
@@ -140,12 +140,13 @@ class _CheckedAnswerActions extends StatelessWidget {
   }
 }
 
-class _McqFilledActionButton extends StatelessWidget {
+class McqFilledActionButton extends StatelessWidget {
   final String title;
   final Color color;
   final VoidCallback onTap;
 
-  const _McqFilledActionButton({
+  const McqFilledActionButton({
+    super.key,
     required this.title,
     required this.color,
     required this.onTap,
@@ -153,6 +154,8 @@ class _McqFilledActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -164,7 +167,7 @@ class _McqFilledActionButton extends StatelessWidget {
         ),
         child: CustomTextWidget(
           title,
-          color: AppPalette.white,
+          color: appColors.whiteToblack,
           fontSize: SizeConfig.text(0.035),
           fontFamily: AppFont.elMessiriSemiBold,
         ),

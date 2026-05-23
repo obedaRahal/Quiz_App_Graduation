@@ -131,6 +131,10 @@ class EndPoints {
   static String createStripeCheckoutSession({required int testId}) =>
       '$baseUrl/test/payments/stripe/$testId';
 
+  static String getTestPlayContent(int testId) {
+    return '$baseUrl/test/content/$testId';
+  }
+
   // laboratory
   static String testsByInterest(int interestId) {
     return '/home/test-by-interest/$interestId';

@@ -9,6 +9,8 @@ enum TestPlaySessionStatus { playing, completed }
 
 enum TestVoiceAssistantStatus { initial, speaking, stopped, failure }
 
+enum McqResultPdfStatus { initial, loading, success, failure }
+
 class TestPlayModesState {
   final TestPlayContentStatus contentStatus;
   final TestPlayContentEntity? content;
@@ -27,6 +29,9 @@ class TestPlayModesState {
   final TestVoiceAssistantStatus voiceStatus;
   final String? voiceErrorMessage;
 
+  final McqResultPdfStatus mcqResultPdfStatus;
+  final String? generatedMcqResultPdfPath;
+
   const TestPlayModesState({
     this.contentStatus = TestPlayContentStatus.initial,
     this.content,
@@ -41,6 +46,9 @@ class TestPlayModesState {
 
     this.voiceStatus = TestVoiceAssistantStatus.initial,
     this.voiceErrorMessage,
+
+    this.mcqResultPdfStatus = McqResultPdfStatus.initial,
+    this.generatedMcqResultPdfPath,
   });
 
   bool get isContentLoading => contentStatus == TestPlayContentStatus.loading;
@@ -61,6 +69,15 @@ class TestPlayModesState {
 
   bool get isVoiceSpeaking => voiceStatus == TestVoiceAssistantStatus.speaking;
   bool get isVoiceFailure => voiceStatus == TestVoiceAssistantStatus.failure;
+
+  bool get isMcqResultPdfLoading =>
+      mcqResultPdfStatus == McqResultPdfStatus.loading;
+  bool get isMcqResultPdfSuccess =>
+      mcqResultPdfStatus == McqResultPdfStatus.success;
+  bool get isMcqResultPdfFailure =>
+      mcqResultPdfStatus == McqResultPdfStatus.failure;
+
+  bool get hasPlayableContent => content != null && questions.isNotEmpty;
 
   TestPlayQuestionEntity? get currentQuestion {
     if (questions.isEmpty) return null;
@@ -144,6 +161,10 @@ class TestPlayModesState {
     TestVoiceAssistantStatus? voiceStatus,
     String? voiceErrorMessage,
     bool clearVoiceError = false,
+
+    McqResultPdfStatus? mcqResultPdfStatus,
+    String? generatedMcqResultPdfPath,
+    bool clearGeneratedMcqResultPdfPath = false,
   }) {
     return TestPlayModesState(
       contentStatus: contentStatus ?? this.contentStatus,
@@ -163,6 +184,11 @@ class TestPlayModesState {
       voiceErrorMessage: clearVoiceError
           ? null
           : voiceErrorMessage ?? this.voiceErrorMessage,
+
+      mcqResultPdfStatus: mcqResultPdfStatus ?? this.mcqResultPdfStatus,
+      generatedMcqResultPdfPath: clearGeneratedMcqResultPdfPath
+          ? null
+          : generatedMcqResultPdfPath ?? this.generatedMcqResultPdfPath,
     );
   }
 }
