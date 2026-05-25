@@ -19,6 +19,7 @@ abstract class AppRouterName {
   static const laboratoryPage = 'laboratoryPage';
 
   static const mcqTestSessionView = 'mcqTestSessionView';
+  static const challengeSetupView = 'challengeSetupView';
 }
 
 abstract class AppRouterPath {
@@ -46,4 +47,5 @@ abstract class AppRouterPath {
   static const laboratoryPage = '/laboratoryPage';
 
   static const mcqTestSessionView = '/mcqTestSessionView';
+  static const challengeSetupView = '/challengeSetupView';
 }

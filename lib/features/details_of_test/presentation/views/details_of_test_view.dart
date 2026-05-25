@@ -475,6 +475,18 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                       ),
                                     );
                                   },
+                                  onChallengeModeTap: () {
+                                    debugPrint("chaleng");
+                                    context.pushNamed(
+                                      AppRouterName.challengeSetupView,
+                                      extra: TestPlayModesRouteArgs(
+                                        testId: overview.data.id,
+                                      ),
+                                    );
+                                  },
+                                  onFlashCardModeTap: () {
+                                    debugPrint("flash");
+                                  },
                                 ),
 
                                 SizedBox(height: SizeConfig.h(0.035)),

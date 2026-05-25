@@ -155,10 +155,10 @@ class _ReviewMoreButton extends StatelessWidget {
   }
 }
 
-class _ReviewerAvatar extends StatelessWidget {
+class ReviewerAvatar extends StatelessWidget {
   final String? avatarPath;
 
-  const _ReviewerAvatar({required this.avatarPath});
+  const ReviewerAvatar({super.key, required this.avatarPath});
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +240,7 @@ class ReviewHeader extends StatelessWidget {
       textDirection: TextDirection.rtl,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _ReviewerAvatar(avatarPath: avatarPath),
+        ReviewerAvatar(avatarPath: avatarPath),
 
         SizedBox(width: SizeConfig.w(0.02)),
 

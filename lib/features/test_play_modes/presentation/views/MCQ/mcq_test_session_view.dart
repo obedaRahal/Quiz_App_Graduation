@@ -15,9 +15,9 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
-import 'package:quiz_app_grad/features/test_play_modes/presentation/views/mcq_result_summary_view.dart';
-import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/mcq/mcq_bottom_action_section.dart';
-import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/mcq/mcq_question_card.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/views/MCQ/mcq_result_summary_view.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/MCQ/mcq_bottom_action_section.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/MCQ/mcq_question_card.dart';
 
 class McqTestSessionView extends StatefulWidget {
   final int testId;
@@ -144,7 +144,7 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
 
                 SizedBox(height: SizeConfig.h(0.018)),
 
-                _McqSessionInfoHeader(state: state),
+                McqSessionInfoHeader(state: state),
 
                 _McqProgressBar(value: state.progressValue),
 
@@ -211,10 +211,10 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
   }
 }
 
-class _McqSessionInfoHeader extends StatelessWidget {
+class McqSessionInfoHeader extends StatelessWidget {
   final TestPlayModesState state;
 
-  const _McqSessionInfoHeader({required this.state});
+  const McqSessionInfoHeader({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {

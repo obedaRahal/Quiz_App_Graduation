@@ -20,6 +20,8 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
   final VoidCallback? onBookmarkTap;
   final VoidCallback? onBookmarkValueTap;
   final void Function() onMcqModeTap;
+  final void Function() onChallengeModeTap;
+  final void Function() onFlashCardModeTap;
 
   const TestDetailsWithPlayModesSection({
     super.key,
@@ -38,7 +40,9 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
     this.onBookmarkTap,
     this.onBookmarkValueTap,
 
-    required this.onMcqModeTap
+    required this.onMcqModeTap,
+    required this.onChallengeModeTap,
+    required this.onFlashCardModeTap,
   });
 
   @override
@@ -72,7 +76,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                   hasLiked: hasLiked,
                   hasBookmarked: hasBookmarked,
                   onLikeTap: onLikeTap,
-                  onLikeValueTap:onLikeValueTap ,
+                  onLikeValueTap: onLikeValueTap,
                   onBookmarkTap: onBookmarkTap,
                   onBookmarkValueTap: onBookmarkValueTap,
                 ),
@@ -93,7 +97,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                     shadowColor: isDark
                         ? AppPalette.black
                         : AppPalette.circleContainer3,
-                    onTap: () => debugPrint("challenge"),
+                    onTap: onChallengeModeTap,
                   ),
                   PlayModeCard(
                     title: "اختيارات متعددة",
@@ -111,7 +115,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                     shadowColor: isDark
                         ? AppPalette.black
                         : AppPalette.circleContainer1,
-                    onTap: () => debugPrint("flashcards"),
+                    onTap: onFlashCardModeTap,
                   ),
                 ],
               ),

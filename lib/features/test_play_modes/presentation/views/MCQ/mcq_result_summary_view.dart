@@ -131,7 +131,7 @@ class McqResultSummaryView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _DashedSectionTitle(title: 'إجاباتك'),
+                        DashedSectionTitle(title: 'إجاباتك'),
 
                         SizedBox(height: SizeConfig.h(0.015)),
 
@@ -155,7 +155,7 @@ class McqResultSummaryView extends StatelessWidget {
                   ),
                 ),
 
-                _PlayAgainButton(
+                PlayAgainButton(
                   onTap: () {
                     context.read<TestPlayModesCubit>().resetSession();
                     context.read<TestPlayModesCubit>().loadMockTestContent();
@@ -350,10 +350,10 @@ class _ResultMiniStat extends StatelessWidget {
   }
 }
 
-class _DashedSectionTitle extends StatelessWidget {
+class DashedSectionTitle extends StatelessWidget {
   final String title;
 
-  const _DashedSectionTitle({required this.title});
+  const DashedSectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -587,10 +587,10 @@ class _McqResultQuestionCard extends StatelessWidget {
   }
 }
 
-class _PlayAgainButton extends StatelessWidget {
+class PlayAgainButton extends StatelessWidget {
   final VoidCallback onTap;
 
-  const _PlayAgainButton({required this.onTap});
+  const PlayAgainButton({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

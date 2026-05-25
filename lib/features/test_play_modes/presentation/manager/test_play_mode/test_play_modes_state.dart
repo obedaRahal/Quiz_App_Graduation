@@ -1,6 +1,8 @@
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_answer_record_entity.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_content_entity.dart';
 
+//////////////////// MCQ ////////////////////////////
+//////////////////// MCQ ////////////////////////////
 enum TestPlayContentStatus { initial, loading, success, failure }
 
 enum McqQuestionPhase { idle, selected, checked }
@@ -11,7 +13,23 @@ enum TestVoiceAssistantStatus { initial, speaking, stopped, failure }
 
 enum McqResultPdfStatus { initial, loading, success, failure }
 
+//////////////////// CHALLENGE ////////////////////////////
+//////////////////// CHALLENGE ////////////////////////////
+enum ChallengeDifficulty { easy, medium, hard }
+
+enum ChallengeSetupPanel { none, rules, characters }
+
+enum ChallengeBotAnswerStatus { idle, thinking, answered }
+
+enum ChallengeAnswerResult { none, correct, wrong }
+
+enum ChallengeBotReaction { none, thinking, correct, wrong }
+
+enum ChallengeAnsweredBy { none, user, bot, timeout }
+
 class TestPlayModesState {
+  //////////////////// MCQ ////////////////////////////
+  //////////////////// MCQ ////////////////////////////
   final TestPlayContentStatus contentStatus;
   final TestPlayContentEntity? content;
 
@@ -32,6 +50,27 @@ class TestPlayModesState {
   final McqResultPdfStatus mcqResultPdfStatus;
   final String? generatedMcqResultPdfPath;
 
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  final ChallengeDifficulty selectedChallengeDifficulty;
+  final ChallengeSetupPanel activeChallengeSetupPanel;
+  final int selectedChallengeCharacterId;
+
+  final int challengeUserScore;
+  final int challengeBotScore;
+  final int? challengeBotSelectedOptionId;
+  final ChallengeAnswerResult challengeUserLastResult;
+  final ChallengeAnswerResult challengeBotLastResult;
+  final ChallengeBotAnswerStatus challengeBotAnswerStatus;
+  final bool challengeUserHasAnsweredCurrentQuestion;
+  final bool challengeBotHasAnsweredCurrentQuestion;
+  final int challengeQuestionTotalSeconds;
+  final int challengeQuestionRemainingSeconds;
+  final ChallengeBotReaction challengeBotReaction;
+
+  final ChallengeAnsweredBy challengeAnsweredBy;
+  final bool? challengeCurrentAnswerIsCorrect;
+
   const TestPlayModesState({
     this.contentStatus = TestPlayContentStatus.initial,
     this.content,
@@ -49,8 +88,30 @@ class TestPlayModesState {
 
     this.mcqResultPdfStatus = McqResultPdfStatus.initial,
     this.generatedMcqResultPdfPath,
+
+    /////////////////////////////////////////////////////////////
+    this.selectedChallengeDifficulty = ChallengeDifficulty.medium,
+    this.activeChallengeSetupPanel = ChallengeSetupPanel.none,
+    this.selectedChallengeCharacterId = 1,
+
+    this.challengeUserScore = 0,
+    this.challengeBotScore = 0,
+    this.challengeBotSelectedOptionId,
+    this.challengeBotAnswerStatus = ChallengeBotAnswerStatus.idle,
+    this.challengeUserLastResult = ChallengeAnswerResult.none,
+    this.challengeBotLastResult = ChallengeAnswerResult.none,
+    this.challengeUserHasAnsweredCurrentQuestion = false,
+    this.challengeBotHasAnsweredCurrentQuestion = false,
+    this.challengeQuestionTotalSeconds = 0,
+    this.challengeQuestionRemainingSeconds = 0,
+    this.challengeBotReaction = ChallengeBotReaction.none,
+
+    this.challengeAnsweredBy = ChallengeAnsweredBy.none,
+    this.challengeCurrentAnswerIsCorrect,
   });
 
+  //////////////////// MCQ ////////////////////////////
+  //////////////////// MCQ ////////////////////////////
   bool get isContentLoading => contentStatus == TestPlayContentStatus.loading;
   bool get isContentSuccess => contentStatus == TestPlayContentStatus.success;
   bool get isContentFailure => contentStatus == TestPlayContentStatus.failure;
@@ -142,7 +203,79 @@ class TestPlayModesState {
     return scorePercentage >= passMark;
   }
 
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  bool get isChallengeRulesPanelVisible =>
+      activeChallengeSetupPanel == ChallengeSetupPanel.rules;
+  bool get isChallengeCharactersPanelVisible =>
+      activeChallengeSetupPanel == ChallengeSetupPanel.characters;
+
+  bool get isChallengeBotIdle =>
+      challengeBotAnswerStatus == ChallengeBotAnswerStatus.idle;
+  bool get isChallengeBotThinking =>
+      challengeBotAnswerStatus == ChallengeBotAnswerStatus.thinking;
+  bool get isChallengeBotAnswered =>
+      challengeBotAnswerStatus == ChallengeBotAnswerStatus.answered;
+  bool get isChallengeUserLastAnswerCorrect =>
+      challengeUserLastResult == ChallengeAnswerResult.correct;
+  bool get isChallengeUserLastAnswerWrong =>
+      challengeUserLastResult == ChallengeAnswerResult.wrong;
+  bool get isChallengeBotLastAnswerCorrect =>
+      challengeBotLastResult == ChallengeAnswerResult.correct;
+  bool get isChallengeBotLastAnswerWrong =>
+      challengeBotLastResult == ChallengeAnswerResult.wrong;
+
+  bool get isChallengeQuestionResolved =>
+      challengeAnsweredBy != ChallengeAnsweredBy.none;
+  bool get canChallengeUserAnswer =>
+      currentQuestion != null && !isChallengeQuestionResolved && !isCompleted;
+  bool get canGoNextChallengeQuestion => isChallengeQuestionResolved;
+
+  bool get hasChallengeWinner {
+    if (!isCompleted) return false;
+    return challengeUserScore != challengeBotScore;
+  }
+
+  bool get didChallengeUserWin =>
+      isCompleted && challengeUserScore > challengeBotScore;
+  bool get didChallengeBotWin =>
+      isCompleted && challengeBotScore > challengeUserScore;
+  bool get isChallengeDraw =>
+      isCompleted && challengeUserScore == challengeBotScore;
+  TestPlayOptionEntity? get challengeBotSelectedOption {
+    final question = currentQuestion;
+    if (question == null || challengeBotSelectedOptionId == null) {
+      return null;
+    }
+    for (final option in question.options) {
+      if (option.optionId == challengeBotSelectedOptionId) {
+        return option;
+      }
+    }
+    return null;
+  }
+
+  bool? get isChallengeBotCurrentAnswerCorrect =>
+      challengeBotSelectedOption?.isCorrect;
+  bool get isChallengeQuestionTimerRunning =>
+      challengeQuestionRemainingSeconds > 0 &&
+      !isChallengeQuestionResolved &&
+      !isCompleted;
+
+  bool get isChallengeBotReactionThinking =>
+      challengeBotReaction == ChallengeBotReaction.thinking;
+  bool get isChallengeBotReactionCorrect =>
+      challengeBotReaction == ChallengeBotReaction.correct;
+  bool get isChallengeBotReactionWrong =>
+      challengeBotReaction == ChallengeBotReaction.wrong;
+  double get challengeQuestionTimerProgress {
+    if (challengeQuestionTotalSeconds <= 0) return 0;
+    return challengeQuestionRemainingSeconds / challengeQuestionTotalSeconds;
+  }
+
   TestPlayModesState copyWith({
+    //////////////////// MCQ ////////////////////////////
+    //////////////////// MCQ ////////////////////////////
     TestPlayContentStatus? contentStatus,
     TestPlayContentEntity? content,
     String? errorTitle,
@@ -165,6 +298,28 @@ class TestPlayModesState {
     McqResultPdfStatus? mcqResultPdfStatus,
     String? generatedMcqResultPdfPath,
     bool clearGeneratedMcqResultPdfPath = false,
+
+    //////////////////// CHALLENGE ////////////////////////////
+    //////////////////// CHALLENGE ////////////////////////////
+    ChallengeDifficulty? selectedChallengeDifficulty,
+    ChallengeSetupPanel? activeChallengeSetupPanel,
+    int? selectedChallengeCharacterId,
+
+    int? challengeUserScore,
+    int? challengeBotScore,
+    int? challengeBotSelectedOptionId,
+    ChallengeBotAnswerStatus? challengeBotAnswerStatus,
+    ChallengeAnswerResult? challengeUserLastResult,
+    ChallengeAnswerResult? challengeBotLastResult,
+    bool? challengeUserHasAnsweredCurrentQuestion,
+    bool? challengeBotHasAnsweredCurrentQuestion,
+    int? challengeQuestionTotalSeconds,
+    int? challengeQuestionRemainingSeconds,
+    ChallengeBotReaction? challengeBotReaction,
+
+    ChallengeAnsweredBy? challengeAnsweredBy,
+    bool? challengeCurrentAnswerIsCorrect,
+    bool clearChallengeCurrentAnswerIsCorrect = false,
   }) {
     return TestPlayModesState(
       contentStatus: contentStatus ?? this.contentStatus,
@@ -189,6 +344,44 @@ class TestPlayModesState {
       generatedMcqResultPdfPath: clearGeneratedMcqResultPdfPath
           ? null
           : generatedMcqResultPdfPath ?? this.generatedMcqResultPdfPath,
+
+      ///////////////////////////////////
+      selectedChallengeDifficulty:
+          selectedChallengeDifficulty ?? this.selectedChallengeDifficulty,
+      activeChallengeSetupPanel:
+          activeChallengeSetupPanel ?? this.activeChallengeSetupPanel,
+      selectedChallengeCharacterId:
+          selectedChallengeCharacterId ?? this.selectedChallengeCharacterId,
+
+      challengeUserScore: challengeUserScore ?? this.challengeUserScore,
+      challengeBotScore: challengeBotScore ?? this.challengeBotScore,
+      challengeBotSelectedOptionId:
+          challengeBotSelectedOptionId ?? this.challengeBotSelectedOptionId,
+      challengeBotAnswerStatus:
+          challengeBotAnswerStatus ?? this.challengeBotAnswerStatus,
+      challengeUserLastResult:
+          challengeUserLastResult ?? this.challengeUserLastResult,
+      challengeBotLastResult:
+          challengeBotLastResult ?? this.challengeBotLastResult,
+      challengeUserHasAnsweredCurrentQuestion:
+          challengeUserHasAnsweredCurrentQuestion ??
+          this.challengeUserHasAnsweredCurrentQuestion,
+      challengeBotHasAnsweredCurrentQuestion:
+          challengeBotHasAnsweredCurrentQuestion ??
+          this.challengeBotHasAnsweredCurrentQuestion,
+
+      challengeQuestionTotalSeconds:
+          challengeQuestionTotalSeconds ?? this.challengeQuestionTotalSeconds,
+      challengeQuestionRemainingSeconds:
+          challengeQuestionRemainingSeconds ??
+          this.challengeQuestionRemainingSeconds,
+      challengeBotReaction: challengeBotReaction ?? this.challengeBotReaction,
+
+      challengeAnsweredBy: challengeAnsweredBy ?? this.challengeAnsweredBy,
+      challengeCurrentAnswerIsCorrect: clearChallengeCurrentAnswerIsCorrect
+          ? null
+          : challengeCurrentAnswerIsCorrect ??
+                this.challengeCurrentAnswerIsCorrect,
     );
   }
 }

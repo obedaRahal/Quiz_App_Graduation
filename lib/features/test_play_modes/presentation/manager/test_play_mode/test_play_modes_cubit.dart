@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,14 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
   final TestVoiceAssistantService voiceAssistantService;
   final McqResultPdfService mcqResultPdfService;
   final GetTestPlayContentUseCase getTestPlayContentUseCase;
+
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
+  Timer? _challengeBotTimer;
+  Timer? _challengeQuestionTimer;
 
   TestPlayModesCubit({
     required this.voiceAssistantService,
@@ -133,6 +142,7 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
       isCorrect: isCorrect,
       questionPosition: question.position,
       answeredAtElapsedSeconds: state.elapsedSeconds,
+      answeredBy: TestPlayAnswerOwner.user,
     );
 
     emit(
@@ -207,6 +217,8 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     debugPrint("============ TestPlayModesCubit.resetSession ============");
 
     _stopSessionTimer();
+    _stopChallengeBotTimer();
+    _stopChallengeQuestionTimer();
 
     emit(const TestPlayModesState());
 
@@ -722,6 +734,664 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     );
   }
 
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  //////////////////// CHALLENGE ////////////////////////////
+  void toggleChallengeRulesPanel() {
+    debugPrint(
+      "============ TestPlayModesCubit.toggleChallengeRulesPanel ============",
+    );
+
+    final nextPanel = state.isChallengeRulesPanelVisible
+        ? ChallengeSetupPanel.none
+        : ChallengeSetupPanel.rules;
+
+    emit(
+      state.copyWith(activeChallengeSetupPanel: nextPanel, clearError: true),
+    );
+
+    debugPrint("→ activeChallengeSetupPanel: $nextPanel");
+    debugPrint("=================================================");
+  }
+
+  void toggleChallengeCharactersPanel() {
+    debugPrint(
+      "============ TestPlayModesCubit.toggleChallengeCharactersPanel ============",
+    );
+
+    final nextPanel = state.isChallengeCharactersPanelVisible
+        ? ChallengeSetupPanel.none
+        : ChallengeSetupPanel.characters;
+
+    emit(
+      state.copyWith(activeChallengeSetupPanel: nextPanel, clearError: true),
+    );
+
+    debugPrint("→ activeChallengeSetupPanel: $nextPanel");
+    debugPrint("=================================================");
+  }
+
+  void changeChallengeDifficulty(ChallengeDifficulty difficulty) {
+    debugPrint(
+      "============ TestPlayModesCubit.changeChallengeDifficulty ============",
+    );
+    debugPrint("→ difficulty: $difficulty");
+
+    emit(
+      state.copyWith(selectedChallengeDifficulty: difficulty, clearError: true),
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void selectChallengeCharacter(int characterId) {
+    debugPrint(
+      "============ TestPlayModesCubit.selectChallengeCharacter ============",
+    );
+    debugPrint("→ characterId: $characterId");
+
+    emit(
+      state.copyWith(
+        selectedChallengeCharacterId: characterId,
+        activeChallengeSetupPanel: ChallengeSetupPanel.none,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("✓ challenge character selected");
+    debugPrint("=================================================");
+  }
+
+  void closeChallengeSetupPanel() {
+    debugPrint(
+      "============ TestPlayModesCubit.closeChallengeSetupPanel ============",
+    );
+
+    emit(
+      state.copyWith(
+        activeChallengeSetupPanel: ChallengeSetupPanel.none,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("✓ challenge setup panel closed");
+    debugPrint("=================================================");
+  }
+
+  void startChallengeSession() {
+    debugPrint(
+      "============ TestPlayModesCubit.startChallengeSession ============",
+    );
+
+    if (!state.hasPlayableContent) {
+      debugPrint("✗ no playable content");
+      debugPrint("=================================================");
+      return;
+    }
+
+    _stopSessionTimer();
+    _stopChallengeBotTimer();
+
+    emit(
+      state.copyWith(
+        currentQuestionIndex: 0,
+        clearSelectedOption: true,
+        mcqQuestionPhase: McqQuestionPhase.idle,
+        answersByQuestionId: {},
+        elapsedSeconds: 0,
+        sessionStatus: TestPlaySessionStatus.playing,
+        challengeUserScore: 0,
+        challengeBotScore: 0,
+        challengeBotSelectedOptionId: null,
+        challengeBotAnswerStatus: ChallengeBotAnswerStatus.thinking,
+        challengeUserLastResult: ChallengeAnswerResult.none,
+        challengeBotLastResult: ChallengeAnswerResult.none,
+        challengeUserHasAnsweredCurrentQuestion: false,
+        challengeBotHasAnsweredCurrentQuestion: false,
+        activeChallengeSetupPanel: ChallengeSetupPanel.none,
+        clearError: true,
+        challengeAnsweredBy: ChallengeAnsweredBy.none,
+        clearChallengeCurrentAnswerIsCorrect: true,
+        challengeBotReaction: ChallengeBotReaction.thinking,
+      ),
+    );
+
+    _startSessionTimer();
+
+    final questionSeconds = _getBotReactionSeconds();
+
+    _startChallengeQuestionTimer(totalSeconds: questionSeconds);
+    _scheduleBotAnswerForCurrentQuestion(reactionSeconds: questionSeconds);
+
+    debugPrint("✓ challenge session started");
+    debugPrint("=================================================");
+  }
+
+  void selectChallengeAnswer({required int optionId}) {
+    debugPrint(
+      "============ TestPlayModesCubit.selectChallengeAnswer ============",
+    );
+    debugPrint("→ optionId: $optionId");
+
+    final question = state.currentQuestion;
+
+    if (question == null) {
+      debugPrint("✗ currentQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (!state.canChallengeUserAnswer) {
+      debugPrint("✗ user cannot answer now");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final selectedOption = _findOptionById(question, optionId);
+
+    if (selectedOption == null) {
+      debugPrint("✗ selected option not found");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final updatedAnswers = Map<int, TestPlayAnswerRecordEntity>.from(
+      state.answersByQuestionId,
+    );
+
+    updatedAnswers[question.questionId] = TestPlayAnswerRecordEntity(
+      questionId: question.questionId,
+      selectedOptionId: optionId,
+      correctOptionId: question.correctOption?.optionId,
+      isCorrect: selectedOption.isCorrect,
+      questionPosition: question.position,
+      answeredAtElapsedSeconds: state.elapsedSeconds,
+      answeredBy: TestPlayAnswerOwner.user,
+    );
+
+    emit(
+      state.copyWith(
+        selectedOptionId: optionId,
+        answersByQuestionId: updatedAnswers,
+        clearError: true,
+      ),
+    );
+
+    _resolveChallengeQuestion(
+      answeredBy: ChallengeAnsweredBy.user,
+      selectedOptionId: optionId,
+    );
+
+    debugPrint("✓ user answered first");
+    debugPrint("→ isCorrect: ${selectedOption.isCorrect}");
+    debugPrint("=================================================");
+  }
+
+  void _scheduleBotAnswerForCurrentQuestion({required int reactionSeconds}) {
+    debugPrint(
+      "============ TestPlayModesCubit._scheduleBotAnswerForCurrentQuestion ============",
+    );
+
+    final question = state.currentQuestion;
+
+    if (question == null) {
+      debugPrint("✗ currentQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    _stopChallengeBotTimer();
+
+    //final reactionSeconds = _getBotReactionSeconds();
+
+    emit(
+      state.copyWith(
+        challengeBotAnswerStatus: ChallengeBotAnswerStatus.thinking,
+        challengeBotSelectedOptionId: null,
+        challengeBotLastResult: ChallengeAnswerResult.none,
+        challengeBotHasAnsweredCurrentQuestion: false,
+        challengeBotReaction: ChallengeBotReaction.thinking,
+      ),
+    );
+
+    _challengeBotTimer = Timer(Duration(seconds: reactionSeconds), () {
+      _answerCurrentQuestionByBot();
+    });
+
+    debugPrint("✓ bot answer scheduled");
+    debugPrint("→ reactionSeconds: $reactionSeconds");
+    debugPrint("=================================================");
+  }
+
+  void _answerCurrentQuestionByBot() {
+    debugPrint(
+      "============ TestPlayModesCubit._answerCurrentQuestionByBot ============",
+    );
+
+    final question = state.currentQuestion;
+
+    if (question == null) {
+      debugPrint("✗ currentQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (state.isChallengeQuestionResolved) {
+      debugPrint("✗ challenge question already resolved");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final selectedOption = _pickBotOption(question);
+
+    final updatedAnswers = Map<int, TestPlayAnswerRecordEntity>.from(
+      state.answersByQuestionId,
+    );
+
+    updatedAnswers[question.questionId] = TestPlayAnswerRecordEntity(
+      questionId: question.questionId,
+      selectedOptionId: selectedOption.optionId,
+      correctOptionId: question.correctOption?.optionId,
+      isCorrect: selectedOption.isCorrect,
+      questionPosition: question.position,
+      answeredAtElapsedSeconds: state.elapsedSeconds,
+      answeredBy: TestPlayAnswerOwner.bot,
+    );
+
+    emit(
+      state.copyWith(
+        challengeBotSelectedOptionId: selectedOption.optionId,
+        challengeBotAnswerStatus: ChallengeBotAnswerStatus.answered,
+        answersByQuestionId: updatedAnswers,
+        clearError: true,
+      ),
+    );
+
+    _resolveChallengeQuestion(
+      answeredBy: ChallengeAnsweredBy.bot,
+      selectedOptionId: selectedOption.optionId,
+    );
+
+    debugPrint("✓ bot answered first");
+    debugPrint("→ optionId: ${selectedOption.optionId}");
+    debugPrint("→ isCorrect: ${selectedOption.isCorrect}");
+    debugPrint("=================================================");
+  }
+
+  // void _resolveChallengeQuestionIfReady() {
+  //   debugPrint(
+  //     "============ TestPlayModesCubit._resolveChallengeQuestionIfReady ============",
+  //   );
+
+  //   if (!state.challengeUserHasAnsweredCurrentQuestion ||
+  //       !state.challengeBotHasAnsweredCurrentQuestion) {
+  //     debugPrint("→ waiting for both players to answer");
+  //     debugPrint("=================================================");
+  //     return;
+  //   }
+
+  //   final question = state.currentQuestion;
+
+  //   if (question == null) {
+  //     debugPrint("✗ currentQuestion is null");
+  //     debugPrint("=================================================");
+  //     return;
+  //   }
+
+  //   final userSelectedOption = _findOptionById(
+  //     question,
+  //     state.selectedOptionId,
+  //   );
+
+  //   final botSelectedOption = _findOptionById(
+  //     question,
+  //     state.challengeBotSelectedOptionId,
+  //   );
+
+  //   final userIsCorrect = userSelectedOption?.isCorrect == true;
+  //   final botIsCorrect = botSelectedOption?.isCorrect == true;
+
+  //   emit(
+  //     state.copyWith(
+  //       challengeUserScore: userIsCorrect
+  //           ? state.challengeUserScore + 1
+  //           : state.challengeUserScore,
+  //       challengeBotScore: botIsCorrect
+  //           ? state.challengeBotScore + 1
+  //           : state.challengeBotScore,
+  //       challengeUserLastResult: userIsCorrect
+  //           ? ChallengeAnswerResult.correct
+  //           : ChallengeAnswerResult.wrong,
+  //       challengeBotLastResult: botIsCorrect
+  //           ? ChallengeAnswerResult.correct
+  //           : ChallengeAnswerResult.wrong,
+  //       clearError: true,
+  //     ),
+  //   );
+
+  //   debugPrint("✓ challenge question resolved");
+  //   debugPrint("→ userIsCorrect: $userIsCorrect");
+  //   debugPrint("→ botIsCorrect: $botIsCorrect");
+  //   debugPrint("→ userScore: ${state.challengeUserScore}");
+  //   debugPrint("→ botScore: ${state.challengeBotScore}");
+  //   debugPrint("=================================================");
+  // }
+
+  TestPlayOptionEntity? _findOptionById(
+    TestPlayQuestionEntity question,
+    int? optionId,
+  ) {
+    if (optionId == null) return null;
+
+    for (final option in question.options) {
+      if (option.optionId == optionId) {
+        return option;
+      }
+    }
+
+    return null;
+  }
+
+  TestPlayOptionEntity _pickBotOption(TestPlayQuestionEntity question) {
+    final random = Random();
+
+    final accuracy = _getBotAccuracyPercentage();
+    final willAnswerCorrect = random.nextInt(100) < accuracy;
+
+    if (willAnswerCorrect && question.correctOption != null) {
+      return question.correctOption!;
+    }
+
+    final wrongOptions = question.options
+        .where((option) => !option.isCorrect)
+        .toList();
+
+    if (wrongOptions.isEmpty) {
+      return question.correctOption ?? question.options.first;
+    }
+
+    return wrongOptions[random.nextInt(wrongOptions.length)];
+  }
+
+  int _getBotAccuracyPercentage() {
+    switch (state.selectedChallengeDifficulty) {
+      case ChallengeDifficulty.easy:
+        return 55;
+      case ChallengeDifficulty.medium:
+        return 72;
+      case ChallengeDifficulty.hard:
+        return 90;
+    }
+  }
+
+  int _getBotReactionSeconds() {
+    final random = Random();
+
+    switch (state.selectedChallengeDifficulty) {
+      case ChallengeDifficulty.easy:
+        return 5 + random.nextInt(5); // 5 - 9
+      case ChallengeDifficulty.medium:
+        return 3 + random.nextInt(4); // 3 - 6
+      case ChallengeDifficulty.hard:
+        return 1 + random.nextInt(3); // 1 - 3
+    }
+  }
+
+  void goToNextChallengeQuestion() {
+    debugPrint(
+      "============ TestPlayModesCubit.goToNextChallengeQuestion ============",
+    );
+
+    if (!state.canGoNextChallengeQuestion) {
+      debugPrint("✗ cannot go next before both answered");
+      debugPrint("=================================================");
+      return;
+    }
+
+    _stopChallengeQuestionTimer();
+
+    final nextIndex = state.currentQuestionIndex + 1;
+    final isLastQuestion = nextIndex >= state.totalQuestions;
+
+    if (isLastQuestion) {
+      completeSession();
+      _stopChallengeBotTimer();
+      _stopChallengeQuestionTimer();
+
+      debugPrint("✓ challenge completed");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final questionSeconds = _getBotReactionSeconds();
+
+    emit(
+      state.copyWith(
+        currentQuestionIndex: nextIndex,
+        clearSelectedOption: true,
+        mcqQuestionPhase: McqQuestionPhase.idle,
+        challengeQuestionTotalSeconds: questionSeconds,
+        challengeQuestionRemainingSeconds: questionSeconds,
+        clearError: true,
+        challengeAnsweredBy: ChallengeAnsweredBy.none,
+        clearChallengeCurrentAnswerIsCorrect: true,
+        challengeBotReaction: ChallengeBotReaction.thinking,
+        challengeBotAnswerStatus: ChallengeBotAnswerStatus.thinking,
+        challengeBotSelectedOptionId: null,
+        challengeUserLastResult: ChallengeAnswerResult.none,
+        challengeBotLastResult: ChallengeAnswerResult.none,
+        challengeUserHasAnsweredCurrentQuestion: false,
+        challengeBotHasAnsweredCurrentQuestion: false,
+      ),
+    );
+
+    _startChallengeQuestionTimer(totalSeconds: questionSeconds);
+    _scheduleBotAnswerForCurrentQuestion(reactionSeconds: questionSeconds);
+
+    debugPrint("✓ moved to next challenge question");
+    debugPrint("→ currentQuestionIndex: $nextIndex");
+    debugPrint("→ questionSeconds: $questionSeconds");
+    debugPrint("=================================================");
+  }
+
+  void _stopChallengeBotTimer() {
+    _challengeBotTimer?.cancel();
+    _challengeBotTimer = null;
+  }
+
+  void _stopChallengeQuestionTimer() {
+    _challengeQuestionTimer?.cancel();
+    _challengeQuestionTimer = null;
+  }
+
+  void _startChallengeQuestionTimer({required int totalSeconds}) {
+    debugPrint(
+      "============ TestPlayModesCubit._startChallengeQuestionTimer ============",
+    );
+    debugPrint("→ totalSeconds: $totalSeconds");
+
+    _stopChallengeQuestionTimer();
+
+    emit(
+      state.copyWith(
+        challengeQuestionTotalSeconds: totalSeconds,
+        challengeQuestionRemainingSeconds: totalSeconds,
+      ),
+    );
+
+    _challengeQuestionTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      final remaining = state.challengeQuestionRemainingSeconds;
+
+      if (state.isChallengeQuestionResolved || state.isCompleted) {
+        _stopChallengeQuestionTimer();
+        return;
+      }
+
+      if (remaining <= 1) {
+        _stopChallengeQuestionTimer();
+        _markChallengeUserAsTimeout();
+        return;
+      }
+
+      emit(state.copyWith(challengeQuestionRemainingSeconds: remaining - 1));
+    });
+
+    debugPrint("✓ challenge question timer started");
+    debugPrint("=================================================");
+  }
+
+  void _markChallengeUserAsTimeout() {
+    debugPrint(
+      "============ TestPlayModesCubit._markChallengeUserAsTimeout ============",
+    );
+
+    final question = state.currentQuestion;
+
+    if (question == null) {
+      debugPrint("✗ currentQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final updatedAnswers = Map<int, TestPlayAnswerRecordEntity>.from(
+      state.answersByQuestionId,
+    );
+
+    updatedAnswers[question.questionId] = TestPlayAnswerRecordEntity(
+      questionId: question.questionId,
+      selectedOptionId: null,
+      correctOptionId: question.correctOption?.optionId,
+      isCorrect: false,
+      questionPosition: question.position,
+      answeredAtElapsedSeconds: state.elapsedSeconds,
+      answeredBy: TestPlayAnswerOwner.timeout,
+    );
+
+    emit(state.copyWith(answersByQuestionId: updatedAnswers, clearError: true));
+
+    if (state.isChallengeQuestionResolved) {
+      debugPrint("✗ challenge question already resolved");
+      debugPrint("=================================================");
+      return;
+    }
+
+    _resolveChallengeQuestion(
+      answeredBy: ChallengeAnsweredBy.timeout,
+      selectedOptionId: null,
+    );
+
+    debugPrint("✓ timeout resolved");
+    debugPrint("=================================================");
+  }
+
+  //// fixes
+  void _resolveChallengeQuestion({
+    required ChallengeAnsweredBy answeredBy,
+    required int? selectedOptionId,
+  }) {
+    debugPrint(
+      "============ TestPlayModesCubit._resolveChallengeQuestion ============",
+    );
+    debugPrint("→ answeredBy: $answeredBy");
+    debugPrint("→ selectedOptionId: $selectedOptionId");
+
+    final question = state.currentQuestion;
+
+    if (question == null) {
+      debugPrint("✗ currentQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (state.isChallengeQuestionResolved) {
+      debugPrint("✗ challenge question already resolved");
+      debugPrint("=================================================");
+      return;
+    }
+
+    _stopChallengeQuestionTimer();
+    _stopChallengeBotTimer();
+
+    final selectedOption = _findOptionById(question, selectedOptionId);
+
+    final isCorrect = selectedOption?.isCorrect == true;
+
+    int userScore = state.challengeUserScore;
+    int botScore = state.challengeBotScore;
+
+    ChallengeAnswerResult userResult = ChallengeAnswerResult.none;
+    ChallengeAnswerResult botResult = ChallengeAnswerResult.none;
+
+    ChallengeBotReaction botReaction = ChallengeBotReaction.none;
+
+    if (answeredBy == ChallengeAnsweredBy.user) {
+      if (isCorrect) {
+        userScore++;
+        userResult = ChallengeAnswerResult.correct;
+        botResult = ChallengeAnswerResult.wrong;
+        botReaction = ChallengeBotReaction.wrong;
+      } else {
+        botScore++;
+        userResult = ChallengeAnswerResult.wrong;
+        botResult = ChallengeAnswerResult.correct;
+        botReaction = ChallengeBotReaction.correct;
+      }
+    }
+
+    if (answeredBy == ChallengeAnsweredBy.bot) {
+      if (isCorrect) {
+        botScore++;
+        botResult = ChallengeAnswerResult.correct;
+        userResult = ChallengeAnswerResult.wrong;
+        botReaction = ChallengeBotReaction.correct;
+      } else {
+        userScore++;
+        botResult = ChallengeAnswerResult.wrong;
+        userResult = ChallengeAnswerResult.correct;
+        botReaction = ChallengeBotReaction.wrong;
+      }
+    }
+
+    if (answeredBy == ChallengeAnsweredBy.timeout) {
+      botScore++;
+      userResult = ChallengeAnswerResult.wrong;
+      botResult = ChallengeAnswerResult.correct;
+      botReaction = ChallengeBotReaction.correct;
+    }
+
+    emit(
+      state.copyWith(
+        challengeAnsweredBy: answeredBy,
+        challengeCurrentAnswerIsCorrect: isCorrect,
+        challengeUserScore: userScore,
+        challengeBotScore: botScore,
+        challengeUserLastResult: userResult,
+        challengeBotLastResult: botResult,
+        challengeBotReaction: botReaction,
+        challengeUserHasAnsweredCurrentQuestion:
+            answeredBy == ChallengeAnsweredBy.user ||
+            answeredBy == ChallengeAnsweredBy.timeout,
+        challengeBotHasAnsweredCurrentQuestion:
+            answeredBy == ChallengeAnsweredBy.bot ||
+            answeredBy == ChallengeAnsweredBy.timeout,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("✓ challenge question resolved");
+    debugPrint("→ isCorrect: $isCorrect");
+    debugPrint("→ userScore: $userScore");
+    debugPrint("→ botScore: $botScore");
+    debugPrint("=================================================");
+  }
+
   @override
   Future<void> close() async {
     debugPrint("============ TestPlayModesCubit CLOSE ============");
@@ -730,6 +1400,9 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     voiceAssistantService.onCancelled = null;
     voiceAssistantService.onError = null;
     await voiceAssistantService.dispose();
+
+    _stopChallengeBotTimer();
+    _stopChallengeQuestionTimer();
     return super.close();
   }
 }
