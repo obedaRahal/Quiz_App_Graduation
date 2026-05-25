@@ -293,8 +293,6 @@ class _ChallengeOptionItem extends StatelessWidget {
     final isUserSelected = state.selectedOptionId == optionId;
     final isBotSelected = state.challengeBotSelectedOptionId == optionId;
 
-    final userAnswered = state.challengeUserHasAnsweredCurrentQuestion;
-    final botAnswered = state.challengeBotHasAnsweredCurrentQuestion;
 
     //final bothAnswered = userAnswered && botAnswered;
     final isResolved = state.isChallengeQuestionResolved;

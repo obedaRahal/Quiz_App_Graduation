@@ -62,8 +62,8 @@ class TestPlayModesState {
   final ChallengeAnswerResult challengeUserLastResult;
   final ChallengeAnswerResult challengeBotLastResult;
   final ChallengeBotAnswerStatus challengeBotAnswerStatus;
-  final bool challengeUserHasAnsweredCurrentQuestion;
-  final bool challengeBotHasAnsweredCurrentQuestion;
+  // final bool challengeUserHasAnsweredCurrentQuestion;
+  // final bool challengeBotHasAnsweredCurrentQuestion;
   final int challengeQuestionTotalSeconds;
   final int challengeQuestionRemainingSeconds;
   final ChallengeBotReaction challengeBotReaction;
@@ -100,8 +100,8 @@ class TestPlayModesState {
     this.challengeBotAnswerStatus = ChallengeBotAnswerStatus.idle,
     this.challengeUserLastResult = ChallengeAnswerResult.none,
     this.challengeBotLastResult = ChallengeAnswerResult.none,
-    this.challengeUserHasAnsweredCurrentQuestion = false,
-    this.challengeBotHasAnsweredCurrentQuestion = false,
+    // this.challengeUserHasAnsweredCurrentQuestion = false,
+    // this.challengeBotHasAnsweredCurrentQuestion = false,
     this.challengeQuestionTotalSeconds = 0,
     this.challengeQuestionRemainingSeconds = 0,
     this.challengeBotReaction = ChallengeBotReaction.none,
@@ -273,6 +273,15 @@ class TestPlayModesState {
     return challengeQuestionRemainingSeconds / challengeQuestionTotalSeconds;
   }
 
+  bool get isChallengeUserThinking =>
+      !isChallengeQuestionResolved && !isCompleted;
+  bool get didUserAnswerChallengeQuestion =>
+      challengeAnsweredBy == ChallengeAnsweredBy.user;
+  bool get didBotAnswerChallengeQuestion =>
+      challengeAnsweredBy == ChallengeAnsweredBy.bot;
+  bool get didChallengeQuestionTimeout =>
+      challengeAnsweredBy == ChallengeAnsweredBy.timeout;
+
   TestPlayModesState copyWith({
     //////////////////// MCQ ////////////////////////////
     //////////////////// MCQ ////////////////////////////
@@ -311,8 +320,8 @@ class TestPlayModesState {
     ChallengeBotAnswerStatus? challengeBotAnswerStatus,
     ChallengeAnswerResult? challengeUserLastResult,
     ChallengeAnswerResult? challengeBotLastResult,
-    bool? challengeUserHasAnsweredCurrentQuestion,
-    bool? challengeBotHasAnsweredCurrentQuestion,
+    //bool? challengeUserHasAnsweredCurrentQuestion,
+    //bool? challengeBotHasAnsweredCurrentQuestion,
     int? challengeQuestionTotalSeconds,
     int? challengeQuestionRemainingSeconds,
     ChallengeBotReaction? challengeBotReaction,
@@ -363,13 +372,13 @@ class TestPlayModesState {
           challengeUserLastResult ?? this.challengeUserLastResult,
       challengeBotLastResult:
           challengeBotLastResult ?? this.challengeBotLastResult,
-      challengeUserHasAnsweredCurrentQuestion:
-          challengeUserHasAnsweredCurrentQuestion ??
-          this.challengeUserHasAnsweredCurrentQuestion,
-      challengeBotHasAnsweredCurrentQuestion:
-          challengeBotHasAnsweredCurrentQuestion ??
-          this.challengeBotHasAnsweredCurrentQuestion,
 
+      // challengeUserHasAnsweredCurrentQuestion:
+      //     challengeUserHasAnsweredCurrentQuestion ??
+      //     this.challengeUserHasAnsweredCurrentQuestion,
+      // challengeBotHasAnsweredCurrentQuestion:
+      //     challengeBotHasAnsweredCurrentQuestion ??
+      //     this.challengeBotHasAnsweredCurrentQuestion,
       challengeQuestionTotalSeconds:
           challengeQuestionTotalSeconds ?? this.challengeQuestionTotalSeconds,
       challengeQuestionRemainingSeconds:
