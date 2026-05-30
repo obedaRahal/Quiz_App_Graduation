@@ -10,18 +10,21 @@ class TopPageHeader extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onIconTap;
   final IconData icon;
+  final Color? titleColor;
 
   const TopPageHeader({
     super.key,
     required this.title,
     required this.onBack,
     required this.onIconTap,
-    required this.icon
+    required this.icon,
+    this.titleColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
+    final resolvedTitleColor = titleColor ?? appColors.blackTogreyMedium;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
@@ -36,7 +39,7 @@ class TopPageHeader extends StatelessWidget {
             child: Center(
               child: CustomTextWidget(
                 title,
-                color: appColors.blackTogreyMedium,
+                color: resolvedTitleColor,
                 fontFamily: AppFont.elMessiriSemiBold,
               ),
             ),

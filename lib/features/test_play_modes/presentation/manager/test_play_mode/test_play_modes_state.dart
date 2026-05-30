@@ -27,6 +27,9 @@ enum ChallengeBotReaction { none, thinking, correct, wrong }
 
 enum ChallengeAnsweredBy { none, user, bot, timeout }
 
+//////////////////// FLASHCARDS ////////////////////////////
+//////////////////// FLASHCARDS ////////////////////////////
+
 class TestPlayModesState {
   //////////////////// MCQ ////////////////////////////
   //////////////////// MCQ ////////////////////////////
@@ -71,6 +74,15 @@ class TestPlayModesState {
   final ChallengeAnsweredBy challengeAnsweredBy;
   final bool? challengeCurrentAnswerIsCorrect;
 
+  //////////////////// FLASHCARDS ////////////////////////////
+  //////////////////// FLASHCARDS ////////////////////////////
+
+  final bool isFlashcardFlipped;
+  final List<int> flashcardQueueQuestionIds;
+  final Set<int> flashcardKnownQuestionIds;
+  final Set<int> flashcardUnknownQuestionIds;
+  final Set<int> flashcardReviewedQuestionIds;
+
   const TestPlayModesState({
     this.contentStatus = TestPlayContentStatus.initial,
     this.content,
@@ -108,6 +120,13 @@ class TestPlayModesState {
 
     this.challengeAnsweredBy = ChallengeAnsweredBy.none,
     this.challengeCurrentAnswerIsCorrect,
+
+    /////////////////////////////
+    this.isFlashcardFlipped = false,
+    this.flashcardQueueQuestionIds = const [],
+    this.flashcardKnownQuestionIds = const {},
+    this.flashcardUnknownQuestionIds = const {},
+    this.flashcardReviewedQuestionIds = const {},
   });
 
   //////////////////// MCQ ////////////////////////////
@@ -282,6 +301,36 @@ class TestPlayModesState {
   bool get didChallengeQuestionTimeout =>
       challengeAnsweredBy == ChallengeAnsweredBy.timeout;
 
+  //////////////////// FLASHCARDS ////////////////////////////
+  //////////////////// FLASHCARDS ////////////////////////////
+
+  bool get hasFlashcardCards => flashcardQueueQuestionIds.isNotEmpty;
+
+  TestPlayQuestionEntity? get currentFlashcardQuestion {
+    if (flashcardQueueQuestionIds.isEmpty) {
+      return null;
+    }
+
+    final currentQuestionId = flashcardQueueQuestionIds.first;
+
+    try {
+      return questions.firstWhere((q) => q.questionId == currentQuestionId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  int get flashcardRemainingCards => flashcardQueueQuestionIds.length;
+
+  int get flashcardKnownCardsCount => flashcardKnownQuestionIds.length;
+
+  int get flashcardUnknownCardsCount => flashcardUnknownQuestionIds.length;
+
+  int get flashcardReviewedCardsCount => flashcardReviewedQuestionIds.length;
+
+  int get flashcardKnownImmediatelyCardsCount =>
+      flashcardKnownQuestionIds.difference(flashcardReviewedQuestionIds).length;
+
   TestPlayModesState copyWith({
     //////////////////// MCQ ////////////////////////////
     //////////////////// MCQ ////////////////////////////
@@ -329,6 +378,14 @@ class TestPlayModesState {
     ChallengeAnsweredBy? challengeAnsweredBy,
     bool? challengeCurrentAnswerIsCorrect,
     bool clearChallengeCurrentAnswerIsCorrect = false,
+
+    //////////////////// FLASH CARD ////////////////////////////
+    //////////////////// FLASH CARD ////////////////////////////
+    bool? isFlashcardFlipped,
+    List<int>? flashcardQueueQuestionIds,
+    Set<int>? flashcardKnownQuestionIds,
+    Set<int>? flashcardUnknownQuestionIds,
+    Set<int>? flashcardReviewedQuestionIds,
   }) {
     return TestPlayModesState(
       contentStatus: contentStatus ?? this.contentStatus,
@@ -373,12 +430,6 @@ class TestPlayModesState {
       challengeBotLastResult:
           challengeBotLastResult ?? this.challengeBotLastResult,
 
-      // challengeUserHasAnsweredCurrentQuestion:
-      //     challengeUserHasAnsweredCurrentQuestion ??
-      //     this.challengeUserHasAnsweredCurrentQuestion,
-      // challengeBotHasAnsweredCurrentQuestion:
-      //     challengeBotHasAnsweredCurrentQuestion ??
-      //     this.challengeBotHasAnsweredCurrentQuestion,
       challengeQuestionTotalSeconds:
           challengeQuestionTotalSeconds ?? this.challengeQuestionTotalSeconds,
       challengeQuestionRemainingSeconds:
@@ -391,6 +442,17 @@ class TestPlayModesState {
           ? null
           : challengeCurrentAnswerIsCorrect ??
                 this.challengeCurrentAnswerIsCorrect,
+
+      /////////////////////////////
+      isFlashcardFlipped: isFlashcardFlipped ?? this.isFlashcardFlipped,
+      flashcardQueueQuestionIds:
+          flashcardQueueQuestionIds ?? this.flashcardQueueQuestionIds,
+      flashcardKnownQuestionIds:
+          flashcardKnownQuestionIds ?? this.flashcardKnownQuestionIds,
+      flashcardUnknownQuestionIds:
+          flashcardUnknownQuestionIds ?? this.flashcardUnknownQuestionIds,
+      flashcardReviewedQuestionIds:
+          flashcardReviewedQuestionIds ?? this.flashcardReviewedQuestionIds,
     );
   }
 }

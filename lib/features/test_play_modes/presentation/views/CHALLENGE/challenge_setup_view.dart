@@ -1,11 +1,17 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/views/CHALLENGE/challenge_session_view.dart';
@@ -24,6 +30,80 @@ class ChallengeSetupView extends StatefulWidget {
 }
 
 class _ChallengeSetupViewState extends State<ChallengeSetupView> {
+  Timer? _characterRollTimer;
+  bool _isRollingCharacter = false;
+  int? _rollingCharacterId;
+  bool _didInitialRoll = false;
+  double _rollingOffsetY = 0;
+
+  final Random _random = Random();
+
+  void _startRandomCharacterRoll() {
+    if (_isRollingCharacter) return;
+
+    final characters = ChallengeCharactersData.characters;
+
+    setState(() {
+      _isRollingCharacter = true;
+      _rollingOffsetY = 0;
+    });
+
+    int ticks = 0;
+
+    _characterRollTimer?.cancel();
+    _characterRollTimer = Timer.periodic(const Duration(milliseconds: 250), (
+      timer,
+    ) {
+      ticks++;
+
+      setState(() {
+        _rollingOffsetY = -SizeConfig.h(0.06);
+      });
+
+      Future.delayed(const Duration(milliseconds: 45), () {
+        if (!mounted || !_isRollingCharacter) return;
+
+        final randomCharacter = characters[_random.nextInt(characters.length)];
+
+        setState(() {
+          _rollingCharacterId = randomCharacter.id;
+          _rollingOffsetY = SizeConfig.h(0.06);
+        });
+
+        Future.delayed(const Duration(milliseconds: 45), () {
+          if (!mounted || !_isRollingCharacter) return;
+
+          setState(() {
+            _rollingOffsetY = 0;
+          });
+        });
+      });
+
+      if (ticks >= 18) {
+        timer.cancel();
+
+        final selectedCharacter =
+            characters[_random.nextInt(characters.length)];
+
+        context.read<TestPlayModesCubit>().selectChallengeCharacter(
+          selectedCharacter.id,
+        );
+
+        setState(() {
+          _rollingCharacterId = null;
+          _rollingOffsetY = 0;
+          _isRollingCharacter = false;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _characterRollTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +118,7 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+    final appColors = context.appColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -45,8 +126,14 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
       body: SafeArea(
         child: BlocBuilder<TestPlayModesCubit, TestPlayModesState>(
           builder: (context, state) {
+            final pageTitle = state.test?.title ?? '';
+
+            // final selectedCharacter = ChallengeCharactersData.selectedById(
+            //   state.selectedChallengeCharacterId,
+            // );
+
             final selectedCharacter = ChallengeCharactersData.selectedById(
-              state.selectedChallengeCharacterId,
+              _rollingCharacterId ?? state.selectedChallengeCharacterId,
             );
 
             if (state.isContentLoading) {
@@ -63,6 +150,15 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
               );
             }
 
+            if (!_didInitialRoll && state.isContentSuccess) {
+              _didInitialRoll = true;
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                _startRandomCharacterRoll();
+              });
+            }
+
             final viewer = state.content?.data.viewer;
             final playerName = viewer?.name ?? 'أنت';
             final playerAvatar = viewer?.avatarUrl ?? AppImage.carmen;
@@ -71,15 +167,27 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
               //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TopPageHeader(
-                  title: 'إعداد التحدي',
+                  title: pageTitle,
                   onBack: () => Navigator.pop(context),
                   icon: Icons.info_outline_rounded,
+                  titleColor: isDark ? AppPalette.grey2Dark : AppPalette.black,
                   onIconTap: () {
                     context
                         .read<TestPlayModesCubit>()
                         .toggleChallengeRulesPanel();
                   },
                 ),
+                CustomButtonWidget(
+                  onTap: () {
+                    debugPrint("change mode ");
+                    context.read<ThemeCubit>().toggleTheme();
+                  },
+                  child: ThemedAppImage(
+                    darkPath: AppImage.logoDark,
+                    lightPath: AppImage.logoLight,
+                  ),
+                ),
+                SizedBox(height: SizeConfig.h(0.015)),
 
                 SizedBox(height: SizeConfig.h(0.018)),
 
@@ -133,11 +241,14 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
                             playerImage: playerAvatar,
                             selectedDifficulty:
                                 state.selectedChallengeDifficulty,
+                            //onOpponentTap: _startRandomCharacterRoll,
                             onOpponentTap: () {
                               context
                                   .read<TestPlayModesCubit>()
                                   .toggleChallengeCharactersPanel();
                             },
+                            isOpponentRolling: _isRollingCharacter,
+                            opponentRollingOffsetY: _rollingOffsetY,
                             onDifficultyChanged: (difficulty) {
                               context
                                   .read<TestPlayModesCubit>()

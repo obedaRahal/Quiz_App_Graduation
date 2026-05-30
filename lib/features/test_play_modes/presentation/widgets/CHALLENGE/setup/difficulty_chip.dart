@@ -46,7 +46,7 @@ class DifficultyChip extends StatelessWidget {
           ),
           child: CustomTextWidget(
             title,
-            color: isSelected ? AppPalette.white : appColors.blackToGrey2Dark,
+            color: isSelected ? appColors.whiteToblack : appColors.blackToGrey2Dark,
             fontFamily: AppFont.elMessiriSemiBold,
             fontSize: SizeConfig.text(0.03),
           ),

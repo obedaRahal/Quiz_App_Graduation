@@ -11,11 +11,16 @@ class ChallengePlayerAvatar extends StatelessWidget {
   final String title;
   final String imagePath;
   final bool showTapHint;
+  final bool isRolling;
+  final double rollingOffsetY;
 
-  const ChallengePlayerAvatar({super.key, 
+  const ChallengePlayerAvatar({
+    super.key,
     required this.title,
     required this.imagePath,
     this.showTapHint = false,
+    this.isRolling = false,
+    this.rollingOffsetY = 0,
   });
 
   @override
@@ -27,8 +32,17 @@ class ChallengePlayerAvatar extends StatelessWidget {
         Stack(
           alignment: Alignment.bottomCenter,
           children: [
-
-            ReviewerAvatar(avatarPath: imagePath),
+            //ReviewerAvatar(avatarPath: imagePath),
+            AnimatedSlide(
+              duration: const Duration(milliseconds: 90),
+              curve: Curves.easeInOut,
+              offset: Offset(0, rollingOffsetY / SizeConfig.h(-0.1)),
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 90),
+                opacity: isRolling ? 0.55 : 1,
+                child: ReviewerAvatar(avatarPath: imagePath),
+              ),
+            ),
             if (showTapHint)
               Container(
                 padding: EdgeInsets.symmetric(
@@ -41,7 +55,7 @@ class ChallengePlayerAvatar extends StatelessWidget {
                 ),
                 child: CustomTextWidget(
                   'تغيير',
-                  color: AppPalette.white,
+                  color: appColors.whiteToblack,
                   fontFamily: AppFont.elMessiriMedium,
                   fontSize: SizeConfig.text(0.015),
                 ),
@@ -50,7 +64,7 @@ class ChallengePlayerAvatar extends StatelessWidget {
         ),
         SizedBox(height: SizeConfig.h(0.008)),
         CustomBackgroundWithChild(
-          backgroundColor: AppPalette.white,
+          backgroundColor: appColors.whiteToblack,
           borderRadius: BorderRadius.circular(10),
           childHorizontalPad: SizeConfig.w(0.025),
           child: CustomTextWidget(
@@ -64,4 +78,3 @@ class ChallengePlayerAvatar extends StatelessWidget {
     );
   }
 }
-

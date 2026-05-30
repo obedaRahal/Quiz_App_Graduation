@@ -735,6 +735,37 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     );
   }
 
+  void restartMcqSession() {
+    debugPrint(
+      "============ TestPlayModesCubit.restartMcqSession ============",
+    );
+
+    if (!state.hasPlayableContent) {
+      debugPrint("✗ no playable content");
+      debugPrint("=================================================");
+      return;
+    }
+
+    _stopSessionTimer();
+
+    emit(
+      state.copyWith(
+        currentQuestionIndex: 0,
+        clearSelectedOption: true,
+        mcqQuestionPhase: McqQuestionPhase.idle,
+        answersByQuestionId: {},
+        elapsedSeconds: 0,
+        sessionStatus: TestPlaySessionStatus.playing,
+        clearError: true,
+      ),
+    );
+
+    _startSessionTimer();
+
+    debugPrint("✓ mcq session restarted");
+    debugPrint("=================================================");
+  }
+
   //////////////////// CHALLENGE ////////////////////////////
   //////////////////// CHALLENGE ////////////////////////////
   //////////////////// CHALLENGE ////////////////////////////
@@ -1331,6 +1362,170 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     debugPrint("→ isCorrect: $isCorrect");
     debugPrint("→ userScore: $userScore");
     debugPrint("→ botScore: $botScore");
+    debugPrint("=================================================");
+  }
+
+  void restartChallengeSession() {
+    debugPrint(
+      "============ TestPlayModesCubit.restartChallengeSession ============",
+    );
+
+    if (!state.hasPlayableContent) {
+      debugPrint("✗ no playable content");
+      debugPrint("=================================================");
+      return;
+    }
+
+    startChallengeSession();
+
+    debugPrint("✓ challenge session restarted");
+    debugPrint("=================================================");
+  }
+
+  //////////////////// FLASH CARD ////////////////////////////
+  //////////////////// FLASH CARD ////////////////////////////
+  void toggleFlashcard() {
+    debugPrint("============ TestPlayModesCubit.toggleFlashcard ============");
+
+    if (state.currentFlashcardQuestion == null) {
+      debugPrint("✗ currentFlashcardQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        isFlashcardFlipped: !state.isFlashcardFlipped,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("✓ flashcard flipped");
+    debugPrint("=================================================");
+  }
+
+  void startFlashcardSession() {
+    _stopSessionTimer();
+    _stopChallengeBotTimer();
+    _stopChallengeQuestionTimer();
+
+    final queue = state.questions.map((e) => e.questionId).toList();
+
+    emit(
+      state.copyWith(
+        sessionStatus: TestPlaySessionStatus.playing,
+
+        flashcardQueueQuestionIds: queue,
+
+        flashcardKnownQuestionIds: {},
+
+        flashcardUnknownQuestionIds: {},
+
+        flashcardReviewedQuestionIds: {},
+
+        isFlashcardFlipped: false,
+      ),
+    );
+
+    _startSessionTimer();
+  }
+
+  void markCurrentFlashcardAsKnown() {
+    debugPrint(
+      "============ TestPlayModesCubit.markCurrentFlashcardAsKnown ============",
+    );
+
+    final question = state.currentFlashcardQuestion;
+
+    if (question == null) {
+      debugPrint("✗ currentFlashcardQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final queue = List<int>.from(state.flashcardQueueQuestionIds);
+    final knownIds = Set<int>.from(state.flashcardKnownQuestionIds);
+    final unknownIds = Set<int>.from(state.flashcardUnknownQuestionIds);
+
+    queue.removeAt(0);
+    knownIds.add(question.questionId);
+    unknownIds.remove(question.questionId);
+
+    if (queue.isEmpty) {
+      emit(
+        state.copyWith(
+          flashcardQueueQuestionIds: queue,
+          flashcardKnownQuestionIds: knownIds,
+          flashcardUnknownQuestionIds: unknownIds,
+          isFlashcardFlipped: false,
+          sessionStatus: TestPlaySessionStatus.completed,
+          clearError: true,
+        ),
+      );
+
+      _stopSessionTimer();
+
+      debugPrint("✓ flashcard session completed");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        flashcardQueueQuestionIds: queue,
+        flashcardKnownQuestionIds: knownIds,
+        flashcardUnknownQuestionIds: unknownIds,
+        isFlashcardFlipped: false,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("✓ flashcard marked as known");
+    debugPrint("→ remaining: ${queue.length}");
+    debugPrint("=================================================");
+  }
+
+  void markCurrentFlashcardAsUnknown() {
+    debugPrint(
+      "============ TestPlayModesCubit.markCurrentFlashcardAsUnknown ============",
+    );
+
+    final question = state.currentFlashcardQuestion;
+
+    if (question == null) {
+      debugPrint("✗ currentFlashcardQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final queue = List<int>.from(state.flashcardQueueQuestionIds);
+    final knownIds = Set<int>.from(state.flashcardKnownQuestionIds);
+    final unknownIds = Set<int>.from(state.flashcardUnknownQuestionIds);
+    final reviewedIds = Set<int>.from(state.flashcardReviewedQuestionIds);
+
+    final currentQuestionId = queue.removeAt(0);
+
+    knownIds.remove(currentQuestionId);
+    unknownIds.add(currentQuestionId);
+    reviewedIds.add(currentQuestionId);
+
+    final insertIndex = queue.length >= 4 ? 4 : queue.length;
+    queue.insert(insertIndex, currentQuestionId);
+
+    emit(
+      state.copyWith(
+        flashcardQueueQuestionIds: queue,
+        flashcardKnownQuestionIds: knownIds,
+        flashcardUnknownQuestionIds: unknownIds,
+        flashcardReviewedQuestionIds: reviewedIds,
+        isFlashcardFlipped: false,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("✓ flashcard marked as unknown and rescheduled");
+    debugPrint("→ insertIndex: $insertIndex");
+    debugPrint("→ remaining: ${queue.length}");
     debugPrint("=================================================");
   }
 

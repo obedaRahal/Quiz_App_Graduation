@@ -67,7 +67,6 @@ class TestOverviewTab extends StatelessWidget {
               childVerticalPad: SizeConfig.h(0.01),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: AppPalette.red),
-
               child: CustomTextWidget(
                 "هذا المحتوى طلابي وليس من صاحب معلومة موثق",
                 color: AppPalette.red,

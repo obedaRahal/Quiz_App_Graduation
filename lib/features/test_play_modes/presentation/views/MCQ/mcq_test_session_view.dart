@@ -91,18 +91,19 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
             }
           },
           builder: (context, state) {
-            final pageTitle = state.test?.title ?? 'جلسة امتحانية';
+            final pageTitle = state.test?.title ?? '';
 
             return Column(
               children: [
-                TopPageHeader(
-                  title: pageTitle,
-                  onBack: _onBackTap,
-                  icon: state.isVoiceSpeaking
-                      ? Icons.stop_circle_outlined
-                      : Icons.volume_up_outlined,
-                  onIconTap: _onSoundTap,
-                ),
+                if (!state.isCompleted)
+                  TopPageHeader(
+                    title: pageTitle,
+                    onBack: _onBackTap,
+                    icon: state.isVoiceSpeaking
+                        ? Icons.stop_circle_outlined
+                        : Icons.volume_up_outlined,
+                    onIconTap: _onSoundTap,
+                  ),
 
                 if (state.isContentLoading) ...[
                   const Expanded(child: McqTestSessionShimmer()),

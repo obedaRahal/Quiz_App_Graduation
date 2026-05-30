@@ -23,13 +23,13 @@ class ChallengeDifficultySelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        CustomTextWidget(
-          'مستوى التحدي',
-          color: appColors.blackToGrey2Dark,
-          fontFamily: AppFont.elMessiriSemiBold,
-          fontSize: SizeConfig.text(0.04),
-        ),
-        SizedBox(height: SizeConfig.h(0.01)),
+        // CustomTextWidget(
+        //   'مستوى التحدي',
+        //   color: appColors.blackToGrey2Dark,
+        //   fontFamily: AppFont.elMessiriSemiBold,
+        //   fontSize: SizeConfig.text(0.04),
+        // ),
+        // SizedBox(height: SizeConfig.h(0.01)),
         Row(
           textDirection: TextDirection.rtl,
           children: [

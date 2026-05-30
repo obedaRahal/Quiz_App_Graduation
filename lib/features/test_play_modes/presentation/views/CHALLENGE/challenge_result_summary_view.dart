@@ -28,13 +28,16 @@ class ChallengeResultSummaryView extends StatelessWidget {
 
             final viewer = state.content?.data.viewer;
             final playerName = viewer?.name ?? 'أنت';
-            final playerImage = viewer?.avatarUrl ;
+            final playerImage = viewer?.avatarUrl;
 
             return Column(
               children: [
                 TopPageHeader(
                   title: 'ملخص التحدي',
-                  onBack: () => Navigator.pop(context),
+                  onBack: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
                   icon: Icons.ios_share,
                   onIconTap: () {
                     debugPrint('share challenge result');
@@ -73,10 +76,9 @@ class ChallengeResultSummaryView extends StatelessWidget {
 
                 PlayAgainButton(
                   onTap: () {
-                    context.read<TestPlayModesCubit>().resetSession();
-                    //context.read<TestPlayModesCubit>().loadMockTestContent();
-
-                    Navigator.pop(context);
+                    context
+                        .read<TestPlayModesCubit>()
+                        .restartChallengeSession();
                   },
                 ),
               ],

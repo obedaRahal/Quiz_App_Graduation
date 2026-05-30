@@ -7,6 +7,7 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/my_published_review_card.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHALLENGE/challenge_characters_data.dart';
+
 class ChallengeCharactersPanel extends StatelessWidget {
   final int selectedCharacterId;
   final ValueChanged<int> onCharacterSelected;
@@ -20,6 +21,7 @@ class ChallengeCharactersPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final availableCharacters = ChallengeCharactersData.characters
         .where((character) => character.id != selectedCharacterId)
@@ -29,7 +31,7 @@ class ChallengeCharactersPanel extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
       child: CustomBackgroundWithChild(
         width: double.infinity,
-        backgroundColor: const Color(0xffFAFAFA),
+        backgroundColor: isDark ? AppPalette.greyMediumDark : const Color(0xffFAFAFA),
         borderRadius: BorderRadius.circular(18),
         padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
         child: Column(
@@ -39,7 +41,7 @@ class ChallengeCharactersPanel extends StatelessWidget {
 
             CustomTextWidget(
               'الشخصيات',
-              color: appColors.blackToGreyLightDark,
+              color: appColors.blackToGrey2Dark,
               fontFamily: AppFont.elMessiriBold,
               fontSize: SizeConfig.text(0.04),
             ),
@@ -66,7 +68,7 @@ class ChallengeCharactersPanel extends StatelessWidget {
                         SizedBox(height: SizeConfig.h(0.006)),
 
                         CustomBackgroundWithChild(
-                          backgroundColor: AppPalette.white,
+                          backgroundColor: appColors.whiteToblack,
                           childHorizontalPad: SizeConfig.h(0.01),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(

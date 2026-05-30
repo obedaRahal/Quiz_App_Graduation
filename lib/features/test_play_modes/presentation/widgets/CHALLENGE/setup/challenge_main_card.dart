@@ -5,7 +5,6 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/my_published_review_card.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHALLENGE/setup/challenge_difficulty_selector.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHALLENGE/setup/challenge_player_avatar.dart';
@@ -20,6 +19,9 @@ class ChallengeMainCard extends StatelessWidget {
   final ValueChanged<ChallengeDifficulty> onDifficultyChanged;
   final VoidCallback onStartChallenge;
 
+  final bool isOpponentRolling;
+  final double opponentRollingOffsetY;
+
   const ChallengeMainCard({
     super.key,
     required this.selectedCharacterName,
@@ -30,6 +32,8 @@ class ChallengeMainCard extends StatelessWidget {
     required this.onOpponentTap,
     required this.onDifficultyChanged,
     required this.onStartChallenge,
+    required this.isOpponentRolling,
+    required this.opponentRollingOffsetY,
   });
 
   @override
@@ -57,6 +61,8 @@ class ChallengeMainCard extends StatelessWidget {
                   title: selectedCharacterName,
                   imagePath: selectedCharacterImage,
                   showTapHint: true,
+                  isRolling: isOpponentRolling,
+                  rollingOffsetY: opponentRollingOffsetY,
                 ),
               ),
             ],
@@ -66,7 +72,7 @@ class ChallengeMainCard extends StatelessWidget {
 
           CustomTextWidget(
             'تحدي',
-            color: appColors.blackTogreyMedium,
+            color: appColors.blackToGrey2Dark,
             fontFamily: AppFont.elMessiriBold,
             fontSize: SizeConfig.text(0.05),
           ),
@@ -74,7 +80,7 @@ class ChallengeMainCard extends StatelessWidget {
           SizedBox(height: SizeConfig.h(0.005)),
 
           CustomTextWidget(
-            'حاول التغلب على نيرد في هذا التحدي الممتع انتبه ! ليس لديك الكثير من الوقت يا صديقي',
+            'حاول التغلب على نيرد في هذا التحدي الممتع , ويمكنك اختيار مستوى التحدي , انتبه ! ليس لديك الكثير من الوقت يا صديقي',
             color: AppPalette.greyMedium,
             fontFamily: AppFont.elMessiriMedium,
             fontSize: SizeConfig.text(0.03),
@@ -82,7 +88,7 @@ class ChallengeMainCard extends StatelessWidget {
             textDirection: TextDirection.rtl,
           ),
 
-          SizedBox(height: SizeConfig.h(0.005)),
+          SizedBox(height: SizeConfig.h(0.05)),
 
           ChallengeDifficultySelector(
             selectedDifficulty: selectedDifficulty,
@@ -98,11 +104,13 @@ class ChallengeMainCard extends StatelessWidget {
               height: SizeConfig.h(0.05),
               alignment: Alignment.center,
               backgroundColor: appColors.primaryToPrimaryDark,
-              boxShadow: [BoxShadow(color: AppPalette.primary, blurRadius: 4)],
+              boxShadow: [
+                BoxShadow(color: appColors.primaryToPrimaryDark, blurRadius: 4),
+              ],
               borderRadius: BorderRadius.circular(18),
               child: CustomTextWidget(
                 'ابدأ التحدي',
-                color: AppPalette.white,
+                color: appColors.whiteToblack,
                 fontFamily: AppFont.elMessiriBold,
                 fontSize: SizeConfig.text(0.035),
               ),
@@ -113,4 +121,3 @@ class ChallengeMainCard extends StatelessWidget {
     );
   }
 }
-

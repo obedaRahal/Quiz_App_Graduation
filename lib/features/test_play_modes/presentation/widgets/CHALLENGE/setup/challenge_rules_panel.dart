@@ -11,12 +11,13 @@ class ChallengeRulesPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
       child: CustomBackgroundWithChild(
         width: double.infinity,
-        backgroundColor: appColors.whiteToPrimaryDark,
+        backgroundColor: isDark ? AppPalette.greyMediumDark : AppPalette.white,
         borderRadius: BorderRadius.circular(18),
         padding: EdgeInsets.all(SizeConfig.w(0.035)),
         child: Column(
@@ -34,7 +35,7 @@ class ChallengeRulesPanel extends StatelessWidget {
                 Expanded(
                   child: CustomTextWidget(
                     'كل إجابة صحيحة لك تحسب نقطة واحدة وكذلك للخصم بنفس الطريقة في حال اجابته بشكل صحيح',
-                    color: appColors.greyMediumTogrey,
+                    color: AppPalette.greyMedium,
                     fontFamily: AppFont.elMessiriMedium,
                     fontSize: SizeConfig.text(0.026),
                     textAlign: TextAlign.right,
@@ -45,9 +46,10 @@ class ChallengeRulesPanel extends StatelessWidget {
                 CustomBackgroundWithChild(
                   borderRadius: BorderRadius.circular(20),
                   padding: EdgeInsets.symmetric(horizontal: SizeConfig.h(0.01)),
-                  backgroundColor: AppPalette.primarySoft,
+                  backgroundColor: appColors.primarySoftTogreyLightDark,
                   child: CustomTextWidget(
                     '1',
+                    color: appColors.primaryToPrimaryDark,
                     fontFamily: AppFont.elMessiriBold,
                     fontSize: SizeConfig.text(0.04),
                   ),
@@ -61,7 +63,7 @@ class ChallengeRulesPanel extends StatelessWidget {
                 Expanded(
                   child: CustomTextWidget(
                     'الاجابة الخاطئة لا تلغي نقطة وفي حال عدم الاجابة خلال الوقت المحدد لن يتم الحصول على نقاط',
-                    color: appColors.greyMediumTogrey,
+                    color: AppPalette.greyMedium,
                     fontFamily: AppFont.elMessiriMedium,
                     fontSize: SizeConfig.text(0.026),
                     textAlign: TextAlign.right,
@@ -72,9 +74,10 @@ class ChallengeRulesPanel extends StatelessWidget {
                 CustomBackgroundWithChild(
                   borderRadius: BorderRadius.circular(20),
                   padding: EdgeInsets.symmetric(horizontal: SizeConfig.h(0.01)),
-                  backgroundColor: AppPalette.primarySoft,
+                  backgroundColor: appColors.primarySoftTogreyLightDark,
                   child: CustomTextWidget(
                     '2',
+                    color: appColors.primaryToPrimaryDark,
                     fontFamily: AppFont.elMessiriBold,
                     fontSize: SizeConfig.text(0.04),
                   ),

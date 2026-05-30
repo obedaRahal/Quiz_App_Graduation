@@ -42,14 +42,6 @@ class McqResultSummaryView extends StatelessWidget {
 
             return Column(
               children: [
-                // TopPageHeader(
-                //   title: 'ملخص الاختبار',
-                //   onBack: () => Navigator.pop(context),
-                //   icon: Icons.download_outlined,
-                //   onIconTap: () {
-                //     debugPrint('download summary');
-                //   },
-                // ),
                 BlocConsumer<TestPlayModesCubit, TestPlayModesState>(
                   listenWhen: (previous, current) =>
                       previous.mcqResultPdfStatus != current.mcqResultPdfStatus,
@@ -157,10 +149,11 @@ class McqResultSummaryView extends StatelessWidget {
 
                 PlayAgainButton(
                   onTap: () {
-                    context.read<TestPlayModesCubit>().resetSession();
-                    context.read<TestPlayModesCubit>().loadMockTestContent();
+                    context
+                        .read<TestPlayModesCubit>()
+                        .restartMcqSession(); //context.read<TestPlayModesCubit>().loadMockTestContent();
 
-                    Navigator.pop(context);
+                    //Navigator.pop(context);
                   },
                 ),
               ],
@@ -617,7 +610,7 @@ class PlayAgainButton extends StatelessWidget {
         childHorizontalPad: SizeConfig.w(0.04),
         childVerticalPad: SizeConfig.h(0.007),
         backgroundColor: appColors.primaryToPrimaryDark,
-        onTap: () {},
+        onTap: onTap,
         child: CustomTextWidget(
           "اللعب مرة اخرى",
           color: appColors.whiteToblack,

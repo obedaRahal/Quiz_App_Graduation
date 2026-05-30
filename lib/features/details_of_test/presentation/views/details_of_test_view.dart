@@ -301,20 +301,7 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                       );
                     },
                   ),
-
                   SizedBox(height: SizeConfig.h(0.015)),
-                  CustomButtonWidget(
-                    onTap: () {
-                      debugPrint("change mode ");
-                      context.read<ThemeCubit>().toggleTheme();
-                    },
-                    child: ThemedAppImage(
-                      darkPath: AppImage.logoDark,
-                      lightPath: AppImage.logoLight,
-                    ),
-                  ),
-                  SizedBox(height: SizeConfig.h(0.015)),
-
                   Expanded(
                     child: BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
                       builder: (context, state) {
@@ -486,6 +473,13 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                   },
                                   onFlashCardModeTap: () {
                                     debugPrint("flash");
+
+                                    context.pushNamed(
+                                      AppRouterName.flashcardView,
+                                      extra: TestPlayModesRouteArgs(
+                                        testId: overview.data.id,
+                                      ),
+                                    );
                                   },
                                 ),
 
