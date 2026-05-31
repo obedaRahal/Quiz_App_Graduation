@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/config/app_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
+import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
@@ -11,6 +12,8 @@ import 'package:quiz_app_grad/core/theme/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  //await TokenStorage.clear();
 
   await CacheHelper.init();
   await initSl();

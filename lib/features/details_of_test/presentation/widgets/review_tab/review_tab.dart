@@ -176,6 +176,7 @@ class ReviewTab extends StatelessWidget {
                   targetId: reviewId,
                   reason: reason.label,
                   description: description,
+                  testId: testId,
                 );
               },
             );

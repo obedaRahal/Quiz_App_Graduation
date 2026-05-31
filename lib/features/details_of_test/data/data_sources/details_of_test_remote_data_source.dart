@@ -8,6 +8,7 @@ import 'package:quiz_app_grad/features/details_of_test/data/models/delete_test_r
 import 'package:quiz_app_grad/features/details_of_test/data/models/download_test_file_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/review_feedback_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/shared_test_link_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/stripe_checkout_session_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/submit_report_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_bookmark_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_follow_action_model.dart';
@@ -92,6 +93,10 @@ abstract class DetailsOfTestRemoteDataSource {
     required TestInteractionUsersType type,
     String search = '',
     String? cursor,
+  });
+
+  Future<StripeCheckoutSessionModel> createStripeCheckoutSession({
+    required int testId,
   });
 }
 
@@ -554,5 +559,33 @@ class DetailsOfTestRemoteDataSourceImpl
     debugPrint("=================================================");
 
     return TestInteractionUsersModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<StripeCheckoutSessionModel> createStripeCheckoutSession({
+    required int testId,
+  }) async {
+    debugPrint(
+      "============ DetailsOfTestRemoteDataSourceImpl.createStripeCheckoutSession ============",
+    );
+
+    final endpoint = EndPoints.createStripeCheckoutSession(testId: testId);
+
+    debugPrint("→ endpoint: $endpoint");
+    debugPrint("→ method: POST");
+    debugPrint("→ params: {testId: $testId}");
+    final idempotencyKey = const Uuid().v4();
+
+    final response = await apiConsumer.post(
+      endpoint,
+      headers: {'Idempotency-Key': idempotencyKey},
+    );
+
+    debugPrint("← response (createStripeCheckoutSession): $response");
+    debugPrint("=================================================");
+
+    return StripeCheckoutSessionModel.fromJson(
+      response as Map<String, dynamic>,
+    );
   }
 }

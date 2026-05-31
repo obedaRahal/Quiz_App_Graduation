@@ -43,6 +43,11 @@ import 'package:quiz_app_grad/features/onboarding/presentation/models/onboarding
 import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/views/CHALLENGE/challenge_setup_view.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/views/FLASHCARD/flashcard_session_view.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/views/MCQ/mcq_test_session_view.dart';
 
 class AppRouter {
   AppRouter._();
@@ -323,6 +328,59 @@ class AppRouter {
                 },
                 child: const DetailsOfTestView(),
               ),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.mcqTestSessionView,
+          name: AppRouterName.mcqTestSessionView,
+          builder: (context, state) {
+            debugPrint("============ mcqTestSessionView Route ============");
+
+            final args = state.extra as TestPlayModesRouteArgs;
+
+            debugPrint("→ received testId: ${args.testId}");
+            debugPrint("=================================================");
+
+            return BlocProvider(
+              create: (_) => sl<TestPlayModesCubit>(),
+              child: McqTestSessionView(testId: args.testId),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRouterPath.challengeSetupView,
+          name: AppRouterName.challengeSetupView,
+          builder: (context, state) {
+            debugPrint("============ challengeSetupView Route ============");
+
+            final args = state.extra as TestPlayModesRouteArgs;
+
+            debugPrint("→ received testId: ${args.testId}");
+            debugPrint("=================================================");
+
+            return BlocProvider(
+              create: (_) => sl<TestPlayModesCubit>(),
+              child: ChallengeSetupView(testId: args.testId),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.flashcardView,
+          name: AppRouterName.flashcardView,
+          builder: (context, state) {
+            debugPrint("============ flashcardView Route ============");
+
+            final args = state.extra as TestPlayModesRouteArgs;
+
+            debugPrint("→ received testId: ${args.testId}");
+            debugPrint("=================================================");
+
+            return BlocProvider(
+              create: (_) => sl<TestPlayModesCubit>(),
+              child: FlashcardSessionView(testId: args.testId),
             );
           },
         ),

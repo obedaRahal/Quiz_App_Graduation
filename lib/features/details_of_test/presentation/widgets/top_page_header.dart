@@ -2,25 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class TopPageHeader extends StatelessWidget {
   final String title;
   final VoidCallback onBack;
-  final VoidCallback onShare;
+  final VoidCallback onIconTap;
+  final IconData icon;
+  final Color? titleColor;
 
   const TopPageHeader({
     super.key,
     required this.title,
     required this.onBack,
-    required this.onShare,
+    required this.onIconTap,
+    required this.icon,
+    this.titleColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
+    final resolvedTitleColor = titleColor ?? appColors.blackTogreyMedium;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
@@ -35,12 +39,12 @@ class TopPageHeader extends StatelessWidget {
             child: Center(
               child: CustomTextWidget(
                 title,
-                color: appColors.blackTogreyMedium,
+                color: resolvedTitleColor,
                 fontFamily: AppFont.elMessiriSemiBold,
               ),
             ),
           ),
-          _HeaderActionButton(icon: Icons.ios_share, onTap: onShare),
+          _HeaderActionButton(icon: icon, onTap: onIconTap),
         ],
       ),
     );

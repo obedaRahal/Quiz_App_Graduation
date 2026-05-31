@@ -19,6 +19,9 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
   final VoidCallback? onLikeValueTap;
   final VoidCallback? onBookmarkTap;
   final VoidCallback? onBookmarkValueTap;
+  final void Function() onMcqModeTap;
+  final void Function() onChallengeModeTap;
+  final void Function() onFlashCardModeTap;
 
   const TestDetailsWithPlayModesSection({
     super.key,
@@ -35,16 +38,20 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
     this.onLikeTap,
     this.onLikeValueTap,
     this.onBookmarkTap,
-    this.onBookmarkValueTap
+    this.onBookmarkValueTap,
+
+    required this.onMcqModeTap,
+    required this.onChallengeModeTap,
+    required this.onFlashCardModeTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final detailsHeight = SizeConfig.h(0.21);
+    final detailsHeight = SizeConfig.h(0.24);
     final playCardHeight = SizeConfig.h(0.15);
-    final overlapSpace = SizeConfig.h(0.04);
+    final overlapSpace = SizeConfig.h(0.09);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
@@ -69,7 +76,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                   hasLiked: hasLiked,
                   hasBookmarked: hasBookmarked,
                   onLikeTap: onLikeTap,
-                  onLikeValueTap:onLikeValueTap ,
+                  onLikeValueTap: onLikeValueTap,
                   onBookmarkTap: onBookmarkTap,
                   onBookmarkValueTap: onBookmarkValueTap,
                 ),
@@ -78,8 +85,8 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
 
             Positioned(
               top: detailsHeight - overlapSpace,
-              left: SizeConfig.w(0.2),
-              right: 0,
+              left: SizeConfig.w(0.25),
+              right: SizeConfig.w(0.02),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -90,7 +97,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                     shadowColor: isDark
                         ? AppPalette.black
                         : AppPalette.circleContainer3,
-                    onTap: () => debugPrint("challenge"),
+                    onTap: onChallengeModeTap,
                   ),
                   PlayModeCard(
                     title: "اختيارات متعددة",
@@ -99,7 +106,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                     shadowColor: isDark
                         ? AppPalette.black
                         : AppPalette.circleContainer3,
-                    onTap: () => debugPrint("mcq"),
+                    onTap: onMcqModeTap,
                   ),
                   PlayModeCard(
                     title: "بطاقات الاستذكار",
@@ -108,7 +115,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                     shadowColor: isDark
                         ? AppPalette.black
                         : AppPalette.circleContainer1,
-                    onTap: () => debugPrint("flashcards"),
+                    onTap: onFlashCardModeTap,
                   ),
                 ],
               ),

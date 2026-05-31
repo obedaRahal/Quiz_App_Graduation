@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -24,10 +26,59 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_purchase_bottom_bar.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class DetailsOfTestView extends StatelessWidget {
+class DetailsOfTestView extends StatefulWidget {
   const DetailsOfTestView({super.key});
+
+  @override
+  State<DetailsOfTestView> createState() => _DetailsOfTestViewState();
+}
+
+class _DetailsOfTestViewState extends State<DetailsOfTestView>
+    with WidgetsBindingObserver {
+  bool _waitingPaymentReturn = false;
+  int? _paymentTestId;
+  bool _showPaymentResultAfterRefresh = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    if (!_waitingPaymentReturn || _paymentTestId == null) return;
+    if (!mounted) return;
+
+    debugPrint("============ Payment Return Detected ============");
+    debugPrint("→ refreshing overview for testId: $_paymentTestId");
+    debugPrint("=================================================");
+
+    _waitingPaymentReturn = false;
+    _showPaymentResultAfterRefresh = true;
+
+    showValidationTopSnackBar(
+      context,
+      title: "التحقق من الدفع",
+      message: "جاري التحقق من حالة عملية الدفع...",
+      type: AppValidationSnackBarType.hint,
+    );
+
+    context.read<DetailsOfTestCubit>().getOtherTestDetailsOverview(
+      testId: _paymentTestId!,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +88,11 @@ class DetailsOfTestView extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.likeActionStatus != current.likeActionStatus ||
               previous.bookmarkActionStatus != current.bookmarkActionStatus ||
-              previous.followActionStatus != current.followActionStatus,
-          listener: (context, state) {
+              previous.followActionStatus != current.followActionStatus ||
+              previous.stripeCheckoutStatus != current.stripeCheckoutStatus ||
+              previous.overviewStatus != current.overviewStatus ||
+              previous.overviewDetails != current.overviewDetails,
+          listener: (context, state) async {
             if (state.isLikeActionFailure) {
               showValidationTopSnackBar(
                 context,
@@ -79,6 +133,95 @@ class DetailsOfTestView extends StatelessWidget {
                   .read<DetailsOfTestCubit>()
                   .resetLikeBookmarkFollowActionsState();
               return;
+            }
+
+            if (state.isStripeCheckoutSuccess) {
+              final checkoutUrl = state.stripeCheckoutUrl;
+
+              if (checkoutUrl == null || checkoutUrl.isEmpty) {
+                showValidationTopSnackBar(
+                  context,
+                  title: "خطأ",
+                  message: "تعذر فتح صفحة الدفع",
+                  type: AppValidationSnackBarType.error,
+                );
+
+                context.read<DetailsOfTestCubit>().resetStripeCheckoutState();
+                return;
+              }
+
+              _paymentTestId = state.overviewDetails?.data.id;
+
+              final uri = Uri.parse(checkoutUrl);
+
+              final opened = await launchUrl(
+                uri,
+                mode: LaunchMode.inAppBrowserView,
+              );
+
+              if (!opened) {
+                showValidationTopSnackBar(
+                  context,
+                  title: "خطأ",
+                  message: "تعذر فتح صفحة الدفع",
+                  type: AppValidationSnackBarType.error,
+                );
+              }
+
+              context.read<DetailsOfTestCubit>().resetStripeCheckoutState();
+
+              if (opened) {
+                _waitingPaymentReturn = true;
+
+                showValidationTopSnackBar(
+                  context,
+                  title: "الدفع",
+                  message: "تم فتح صفحة الدفع، أكمل العملية ثم عد إلى التطبيق",
+                  type: AppValidationSnackBarType.hint,
+                );
+              }
+            }
+
+            if (state.isStripeCheckoutFailure) {
+              showValidationTopSnackBar(
+                context,
+                title: state.errorTitle ?? "خطأ",
+                message: state.errorMessage ?? "تعذر إنشاء جلسة الدفع",
+                type: AppValidationSnackBarType.error,
+              );
+
+              context.read<DetailsOfTestCubit>().resetStripeCheckoutState();
+            }
+
+            if (_showPaymentResultAfterRefresh && state.isOverviewSuccess) {
+              _showPaymentResultAfterRefresh = false;
+
+              final hasPurchased =
+                  state
+                      .overviewDetails
+                      ?.data
+                      .extraInfo
+                      .viewerContext
+                      .hasPurchased ??
+                  false;
+
+              if (hasPurchased) {
+                showValidationTopSnackBar(
+                  context,
+                  title: "تم الدفع بنجاح",
+                  message: "تم تأكيد شراء الاختبار ويمكنك الآن الوصول للمحتوى",
+                  type: AppValidationSnackBarType.success,
+                );
+              } else {
+                showValidationTopSnackBar(
+                  context,
+                  title: "لم يتم تأكيد الدفع بعد",
+                  message: "إذا أتممت الدفع انتظر قليلًا ثم حدّث الصفحة",
+                  type: AppValidationSnackBarType.hint,
+                );
+              }
+
+              _paymentTestId = null;
             }
           },
           child: Scaffold(
@@ -135,7 +278,8 @@ class DetailsOfTestView extends StatelessWidget {
                       return TopPageHeader(
                         title: 'تفاصيل اختبار',
                         onBack: () => safeBackToHome(context),
-                        onShare: state.isShareLinkLoading
+                        icon: Icons.ios_share,
+                        onIconTap: state.isShareLinkLoading
                             ? () {}
                             : () {
                                 debugPrint('share');
@@ -157,20 +301,7 @@ class DetailsOfTestView extends StatelessWidget {
                       );
                     },
                   ),
-
                   SizedBox(height: SizeConfig.h(0.015)),
-                  CustomButtonWidget(
-                    onTap: () {
-                      debugPrint("change mode ");
-                      context.read<ThemeCubit>().toggleTheme();
-                    },
-                    child: ThemedAppImage(
-                      darkPath: AppImage.logoDark,
-                      lightPath: AppImage.logoLight,
-                    ),
-                  ),
-                  SizedBox(height: SizeConfig.h(0.015)),
-
                   Expanded(
                     child: BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
                       builder: (context, state) {
@@ -322,6 +453,34 @@ class DetailsOfTestView extends StatelessWidget {
                                       searchHint: 'ابحث عن مستخدم',
                                     );
                                   },
+                                  onMcqModeTap: () {
+                                    debugPrint("go to MCQ MODE");
+                                    context.pushNamed(
+                                      AppRouterName.mcqTestSessionView,
+                                      extra: TestPlayModesRouteArgs(
+                                        testId: overview.data.id,
+                                      ),
+                                    );
+                                  },
+                                  onChallengeModeTap: () {
+                                    debugPrint("chaleng");
+                                    context.pushNamed(
+                                      AppRouterName.challengeSetupView,
+                                      extra: TestPlayModesRouteArgs(
+                                        testId: overview.data.id,
+                                      ),
+                                    );
+                                  },
+                                  onFlashCardModeTap: () {
+                                    debugPrint("flash");
+
+                                    context.pushNamed(
+                                      AppRouterName.flashcardView,
+                                      extra: TestPlayModesRouteArgs(
+                                        testId: overview.data.id,
+                                      ),
+                                    );
+                                  },
                                 ),
 
                                 SizedBox(height: SizeConfig.h(0.035)),
@@ -426,9 +585,17 @@ class DetailsOfTestView extends StatelessWidget {
                             overview.data.extraInfo.viewerContext.canDownload,
                         canReport:
                             overview.data.extraInfo.viewerContext.canReport,
-                        onBuyTap: () {
-                          debugPrint("buy now");
-                        },
+                        onBuyTap: state.isStripeCheckoutLoading
+                            ? () {}
+                            : () {
+                                debugPrint("buy now");
+
+                                context
+                                    .read<DetailsOfTestCubit>()
+                                    .createStripeCheckoutSession(
+                                      testId: overview.data.id,
+                                    );
+                              },
                         onDownloadTap: state.isDownloadLoading
                             ? () {}
                             : () {

@@ -46,6 +46,24 @@ class AppImage {
   static String get numberofquestion => '$_baseIcon/numberofquestion.svg';
   static String get timer => '$_baseIcon/timer.svg';
 
+  ////////////   Mode play
+  static String get cup => '$_baseIcon/cup.svg';
+  static String get robot1 => '$_baseIcon/robot1.svg';
+  static String get robot2 => '$_baseIcon/robot2.svg';
+  static String get robot3 => '$_baseIcon/robot3.svg';
+  static String get robot4 => '$_baseIcon/robot4.svg';
+  static String get robot5 => '$_baseIcon/robot5.svg';
+  static String get robot6 => '$_baseIcon/robot6.svg';
+
+  static String get correctLottie => '$_baseLottie/correctLottie.json';
+  static String get winnerLottie => '$_baseLottie/winnerLottie.json';
+  static String get thinkIcon => '$_baseGif/thinkIcon.gif';
+  static String get wrongIcon => '$_baseGif/faild.gif';
+
+  static String get vsIcon => '$_baseIcon/VS.svg';
+  static String get challengeMainCardLight =>
+      '$_baseImageLight/challengeMainCardLight.svg';
+
   /////////////////////////////////////////////////////////////////
   ////////////////////// darkkkk image ////////////////////////////
   //////////////////////////////////////////////////////////////
@@ -76,4 +94,8 @@ class AppImage {
   static String get library => '$_baseImageLight/library-svgrepo-com.svg';
   static String get bookmark =>
       '$_baseImageLight/book-bookmark-minimalistic-svgrepo-com.svg';
+
+  //// play mode
+  static String get challengeMainCardDark =>
+      '$_baseImageDark/challengeMainCardDark.svg';
 }

@@ -302,11 +302,10 @@ class PublicReviewCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final cardColor = isDark ? AppPalette.greyMediumDark : AppPalette.white;
-    final shadowColor = isDark
-        ? AppPalette.greyLightDark.withOpacity(0.35)
-        : Colors.black.withOpacity(0.08);
+    final shadowColor = AppPalette.greyLightDark.withOpacity(0.35);
 
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         Container(
           width: double.infinity,
@@ -350,9 +349,9 @@ class PublicReviewCard extends StatelessWidget {
         ),
 
         Positioned(
-          left: 0,
+          left: -6,
           //right: 0,
-          top: 8,
+          top: 4,
           child: _ReviewReportMenuButton(onReport: onReport),
         ),
 

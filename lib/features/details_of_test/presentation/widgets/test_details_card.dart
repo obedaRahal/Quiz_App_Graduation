@@ -36,8 +36,7 @@ class TestDetailsCard extends StatelessWidget {
     this.onLikeTap,
     this.onLikeValueTap,
     this.onBookmarkTap,
-    this.onBookmarkValueTap
-    
+    this.onBookmarkValueTap,
   });
 
   Color _difficultyColor(String difficulty) {
@@ -94,7 +93,7 @@ class TestDetailsCard extends StatelessWidget {
               children: [
                 CustomBackgroundWithChild(
                   backgroundColor: difficultyColor,
-                  childHorizontalPad: SizeConfig.w(0.03),
+                  childHorizontalPad: SizeConfig.w(0.02),
                   childVerticalPad: 2,
                   borderRadius: BorderRadius.circular(5),
                   child: CustomTextWidget(
@@ -151,21 +150,22 @@ class TestDetailsCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-
-                  child: Row(
-                    children: [
-                      CustomTextWidget(
+                SizedBox(
+                  width: double.infinity,
+                  child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      reverse: true,
+                      child: CustomTextWidget(
                         title,
                         fontSize: SizeConfig.text(0.046),
                         color: appColors.blackToGrey2Dark,
                         fontFamily: AppFont.elMessiriBold,
-                        textAlign: TextAlign.end,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: TextOverflow.visible,
                       ),
-                    ],
+                    ),
                   ),
                 ),
 
@@ -186,9 +186,13 @@ class TestDetailsCard extends StatelessWidget {
                   children: [
                     _TestInfoCounter(
                       value: bookmarksCount.toString(),
-                      icon: FontAwesomeIcons.bookmark,
+                      icon: hasBookmarked
+                          ? FontAwesomeIcons.solidBookmark
+                          : FontAwesomeIcons.bookmark,
                       isActive: hasBookmarked,
-                      activeColor: AppPalette.primary,
+                      activeColor: hasBookmarked
+                          ? AppPalette.black
+                          : AppPalette.greyMedium,
                       onIconTap: onBookmarkTap,
                       onValueTap: onBookmarkValueTap,
                     ),
@@ -200,9 +204,12 @@ class TestDetailsCard extends StatelessWidget {
                     ),
                     SizedBox(width: SizeConfig.w(0.025)),
 
+                    //                    Icon(Icons.heart),
                     _TestInfoCounter(
                       value: likesCount.toString(),
-                      icon: FontAwesomeIcons.heart,
+                      icon: hasLiked
+                          ? FontAwesomeIcons.solidHeart
+                          : FontAwesomeIcons.heart,
                       isActive: hasLiked,
                       activeColor: AppPalette.red,
                       onIconTap: onLikeTap,

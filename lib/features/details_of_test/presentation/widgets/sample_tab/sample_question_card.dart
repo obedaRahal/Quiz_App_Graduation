@@ -7,6 +7,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_hint_play_mode.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/sample_tab/sample_test_tap.dart';
@@ -64,16 +65,16 @@ class SampleQuestionCard extends StatelessWidget {
               if (hasHint)
                 InkWell(
                   onTap: () {
-                    showValidationTopSnackBar(
+                    showCustomerSnackBarHintPlayMode( 
                       context,
                       title: "توضيح",
                       message: hint,
-                      type: AppValidationSnackBarType.hint,
+                      //type: AppValidationSnackBarType.hint,
                     );
                   },
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.w(0.03),
+                      horizontal: SizeConfig.w(0.0),
                     ),
                     child: FaIcon(
                       FontAwesomeIcons.lightbulb,
@@ -129,7 +130,7 @@ class _QuestionHeader extends StatelessWidget {
         CustomTextWidget(
           "السؤال",
           color: appColors.primaryToPrimaryDark,
-          //fontFamily: AppFont.elMessiriSemiBold,
+          fontFamily: AppFont.elMessiriSemiBold,
           fontSize: SizeConfig.text(0.035),
         ),
         CustomBackgroundWithChild(

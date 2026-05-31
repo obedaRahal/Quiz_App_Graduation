@@ -49,7 +49,6 @@ import 'package:flutter/material.dart';
 //   }
 // }
 
-
 class CustomBackgroundWithChild extends StatelessWidget {
   final double? height;
   final double? width;
@@ -65,6 +64,8 @@ class CustomBackgroundWithChild extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final Clip clipBehavior;
 
+  final Gradient? gradient;
+
   const CustomBackgroundWithChild({
     super.key,
     this.height,
@@ -79,6 +80,7 @@ class CustomBackgroundWithChild extends StatelessWidget {
     this.boxShadow,
     this.padding,
     this.clipBehavior = Clip.none,
+    this.gradient,
   });
 
   @override
@@ -96,15 +98,13 @@ class CustomBackgroundWithChild extends StatelessWidget {
       alignment: alignment,
       clipBehavior: clipBehavior,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color:  gradient == null ? backgroundColor : null,
+        gradient: gradient,
         borderRadius: borderRadius,
         border: border,
         boxShadow: boxShadow,
       ),
-      child: Padding(
-        padding: resolvedPadding,
-        child: child,
-      ),
+      child: Padding(padding: resolvedPadding, child: child),
     );
 
     if (width == null) {

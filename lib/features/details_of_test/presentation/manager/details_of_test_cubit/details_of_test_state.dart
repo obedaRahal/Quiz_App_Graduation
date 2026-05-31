@@ -37,6 +37,8 @@ enum TestShareLinkStatus { initial, loading, success, failure }
 
 enum SharedTestLinkStatus { initial, loading, success, failure }
 
+enum StripeCheckoutSessionStatus { initial, loading, success, failure }
+
 class DetailsOfTestState {
   //  for UI ////
   final DetailsOfTestTab selectedTab;
@@ -88,6 +90,10 @@ class DetailsOfTestState {
   final int? sharedTestId;
   final bool? sharedTestIsOwner;
 
+  final StripeCheckoutSessionStatus stripeCheckoutStatus;
+  final String? stripeCheckoutUrl;
+  final int? stripePurchaseId;
+
   const DetailsOfTestState({
     this.selectedTab = DetailsOfTestTab.overview,
     this.selectedSampleAnswers = const {},
@@ -133,6 +139,10 @@ class DetailsOfTestState {
     this.sharedTestLinkStatus = SharedTestLinkStatus.initial,
     this.sharedTestId,
     this.sharedTestIsOwner,
+
+    this.stripeCheckoutStatus = StripeCheckoutSessionStatus.initial,
+    this.stripeCheckoutUrl,
+    this.stripePurchaseId,
   });
 
   bool get canSubmitDraftReview =>
@@ -235,6 +245,13 @@ class DetailsOfTestState {
   bool get isSharedTestLinkFailure =>
       sharedTestLinkStatus == SharedTestLinkStatus.failure;
 
+  bool get isStripeCheckoutLoading =>
+      stripeCheckoutStatus == StripeCheckoutSessionStatus.loading;
+  bool get isStripeCheckoutSuccess =>
+      stripeCheckoutStatus == StripeCheckoutSessionStatus.success;
+  bool get isStripeCheckoutFailure =>
+      stripeCheckoutStatus == StripeCheckoutSessionStatus.failure;
+
   DetailsOfTestState copyWith({
     //  for UI ////
     DetailsOfTestTab? selectedTab,
@@ -287,6 +304,11 @@ class DetailsOfTestState {
     int? sharedTestId,
     bool? sharedTestIsOwner,
     bool clearSharedTestLink = false,
+
+    StripeCheckoutSessionStatus? stripeCheckoutStatus,
+    String? stripeCheckoutUrl,
+    int? stripePurchaseId,
+    bool clearStripeCheckout = false,
   }) {
     return DetailsOfTestState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -338,14 +360,20 @@ class DetailsOfTestState {
       shareUrl: clearShareUrl ? null : shareUrl ?? this.shareUrl,
 
       sharedTestLinkStatus: sharedTestLinkStatus ?? this.sharedTestLinkStatus,
-
       sharedTestId: clearSharedTestLink
           ? null
           : sharedTestId ?? this.sharedTestId,
-
       sharedTestIsOwner: clearSharedTestLink
           ? null
           : sharedTestIsOwner ?? this.sharedTestIsOwner,
+
+      stripeCheckoutStatus: stripeCheckoutStatus ?? this.stripeCheckoutStatus,
+      stripeCheckoutUrl: clearStripeCheckout
+          ? null
+          : stripeCheckoutUrl ?? this.stripeCheckoutUrl,
+      stripePurchaseId: clearStripeCheckout
+          ? null
+          : stripePurchaseId ?? this.stripePurchaseId,
     );
   }
 }
