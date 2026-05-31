@@ -181,42 +181,7 @@ class TestDetailsCard extends StatelessWidget {
 
                 SizedBox(height: SizeConfig.h(0.01)),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    _TestInfoCounter(
-                      value: bookmarksCount.toString(),
-                      icon: hasBookmarked
-                          ? FontAwesomeIcons.solidBookmark
-                          : FontAwesomeIcons.bookmark,
-                      isActive: hasBookmarked,
-                      activeColor: hasBookmarked
-                          ? AppPalette.black
-                          : AppPalette.greyMedium,
-                      onIconTap: onBookmarkTap,
-                      onValueTap: onBookmarkValueTap,
-                    ),
-                    SizedBox(width: SizeConfig.w(0.025)),
-
-                    _TestInfoCounter(
-                      value: reviewsCount.toString(),
-                      icon: FontAwesomeIcons.comment,
-                    ),
-                    SizedBox(width: SizeConfig.w(0.025)),
-
-                    //                    Icon(Icons.heart),
-                    _TestInfoCounter(
-                      value: likesCount.toString(),
-                      icon: hasLiked
-                          ? FontAwesomeIcons.solidHeart
-                          : FontAwesomeIcons.heart,
-                      isActive: hasLiked,
-                      activeColor: AppPalette.red,
-                      onIconTap: onLikeTap,
-                      onValueTap: onLikeValueTap,
-                    ),
-                  ],
-                ),
+                
               ],
             ),
           ),
@@ -226,97 +191,7 @@ class TestDetailsCard extends StatelessWidget {
   }
 }
 
-// class _TestInfoCounter extends StatelessWidget {
-//   final String value;
-//   final FaIconData icon;
 
-//   const _TestInfoCounter({required this.value, required this.icon});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SingleChildScrollView(
-//       scrollDirection: Axis.vertical,
-//       child: Row(
-//         children: [
-//           CustomTextWidget(
-//             value,
-//             fontSize: SizeConfig.text(0.035),
-//             color: AppPalette.greyMedium,
-//             fontFamily: AppFont.elMessiriBold,
-//           ),
-//           SizedBox(width: SizeConfig.w(0.01)),
-
-//           FaIcon(icon, size: SizeConfig.h(0.022), color: AppPalette.greyMedium),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-class _TestInfoCounter extends StatelessWidget {
-  final String value;
-  final FaIconData icon;
-  final bool isActive;
-  final Color? activeColor;
-  final VoidCallback? onIconTap;
-  final VoidCallback? onValueTap;
-
-  const _TestInfoCounter({
-    required this.value,
-    required this.icon,
-    this.isActive = false,
-    this.activeColor,
-    this.onIconTap,
-    this.onValueTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
-    final color = isActive
-        ? activeColor ?? appColors.primaryToPrimaryDark
-        : AppPalette.greyMedium;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: SizeConfig.w(0.006),
-        vertical: SizeConfig.h(0.004),
-      ),
-      child: Row(
-        children: [
-          InkWell(
-            onTap: onValueTap,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: SizeConfig.w(0.006),
-                vertical: SizeConfig.h(0.004),
-              ),
-              child: CustomTextWidget(
-                value,
-                fontSize: SizeConfig.text(0.035),
-                color: color,
-                fontFamily: AppFont.elMessiriBold,
-              ),
-            ),
-          ),
-          SizedBox(width: SizeConfig.w(0.01)),
-          InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: onIconTap,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: SizeConfig.w(0.006),
-                vertical: SizeConfig.h(0.004),
-              ),
-              child: FaIcon(icon, size: SizeConfig.h(0.022), color: color),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class DashedVerticalDivider extends StatelessWidget {
   final double height;

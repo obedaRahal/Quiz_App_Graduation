@@ -12,6 +12,7 @@ import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHAL
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHALLENGE/session/challenge_next_button.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHALLENGE/session/challenge_players_score_section.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHALLENGE/session/challenge_session_info_header.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/exit_test_play_mode_dialog.dart';
 
 class ChallengeSessionView extends StatefulWidget {
   const ChallengeSessionView({super.key});
@@ -31,7 +32,21 @@ class _ChallengeSessionViewState extends State<ChallengeSessionView> {
   }
 
   void _onBackTap() {
-    Navigator.pop(context);
+    final state = context.read<TestPlayModesCubit>().state;
+
+    if (state.isCompleted) {
+      Navigator.pop(context);
+      return;
+    }
+
+    showExitTestPlayModeDialog(
+      context: context,
+      onExitConfirmed: () {
+        context.read<TestPlayModesCubit>().restartChallengeSession();
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+    );
   }
 
   void _onSoundTap() {
@@ -66,6 +81,10 @@ class _ChallengeSessionViewState extends State<ChallengeSessionView> {
 
             if (question == null) {
               return const SizedBox.shrink();
+            }
+
+            if (state.isCompleted) {
+              ChallengeResultSummaryView();
             }
 
             return Column(

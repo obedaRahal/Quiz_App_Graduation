@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/services/accessibility/test_voice_assistant_service.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/services/challenge_result_pdf_service.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/services/mcq_result_pdf_service.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_answer_record_entity.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_content_entity.dart';
@@ -16,6 +17,7 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
   final TestVoiceAssistantService voiceAssistantService;
   final McqResultPdfService mcqResultPdfService;
   final GetTestPlayContentUseCase getTestPlayContentUseCase;
+  final ChallengeResultPdfService challengeResultPdfService;
 
   //////////////////////////////
   //////////////////////////////
@@ -29,6 +31,7 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     required this.voiceAssistantService,
     required this.mcqResultPdfService,
     required this.getTestPlayContentUseCase,
+    required this.challengeResultPdfService,
   }) : super(const TestPlayModesState()) {
     debugPrint("============ TestPlayModesCubit INIT ============");
     voiceAssistantService.onCompleted = _handleVoiceCompleted;
@@ -274,7 +277,7 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
           testId: 1,
           title: "اختبار توصية 001 - الذكاء الاصطناعي",
           questionCount: 3,
-          durationSeconds: 1200,
+          durationSeconds: 12,
           passMarkPercentage: 51,
           questions: [
             TestPlayQuestionEntity(
@@ -1380,6 +1383,90 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
 
     debugPrint("✓ challenge session restarted");
     debugPrint("=================================================");
+  }
+
+  Future<void> downloadChallengeResultPdf({
+    required String opponentName,
+    required String opponentImage,
+    required String playerName,
+    required String playerImage,
+  }) async {
+    debugPrint(
+      "============ TestPlayModesCubit.downloadChallengeResultPdf ============",
+    );
+
+    final test = state.test;
+
+    if (test == null) {
+      emit(
+        state.copyWith(
+          challengeResultPdfStatus: ChallengeResultPdfStatus.failure,
+          errorTitle: "خطأ",
+          errorMessage: "لا توجد بيانات كافية لإنشاء ملف النتيجة",
+          clearGeneratedChallengeResultPdfPath: true,
+        ),
+      );
+      return;
+    }
+
+    if (state.isChallengeResultPdfLoading) return;
+
+    emit(
+      state.copyWith(
+        challengeResultPdfStatus: ChallengeResultPdfStatus.loading,
+        clearGeneratedChallengeResultPdfPath: true,
+        clearError: true,
+      ),
+    );
+
+    try {
+      final filePath = await challengeResultPdfService
+          .generateChallengeResultPdf(
+            test: test,
+            answersByQuestionId: state.answersByQuestionId,
+            userScore: state.challengeUserScore,
+            botScore: state.challengeBotScore,
+            opponentName: opponentName,
+            opponentImage: opponentImage,
+            playerName: playerName,
+            playerImage: playerImage,
+            elapsedSeconds: state.elapsedSeconds,
+            didUserWin: state.didChallengeUserWin,
+            didBotWin: state.didChallengeBotWin,
+            isDraw: state.isChallengeDraw,
+          );
+
+      emit(
+        state.copyWith(
+          challengeResultPdfStatus: ChallengeResultPdfStatus.success,
+          generatedChallengeResultPdfPath: filePath,
+          clearError: true,
+        ),
+      );
+    } catch (error) {
+      debugPrint("✗ downloadChallengeResultPdf error: $error");
+
+      emit(
+        state.copyWith(
+          challengeResultPdfStatus: ChallengeResultPdfStatus.failure,
+          errorTitle: "خطأ",
+          errorMessage: "تعذر إنشاء ملف نتيجة التحدي",
+          clearGeneratedChallengeResultPdfPath: true,
+        ),
+      );
+    }
+
+    debugPrint("=================================================");
+  }
+
+  void resetChallengeResultPdfState() {
+    emit(
+      state.copyWith(
+        challengeResultPdfStatus: ChallengeResultPdfStatus.initial,
+        clearGeneratedChallengeResultPdfPath: true,
+        clearError: true,
+      ),
+    );
   }
 
   //////////////////// FLASH CARD ////////////////////////////

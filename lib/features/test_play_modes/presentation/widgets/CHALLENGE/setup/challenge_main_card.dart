@@ -68,7 +68,7 @@ class ChallengeMainCard extends StatelessWidget {
             ],
           ),
           //Spacer(),
-          SizedBox(height: SizeConfig.h(0.07)),
+          SizedBox(height: SizeConfig.diagonal * .045),
 
           CustomTextWidget(
             'تحدي',
@@ -77,31 +77,31 @@ class ChallengeMainCard extends StatelessWidget {
             fontSize: SizeConfig.text(0.05),
           ),
 
-          SizedBox(height: SizeConfig.h(0.005)),
-
+            SizedBox(height: SizeConfig.h(0.005)),
           CustomTextWidget(
-            'حاول التغلب على نيرد في هذا التحدي الممتع , ويمكنك اختيار مستوى التحدي , انتبه ! ليس لديك الكثير من الوقت يا صديقي',
+            'حاول التغلب على نيرد في هذا التحدي الممتع ,يمكنك اختيار مستوى التحدي ,انتبه! ليس لديك الكثير من الوقت ',
             color: AppPalette.greyMedium,
             fontFamily: AppFont.elMessiriMedium,
             fontSize: SizeConfig.text(0.03),
             textAlign: TextAlign.center,
+            maxLines: 2,
             textDirection: TextDirection.rtl,
           ),
 
-          SizedBox(height: SizeConfig.h(0.05)),
+          SizedBox(height: SizeConfig.diagonal * .02),
 
           ChallengeDifficultySelector(
             selectedDifficulty: selectedDifficulty,
             onChanged: onDifficultyChanged,
           ),
 
-          SizedBox(height: SizeConfig.h(0.02)),
+          SizedBox(height: SizeConfig.h(0.015)),
 
           GestureDetector(
             onTap: onStartChallenge,
             child: CustomBackgroundWithChild(
               width: double.infinity,
-              height: SizeConfig.h(0.05),
+              height: SizeConfig.h(0.04),
               alignment: Alignment.center,
               backgroundColor: appColors.primaryToPrimaryDark,
               boxShadow: [

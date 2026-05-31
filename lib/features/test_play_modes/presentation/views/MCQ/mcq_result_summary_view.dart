@@ -97,16 +97,7 @@ class McqResultSummaryView extends StatelessWidget {
                     );
                   },
                 ),
-                CustomButtonWidget(
-                  onTap: () {
-                    debugPrint("change mode ");
-                    context.read<ThemeCubit>().toggleTheme();
-                  },
-                  child: ThemedAppImage(
-                    darkPath: AppImage.logoDark,
-                    lightPath: AppImage.logoLight,
-                  ),
-                ),
+
 
                 SizedBox(height: SizeConfig.h(0.02)),
 
@@ -275,25 +266,9 @@ class _McqResultCongratulationsCard extends StatelessWidget {
               padding: EdgeInsets.only(left: SizeConfig.w(0.02)),
               child: CustomAppImage(
                 path: AppImage.cup,
-                height: SizeConfig.h(0.19),
+                height: SizeConfig.h(0.17),
               ),
             ),
-
-            // Container(
-            //   width: SizeConfig.w(0.18),
-            //   height: SizeConfig.w(0.18),
-            //   decoration: BoxDecoration(
-            //     color: AppPalette.white.withOpacity(0.12),
-            //     shape: BoxShape.circle,
-            //   ),
-            //   child: Icon(
-            //     isPassed
-            //         ? Icons.emoji_events_outlined
-            //         : Icons.psychology_alt_outlined,
-            //     color: AppPalette.white.withOpacity(0.8),
-            //     size: SizeConfig.w(0.11),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -321,8 +296,8 @@ class _ResultMiniStat extends StatelessWidget {
     return CustomBackgroundWithChild(
       backgroundColor: appColors.whiteToblack.withOpacity(0.18),
       borderRadius: BorderRadius.circular(5),
-      childHorizontalPad: SizeConfig.w(0.025),
-      childVerticalPad: SizeConfig.h(0.004),
+      childHorizontalPad: SizeConfig.w(0.015),
+      childVerticalPad: SizeConfig.h(0.002),
       child: Column(
         children: [
           CustomTextWidget(

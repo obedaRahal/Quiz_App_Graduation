@@ -12,6 +12,7 @@ import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/FLAS
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/FLASH_CARD/flashcard_progress_dots.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/FLASH_CARD/flashcard_session_info_header.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/FLASH_CARD/flashcard_summary_dialog.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/exit_test_play_mode_dialog.dart';
 
 import '../../manager/test_play_mode/test_play_modes_state.dart';
 
@@ -75,7 +76,20 @@ class _FlashcardSessionViewState extends State<FlashcardSessionView> {
   }
 
   void _onBackTap() {
-    Navigator.pop(context);
+    final state = context.read<TestPlayModesCubit>().state;
+
+    if (state.isCompleted) {
+      Navigator.pop(context);
+      return;
+    }
+
+    showExitTestPlayModeDialog(
+      context: context,
+      onExitConfirmed: () {
+        context.read<TestPlayModesCubit>().resetSession();
+        Navigator.pop(context);
+      },
+    );
   }
 
   void _onFlipCard() {
@@ -100,6 +114,41 @@ class _FlashcardSessionViewState extends State<FlashcardSessionView> {
       title: 'تلميح',
       message: cleanHint,
     );
+  }
+
+  double _dragStartX = 0;
+
+  void _onCardDragStart(DragStartDetails details) {
+    _dragStartX = details.globalPosition.dx;
+  }
+
+  void _onCardDragUpdate(DragUpdateDetails details) {
+    setState(() {
+      _cardSlideX += details.delta.dx;
+      _cardOpacity = (1 - (_cardSlideX.abs() / SizeConfig.w(1.2))).clamp(
+        0.25,
+        1.0,
+      );
+    });
+  }
+
+  void _onCardDragEnd(DragEndDetails details) {
+    final threshold = SizeConfig.w(0.22);
+
+    if (_cardSlideX > threshold) {
+      _animateCardOut(isKnown: true);
+      return;
+    }
+
+    if (_cardSlideX < -threshold) {
+      _animateCardOut(isKnown: false);
+      return;
+    }
+
+    setState(() {
+      _cardSlideX = 0;
+      _cardOpacity = 1;
+    });
   }
 
   @override
@@ -193,6 +242,9 @@ class _FlashcardSessionViewState extends State<FlashcardSessionView> {
                       onTap: _onFlipCard,
                       hasHint: hasHint,
                       onHintTap: () => _showHint(hint),
+                      onHorizontalDragStart: _onCardDragStart,
+                      onHorizontalDragUpdate: _onCardDragUpdate,
+                      onHorizontalDragEnd: _onCardDragEnd,
                     ),
                   ),
 

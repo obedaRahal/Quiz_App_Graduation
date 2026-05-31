@@ -21,6 +21,10 @@ class FlashcardCard extends StatelessWidget {
   final bool hasHint;
   final VoidCallback onHintTap;
 
+  final GestureDragStartCallback? onHorizontalDragStart;
+  final GestureDragUpdateCallback? onHorizontalDragUpdate;
+  final GestureDragEndCallback? onHorizontalDragEnd;
+
   const FlashcardCard({
     super.key,
     required this.question,
@@ -33,6 +37,9 @@ class FlashcardCard extends StatelessWidget {
     required this.thirdColor,
     required this.hasHint,
     required this.onHintTap,
+    this.onHorizontalDragStart,
+    this.onHorizontalDragUpdate,
+    this.onHorizontalDragEnd,
   });
   @override
   Widget build(BuildContext context) {
@@ -77,6 +84,9 @@ class FlashcardCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.05)),
               child: GestureDetector(
                 onTap: onTap,
+                onHorizontalDragStart: onHorizontalDragStart,
+                onHorizontalDragUpdate: onHorizontalDragUpdate,
+                onHorizontalDragEnd: onHorizontalDragEnd,
                 child: TweenAnimationBuilder<double>(
                   key: ValueKey(question.questionId),
                   tween: Tween<double>(begin: 0, end: isRevealed ? math.pi : 0),

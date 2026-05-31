@@ -27,6 +27,7 @@ enum ChallengeBotReaction { none, thinking, correct, wrong }
 
 enum ChallengeAnsweredBy { none, user, bot, timeout }
 
+enum ChallengeResultPdfStatus { initial, loading, success, failure }
 //////////////////// FLASHCARDS ////////////////////////////
 //////////////////// FLASHCARDS ////////////////////////////
 
@@ -74,6 +75,9 @@ class TestPlayModesState {
   final ChallengeAnsweredBy challengeAnsweredBy;
   final bool? challengeCurrentAnswerIsCorrect;
 
+  final ChallengeResultPdfStatus challengeResultPdfStatus;
+  final String? generatedChallengeResultPdfPath;
+
   //////////////////// FLASHCARDS ////////////////////////////
   //////////////////// FLASHCARDS ////////////////////////////
 
@@ -120,6 +124,9 @@ class TestPlayModesState {
 
     this.challengeAnsweredBy = ChallengeAnsweredBy.none,
     this.challengeCurrentAnswerIsCorrect,
+
+    this.challengeResultPdfStatus = ChallengeResultPdfStatus.initial,
+    this.generatedChallengeResultPdfPath,
 
     /////////////////////////////
     this.isFlashcardFlipped = false,
@@ -301,6 +308,13 @@ class TestPlayModesState {
   bool get didChallengeQuestionTimeout =>
       challengeAnsweredBy == ChallengeAnsweredBy.timeout;
 
+  bool get isChallengeResultPdfLoading =>
+      challengeResultPdfStatus == ChallengeResultPdfStatus.loading;
+  bool get isChallengeResultPdfSuccess =>
+      challengeResultPdfStatus == ChallengeResultPdfStatus.success;
+  bool get isChallengeResultPdfFailure =>
+      challengeResultPdfStatus == ChallengeResultPdfStatus.failure;
+
   //////////////////// FLASHCARDS ////////////////////////////
   //////////////////// FLASHCARDS ////////////////////////////
 
@@ -379,6 +393,10 @@ class TestPlayModesState {
     bool? challengeCurrentAnswerIsCorrect,
     bool clearChallengeCurrentAnswerIsCorrect = false,
 
+    ChallengeResultPdfStatus? challengeResultPdfStatus,
+    String? generatedChallengeResultPdfPath,
+    bool clearGeneratedChallengeResultPdfPath = false,
+
     //////////////////// FLASH CARD ////////////////////////////
     //////////////////// FLASH CARD ////////////////////////////
     bool? isFlashcardFlipped,
@@ -442,6 +460,13 @@ class TestPlayModesState {
           ? null
           : challengeCurrentAnswerIsCorrect ??
                 this.challengeCurrentAnswerIsCorrect,
+
+      challengeResultPdfStatus:
+          challengeResultPdfStatus ?? this.challengeResultPdfStatus,
+      generatedChallengeResultPdfPath: clearGeneratedChallengeResultPdfPath
+          ? null
+          : generatedChallengeResultPdfPath ??
+                this.generatedChallengeResultPdfPath,
 
       /////////////////////////////
       isFlashcardFlipped: isFlashcardFlipped ?? this.isFlashcardFlipped,

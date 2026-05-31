@@ -3,17 +3,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
-import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
-import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/shimmers/challenge_setup_shimmer.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/views/CHALLENGE/challenge_session_view.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHALLENGE/setup/challenge_characters_panel.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHALLENGE/setup/challenge_main_card.dart';
@@ -37,6 +35,23 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
   double _rollingOffsetY = 0;
 
   final Random _random = Random();
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      context.read<TestPlayModesCubit>().getTestPlayContent(
+        testId: widget.testId,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _characterRollTimer?.cancel();
+    super.dispose();
+  }
 
   void _startRandomCharacterRoll() {
     if (_isRollingCharacter) return;
@@ -99,26 +114,9 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
   }
 
   @override
-  void dispose() {
-    _characterRollTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    Future.microtask(() {
-      context.read<TestPlayModesCubit>().getTestPlayContent(
-        testId: widget.testId,
-      );
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
-    final appColors = context.appColors;
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -126,29 +124,7 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
       body: SafeArea(
         child: BlocBuilder<TestPlayModesCubit, TestPlayModesState>(
           builder: (context, state) {
-            final pageTitle = state.test?.title ?? '';
-
-            // final selectedCharacter = ChallengeCharactersData.selectedById(
-            //   state.selectedChallengeCharacterId,
-            // );
-
-            final selectedCharacter = ChallengeCharactersData.selectedById(
-              _rollingCharacterId ?? state.selectedChallengeCharacterId,
-            );
-
-            if (state.isContentLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (state.isContentFailure) {
-              return Center(
-                child: CustomTextWidget(
-                  state.errorMessage ?? 'حدث خطأ أثناء تحميل بيانات التحدي',
-                  color: AppPalette.red,
-                  textAlign: TextAlign.center,
-                ),
-              );
-            }
+            final pageTitle = state.test?.title ?? 'إعداد التحدي';
 
             if (!_didInitialRoll && state.isContentSuccess) {
               _didInitialRoll = true;
@@ -159,12 +135,7 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
               });
             }
 
-            final viewer = state.content?.data.viewer;
-            final playerName = viewer?.name ?? 'أنت';
-            final playerAvatar = viewer?.avatarUrl ?? AppImage.carmen;
-
             return Column(
-              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TopPageHeader(
                   title: pageTitle,
@@ -177,103 +148,64 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
                         .toggleChallengeRulesPanel();
                   },
                 ),
-                CustomButtonWidget(
-                  onTap: () {
-                    debugPrint("change mode ");
-                    context.read<ThemeCubit>().toggleTheme();
-                  },
-                  child: ThemedAppImage(
-                    darkPath: AppImage.logoDark,
-                    lightPath: AppImage.logoLight,
-                  ),
-                ),
-                SizedBox(height: SizeConfig.h(0.015)),
 
-                SizedBox(height: SizeConfig.h(0.018)),
-
-                SizedBox(
-                  height: SizeConfig.h(0.2),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 600),
-                    switchInCurve: Curves.easeOutCubic,
-                    switchOutCurve: Curves.easeInCubic,
-                    child: state.isChallengeRulesPanelVisible
-                        ? const ChallengeRulesPanel(
-                            key: ValueKey('rules_panel'),
-                          )
-                        : state.isChallengeCharactersPanelVisible
-                        ? ChallengeCharactersPanel(
-                            key: ValueKey('characters_panel'),
-                            selectedCharacterId:
-                                state.selectedChallengeCharacterId,
-                            onCharacterSelected: (characterId) {
-                              context
-                                  .read<TestPlayModesCubit>()
-                                  .selectChallengeCharacter(characterId);
-                            },
-                          )
-                        : const SizedBox(key: ValueKey('empty_panel')),
-                  ),
-                ),
-
-                SizedBox(height: SizeConfig.h(0.03)),
-
-                Stack(
-                  children: [
-                    ThemedAppImage(
-                      lightPath: AppImage.challengeMainCardLight,
-                      darkPath: AppImage.challengeMainCardDark,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.w(0.03),
-                            vertical: SizeConfig.h(0.01),
-                          ),
-                          child: ChallengeMainCard(
-                            selectedCharacterName: selectedCharacter.name,
-                            selectedCharacterImage: selectedCharacter.imagePath,
-                            playerName: playerName,
-                            playerImage: playerAvatar,
-                            selectedDifficulty:
-                                state.selectedChallengeDifficulty,
-                            //onOpponentTap: _startRandomCharacterRoll,
-                            onOpponentTap: () {
-                              context
-                                  .read<TestPlayModesCubit>()
-                                  .toggleChallengeCharactersPanel();
-                            },
-                            isOpponentRolling: _isRollingCharacter,
-                            opponentRollingOffsetY: _rollingOffsetY,
-                            onDifficultyChanged: (difficulty) {
-                              context
-                                  .read<TestPlayModesCubit>()
-                                  .changeChallengeDifficulty(difficulty);
-                            },
-                            onStartChallenge: () {
-                              debugPrint(
-                                'start challenge with testId: ${widget.testId}',
-                              );
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => BlocProvider.value(
-                                    value: context.read<TestPlayModesCubit>(),
-                                    child: const ChallengeSessionView(),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                if (state.isContentLoading) ...[
+                  const Expanded(child: ChallengeSetupShimmer()),
+                ] else if (state.isContentFailure) ...[
+                  Expanded(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.w(0.08),
+                        ),
+                        child: CustomTextWidget(
+                          state.errorMessage ??
+                              'حدث خطأ أثناء تحميل بيانات التحدي',
+                          color: AppPalette.red,
+                          textAlign: TextAlign.center,
+                          textDirection: TextDirection.rtl,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ] else ...[
+                  _ChallengeSetupLoadedBody(
+                    state: state,
+                    rollingCharacterId: _rollingCharacterId,
+                    isRollingCharacter: _isRollingCharacter,
+                    rollingOffsetY: _rollingOffsetY,
+                    onOpponentTap: () {
+                      context
+                          .read<TestPlayModesCubit>()
+                          .toggleChallengeCharactersPanel();
+                    },
+                    onCharacterSelected: (characterId) {
+                      context
+                          .read<TestPlayModesCubit>()
+                          .selectChallengeCharacter(characterId);
+                    },
+                    onDifficultyChanged: (difficulty) {
+                      context
+                          .read<TestPlayModesCubit>()
+                          .changeChallengeDifficulty(difficulty);
+                    },
+                    onStartChallenge: () {
+                      debugPrint(
+                        'start challenge with testId: ${widget.testId}',
+                      );
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: context.read<TestPlayModesCubit>(),
+                            child: const ChallengeSessionView(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ],
             );
           },
@@ -283,22 +215,98 @@ class _ChallengeSetupViewState extends State<ChallengeSetupView> {
   }
 }
 
+class _ChallengeSetupLoadedBody extends StatelessWidget {
+  final TestPlayModesState state;
+  final int? rollingCharacterId;
+  final bool isRollingCharacter;
+  final double rollingOffsetY;
 
-// class _VsBadge extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return CustomBackgroundWithChild(
-//       backgroundColor: AppPalette.orange.withOpacity(0.15),
-//       borderRadius: BorderRadius.circular(20),
-//       childHorizontalPad: SizeConfig.w(0.035),
-//       childVerticalPad: SizeConfig.h(0.008),
-//       child: CustomTextWidget(
-//         'VS',
-//         color: AppPalette.orange,
-//         fontFamily: AppFont.elMessiriBold,
-//         fontSize: SizeConfig.text(0.045),
-//       ),
-//     );
-//   }
-// }
+  final VoidCallback onOpponentTap;
+  final ValueChanged<int> onCharacterSelected;
+  final ValueChanged<ChallengeDifficulty> onDifficultyChanged;
+  final VoidCallback onStartChallenge;
 
+  const _ChallengeSetupLoadedBody({
+    required this.state,
+    required this.rollingCharacterId,
+    required this.isRollingCharacter,
+    required this.rollingOffsetY,
+    required this.onOpponentTap,
+    required this.onCharacterSelected,
+    required this.onDifficultyChanged,
+    required this.onStartChallenge,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedCharacter = ChallengeCharactersData.selectedById(
+      rollingCharacterId ?? state.selectedChallengeCharacterId,
+    );
+
+    final viewer = state.content?.data.viewer;
+    final playerName = viewer?.name ?? 'أنت';
+    final playerAvatar = viewer?.avatarUrl ?? AppImage.carmen;
+
+    return Expanded(
+      child: Column(
+        children: [
+          SizedBox(height: SizeConfig.h(0.018)),
+
+          SizedBox(
+            height: SizeConfig.h(0.2),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 600),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              child: state.isChallengeRulesPanelVisible
+                  ? const ChallengeRulesPanel(key: ValueKey('rules_panel'))
+                  : state.isChallengeCharactersPanelVisible
+                  ? ChallengeCharactersPanel(
+                      key: const ValueKey('characters_panel'),
+                      selectedCharacterId: state.selectedChallengeCharacterId,
+                      onCharacterSelected: onCharacterSelected,
+                    )
+                  : const SizedBox(key: ValueKey('empty_panel')),
+            ),
+          ),
+
+          SizedBox(height: SizeConfig.h(0.03)),
+
+          Stack(
+            children: [
+              ThemedAppImage(
+                lightPath: AppImage.challengeMainCardLight,
+                darkPath: AppImage.challengeMainCardDark,
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                     // horizontal: SizeConfig.w(0.03),
+                      //vertical: SizeConfig.h(0.005),
+                    ),
+                    child: ChallengeMainCard(
+                      selectedCharacterName: selectedCharacter.name,
+                      selectedCharacterImage: selectedCharacter.imagePath,
+                      playerName: playerName,
+                      playerImage: playerAvatar,
+                      selectedDifficulty: state.selectedChallengeDifficulty,
+                      onOpponentTap: onOpponentTap,
+                      isOpponentRolling: isRollingCharacter,
+                      opponentRollingOffsetY: rollingOffsetY,
+                      onDifficultyChanged: onDifficultyChanged,
+                      onStartChallenge: onStartChallenge,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

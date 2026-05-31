@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
@@ -20,7 +22,40 @@ class ChallengeResultSummaryView extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<TestPlayModesCubit, TestPlayModesState>(
+        child: BlocConsumer<TestPlayModesCubit, TestPlayModesState>(
+          listenWhen: (previous, current) =>
+              previous.challengeResultPdfStatus !=
+              current.challengeResultPdfStatus,
+          listener: (context, state) async {
+            if (state.isChallengeResultPdfSuccess) {
+              showValidationTopSnackBar(
+                context,
+                title: 'تم التحميل',
+                message: 'تم حفظ نتيجة التحدي بنجاح',
+                type: AppValidationSnackBarType.success,
+                actionText: 'عرض النتيجة',
+                onActionTap: () async {
+                  final filePath = state.generatedChallengeResultPdfPath;
+                  if (filePath == null || filePath.isEmpty) return;
+
+                  await OpenFilex.open(filePath);
+                },
+              );
+
+              context.read<TestPlayModesCubit>().resetChallengeResultPdfState();
+            }
+
+            if (state.isChallengeResultPdfFailure) {
+              showValidationTopSnackBar(
+                context,
+                title: state.errorTitle ?? 'خطأ',
+                message: state.errorMessage ?? 'تعذر إنشاء ملف نتيجة التحدي',
+                type: AppValidationSnackBarType.error,
+              );
+
+              context.read<TestPlayModesCubit>().resetChallengeResultPdfState();
+            }
+          },
           builder: (context, state) {
             final selectedCharacter = ChallengeCharactersData.selectedById(
               state.selectedChallengeCharacterId,
@@ -38,10 +73,21 @@ class ChallengeResultSummaryView extends StatelessWidget {
                     Navigator.pop(context);
                     Navigator.pop(context);
                   },
-                  icon: Icons.ios_share,
-                  onIconTap: () {
-                    debugPrint('share challenge result');
-                  },
+                  icon: state.isChallengeResultPdfLoading
+                      ? Icons.hourglass_top_rounded
+                      : Icons.download_outlined,
+                  onIconTap: state.isChallengeResultPdfLoading
+                      ? () {}
+                      : () {
+                          context
+                              .read<TestPlayModesCubit>()
+                              .downloadChallengeResultPdf(
+                                opponentName: selectedCharacter.name,
+                                opponentImage: selectedCharacter.imagePath,
+                                playerName: playerName,
+                                playerImage: playerImage ?? AppImage.male,
+                              );
+                        },
                 ),
 
                 SizedBox(height: SizeConfig.h(0.018)),

@@ -15,6 +15,7 @@ import 'package:quiz_app_grad/features/test_play_modes/presentation/views/MCQ/mc
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/MCQ/mcq_bottom_action_section.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/MCQ/mcq_question_card.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/MCQ/mcq_session_info_header.dart';
+import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/exit_test_play_mode_dialog.dart';
 
 class McqTestSessionView extends StatefulWidget {
   final int testId;
@@ -37,8 +38,24 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
     });
   }
 
+  // void _onBackTap() {
+  //   Navigator.pop(context);
+  // }
   void _onBackTap() {
-    Navigator.pop(context);
+    final state = context.read<TestPlayModesCubit>().state;
+
+    if (state.isCompleted) {
+      Navigator.pop(context);
+      return;
+    }
+
+    showExitTestPlayModeDialog(
+      context: context,
+      onExitConfirmed: () {
+        context.read<TestPlayModesCubit>().resetSession();
+        Navigator.pop(context);
+      },
+    );
   }
 
   void _onSoundTap() {

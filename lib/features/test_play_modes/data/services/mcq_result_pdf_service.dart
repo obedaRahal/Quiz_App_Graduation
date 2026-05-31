@@ -224,7 +224,7 @@ class McqResultPdfService {
         borderRadius: pw.BorderRadius.circular(10),
       ),
       child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.end,
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,

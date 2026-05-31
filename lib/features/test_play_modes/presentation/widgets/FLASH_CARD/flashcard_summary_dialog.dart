@@ -33,73 +33,77 @@ class FlashcardSummaryDialog extends StatelessWidget {
       insetPadding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.08)),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          // maxWidth: SizeConfig.w(0.86),
-          maxHeight: SizeConfig.h(0.47),
+          maxWidth: double.infinity,
+          maxHeight: SizeConfig.h(0.6),
         ),
         child: CustomBackgroundWithChild(
           width: double.infinity,
           backgroundColor: appColors.whiteToblack,
           borderRadius: BorderRadius.circular(16),
 
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.035)),
-                child: Row(
-                  textDirection: TextDirection.rtl,
-                  children: [
-                    Expanded(
-                      child: CustomTextWidget(
-                        'ملخص الاختبار',
-                        color: appColors.blackToGrey2Dark,
-                        fontFamily: AppFont.elMessiriBold,
-                        fontSize: SizeConfig.text(0.045),
-                        textAlign: TextAlign.center,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.w(0.035),
+                  ),
+                  child: Row(
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      Expanded(
+                        child: CustomTextWidget(
+                          'ملخص الاختبار',
+                          color: appColors.blackToGrey2Dark,
+                          fontFamily: AppFont.elMessiriBold,
+                          fontSize: SizeConfig.text(0.045),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: onClose,
-                      child: Icon(
-                        Icons.close_rounded,
-                        color: appColors.blackToGrey2Dark,
-                        size: SizeConfig.h(0.028),
+                      GestureDetector(
+                        onTap: onClose,
+                        child: Icon(
+                          Icons.close_rounded,
+                          color: appColors.blackToGrey2Dark,
+                          size: SizeConfig.h(0.028),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
-              SizedBox(height: SizeConfig.h(0.01)),
+                SizedBox(height: SizeConfig.h(0.01)),
 
-              const CustomDivider(height: 20, thickness: 4, isDashed: true),
+                const CustomDivider(height: 20, thickness: 4, isDashed: true),
 
-              SizedBox(height: SizeConfig.h(0.01)),
+                SizedBox(height: SizeConfig.h(0.01)),
 
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.01)),
-                child: _FlashcardResultCongratulationsCard(state: state),
-              ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.01)),
+                  child: _FlashcardResultCongratulationsCard(state: state),
+                ),
 
-              SizedBox(height: SizeConfig.h(0.014)),
-              PlayAgainButton(onTap: onPlayAgain),
-              // GestureDetector(
-              //   onTap: onPlayAgain,
-              //   child: CustomBackgroundWithChild(
-              //     width: double.infinity,
-              //     height: SizeConfig.h(0.05),
-              //     alignment: Alignment.center,
-              //     backgroundColor: appColors.primaryToPrimaryDark,
-              //     borderRadius: BorderRadius.circular(10),
-              //     child: CustomTextWidget(
-              //       'اللعب مرة أخرى',
-              //       color: AppPalette.white,
-              //       fontFamily: AppFont.elMessiriBold,
-              //       fontSize: SizeConfig.text(0.033),
-              //     ),
-              //   ),
-              // ),
-            ],
+                SizedBox(height: SizeConfig.h(0.014)),
+                PlayAgainButton(onTap: onPlayAgain),
+                // GestureDetector(
+                //   onTap: onPlayAgain,
+                //   child: CustomBackgroundWithChild(
+                //     width: double.infinity,
+                //     height: SizeConfig.h(0.05),
+                //     alignment: Alignment.center,
+                //     backgroundColor: appColors.primaryToPrimaryDark,
+                //     borderRadius: BorderRadius.circular(10),
+                //     child: CustomTextWidget(
+                //       'اللعب مرة أخرى',
+                //       color: AppPalette.white,
+                //       fontFamily: AppFont.elMessiriBold,
+                //       fontSize: SizeConfig.text(0.033),
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ),
       ),

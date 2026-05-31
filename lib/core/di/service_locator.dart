@@ -79,6 +79,7 @@ import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.d
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/data_sources/test_play_modes_remote_data_source.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/repo_impl/test_play_modes_repository_impl.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/services/challenge_result_pdf_service.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/services/mcq_result_pdf_service.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/repositories/test_play_modes_repository.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/get_test_play_content_use_case.dart';
@@ -174,6 +175,10 @@ Future<void> _registerCore() async {
   if (!sl.isRegistered<McqResultPdfService>()) {
     sl.registerLazySingleton<McqResultPdfService>(() => McqResultPdfService());
   }
+
+  sl.registerLazySingleton<ChallengeResultPdfService>(
+    () => ChallengeResultPdfService(),
+  );
 }
 
 void _registerThemeFeature() {
@@ -389,6 +394,7 @@ void _registerTestPlayModeFeature() {
         voiceAssistantService: sl(),
         mcqResultPdfService: sl(),
         getTestPlayContentUseCase: sl<GetTestPlayContentUseCase>(),
+        challengeResultPdfService: sl(),
       ),
     );
 
@@ -416,6 +422,7 @@ void _registerTestPlayModeFeature() {
           voiceAssistantService: sl(),
           mcqResultPdfService: sl(),
           getTestPlayContentUseCase: sl(),
+          challengeResultPdfService: sl(),
         ),
       );
     }
