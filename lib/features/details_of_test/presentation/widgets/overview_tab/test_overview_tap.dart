@@ -3,7 +3,6 @@ import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.d
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
-import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_info_details_section.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_publisher_card.dart';
@@ -54,8 +53,6 @@ class TestOverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [

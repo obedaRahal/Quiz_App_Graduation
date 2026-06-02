@@ -1,0 +1,7 @@
+<svg id="tasks-2" xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19">
+  <path id="Path_12043" data-name="Path 12043" d="M15.839,4.5H7.871A3.374,3.374,0,0,0,4.5,7.871v7.968A3.374,3.374,0,0,0,7.871,19.21h7.968a3.374,3.374,0,0,0,3.371-3.371V7.871A3.374,3.374,0,0,0,15.839,4.5Z" transform="translate(-0.21 -0.21)" fill="#ffbb5f"/>
+  <path id="Path_12044" data-name="Path 12044" d="M4.146,4.118l8.487-1.262a1.524,1.524,0,0,1,1.548.75.919.919,0,1,0,1.59-.923,3.348,3.348,0,0,0-3.408-1.645L3.877,2.3a3.368,3.368,0,0,0-2.84,3.829l1.2,8.067a.92.92,0,0,0,.909.784.867.867,0,0,0,.136-.01.92.92,0,0,0,.774-1.044l-1.2-8.066A1.532,1.532,0,0,1,4.146,4.118Z" transform="translate(-1 -1)" fill="#ffbb5f"/>
+  <g id="pen" transform="translate(8.24 8.365)">
+    <path id="Path_15453" data-name="Path 15453" d="M6,10.656l1.972-.493,4.377-4.377A1.046,1.046,0,1,0,10.87,4.306L6.493,8.684Z" transform="translate(-6 -4)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.7"/>
+  </g>
+</svg>

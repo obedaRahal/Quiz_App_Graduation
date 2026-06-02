@@ -57,6 +57,7 @@ import 'package:quiz_app_grad/features/laboratory/domain/repositories/laboratory
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
+import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_remote_data_source.dart';
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -110,6 +111,8 @@ Future<void> initSl() async {
   _registerDetailsOfTestFeature();
   _registerTestsByInterestFeature();
   _registerTestPlayModeFeature();
+
+  _registerMyTestDetailsFeature();
 }
 
 Future<void> _registerCore() async {
@@ -690,5 +693,11 @@ void _registerTestsByInterestFeature() {
             sl<tests_by_interest_search.SearchTestsByInterestUseCase>(),
       ),
     );
+  }
+}
+
+void _registerMyTestDetailsFeature() {
+  if (!sl.isRegistered<MyTestDetailsCubit>()) {
+    sl.registerFactory<MyTestDetailsCubit>(() => MyTestDetailsCubit());
   }
 }

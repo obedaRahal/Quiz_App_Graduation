@@ -72,15 +72,36 @@ class MainLayoutBody extends StatelessWidget {
                 ),
             
                 Center(
-                  child: InkWell(
-                    onTap: () {
-                      //context.pushNamed(AppRouterName.detailsOfTest);
-                      context.pushNamed(
-                        AppRouterName.detailsOfTest,
-                        extra: DetailsOfTestRouteArgs(testId: 4),
-                      );
-                    },
-                    child: Text("details of test"),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.detailsOfTest,
+                              extra: DetailsOfTestRouteArgs(testId: 4),
+                            );
+                          },
+                          child: Text("details of test"),
+                        ),
+                      ),
+                  
+                  
+                      SizedBox(height: 40,),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.myTestDetails,
+                              extra: DetailsOfTestRouteArgs(testId: 4),
+                            );
+                          },
+                          child: Text("my test detailssssssssss"),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 //const Center(child: Text('الخطة')),

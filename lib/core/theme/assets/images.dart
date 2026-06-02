@@ -64,6 +64,15 @@ class AppImage {
   static String get challengeMainCardLight =>
       '$_baseImageLight/challengeMainCardLight.svg';
 
+  ///////////////////////// mt test details
+  static String get approvedIcon => '$_baseIcon/approvedIcon.svg';
+  static String get deleteIcon => '$_baseIcon/deleteIcon.svg';
+  static String get needsModificationIcon =>
+      '$_baseIcon/needsModificationIcon.svg';
+  static String get newIcon => '$_baseIcon/newIcon.svg';
+  static String get reportedIcon => '$_baseIcon/reportedIcon.svg';
+  static String get underReviewIcon => '$_baseIcon/underReviewIcon.svg';
+
   /////////////////////////////////////////////////////////////////
   ////////////////////// darkkkk image ////////////////////////////
   //////////////////////////////////////////////////////////////

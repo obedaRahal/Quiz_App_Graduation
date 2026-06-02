@@ -28,6 +28,8 @@ import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/view/laboratory_page.dart';
+import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
+import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_test_details_view.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_progress_preview_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
@@ -381,6 +383,25 @@ class AppRouter {
             return BlocProvider(
               create: (_) => sl<TestPlayModesCubit>(),
               child: FlashcardSessionView(testId: args.testId),
+            );
+          },
+        ),
+
+        //////////////////
+        GoRoute(
+          path: AppRouterPath.myTestDetails,
+          name: AppRouterName.myTestDetails,
+          builder: (context, state) {
+            debugPrint("============ myTestDetails Route ============");
+
+            final args = state.extra as DetailsOfTestRouteArgs;
+
+            debugPrint("→ received testId: ${args.testId}");
+            debugPrint("=================================================");
+
+            return BlocProvider(
+              create: (_) => sl<MyTestDetailsCubit>(),
+              child: MyTestDetailsView(testId: args.testId),
             );
           },
         ),
