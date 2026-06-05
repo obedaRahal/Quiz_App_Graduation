@@ -1,147 +1,453 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
+import 'package:quiz_app_grad/core/utils/safe_back_to_home.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/test_details_playmode_section_shimmer.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/test_overview_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_details_with_play_modes_session.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
+import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
+import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_state.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/widgets/my_test_details_tabs_section.dart';
+import 'package:share_plus/share_plus.dart';
 
-class MyTestDetailsView extends StatelessWidget {
+class MyTestDetailsView extends StatefulWidget {
   final int testId;
+
   const MyTestDetailsView({super.key, required this.testId});
+
+  @override
+  State<MyTestDetailsView> createState() => _MyTestDetailsViewState();
+}
+
+class _MyTestDetailsViewState extends State<MyTestDetailsView> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      context.read<MyTestDetailsCubit>().getMyPublicTestDetailsOverview(
+        testId: widget.testId,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+
+    return BlocListener<MyTestDetailsCubit, MyTestDetailsState>(
+      listenWhen: (previous, current) =>
+          previous.downloadStatus != current.downloadStatus ||
+          previous.shareLinkStatus != current.shareLinkStatus,
+      listener: (context, state) async {
+        if (state.isDownloadLoading) {
+          showValidationTopSnackBar(
+            context,
+            title: "تحميل",
+            message: "جاري تحميل ملف الاختبار...",
+            type: AppValidationSnackBarType.hint,
+          );
+        }
+
+        if (state.isDownloadSuccess) {
+          showValidationTopSnackBar(
+            context,
+            title: "تم التحميل",
+            message: "تم حفظ ملف الاختبار بنجاح",
+            type: AppValidationSnackBarType.success,
+            actionText: 'عرض الاختبار',
+            onActionTap: () async {
+              final filePath = state.downloadedFilePath;
+
+              if (filePath == null || filePath.isEmpty) {
+                showValidationTopSnackBar(
+                  context,
+                  title: "خطأ",
+                  message: "تعذر العثور على ملف الاختبار",
+                  type: AppValidationSnackBarType.error,
+                );
+                return;
+              }
+
+              debugPrint(
+                "============ Open My Public Downloaded PDF ============",
+              );
+              debugPrint("→ filePath: $filePath");
+
+              final result = await OpenFilex.open(filePath);
+
+              debugPrint("→ open result type: ${result.type}");
+              debugPrint("→ open result message: ${result.message}");
+              debugPrint(
+                "=======================================================",
+              );
+            },
+          );
+
+          context.read<MyTestDetailsCubit>().resetDownloadState();
+        }
+
+        if (state.isDownloadFailure) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? "خطأ",
+            message: state.errorMessage ?? "تعذر تحميل ملف الاختبار",
+            type: AppValidationSnackBarType.error,
+          );
+
+          context.read<MyTestDetailsCubit>().resetDownloadState();
+        }
+
+        if (state.isShareLinkSuccess) {
+          final shareUrl = state.shareUrl;
+
+          if (shareUrl == null || shareUrl.isEmpty) {
+            showValidationTopSnackBar(
+              context,
+              title: "خطأ",
+              message: "تعذر تجهيز رابط المشاركة",
+              type: AppValidationSnackBarType.error,
+            );
+
+            context.read<MyTestDetailsCubit>().resetShareLinkState();
+            return;
+          }
+
+          await Share.share(shareUrl, subject: 'مشاركة اختبار من Nerd');
+
+          context.read<MyTestDetailsCubit>().resetShareLinkState();
+        }
+
+        if (state.isShareLinkFailure) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? "خطأ",
+            message: state.errorMessage ?? "تعذر مشاركة الاختبار",
+            type: AppValidationSnackBarType.error,
+          );
+
+          context.read<MyTestDetailsCubit>().resetShareLinkState();
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              BlocBuilder<MyTestDetailsCubit, MyTestDetailsState>(
+                buildWhen: (previous, current) =>
+                    previous.overviewDetails != current.overviewDetails ||
+                    previous.overviewStatus != current.overviewStatus,
+                builder: (context, state) {
+                  return TopPageHeader(
+                    title: 'تفاصيل اختباري',
+                    onBack: () => safeBackToHome(context),
+                    icon: Icons.info_outline_rounded,
+                    onIconTap: () {
+                      showValidationTopSnackBar(
+                        context,
+                        title: 'تفاصيل اختباري',
+                        message:
+                            'هذه الصفحة تعرض تفاصيل الاختبار الذي قمت بإنشائه',
+                        type: AppValidationSnackBarType.hint,
+                      );
+                    },
+                  );
+                },
+              ),
+
+              SizedBox(height: SizeConfig.h(0.015)),
+
+              Expanded(
+                child: BlocBuilder<MyTestDetailsCubit, MyTestDetailsState>(
+                  buildWhen: (previous, current) =>
+                      previous.overviewStatus != current.overviewStatus ||
+                      previous.overviewDetails != current.overviewDetails ||
+                      previous.errorMessage != current.errorMessage,
+                  builder: (context, state) {
+                    if (state.isOverviewLoading) {
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            const TestDetailsWithPlayModesSectionShimmer(),
+                            SizedBox(height: SizeConfig.h(0.02)),
+                            const TestOverviewTabShimmer(),
+                          ],
+                        ),
+                      );
+                    }
+
+                    if (state.isOverviewFailure) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.w(0.06),
+                          ),
+                          child: CustomTextWidget(
+                            state.errorMessage ??
+                                'حدث خطأ أثناء جلب تفاصيل الاختبار',
+                            color: AppPalette.red,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    }
+
+                    final overview = state.overviewDetails;
+
+                    if (overview == null) {
+                      return const SizedBox.shrink();
+                    }
+
+                    final data = overview.data;
+
+                    return NotificationListener<ScrollNotification>(
+                      onNotification: (notification) {
+                        if (notification.metrics.maxScrollExtent <= 0) {
+                          return false;
+                        }
+
+                        final cubit = context.read<MyTestDetailsCubit>();
+                        final currentState = cubit.state;
+
+                        final isReviewsTab =
+                            currentState.selectedTab ==
+                            MyTestDetailsTab.reviews;
+
+                        final reviewsDetails = currentState.reviewsDetails;
+
+                        final hasMorePages =
+                            reviewsDetails?.data.meta.hasMorePages ?? false;
+
+                        final isAfterThreshold =
+                            notification.metrics.pixels >=
+                            notification.metrics.maxScrollExtent * 0.80;
+
+                        if (isReviewsTab &&
+                            isAfterThreshold &&
+                            hasMorePages &&
+                            !currentState.isReviewsLoadMoreLoading &&
+                            !currentState.isFilteringReviewsLoading) {
+                          debugPrint(
+                            "============ My Public Reviews Load More Trigger ============",
+                          );
+                          debugPrint(
+                            "→ current page: ${reviewsDetails?.data.meta.currentPage}",
+                          );
+                          debugPrint("→ hasMorePages: $hasMorePages");
+                          debugPrint(
+                            "===================================================",
+                          );
+
+                          cubit.getMyPublicTestReviews(
+                            testId: data.id,
+                            rating: currentState.selectedRatingFilter,
+                            loadMore: true,
+                          );
+                        }
+
+                        return false;
+                      },
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SizedBox(height: SizeConfig.h(0.015)),
+
+                            TestDetailsWithPlayModesSection(
+                              title: data.basicInfo.title,
+                              description: data.basicInfo.description,
+                              difficultyLevel: data.basicInfo.difficultyLevel,
+                              price: data.basicInfo.price,
+                              likesCount: data.basicInfo.likesCount,
+                              reviewsCount: data.basicInfo.reviewsCount,
+                              bookmarksCount: data.basicInfo.bookmarksCount,
+                              hasLiked: false,
+                              hasBookmarked: false,
+                              onLikeTap: null,
+                              onBookmarkTap: null,
+                              onMcqModeTap: () {
+                                debugPrint('go to MCQ MODE from MyTestDetails');
+                              },
+                              onChallengeModeTap: () {
+                                debugPrint(
+                                  'go to Challenge MODE from MyTestDetails',
+                                );
+                              },
+                              onFlashCardModeTap: () {
+                                debugPrint(
+                                  'go to Flashcard MODE from MyTestDetails',
+                                );
+                              },
+                            ),
+
+                            SizedBox(height: SizeConfig.h(0.03)),
+
+                            MyTestDetailsTabsSection(
+                              testId: data.id,
+                              overview: overview,
+                            ),
+
+                            SizedBox(height: SizeConfig.h(0.02)),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const _MyTestDetailsBottomBar(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MyTestDetailsBottomBar extends StatelessWidget {
+  const _MyTestDetailsBottomBar();
+
+  @override
+  Widget build(BuildContext context) {
     final appColors = context.appColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Mock Data
-    final testData = {
-      "title": "اختبار خاص تجريبي",
-      "description": "هذا الاختبار غير حقيقي وهو بهدف التجريب فقط",
-      "difficultyLevel": "متوسط",
-      "price": 0,
-      "likesCount": 12,
-      "reviewsCount": 5,
-      "bookmarksCount": 0,
-    };
+    return BlocBuilder<MyTestDetailsCubit, MyTestDetailsState>(
+      buildWhen: (previous, current) =>
+          previous.overviewDetails != current.overviewDetails ||
+          previous.overviewStatus != current.overviewStatus ||
+          previous.downloadStatus != current.downloadStatus ||
+          previous.shareLinkStatus != current.shareLinkStatus,
+      builder: (context, state) {
+        final overview = state.overviewDetails;
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            TopPageHeader(
-              title: testData["title"]!.toString(),
-              onBack: () => Navigator.pop(context),
-              icon: Icons.info_outline_rounded,
-              onIconTap: () {},
-            ),
-            SizedBox(height: SizeConfig.h(0.015)),
+        if (overview == null || state.isOverviewLoading) {
+          return const SizedBox.shrink();
+        }
 
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(height: SizeConfig.h(0.015)),
-                    // Test Details Section
-                    TestDetailsWithPlayModesSection(
-                      title: testData["title"]!.toString(),
-                      description: testData["description"]!.toString(),
-                      difficultyLevel: testData["difficultyLevel"]!.toString(),
-                      price: 30,
-                      likesCount: 12,
-                      hasLiked: false,
-                      hasBookmarked: false,
-                      reviewsCount: 23,
-                      bookmarksCount: 34,
-                      onMcqModeTap: () {},
-                      onChallengeModeTap: () {},
-                      onFlashCardModeTap: () {},
-                    ),
+        final viewerContext = overview.data.viewerContext;
 
-                    SizedBox(height: SizeConfig.h(0.03)),
+        final isDownloadLoading = state.isDownloadLoading;
+        final isShareLinkLoading = state.isShareLinkLoading;
 
-                    // Tabs Section
-                    MyTestDetailsTabsSection(testId: testId),
-                  ],
-                ),
-              ),
-            ),
-
-            CustomBackgroundWithChild(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                horizontal: SizeConfig.w(0.03),
-                vertical: SizeConfig.h(0.017),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark
-                      ? AppPalette.greyMediumDark
-                      : AppPalette.greyBorderCart,
-                  blurRadius: 4,
-                  offset: const Offset(0, -4),
-                ),
-              ],
-              backgroundColor: appColors.whiteToblack,
-              child: Row(
-                children: [
-                  CustomButtonWidget(
-                    backgroundColor: appColors.primaryToPrimaryDark,
-                    childHorizontalPad: SizeConfig.w(0.04),
-                    childVerticalPad: SizeConfig.w(0.013),
-                    borderRadius: 20,
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        CustomTextWidget(
-                          "تحميل الاختبار",
-                          fontSize: SizeConfig.text(0.025),
-                          color: appColors.whiteToblack,
-                        ),
-
-                        Icon(
-                          Icons.download,
-                          size: SizeConfig.h(0.02),
-                          color: appColors.whiteToblack,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(width: SizeConfig.w(0.02)),
-
-                  CustomButtonWidget(
-                    backgroundColor: appColors.greyToGreyMediumDark,
-                    childHorizontalPad: SizeConfig.w(0.04),
-                    childVerticalPad: SizeConfig.w(0.013),
-                    borderRadius: 20,
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        CustomTextWidget(
-                          "مشاركة الاختبار",
-                          fontSize: SizeConfig.text(0.025),
-                          color: AppPalette.greyMedium,
-                        ),
-                        Icon(
-                          Icons.share,
-                          size: SizeConfig.h(0.02),
-                          color: AppPalette.greyMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+        return CustomBackgroundWithChild(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: SizeConfig.w(0.03),
+            vertical: SizeConfig.h(0.017),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? AppPalette.greyMediumDark
+                  : AppPalette.greyBorderCart,
+              blurRadius: 4,
+              offset: const Offset(0, -4),
             ),
           ],
-        ),
-      ),
+          backgroundColor: appColors.whiteToblack,
+          child: Row(
+            children: [
+              if (viewerContext.canDownload)
+                CustomButtonWidget(
+                  backgroundColor: appColors.primaryToPrimaryDark,
+                  childHorizontalPad: SizeConfig.w(0.04),
+                  childVerticalPad: SizeConfig.w(0.013),
+                  borderRadius: 20,
+                  onTap: isDownloadLoading
+                      ? () {}
+                      : () {
+                          debugPrint(
+                            'download my public test => ${overview.data.id}',
+                          );
+
+                          context
+                              .read<MyTestDetailsCubit>()
+                              .downloadMyPublicTestFile(
+                                testId: overview.data.id,
+                              );
+                        },
+                  child: Row(
+                    children: [
+                      CustomTextWidget(
+                        isDownloadLoading
+                            ? 'جاري التحميل...'
+                            : 'تحميل الاختبار',
+                        fontSize: SizeConfig.text(0.025),
+                        color: AppPalette.white,
+                      ),
+                      SizedBox(width: SizeConfig.w(0.012)),
+                      Icon(
+                        Icons.download,
+                        size: SizeConfig.h(0.02),
+                        color: AppPalette.white,
+                      ),
+                    ],
+                  ),
+                ),
+
+              if (viewerContext.canDownload && viewerContext.canShare)
+                SizedBox(width: SizeConfig.w(0.02)),
+
+              if (viewerContext.canShare)
+                CustomButtonWidget(
+                  backgroundColor: appColors.greyToGreyMediumDark,
+                  childHorizontalPad: SizeConfig.w(0.04),
+                  childVerticalPad: SizeConfig.w(0.013),
+                  borderRadius: 20,
+                  onTap: isShareLinkLoading
+                      ? () {}
+                      : () {
+                          debugPrint(
+                            'share my public test => ${overview.data.id}',
+                          );
+
+                          context
+                              .read<MyTestDetailsCubit>()
+                              .getMyPublicTestShareLink(
+                                testId: overview.data.id,
+                              );
+                        },
+                  child: Row(
+                    children: [
+                      CustomTextWidget(
+                        isShareLinkLoading
+                            ? 'جاري التجهيز...'
+                            : 'مشاركة الاختبار',
+                        fontSize: SizeConfig.text(0.025),
+                        color: AppPalette.greyMedium,
+                      ),
+                      SizedBox(width: SizeConfig.w(0.012)),
+                      Icon(
+                        Icons.share,
+                        size: SizeConfig.h(0.02),
+                        color: AppPalette.greyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+
+              if (!viewerContext.canDownload && !viewerContext.canShare)
+                Expanded(
+                  child: CustomTextWidget(
+                    'لا توجد إجراءات متاحة لهذا الاختبار حاليًا',
+                    color: AppPalette.greyMedium,
+                    textAlign: TextAlign.center,
+                    fontSize: SizeConfig.text(0.03),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

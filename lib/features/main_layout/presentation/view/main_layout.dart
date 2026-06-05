@@ -95,7 +95,7 @@ class MainLayoutBody extends StatelessWidget {
                             //context.pushNamed(AppRouterName.detailsOfTest);
                             context.pushNamed(
                               AppRouterName.myTestDetails,
-                              extra: DetailsOfTestRouteArgs(testId: 4),
+                              extra: DetailsOfTestRouteArgs(testId: 801),
                             );
                           },
                           child: Text("my test detailssssssssss"),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
@@ -8,74 +9,19 @@ import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
-
-enum TestStatusType {
-  deleted,
-  reported,
-  approved,
-  underReview,
-  needsModification,
-  newOne,
-}
-
-class TestStatusEntity {
-  final TestStatusType type;
-  final String title;
-  final String description;
-  final String happenedAt;
-
-  const TestStatusEntity({
-    required this.type,
-    required this.title,
-    required this.description,
-    required this.happenedAt,
-  });
-}
+import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_status_history_entity.dart';
 
 class MyTestStatusTab extends StatelessWidget {
-  const MyTestStatusTab({super.key});
+  final MyPublicTestStatusHistoryEntity statusHistory;
+
+  const MyTestStatusTab({super.key, required this.statusHistory});
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig.init(context);
     final appColors = context.appColors;
 
-    // Mock Data من JSON المثال
-    final List<TestStatusEntity> statuses = [
-      TestStatusEntity(
-        type: TestStatusType.reported,
-        title: "مبلغ عنه",
-        description: "هذا الاختبار حصل على الكثير من الابلاغات",
-        happenedAt: "2025/10/21",
-      ),
-      TestStatusEntity(
-        type: TestStatusType.approved,
-        title: "تمت الموافقة عليه",
-        description:
-            "تم الموافقة على نشر اختبارك للعامة واصبح بإمكان الجميع رؤيته والاطلاع عليه",
-        happenedAt: "2025/10/20",
-      ),
-      TestStatusEntity(
-        type: TestStatusType.underReview,
-        title: "قيد المراجعة",
-        description:
-            "الاختبار في حالة مراجعة من قبل مركز الاشراف للتأكد من التعديلات",
-        happenedAt: "2025/10/19",
-      ),
-      TestStatusEntity(
-        type: TestStatusType.needsModification,
-        title: "يحتاج تعديل",
-        description: "الاختبار الخاص بك يحتاج الى تعديل محتواه وفقا للتعليمات",
-        happenedAt: "2025/10/18",
-      ),
-      TestStatusEntity(
-        type: TestStatusType.newOne,
-        title: "جديد",
-        description:
-            "هذا الاختبار في حالة مسودة الان ولن يظهر للعامة الا بعد المراجعة",
-        happenedAt: "2025/10/17",
-      ),
-    ];
+    final currentStatus = statusHistory.currentStatus;
+    final previousStatuses = statusHistory.previousStatuses;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -86,42 +32,57 @@ class MyTestStatusTab extends StatelessWidget {
           fontFamily: AppFont.elMessiriBold,
           fontSize: SizeConfig.text(0.04),
         ),
+
         SizedBox(height: SizeConfig.h(0.012)),
 
-        TestStatusItemWidget(
-          status: TestStatusEntity(
-            type: TestStatusType.deleted,
-            title: "تم حذفه",
-            description: "تم حذف الاختبار لانه مسيء وقبيح",
-            happenedAt: "2025/10/22",
+        if (currentStatus == null)
+          CustomTextWidget(
+            'لا توجد حالة حالية لهذا الاختبار',
+            color: AppPalette.greyMedium,
+            textAlign: TextAlign.center,
+          )
+        else
+          TestStatusItemWidget(
+            status: currentStatus,
+            fontColor: true,
+            useTypeColor: true,
           ),
-          fontColor: true,
-          useTypeColor: true,
-        ),
+
         CustomDivider(height: 40, thickness: 3),
+
         CustomTextWidget(
           "الحالات السابقة",
           color: appColors.blackTogreyMedium,
           fontFamily: AppFont.elMessiriBold,
           fontSize: SizeConfig.text(0.04),
         ),
+
         SizedBox(height: SizeConfig.h(0.012)),
 
-        Column(
-          children: statuses.map((status) {
-            return Padding(
-              padding: EdgeInsets.only(bottom: SizeConfig.h(0.015)),
-              child: TestStatusItemWidget(status: status),
-            );
-          }).toList(),
-        ),
+        if (previousStatuses.isEmpty)
+          Center(
+            child: CustomTextWidget(
+              'لا توجد حالات سابقة',
+              color: AppPalette.greyMedium,
+              textAlign: TextAlign.center,
+            ),
+          )
+        else
+          Column(
+            children: previousStatuses.map((status) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: SizeConfig.h(0.015)),
+                child: TestStatusItemWidget(status: status),
+              );
+            }).toList(),
+          ),
       ],
     );
   }
 }
 
 class TestStatusItemWidget extends StatelessWidget {
-  final TestStatusEntity status;
+  final MyPublicTestStatusHistoryItemEntity status;
   final bool fontColor;
   final bool useTypeColor;
 
@@ -177,15 +138,35 @@ class TestStatusItemWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: SizeConfig.h(0.002)),
-                CustomTextWidget(
-                  status.description,
-                  fontSize: SizeConfig.text(0.028),
-                  fontFamily: AppFont.elMessiriRegular,
-                  color: AppPalette.greyMedium,
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.right,
-                ),
+                if (status.description.isNotEmpty) ...[
+                  SizedBox(height: SizeConfig.h(0.002)),
+                  CustomTextWidget(
+                    status.description,
+                    fontSize: SizeConfig.text(0.028),
+                    fontFamily: AppFont.elMessiriRegular,
+                    color: AppPalette.greyMedium,
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                  ),
+                ],
+                if (status.type ==
+                    MyPublicTestStatusType.needsModification) ...[
+                  SizedBox(height: SizeConfig.h(0.002)),
+                  CustomBackgroundWithChild(
+                    backgroundColor: AppPalette.orange.withOpacity(0.09),
+                    childHorizontalPad: SizeConfig.w(0.02),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppPalette.orange),
+                    child: CustomButtonWidget(
+                      onTap: () {},
+                      child: CustomTextWidget(
+                        "عرض قائمة التعديلات",
+                        color: AppPalette.orange,
+                        fontSize: SizeConfig.text(0.03),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -200,53 +181,77 @@ class TestStatusItemWidget extends StatelessWidget {
     );
   }
 
-  Color _getBackgroundColor(TestStatusType type) {
+  Color _getBackgroundColor(MyPublicTestStatusType type) {
     switch (type) {
-      case TestStatusType.deleted:
+      case MyPublicTestStatusType.deleted:
         return AppPalette.red.withOpacity(0.09);
-      case TestStatusType.reported:
-        return AppPalette.green.withOpacity(0.09);
-      case TestStatusType.approved:
+
+      case MyPublicTestStatusType.reported:
+        return AppPalette.violet.withOpacity(0.09);
+
+      case MyPublicTestStatusType.approved:
         return AppPalette.greenSoft;
-      case TestStatusType.underReview:
+
+      case MyPublicTestStatusType.underReview:
         return AppPalette.yellow.withOpacity(0.09);
-      case TestStatusType.needsModification:
+
+      case MyPublicTestStatusType.needsModification:
         return AppPalette.orange.withOpacity(0.09);
-      case TestStatusType.newOne:
+
+      case MyPublicTestStatusType.draft:
         return AppPalette.blueLight.withOpacity(0.09);
+
+      case MyPublicTestStatusType.unknown:
+        return AppPalette.grey;
     }
   }
 
-  Color _getBorderColor(TestStatusType type) {
+  Color _getBorderColor(MyPublicTestStatusType type) {
     switch (type) {
-      case TestStatusType.deleted:
+      case MyPublicTestStatusType.deleted:
         return AppPalette.red;
-      case TestStatusType.reported:
+
+      case MyPublicTestStatusType.reported:
+        return AppPalette.violet;
+
+      case MyPublicTestStatusType.approved:
         return AppPalette.green;
-      case TestStatusType.approved:
-        return AppPalette.green;
-      case TestStatusType.underReview:
+
+      case MyPublicTestStatusType.underReview:
         return AppPalette.yellow;
-      case TestStatusType.needsModification:
+
+      case MyPublicTestStatusType.needsModification:
         return AppPalette.orange;
-      case TestStatusType.newOne:
+
+      case MyPublicTestStatusType.draft:
         return AppPalette.blueLight;
+
+      case MyPublicTestStatusType.unknown:
+        return AppPalette.greyMedium;
     }
   }
 
-  String _getIconAsset(TestStatusType type) {
+  String _getIconAsset(MyPublicTestStatusType type) {
     switch (type) {
-      case TestStatusType.deleted:
+      case MyPublicTestStatusType.deleted:
         return AppImage.deleteIcon;
-      case TestStatusType.reported:
+
+      case MyPublicTestStatusType.reported:
         return AppImage.reportedIcon;
-      case TestStatusType.approved:
+
+      case MyPublicTestStatusType.approved:
         return AppImage.approvedIcon;
-      case TestStatusType.underReview:
+
+      case MyPublicTestStatusType.underReview:
         return AppImage.underReviewIcon;
-      case TestStatusType.needsModification:
+
+      case MyPublicTestStatusType.needsModification:
         return AppImage.needsModificationIcon;
-      case TestStatusType.newOne:
+
+      case MyPublicTestStatusType.draft:
+        return AppImage.newIcon;
+
+      case MyPublicTestStatusType.unknown:
         return AppImage.newIcon;
     }
   }

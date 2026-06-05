@@ -57,6 +57,12 @@ import 'package:quiz_app_grad/features/laboratory/domain/repositories/laboratory
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
+import 'package:quiz_app_grad/features/my_test_details/data/data_sources/my_public_test_details_remote_data_source.dart';
+import 'package:quiz_app_grad/features/my_test_details/data/repo_impl/my_public_test_details_repository_impl.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/repository/my_public_test_details_repository.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_details_overview_use_case.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_reviews_use_case.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_status_history_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_remote_data_source.dart';
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
@@ -696,8 +702,70 @@ void _registerTestsByInterestFeature() {
   }
 }
 
+// ================= My Public Test Details =================
 void _registerMyTestDetailsFeature() {
+  if (!sl.isRegistered<MyPublicTestDetailsRemoteDataSource>()) {
+    sl.registerLazySingleton<MyPublicTestDetailsRemoteDataSource>(
+      () => MyPublicTestDetailsRemoteDataSourceImpl(apiConsumer: sl()),
+    );
+  }
+
+  if (!sl.isRegistered<MyPublicTestDetailsRepository>()) {
+    sl.registerLazySingleton<MyPublicTestDetailsRepository>(
+      () => MyPublicTestDetailsRepositoryImpl(remoteDataSource: sl()),
+    );
+  }
+
+  if (!sl.isRegistered<GetMyPublicTestDetailsOverviewUseCase>()) {
+    sl.registerLazySingleton<GetMyPublicTestDetailsOverviewUseCase>(
+      () => GetMyPublicTestDetailsOverviewUseCase(
+        sl<MyPublicTestDetailsRepository>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<GetMyPublicTestStatusHistoryUseCase>()) {
+    sl.registerLazySingleton<GetMyPublicTestStatusHistoryUseCase>(
+      () => GetMyPublicTestStatusHistoryUseCase(
+        sl<MyPublicTestDetailsRepository>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<GetMyPublicTestReviewsUseCase>()) {
+    sl.registerLazySingleton<GetMyPublicTestReviewsUseCase>(
+      () => GetMyPublicTestReviewsUseCase(sl<MyPublicTestDetailsRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetMyPublicTestStatusHistoryUseCase>()) {
+    sl.registerFactory<MyTestDetailsCubit>(
+      () => MyTestDetailsCubit(
+        getMyPublicTestDetailsOverviewUseCase:
+            sl<GetMyPublicTestDetailsOverviewUseCase>(),
+        getMyPublicTestStatusHistoryUseCase:
+            sl<GetMyPublicTestStatusHistoryUseCase>(),
+        getMyPublicTestReviewsUseCase: sl<GetMyPublicTestReviewsUseCase>(),
+        addFeedbackOnReviewUseCase: sl<AddFeedbackOnReviewUseCase>(),
+        deleteFeedbackOnReviewUseCase: sl<DeleteFeedbackOnReviewUseCase>(),
+        downloadTestFileUseCase: sl<DownloadTestFileUseCase>(),
+        getTestShareLinkUseCase: sl<GetTestShareLinkUseCase>(),
+      ),
+    );
+  }
+
   if (!sl.isRegistered<MyTestDetailsCubit>()) {
-    sl.registerFactory<MyTestDetailsCubit>(() => MyTestDetailsCubit());
+    sl.registerFactory<MyTestDetailsCubit>(
+      () => MyTestDetailsCubit(
+        getMyPublicTestDetailsOverviewUseCase:
+            sl<GetMyPublicTestDetailsOverviewUseCase>(),
+        getMyPublicTestStatusHistoryUseCase:
+            sl<GetMyPublicTestStatusHistoryUseCase>(),
+        getMyPublicTestReviewsUseCase: sl<GetMyPublicTestReviewsUseCase>(),
+        addFeedbackOnReviewUseCase: sl<AddFeedbackOnReviewUseCase>(),
+        deleteFeedbackOnReviewUseCase: sl<DeleteFeedbackOnReviewUseCase>(),
+        downloadTestFileUseCase: sl<DownloadTestFileUseCase>(),
+        getTestShareLinkUseCase: sl<GetTestShareLinkUseCase>(),
+      ),
+    );
   }
 }

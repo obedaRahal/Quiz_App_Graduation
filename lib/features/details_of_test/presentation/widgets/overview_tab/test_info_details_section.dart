@@ -102,7 +102,7 @@ class TestInfoDetailsSection extends StatelessWidget {
 
             Expanded(
               child: _TestInfoItem(
-                iconPath: AppImage.timer,
+                iconPath: AppImage.timerIcon,
                 title: "نشر في",
                 value: _safeText(publishedAt),
               ),

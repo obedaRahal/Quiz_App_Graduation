@@ -1,10 +1,10 @@
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
 
 class EndPoints {
-  static const String baseUrl = 'http://192.168.1.108/api/v1/user-mobile';
-  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  //static const String baseUrl = 'http://192.168.137.216/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
-  static const String refreshToken = 'http://192.168.1.108/api/v1/refresh';
+  static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
 
@@ -147,4 +147,17 @@ class EndPoints {
   // Test By Interest
   static const String testByInterest = '/home/test-by-interest';
   static const String searchTestByInterest = '/home/search-test-by-interest';
+
+  //// my public test details
+  static String myPublicTestDetailsOverview(int testId) =>
+      '$baseUrl/test/tests-details/my-public/$testId';
+  static String myPublicTestStatusHistory(int testId) =>
+      '$baseUrl/test/tests-details/my-public/status-history/$testId';
+
+  static String myPublicTestReviews({
+    required int testId,
+    required String rating,
+    required int page,
+  }) =>
+      '$baseUrl/test/tests-details/my-public/reviews/$testId?rating=$rating&page=$page';
 }

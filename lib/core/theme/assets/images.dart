@@ -45,6 +45,7 @@ class AppImage {
   static String get downmark => '$_baseIcon/downmark.svg';
   static String get numberofquestion => '$_baseIcon/numberofquestion.svg';
   static String get timer => '$_baseIcon/timer.svg';
+  static String get timerIcon => '$_baseIcon/timerIcon.svg';
 
   ////////////   Mode play
   static String get cup => '$_baseIcon/cup.svg';

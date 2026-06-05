@@ -399,8 +399,15 @@ class AppRouter {
             debugPrint("→ received testId: ${args.testId}");
             debugPrint("=================================================");
 
-            return BlocProvider(
-              create: (_) => sl<MyTestDetailsCubit>(),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<MyTestDetailsCubit>(
+                  create: (_) => sl<MyTestDetailsCubit>(),
+                ),
+                BlocProvider<DetailsOfTestCubit>(
+                  create: (_) => sl<DetailsOfTestCubit>(),
+                ),
+              ],
               child: MyTestDetailsView(testId: args.testId),
             );
           },
