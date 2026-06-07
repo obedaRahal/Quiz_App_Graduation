@@ -1,6 +1,8 @@
+import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_private_test_details_overview_entity.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_details_overview_entity.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_reviews_entity.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_status_history_entity.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_test_modifications_entity.dart';
 
 enum MyTestDetailsTab { overview, status, reviews }
 
@@ -17,6 +19,10 @@ enum MyPublicReviewFeedbackActionStatus { initial, loading, success, failure }
 enum MyPublicTestDownloadStatus { initial, loading, success, failure }
 
 enum MyPublicTestShareLinkStatus { initial, loading, success, failure }
+
+enum MyTestModificationsStatus { initial, loading, success, failure }
+
+enum MyPrivateTestDetailsStatus { initial, loading, success, failure }
 
 class MyTestDetailsState {
   final MyTestDetailsTab selectedTab;
@@ -47,6 +53,12 @@ class MyTestDetailsState {
   final String? errorTitle;
   final String? errorMessage;
 
+  final MyTestModificationsStatus modificationsStatus;
+  final MyTestModificationsEntity? modificationsDetails;
+
+  final MyPrivateTestDetailsStatus overviewPrivateStatus;
+  final MyPrivateTestDetailsOverviewEntity? overviewPrivateDetails;
+
   const MyTestDetailsState({
     this.selectedTab = MyTestDetailsTab.overview,
     this.selectedSampleAnswers = const {},
@@ -71,6 +83,12 @@ class MyTestDetailsState {
 
     this.shareLinkStatus = MyPublicTestShareLinkStatus.initial,
     this.shareUrl,
+
+    this.modificationsStatus = MyTestModificationsStatus.initial,
+    this.modificationsDetails,
+
+    this.overviewPrivateStatus = MyPrivateTestDetailsStatus.initial,
+    this.overviewPrivateDetails,
   });
 
   bool get isOverviewLoading =>
@@ -127,6 +145,20 @@ class MyTestDetailsState {
   bool get isShareLinkFailure =>
       shareLinkStatus == MyPublicTestShareLinkStatus.failure;
 
+  bool get isModificationsLoading =>
+      modificationsStatus == MyTestModificationsStatus.loading;
+  bool get isModificationsSuccess =>
+      modificationsStatus == MyTestModificationsStatus.success;
+  bool get isModificationsFailure =>
+      modificationsStatus == MyTestModificationsStatus.failure;
+
+  bool get isOverviewPrivateLoading =>
+      overviewPrivateStatus == MyPrivateTestDetailsStatus.loading;
+  bool get isOverviewPrivateSuccess =>
+      overviewPrivateStatus == MyPrivateTestDetailsStatus.success;
+  bool get isOverviewPrivateFailure =>
+      overviewPrivateStatus == MyPrivateTestDetailsStatus.failure;
+
   MyTestDetailsState copyWith({
     MyTestDetailsTab? selectedTab,
     Map<int, int>? selectedSampleAnswers,
@@ -153,6 +185,12 @@ class MyTestDetailsState {
     MyPublicTestShareLinkStatus? shareLinkStatus,
     String? shareUrl,
     bool clearShareUrl = false,
+
+    MyTestModificationsStatus? modificationsStatus,
+    MyTestModificationsEntity? modificationsDetails,
+
+    MyPrivateTestDetailsStatus? overviewPrivateStatus,
+    MyPrivateTestDetailsOverviewEntity? overviewPrivateDetails,
   }) {
     return MyTestDetailsState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -181,6 +219,14 @@ class MyTestDetailsState {
       downloadedFilePath: downloadedFilePath ?? this.downloadedFilePath,
       shareLinkStatus: shareLinkStatus ?? this.shareLinkStatus,
       shareUrl: clearShareUrl ? null : shareUrl ?? this.shareUrl,
+
+      modificationsStatus: modificationsStatus ?? this.modificationsStatus,
+      modificationsDetails: modificationsDetails ?? this.modificationsDetails,
+
+      overviewPrivateStatus:
+          overviewPrivateStatus ?? this.overviewPrivateStatus,
+      overviewPrivateDetails:
+          overviewPrivateDetails ?? this.overviewPrivateDetails,
     );
   }
 }

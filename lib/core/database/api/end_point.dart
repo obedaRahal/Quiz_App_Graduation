@@ -160,4 +160,13 @@ class EndPoints {
     required int page,
   }) =>
       '$baseUrl/test/tests-details/my-public/reviews/$testId?rating=$rating&page=$page';
+
+  static String myTestModifications({
+    required int testId,
+    required int roundId,
+  }) =>
+      '$baseUrl/test/tests-details/my-public/status-history/$testId/revision-request/$roundId';
+
+  static String myPrivateTestDetailsOverview(int testId) =>
+      '$baseUrl/test/tests-details/my-private/$testId';
 }

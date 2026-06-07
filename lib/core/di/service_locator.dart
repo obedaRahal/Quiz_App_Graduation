@@ -60,9 +60,11 @@ import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_b
 import 'package:quiz_app_grad/features/my_test_details/data/data_sources/my_public_test_details_remote_data_source.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/repo_impl/my_public_test_details_repository_impl.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/repository/my_public_test_details_repository.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_private_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_status_history_use_case.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_test_modifications_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_remote_data_source.dart';
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
@@ -737,6 +739,20 @@ void _registerMyTestDetailsFeature() {
     );
   }
 
+  if (!sl.isRegistered<GetMyTestModificationsUseCase>()) {
+    sl.registerLazySingleton<GetMyTestModificationsUseCase>(
+      () => GetMyTestModificationsUseCase(sl<MyPublicTestDetailsRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetMyPrivateTestDetailsOverviewUseCase>()) {
+    sl.registerLazySingleton<GetMyPrivateTestDetailsOverviewUseCase>(
+      () => GetMyPrivateTestDetailsOverviewUseCase(
+        sl<MyPublicTestDetailsRepository>(),
+      ),
+    );
+  }
+
   if (!sl.isRegistered<GetMyPublicTestStatusHistoryUseCase>()) {
     sl.registerFactory<MyTestDetailsCubit>(
       () => MyTestDetailsCubit(
@@ -749,6 +765,8 @@ void _registerMyTestDetailsFeature() {
         deleteFeedbackOnReviewUseCase: sl<DeleteFeedbackOnReviewUseCase>(),
         downloadTestFileUseCase: sl<DownloadTestFileUseCase>(),
         getTestShareLinkUseCase: sl<GetTestShareLinkUseCase>(),
+        getMyTestModificationsUseCase: sl<GetMyTestModificationsUseCase>(),
+        getOverviewPrivateUseCase: sl<GetMyPrivateTestDetailsOverviewUseCase>(),
       ),
     );
   }
@@ -765,6 +783,8 @@ void _registerMyTestDetailsFeature() {
         deleteFeedbackOnReviewUseCase: sl<DeleteFeedbackOnReviewUseCase>(),
         downloadTestFileUseCase: sl<DownloadTestFileUseCase>(),
         getTestShareLinkUseCase: sl<GetTestShareLinkUseCase>(),
+        getMyTestModificationsUseCase: sl<GetMyTestModificationsUseCase>(),
+        getOverviewPrivateUseCase: sl<GetMyPrivateTestDetailsOverviewUseCase>(),
       ),
     );
   }

@@ -14,6 +14,7 @@ import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_t
 import 'package:quiz_app_grad/features/my_test_details/presentation/widgets/my_test_overview_tab.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/widgets/my_test_review_tab.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/widgets/my_test_status_tab.dart';
+import 'package:quiz_app_grad/features/my_test_details/presentation/widgets/show_my_test_revision_bottom_sheet.dart';
 
 class MyTestDetailsTabsSection extends StatelessWidget {
   final int testId;
@@ -181,7 +182,32 @@ class _StatusTabBlocContentState extends State<_StatusTabBlocContent> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MyTestDetailsCubit, MyTestDetailsState>(
+    return BlocConsumer<MyTestDetailsCubit, MyTestDetailsState>(
+      listenWhen: (previous, current) =>
+          previous.modificationsStatus != current.modificationsStatus,
+      listener: (context, state) {
+        if (state.isModificationsSuccess) {
+          final modifications = state.modificationsDetails?.data ?? [];
+
+          showTestModificationBottomSheet(
+            context: context,
+            items: modifications,
+          );
+
+          context.read<MyTestDetailsCubit>().resetMyTestModificationsState();
+        }
+
+        if (state.isModificationsFailure) {
+          showValidationTopSnackBar(
+            context,
+            title: state.errorTitle ?? 'خطأ',
+            message: state.errorMessage ?? 'تعذر جلب قائمة التعديلات',
+            type: AppValidationSnackBarType.error,
+          );
+
+          context.read<MyTestDetailsCubit>().resetMyTestModificationsState();
+        }
+      },
       buildWhen: (previous, current) =>
           previous.statusHistoryStatus != current.statusHistoryStatus ||
           previous.statusHistoryDetails != current.statusHistoryDetails ||
@@ -211,7 +237,10 @@ class _StatusTabBlocContentState extends State<_StatusTabBlocContent> {
           );
         }
 
-        return MyTestStatusTab(statusHistory: statusHistory);
+        return MyTestStatusTab(
+          statusHistory: statusHistory,
+          testId: widget.testId,
+        );
       },
     );
   }
@@ -266,7 +295,6 @@ class _ReviewsTabBlocContentState extends State<_ReviewsTabBlocContent> {
           );
 
           context.read<MyTestDetailsCubit>().resetReviewsLoadMoreState();
-
         }
         if (state.isReviewFeedbackFailure) {
           showValidationTopSnackBar(

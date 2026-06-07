@@ -23,6 +23,7 @@ abstract class AppRouterName {
   static const flashcardView = 'flashcardView';
 
   static const myTestDetails = 'myTestDetails';
+  static const myPrivateTestDetails = 'myPrivateTestDetails';
 }
 
 abstract class AppRouterPath {
@@ -55,4 +56,5 @@ abstract class AppRouterPath {
 
 
   static const myTestDetails = '/myTestDetails';
+  static const myPrivateTestDetails = '/myPrivateTestDetails';
 }

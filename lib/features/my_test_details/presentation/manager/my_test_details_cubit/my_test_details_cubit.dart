@@ -9,12 +9,16 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/d
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_test_share_link_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/review_feedback_action_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_reviews_entity.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_private_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_status_history_use_case.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_test_modifications_use_case.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/get_my_private_test_details_overview_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/get_my_public_test_details_overview_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/get_my_public_test_reviews_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/get_my_public_test_status_history_params.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/get_my_test_modifications_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_state.dart';
 
 class MyTestDetailsCubit extends Cubit<MyTestDetailsState> {
@@ -29,6 +33,10 @@ class MyTestDetailsCubit extends Cubit<MyTestDetailsState> {
   final DownloadTestFileUseCase downloadTestFileUseCase;
   final GetTestShareLinkUseCase getTestShareLinkUseCase;
 
+  final GetMyTestModificationsUseCase getMyTestModificationsUseCase;
+
+  final GetMyPrivateTestDetailsOverviewUseCase getOverviewPrivateUseCase;
+
   MyTestDetailsCubit({
     required this.getMyPublicTestDetailsOverviewUseCase,
     required this.getMyPublicTestStatusHistoryUseCase,
@@ -37,6 +45,8 @@ class MyTestDetailsCubit extends Cubit<MyTestDetailsState> {
     required this.deleteFeedbackOnReviewUseCase,
     required this.downloadTestFileUseCase,
     required this.getTestShareLinkUseCase,
+    required this.getMyTestModificationsUseCase,
+    required this.getOverviewPrivateUseCase,
   }) : super(const MyTestDetailsState()) {
     debugPrint("============ MyTestDetailsCubit INIT ============");
   }
@@ -649,6 +659,137 @@ class MyTestDetailsCubit extends Cubit<MyTestDetailsState> {
       ),
     );
 
+    debugPrint("=================================================");
+  }
+
+  Future<void> getMyTestModifications({
+    required int testId,
+    required int roundId,
+  }) async {
+    debugPrint(
+      "============ MyTestDetailsCubit.getMyTestModifications ============",
+    );
+    debugPrint("→ params: {testId: $testId, roundId: $roundId}");
+
+    if (state.isModificationsLoading) {
+      debugPrint("✗ modifications already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        modificationsStatus: MyTestModificationsStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await getMyTestModificationsUseCase(
+      GetMyTestModificationsParams(testId: testId, roundId: roundId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ my test modifications failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            modificationsStatus: MyTestModificationsStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ my test modifications loaded successfully");
+        debugPrint("→ title: ${response.title}");
+        debugPrint("→ modifications count: ${response.data.length}");
+
+        emit(
+          state.copyWith(
+            modificationsStatus: MyTestModificationsStatus.success,
+            modificationsDetails: response,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetMyTestModificationsState() {
+    debugPrint(
+      "============ MyTestDetailsCubit.resetMyTestModificationsState ============",
+    );
+
+    emit(
+      state.copyWith(
+        modificationsStatus: MyTestModificationsStatus.initial,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> getMyPrivateTestOverview({required int testId}) async {
+    debugPrint(
+      "============ MyPrivateTestDetailsCubit.getMyPrivateTestOverview ============",
+    );
+    debugPrint("→ params: {testId: $testId}");
+
+    emit(
+      state.copyWith(overviewPrivateStatus: MyPrivateTestDetailsStatus.loading),
+    );
+
+    final result = await getOverviewPrivateUseCase(
+      GetMyPrivateTestDetailsOverviewParams(testId: testId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ getMyPrivateTestOverview failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+        emit(
+          state.copyWith(
+            overviewPrivateStatus: MyPrivateTestDetailsStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (overview) {
+        debugPrint("✓ getMyPrivateTestOverview success");
+        debugPrint("→ title: ${overview.title}");
+        debugPrint("→ id: ${overview.data.id}");
+        emit(
+          state.copyWith(
+            overviewPrivateStatus: MyPrivateTestDetailsStatus.success,
+            overviewPrivateDetails: overview,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetPrivateOverviewState() {
+    debugPrint(
+      "============ MyPrivateTestDetailsCubit.resetOverviewState ============",
+    );
+    emit(
+      state.copyWith(
+        overviewPrivateStatus: MyPrivateTestDetailsStatus.initial,
+        overviewDetails: null,
+        errorTitle: null,
+        errorMessage: null,
+      ),
+    );
     debugPrint("=================================================");
   }
 }

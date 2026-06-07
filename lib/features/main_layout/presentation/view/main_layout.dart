@@ -101,6 +101,21 @@ class MainLayoutBody extends StatelessWidget {
                           child: Text("my test detailssssssssss"),
                         ),
                       ),
+
+
+                      SizedBox(height: 40,),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.myPrivateTestDetails,
+                              extra: DetailsOfTestRouteArgs(testId: 801),
+                            );
+                          },
+                          child: Text("my test private detailssssssssss"),
+                        ),
+                      ),
                     ],
                   ),
                 ),

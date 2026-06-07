@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
@@ -7,14 +8,23 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_status_history_entity.dart';
+import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
+import 'package:quiz_app_grad/features/my_test_details/presentation/widgets/show_my_test_revision_bottom_sheet.dart';
 
 class MyTestStatusTab extends StatelessWidget {
+  final int testId;
+
   final MyPublicTestStatusHistoryEntity statusHistory;
 
-  const MyTestStatusTab({super.key, required this.statusHistory});
+  const MyTestStatusTab({
+    super.key,
+    required this.statusHistory,
+    required this.testId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +56,7 @@ class MyTestStatusTab extends StatelessWidget {
             status: currentStatus,
             fontColor: true,
             useTypeColor: true,
+            onEditListTap: () {},
           ),
 
         CustomDivider(height: 40, thickness: 3),
@@ -72,7 +83,33 @@ class MyTestStatusTab extends StatelessWidget {
             children: previousStatuses.map((status) {
               return Padding(
                 padding: EdgeInsets.only(bottom: SizeConfig.h(0.015)),
-                child: TestStatusItemWidget(status: status),
+                child: TestStatusItemWidget(
+                  status: status,
+                  onEditListTap: () {
+                    final roundId = status.roundId;
+
+                    debugPrint(
+                      "============ Open My Test Modifications ============",
+                    );
+                    debugPrint("→ testId: $testId");
+                    debugPrint("→ roundId: $roundId");
+
+                    if (roundId == null) {
+                      showValidationTopSnackBar(
+                        context,
+                        title: 'تنبيه',
+                        message: 'لا يوجد رقم جولة مرتبط بهذه الحالة',
+                        type: AppValidationSnackBarType.hint,
+                      );
+                      return;
+                    }
+
+                    context.read<MyTestDetailsCubit>().getMyTestModifications(
+                      testId: testId,
+                      roundId: roundId,
+                    );
+                  },
+                ),
               );
             }).toList(),
           ),
@@ -85,12 +122,14 @@ class TestStatusItemWidget extends StatelessWidget {
   final MyPublicTestStatusHistoryItemEntity status;
   final bool fontColor;
   final bool useTypeColor;
+  final void Function() onEditListTap;
 
   const TestStatusItemWidget({
     super.key,
     required this.status,
     this.fontColor = false,
     this.useTypeColor = false,
+    required this.onEditListTap,
   });
 
   @override
@@ -158,7 +197,7 @@ class TestStatusItemWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: AppPalette.orange),
                     child: CustomButtonWidget(
-                      onTap: () {},
+                      onTap: onEditListTap,
                       child: CustomTextWidget(
                         "عرض قائمة التعديلات",
                         color: AppPalette.orange,
