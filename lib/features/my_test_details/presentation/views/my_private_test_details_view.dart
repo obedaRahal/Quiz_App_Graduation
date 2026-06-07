@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
@@ -16,6 +18,7 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_state.dart';
+import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
 
 class MyPrivateTestDetailsView extends StatefulWidget {
   final int testId;
@@ -196,7 +199,6 @@ class _MyPrivateTestDetailsViewState extends State<MyPrivateTestDetailsView> {
                             description: basicInfo.description,
                             difficultyLevel: basicInfo.difficultyLevel,
 
-                            // الـ private response لا يحتوي هذه القيم.
                             price: 0,
                             likesCount: 0,
                             reviewsCount: 0,
@@ -222,18 +224,31 @@ class _MyPrivateTestDetailsViewState extends State<MyPrivateTestDetailsView> {
                               );
                             },
                             onMcqModeTap: () {
-                              debugPrint(
-                                'go to MCQ MODE from MyPrivateTestDetails',
+                              debugPrint("go to MCQ MODE");
+                              context.pushNamed(
+                                AppRouterName.mcqTestSessionView,
+                                extra: TestPlayModesRouteArgs(
+                                  testId: overview.data.id,
+                                ),
                               );
                             },
                             onChallengeModeTap: () {
-                              debugPrint(
-                                'go to Challenge MODE from MyPrivateTestDetails',
+                              debugPrint("chaleng");
+                              context.pushNamed(
+                                AppRouterName.challengeSetupView,
+                                extra: TestPlayModesRouteArgs(
+                                  testId: overview.data.id,
+                                ),
                               );
                             },
                             onFlashCardModeTap: () {
-                              debugPrint(
-                                'go to Flashcard MODE from MyPrivateTestDetails',
+                              debugPrint("flash");
+
+                              context.pushNamed(
+                                AppRouterName.flashcardView,
+                                extra: TestPlayModesRouteArgs(
+                                  testId: overview.data.id,
+                                ),
                               );
                             },
                           ),

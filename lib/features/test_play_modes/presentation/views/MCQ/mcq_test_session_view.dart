@@ -38,9 +38,6 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
     });
   }
 
-  // void _onBackTap() {
-  //   Navigator.pop(context);
-  // }
   void _onBackTap() {
     final state = context.read<TestPlayModesCubit>().state;
 
@@ -200,6 +197,7 @@ class _McqLoadedBody extends StatelessWidget {
 
           Expanded(
             child: CustomBackgroundWithChild(
+              width: double.infinity,
               backgroundColor: AppPalette.black,
               alignment: Alignment.topCenter,
               borderRadius: const BorderRadius.only(

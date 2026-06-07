@@ -114,6 +114,7 @@ class _ChallengeSessionViewState extends State<ChallengeSessionView> {
 
                 Expanded(
                   child: CustomBackgroundWithChild(
+                    width: double.infinity,
                     backgroundColor: AppPalette.black,
                     alignment: Alignment.topCenter,
                     borderRadius: const BorderRadius.only(
