@@ -80,7 +80,7 @@ class MainLayoutBody extends StatelessWidget {
                             //context.pushNamed(AppRouterName.detailsOfTest);
                             context.pushNamed(
                               AppRouterName.detailsOfTest,
-                              extra: DetailsOfTestRouteArgs(testId: 4),
+                              extra: DetailsOfTestRouteArgs(testId: 100),
                             );
                           },
                           child: Text("details of test"),
@@ -95,7 +95,7 @@ class MainLayoutBody extends StatelessWidget {
                             //context.pushNamed(AppRouterName.detailsOfTest);
                             context.pushNamed(
                               AppRouterName.myTestDetails,
-                              extra: DetailsOfTestRouteArgs(testId: 801),
+                              extra: DetailsOfTestRouteArgs(testId: 640),
                             );
                           },
                           child: Text("my test detailssssssssss"),
@@ -110,7 +110,7 @@ class MainLayoutBody extends StatelessWidget {
                             //context.pushNamed(AppRouterName.detailsOfTest);
                             context.pushNamed(
                               AppRouterName.myPrivateTestDetails,
-                              extra: DetailsOfTestRouteArgs(testId: 801),
+                              extra: DetailsOfTestRouteArgs(testId: 802),
                             );
                           },
                           child: Text("my test private detailssssssssss"),

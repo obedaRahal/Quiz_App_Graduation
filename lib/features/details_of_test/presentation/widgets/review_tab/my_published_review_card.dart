@@ -26,7 +26,6 @@ class MyPublishedReviewCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final cardColor = isDark ? AppPalette.greyMediumDark : AppPalette.white;
-    final shadowColor = AppPalette.greyLightDark.withOpacity(0.35);
 
     return Stack(
       clipBehavior: Clip.none,

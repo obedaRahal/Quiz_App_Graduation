@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_confirmation_dialog.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_hint_play_mode.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/params/register_test_attempt_interaction_params.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/shimmers/flashcard_session_shimmer.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/FLASH_CARD/flashcard_bottom_action_section.dart';
@@ -83,9 +85,24 @@ class _FlashcardSessionViewState extends State<FlashcardSessionView> {
       return;
     }
 
-    showExitTestPlayModeDialog(
+    // showExitTestPlayModeDialog(
+    //   context: context,
+    //   onExitConfirmed: () {
+    //     context.read<TestPlayModesCubit>().resetSession();
+    //     Navigator.pop(context);
+    //   },
+    // );
+
+    showCustomConfirmationDialog(
       context: context,
-      onExitConfirmed: () {
+      title: 'هل تريد مغادرة الاختبار حقاً ؟',
+      message:
+          'في حال غادرت الاختبار ستخسر تقدمك، ولن يتم تسجيل نتيجتك في قائمة سجل الاختبارات التي قمت بإجرائها',
+      icon: Icons.exit_to_app_rounded,
+      confirmText: 'مغادرة',
+      cancelText: 'إلغاء',
+      onConfirm: () {
+        // منطق المغادرة
         context.read<TestPlayModesCubit>().resetSession();
         Navigator.pop(context);
       },
@@ -161,6 +178,22 @@ class _FlashcardSessionViewState extends State<FlashcardSessionView> {
           listenWhen: (previous, current) =>
               !previous.isCompleted && current.isCompleted,
           listener: (context, state) {
+            final testId = state.test?.testId;
+
+            debugPrint("============ Flashcard complete listener ============");
+            debugPrint("→ try register flashCard attempt interaction");
+            debugPrint("→ testId: $testId");
+
+            if (testId != null) {
+              context
+                  .read<TestPlayModesCubit>()
+                  .registerTestAttemptInteractionSilently(
+                    testId: testId,
+                    mode: TestAttemptInteractionMode.flashCard,
+                  );
+            }
+            debugPrint("=================================================");
+
             showDialog(
               context: context,
               barrierDismissible: false,

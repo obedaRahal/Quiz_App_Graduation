@@ -1,3 +1,4 @@
+import 'package:quiz_app_grad/features/my_test_details/domain/entities/delete_my_test_entity.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_private_test_details_overview_entity.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_details_overview_entity.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_reviews_entity.dart';
@@ -23,6 +24,8 @@ enum MyPublicTestShareLinkStatus { initial, loading, success, failure }
 enum MyTestModificationsStatus { initial, loading, success, failure }
 
 enum MyPrivateTestDetailsStatus { initial, loading, success, failure }
+
+enum DeleteMyTestStatus { initial, loading, success, failure }
 
 class MyTestDetailsState {
   final MyTestDetailsTab selectedTab;
@@ -59,6 +62,9 @@ class MyTestDetailsState {
   final MyPrivateTestDetailsStatus overviewPrivateStatus;
   final MyPrivateTestDetailsOverviewEntity? overviewPrivateDetails;
 
+  final DeleteMyTestStatus deleteMyTestStatus;
+  final DeleteMyTestEntity? deleteMyTestDetails;
+
   const MyTestDetailsState({
     this.selectedTab = MyTestDetailsTab.overview,
     this.selectedSampleAnswers = const {},
@@ -89,6 +95,9 @@ class MyTestDetailsState {
 
     this.overviewPrivateStatus = MyPrivateTestDetailsStatus.initial,
     this.overviewPrivateDetails,
+
+    this.deleteMyTestStatus = DeleteMyTestStatus.initial,
+    this.deleteMyTestDetails,
   });
 
   bool get isOverviewLoading =>
@@ -159,6 +168,13 @@ class MyTestDetailsState {
   bool get isOverviewPrivateFailure =>
       overviewPrivateStatus == MyPrivateTestDetailsStatus.failure;
 
+  bool get isDeleteMyTestLoading =>
+      deleteMyTestStatus == DeleteMyTestStatus.loading;
+  bool get isDeleteMyTestSuccess =>
+      deleteMyTestStatus == DeleteMyTestStatus.success;
+  bool get isDeleteMyTestFailure =>
+      deleteMyTestStatus == DeleteMyTestStatus.failure;
+
   MyTestDetailsState copyWith({
     MyTestDetailsTab? selectedTab,
     Map<int, int>? selectedSampleAnswers,
@@ -191,6 +207,10 @@ class MyTestDetailsState {
 
     MyPrivateTestDetailsStatus? overviewPrivateStatus,
     MyPrivateTestDetailsOverviewEntity? overviewPrivateDetails,
+
+    DeleteMyTestStatus? deleteMyTestStatus,
+    DeleteMyTestEntity? deleteMyTestDetails,
+    bool clearDeleteMyTestDetails = false,
   }) {
     return MyTestDetailsState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -227,6 +247,11 @@ class MyTestDetailsState {
           overviewPrivateStatus ?? this.overviewPrivateStatus,
       overviewPrivateDetails:
           overviewPrivateDetails ?? this.overviewPrivateDetails,
+
+      deleteMyTestStatus: deleteMyTestStatus ?? this.deleteMyTestStatus,
+      deleteMyTestDetails: clearDeleteMyTestDetails
+          ? null
+          : deleteMyTestDetails ?? this.deleteMyTestDetails,
     );
   }
 }

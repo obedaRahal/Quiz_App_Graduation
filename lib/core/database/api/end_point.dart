@@ -1,8 +1,8 @@
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
 
 class EndPoints {
-  static const String baseUrl = 'http://192.168.1.108/api/v1/user-mobile';
-  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  //static const String baseUrl = 'http://192.168.1.108/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -169,4 +169,9 @@ class EndPoints {
 
   static String myPrivateTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/my-private/$testId';
+
+  static String deleteMyTest(int testId) => '$baseUrl/test/delete/test/$testId';
+
+  static String registerTestAttemptInteraction(int testId) =>
+      '$baseUrl/test/attempts/$testId';
 }

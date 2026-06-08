@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_confirmation_dialog.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -46,9 +47,23 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
       return;
     }
 
-    showExitTestPlayModeDialog(
+    // showExitTestPlayModeDialog(
+    //   context: context,
+    //   onExitConfirmed: () {
+    //     context.read<TestPlayModesCubit>().resetSession();
+    //     Navigator.pop(context);
+    //   },
+    // );
+    showCustomConfirmationDialog(
       context: context,
-      onExitConfirmed: () {
+      title: 'هل تريد مغادرة الاختبار حقاً ؟',
+      message:
+          'في حال غادرت الاختبار ستخسر تقدمك، ولن يتم تسجيل نتيجتك في قائمة سجل الاختبارات التي قمت بإجرائها',
+      icon: Icons.exit_to_app_rounded,
+      confirmText: 'مغادرة',
+      cancelText: 'إلغاء',
+      onConfirm: () {
+        // منطق المغادرة
         context.read<TestPlayModesCubit>().resetSession();
         Navigator.pop(context);
       },

@@ -60,6 +60,7 @@ import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_b
 import 'package:quiz_app_grad/features/my_test_details/data/data_sources/my_public_test_details_remote_data_source.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/repo_impl/my_public_test_details_repository_impl.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/repository/my_public_test_details_repository.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/delete_my_test_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_private_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_reviews_use_case.dart';
@@ -92,6 +93,7 @@ import 'package:quiz_app_grad/features/test_play_modes/data/services/challenge_r
 import 'package:quiz_app_grad/features/test_play_modes/data/services/mcq_result_pdf_service.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/repositories/test_play_modes_repository.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/get_test_play_content_use_case.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/register_test_attempt_interaction_use_case.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/data/data_source/tests_by_interest_remote_data_source.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/data/repositories/tests_by_interest_repository_impl.dart';
@@ -406,6 +408,8 @@ void _registerTestPlayModeFeature() {
         mcqResultPdfService: sl(),
         getTestPlayContentUseCase: sl<GetTestPlayContentUseCase>(),
         challengeResultPdfService: sl(),
+        registerTestAttemptInteractionUseCase:
+            sl<RegisterTestAttemptInteractionUseCase>(),
       ),
     );
 
@@ -427,13 +431,23 @@ void _registerTestPlayModeFeature() {
       );
     }
 
+    if (!sl.isRegistered<RegisterTestAttemptInteractionUseCase>()) {
+      sl.registerLazySingleton<RegisterTestAttemptInteractionUseCase>(
+        () => RegisterTestAttemptInteractionUseCase(
+          sl<TestPlayModesRepository>(),
+        ),
+      );
+    }
+
     if (!sl.isRegistered<TestPlayModesCubit>()) {
       sl.registerFactory<TestPlayModesCubit>(
         () => TestPlayModesCubit(
           voiceAssistantService: sl(),
           mcqResultPdfService: sl(),
-          getTestPlayContentUseCase: sl(),
+          getTestPlayContentUseCase: sl<GetTestPlayContentUseCase>(),
           challengeResultPdfService: sl(),
+          registerTestAttemptInteractionUseCase:
+              sl<RegisterTestAttemptInteractionUseCase>(),
         ),
       );
     }
@@ -753,6 +767,12 @@ void _registerMyTestDetailsFeature() {
     );
   }
 
+  if (!sl.isRegistered<DeleteMyTestUseCase>()) {
+    sl.registerLazySingleton<DeleteMyTestUseCase>(
+      () => DeleteMyTestUseCase(sl<MyPublicTestDetailsRepository>()),
+    );
+  }
+
   if (!sl.isRegistered<GetMyPublicTestStatusHistoryUseCase>()) {
     sl.registerFactory<MyTestDetailsCubit>(
       () => MyTestDetailsCubit(
@@ -767,6 +787,7 @@ void _registerMyTestDetailsFeature() {
         getTestShareLinkUseCase: sl<GetTestShareLinkUseCase>(),
         getMyTestModificationsUseCase: sl<GetMyTestModificationsUseCase>(),
         getOverviewPrivateUseCase: sl<GetMyPrivateTestDetailsOverviewUseCase>(),
+        deleteMyTestUseCase: sl<DeleteMyTestUseCase>(),
       ),
     );
   }
@@ -785,6 +806,7 @@ void _registerMyTestDetailsFeature() {
         getTestShareLinkUseCase: sl<GetTestShareLinkUseCase>(),
         getMyTestModificationsUseCase: sl<GetMyTestModificationsUseCase>(),
         getOverviewPrivateUseCase: sl<GetMyPrivateTestDetailsOverviewUseCase>(),
+        deleteMyTestUseCase: sl<DeleteMyTestUseCase>(),
       ),
     );
   }

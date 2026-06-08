@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:quiz_app_grad/core/errors/failure.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/entities/delete_my_test_entity.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_private_test_details_overview_entity.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_details_overview_entity.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_reviews_entity.dart';
@@ -26,4 +27,8 @@ abstract class MyPublicTestDetailsRepository {
 
   Future<Either<Failure, MyPrivateTestDetailsOverviewEntity>>
   getMyPrivateTestDetailsOverview({required int testId});
+
+  Future<Either<Failure, DeleteMyTestEntity>> deleteMyTest({
+    required int testId,
+  });
 }

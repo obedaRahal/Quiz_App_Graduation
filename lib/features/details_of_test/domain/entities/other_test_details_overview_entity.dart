@@ -210,6 +210,8 @@ class TestViewerContextEntity {
   final bool hasLiked;
   final bool hasBookmarked;
 
+  final bool isAttemptIt;
+
   const TestViewerContextEntity({
     required this.isOwner,
     required this.isFree,
@@ -221,6 +223,7 @@ class TestViewerContextEntity {
     required this.canReport,
     required this.hasLiked,
     required this.hasBookmarked,
+    required this.isAttemptIt,
   });
 
   TestViewerContextEntity copyWith({
@@ -234,6 +237,7 @@ class TestViewerContextEntity {
     bool? canReport,
     bool? hasLiked,
     bool? hasBookmarked,
+    bool? isAttemptIt,
   }) {
     return TestViewerContextEntity(
       isOwner: isOwner ?? this.isOwner,
@@ -246,6 +250,7 @@ class TestViewerContextEntity {
       canReport: canReport ?? this.canReport,
       hasLiked: hasLiked ?? this.hasLiked,
       hasBookmarked: hasBookmarked ?? this.hasBookmarked,
+      isAttemptIt: isAttemptIt ?? this.isAttemptIt,
     );
   }
 }

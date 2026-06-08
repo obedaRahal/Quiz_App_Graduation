@@ -449,17 +449,66 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                       searchHint: 'ابحث عن مستخدم',
                                     );
                                   },
-                                  onMcqModeTap: () {
+                                  onMcqModeTap: () async {
                                     debugPrint("go to MCQ MODE");
-                                    context.pushNamed(
+                                    // context.pushNamed(
+                                    //   AppRouterName.mcqTestSessionView,
+                                    //   extra: TestPlayModesRouteArgs(
+                                    //     testId: overview.data.id,
+                                    //   ),
+                                    // );
+                                    final result = await context.pushNamed(
                                       AppRouterName.mcqTestSessionView,
                                       extra: TestPlayModesRouteArgs(
                                         testId: overview.data.id,
                                       ),
                                     );
+                                    debugPrint(
+                                      "============ DetailsOfTestView MCQ returned ============",
+                                    );
+                                    debugPrint("→ result: $result");
+                                    if (result == true && context.mounted) {
+                                      context
+                                          .read<DetailsOfTestCubit>()
+                                          .getOtherTestDetailsOverview(
+                                            testId: overview.data.id,
+                                          );
+                                    }
+                                    debugPrint(
+                                      "=================================================",
+                                    );
                                   },
+
+                                  // onChallengeModeTap: () {
+                                  //   debugPrint("chaleng");
+                                  //   context.pushNamed(
+                                  //     AppRouterName.challengeSetupView,
+                                  //     extra: TestPlayModesRouteArgs(
+                                  //       testId: overview.data.id,
+                                  //     ),
+                                  //   );
+                                  // },
                                   onChallengeModeTap: () {
-                                    debugPrint("chaleng");
+                                    debugPrint('challenge mode tap');
+                                    debugPrint(
+                                      '→ isAttemptIt: ${overview.data.extraInfo.viewerContext.isAttemptIt}',
+                                    );
+
+                                    if (!overview
+                                        .data
+                                        .extraInfo
+                                        .viewerContext
+                                        .isAttemptIt) {
+                                      showValidationTopSnackBar(
+                                        context,
+                                        title: 'تنبيه',
+                                        message:
+                                            'يجب عليك إجراء نمط الاختيار من متعدد أولًا قبل الدخول إلى نمط التحدي',
+                                        type: AppValidationSnackBarType.hint,
+                                      );
+                                      return;
+                                    }
+
                                     context.pushNamed(
                                       AppRouterName.challengeSetupView,
                                       extra: TestPlayModesRouteArgs(
@@ -467,8 +516,37 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                       ),
                                     );
                                   },
+
+                                  // onFlashCardModeTap: () {
+                                  //   debugPrint("flash");
+
+                                  //   context.pushNamed(
+                                  //     AppRouterName.flashcardView,
+                                  //     extra: TestPlayModesRouteArgs(
+                                  //       testId: overview.data.id,
+                                  //     ),
+                                  //   );
+                                  // },
                                   onFlashCardModeTap: () {
-                                    debugPrint("flash");
+                                    debugPrint('flashcard mode tap');
+                                    debugPrint(
+                                      '→ isAttemptIt: ${overview.data.extraInfo.viewerContext.isAttemptIt}',
+                                    );
+
+                                    if (!overview
+                                        .data
+                                        .extraInfo
+                                        .viewerContext
+                                        .isAttemptIt) {
+                                      showValidationTopSnackBar(
+                                        context,
+                                        title: 'تنبيه',
+                                        message:
+                                            'يجب عليك إجراء نمط الاختيار من متعدد أولًا قبل الدخول إلى نمط البطاقات التعليمية',
+                                        type: AppValidationSnackBarType.hint,
+                                      );
+                                      return;
+                                    }
 
                                     context.pushNamed(
                                       AppRouterName.flashcardView,

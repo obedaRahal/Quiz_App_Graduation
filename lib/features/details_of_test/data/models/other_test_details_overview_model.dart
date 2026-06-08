@@ -260,6 +260,8 @@ class TestViewerContextModel {
   final bool hasLiked;
   final bool hasBookmarked;
 
+  final bool isAttemptIt;
+
   const TestViewerContextModel({
     required this.isOwner,
     required this.isFree,
@@ -271,6 +273,7 @@ class TestViewerContextModel {
     required this.canReport,
     required this.hasLiked,
     required this.hasBookmarked,
+    required this.isAttemptIt,
   });
 
   factory TestViewerContextModel.fromJson(Map<String, dynamic> json) {
@@ -285,6 +288,7 @@ class TestViewerContextModel {
       canReport: json['can_report'] as bool? ?? false,
       hasLiked: json['has_liked'] as bool? ?? false,
       hasBookmarked: json['has_bookmarked'] as bool? ?? false,
+      isAttemptIt: json['is_Attempt_it'] as bool? ?? false,
     );
   }
 
@@ -300,6 +304,7 @@ class TestViewerContextModel {
       canReport: canReport,
       hasLiked: hasLiked,
       hasBookmarked: hasBookmarked,
+      isAttemptIt: isAttemptIt,
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
+import 'package:quiz_app_grad/features/my_test_details/data/models/delete_my_test_model.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/models/my_private_test_details_overview_model.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/models/my_public_test_details_overview_model.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/models/my_public_test_reviews_model.dart';
@@ -30,6 +31,8 @@ abstract class MyPublicTestDetailsRemoteDataSource {
   Future<MyPrivateTestDetailsOverviewModel> getMyPrivateTestDetailsOverview({
     required int testId,
   });
+
+  Future<DeleteMyTestModel> deleteMyTest({required int testId});
 }
 
 class MyPublicTestDetailsRemoteDataSourceImpl
@@ -158,5 +161,25 @@ class MyPublicTestDetailsRemoteDataSourceImpl
     return MyPrivateTestDetailsOverviewModel.fromJson(
       response as Map<String, dynamic>,
     );
+  }
+
+  @override
+  Future<DeleteMyTestModel> deleteMyTest({required int testId}) async {
+    debugPrint(
+      "============ MyPublicTestDetailsRemoteDataSourceImpl.deleteMyTest ============",
+    );
+
+    final endpoint = EndPoints.deleteMyTest(testId);
+
+    debugPrint("→ endpoint: $endpoint");
+    debugPrint("→ method: DELETE");
+    debugPrint("→ params: {testId: $testId}");
+
+    final response = await apiConsumer.delete(endpoint);
+
+    debugPrint("← response (deleteMyTest): $response");
+    debugPrint("=================================================");
+
+    return DeleteMyTestModel.fromJson(response as Map<String, dynamic>);
   }
 }

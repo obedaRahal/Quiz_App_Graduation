@@ -7,7 +7,6 @@ import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -16,15 +15,46 @@ import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_details_card.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
-import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart'
-    show ThemeCubit;
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_answer_record_entity.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_content_entity.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/params/register_test_attempt_interaction_params.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
 
-class McqResultSummaryView extends StatelessWidget {
+class McqResultSummaryView extends StatefulWidget {
   const McqResultSummaryView({super.key});
+
+  @override
+  State<McqResultSummaryView> createState() => _McqResultSummaryViewState();
+}
+
+class _McqResultSummaryViewState extends State<McqResultSummaryView> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      final cubit = context.read<TestPlayModesCubit>();
+      final testId = cubit.state.test?.testId;
+
+      debugPrint("============ McqResultSummaryView.initState ============");
+      debugPrint("→ try register mcq attempt interaction");
+      debugPrint("→ testId: $testId");
+
+      if (testId == null) {
+        debugPrint("✗ testId is null");
+        debugPrint("=================================================");
+        return;
+      }
+
+      cubit.registerTestAttemptInteractionSilently(
+        testId: testId,
+        mode: TestAttemptInteractionMode.mcq,
+      );
+
+      debugPrint("=================================================");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +113,7 @@ class McqResultSummaryView extends StatelessWidget {
                   builder: (context, state) {
                     return TopPageHeader(
                       title: 'ملخص الاختبار',
-                      onBack: () => Navigator.pop(context),
+                      onBack: () => Navigator.pop(context, true),
                       icon: state.isMcqResultPdfLoading
                           ? Icons.hourglass_top_rounded
                           : Icons.download_outlined,
@@ -97,7 +127,6 @@ class McqResultSummaryView extends StatelessWidget {
                     );
                   },
                 ),
-
 
                 SizedBox(height: SizeConfig.h(0.02)),
 

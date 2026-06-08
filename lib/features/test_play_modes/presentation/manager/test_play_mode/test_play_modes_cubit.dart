@@ -10,6 +10,8 @@ import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_content_entity.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/get_test_play_content_use_case.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/params/get_test_play_content_params.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/params/register_test_attempt_interaction_params.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/register_test_attempt_interaction_use_case.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
 
 class TestPlayModesCubit extends Cubit<TestPlayModesState> {
@@ -27,11 +29,16 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
   Timer? _challengeBotTimer;
   Timer? _challengeQuestionTimer;
 
+  final RegisterTestAttemptInteractionUseCase
+  registerTestAttemptInteractionUseCase;
+
   TestPlayModesCubit({
     required this.voiceAssistantService,
     required this.mcqResultPdfService,
     required this.getTestPlayContentUseCase,
     required this.challengeResultPdfService,
+
+    required this.registerTestAttemptInteractionUseCase,
   }) : super(const TestPlayModesState()) {
     debugPrint("============ TestPlayModesCubit INIT ============");
     voiceAssistantService.onCompleted = _handleVoiceCompleted;
@@ -676,6 +683,10 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     );
     debugPrint("→ params: {testId: $testId}");
 
+    _resetAttemptInteractionRegisterGuard(
+      source: 'getTestPlayContent - mcq session start',
+    );
+
     _stopSessionTimer();
     await stopVoiceAssistant();
 
@@ -750,6 +761,8 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     }
 
     _stopSessionTimer();
+
+    _resetAttemptInteractionRegisterGuard(source: 'restartMcqSession');
 
     emit(
       state.copyWith(
@@ -1495,6 +1508,7 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     _stopSessionTimer();
     _stopChallengeBotTimer();
     _stopChallengeQuestionTimer();
+    _resetAttemptInteractionRegisterGuard(source: 'startFlashcardSession');
 
     final queue = state.questions.map((e) => e.questionId).toList();
 
@@ -1628,5 +1642,62 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     _stopChallengeBotTimer();
     _stopChallengeQuestionTimer();
     return super.close();
+  }
+
+  ///// mark as attempt /////////////////////
+  bool _hasRegisteredAttemptInteractionForCurrentSession = false;
+
+  void _resetAttemptInteractionRegisterGuard({required String source}) {
+    debugPrint(
+      "============ TestPlayModesCubit._resetAttemptInteractionRegisterGuard ============",
+    );
+    debugPrint("→ source: $source");
+
+    _hasRegisteredAttemptInteractionForCurrentSession = false;
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> registerTestAttemptInteractionSilently({
+    required int testId,
+    required TestAttemptInteractionMode mode,
+  }) async {
+    debugPrint(
+      "============ TestPlayModesCubit.registerTestAttemptInteractionSilently ============",
+    );
+    debugPrint("→ params: {testId: $testId, mode: ${mode.apiValue}}");
+
+    if (_hasRegisteredAttemptInteractionForCurrentSession) {
+      debugPrint("✗ attempt interaction already registered for this session");
+      debugPrint("→ ignored duplicate call: true");
+      debugPrint("=================================================");
+      return;
+    }
+
+    _hasRegisteredAttemptInteractionForCurrentSession = true;
+
+    final result = await registerTestAttemptInteractionUseCase(
+      RegisterTestAttemptInteractionParams(testId: testId, mode: mode),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ register test attempt interaction failed silently");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+        debugPrint("→ ignored by UI: true");
+
+        // نعيد السماح بالمحاولة فقط إذا فشل الطلب؟
+        // بما أنك قلت لا يؤثر على شيء، الأفضل لا نعيده كي لا تتكرر الطلبات عند rebuild.
+      },
+      (response) {
+        debugPrint("✓ register test attempt interaction success");
+        debugPrint("→ title: ${response.title}");
+        debugPrint("→ message: ${response.message}");
+        debugPrint("→ ignored by UI: true");
+      },
+    );
+
+    debugPrint("=================================================");
   }
 }

@@ -1600,4 +1600,33 @@ class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
       ),
     );
   }
+
+  void markOtherTestAsAttemptedLocally() {
+    debugPrint(
+      "============ DetailsOfTestCubit.markOtherTestAsAttemptedLocally ============",
+    );
+
+    final overview = state.overviewDetails;
+
+    if (overview == null) {
+      debugPrint("✗ overviewDetails is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final updatedOverview = overview.copyWith(
+      data: overview.data.copyWith(
+        extraInfo: overview.data.extraInfo.copyWith(
+          viewerContext: overview.data.extraInfo.viewerContext.copyWith(
+            isAttemptIt: true,
+          ),
+        ),
+      ),
+    );
+
+    emit(state.copyWith(overviewDetails: updatedOverview));
+
+    debugPrint("✓ isAttemptIt updated locally to true");
+    debugPrint("=================================================");
+  }
 }

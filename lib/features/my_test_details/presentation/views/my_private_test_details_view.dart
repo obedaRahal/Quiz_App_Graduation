@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_confirmation_dialog.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -48,7 +49,8 @@ class _MyPrivateTestDetailsViewState extends State<MyPrivateTestDetailsView> {
 
     return BlocListener<MyTestDetailsCubit, MyTestDetailsState>(
       listenWhen: (previous, current) =>
-          previous.downloadStatus != current.downloadStatus,
+          previous.downloadStatus != current.downloadStatus ||
+          previous.deleteMyTestStatus != current.deleteMyTestStatus,
       listener: (context, state) async {
         if (state.isDownloadLoading) {
           showValidationTopSnackBar(
@@ -107,6 +109,30 @@ class _MyPrivateTestDetailsViewState extends State<MyPrivateTestDetailsView> {
 
           context.read<MyTestDetailsCubit>().resetDownloadState();
         }
+
+        if (state.isDeleteMyTestLoading) {
+          showValidationTopSnackBar(
+            context,
+            title: 'حذف الاختبار',
+            message: 'جاري حذف الاختبار...',
+            type: AppValidationSnackBarType.hint,
+          );
+        }
+
+        if (state.isDeleteMyTestSuccess) {
+          final deleteResponse = state.deleteMyTestDetails;
+
+          showValidationTopSnackBar(
+            context,
+            title: deleteResponse?.title ?? 'تم الحذف',
+            message: deleteResponse?.message ?? 'تم حذف الاختبار بنجاح',
+            type: AppValidationSnackBarType.success,
+          );
+
+          context.read<MyTestDetailsCubit>().resetDeleteMyTestState();
+
+          safeBackToHome(context);
+        }
       },
       child: Scaffold(
         body: SafeArea(
@@ -119,27 +145,48 @@ class _MyPrivateTestDetailsViewState extends State<MyPrivateTestDetailsView> {
                     previous.overviewPrivateStatus !=
                         current.overviewPrivateStatus,
                 builder: (context, state) {
-                  final title =
-                      state.overviewPrivateDetails?.data.basicInfo.title ??
-                      'تفاصيل اختباري';
-
                   return TopPageHeader(
-                    title: title,
+                    title: 'تفاصيل اختباري',
                     onBack: () => safeBackToHome(context),
-                    icon: Icons.info_outline_rounded,
+                    icon: Icons.more_vert_rounded,
                     onIconTap: () {
-                      showValidationTopSnackBar(
-                        context,
-                        title: 'تفاصيل الاختبار الخاص',
-                        message:
-                            'هذه الصفحة تعرض تفاصيل اختبارك الخاص غير المنشور للعامة',
-                        type: AppValidationSnackBarType.hint,
+                      debugPrint(
+                        "============ MyPrivateTest More Menu Tap ============",
+                      );
+
+                      showMyPrivateTestMoreMenu(
+                        context: context,
+                        onEdit: () {
+                          debugPrint("→ edit my private test");
+                          // TODO: go to edit test page
+                        },
+                        onDelete: () {
+                          debugPrint("→ delete my private test");
+                          showCustomConfirmationDialog(
+                            context: context,
+                            title: 'هل تريد حذف هذا الاختبار حقاً ؟',
+                            message:
+                                'لن تعد قادر الى العودة لهذا الاختبار او التفاعل معه مجددا بعد اتمام عملية الحذف',
+                            icon: Icons.delete_forever_outlined,
+                            confirmText: 'حذف',
+                            cancelText: 'إلغاء',
+                            iconColor: AppPalette.red,
+                            iconBackgroundColor: AppPalette.red.withOpacity(
+                              0.09,
+                            ),
+                            confirmBackgroundColor: AppPalette.red,
+                            onConfirm: () {
+                              context.read<MyTestDetailsCubit>().deleteMyTest(
+                                testId: widget.testId,
+                              );
+                            },
+                          );
+                        },
                       );
                     },
                   );
                 },
               ),
-
               SizedBox(height: SizeConfig.h(0.015)),
 
               Expanded(
@@ -375,6 +422,106 @@ class _MyPrivateTestDetailsBottomBar extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+enum MyPrivateTestAction { edit, delete }
+
+Future<void> showMyPrivateTestMoreMenu({
+  required BuildContext context,
+  required VoidCallback onEdit,
+  required VoidCallback onDelete,
+}) async {
+  final appColors = context.appColors;
+  final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+  final selectedAction = await showMenu<MyPrivateTestAction>(
+    context: context,
+    color: appColors.whiteToblack,
+    elevation: 2,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
+      side: BorderSide(color: AppPalette.black, width: 1),
+    ),
+
+    position: RelativeRect.fromLTRB(
+      SizeConfig.w(0.9),
+      SizeConfig.h(0.05),
+      SizeConfig.w(0.06),
+      0,
+    ),
+    items: [
+      PopupMenuItem<MyPrivateTestAction>(
+        value: MyPrivateTestAction.edit,
+        height: SizeConfig.h(0.036),
+        padding: EdgeInsets.zero,
+        child: _MyPrivateTestMenuItem(
+          title: 'تعديل الاختبار',
+          color: AppPalette.greyMedium,
+        ),
+      ),
+
+      PopupMenuItem<MyPrivateTestAction>(
+        enabled: false,
+        height: 2,
+        padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.009)),
+        child: Container(height: 2, color: AppPalette.greyBorderCart),
+      ),
+
+      PopupMenuItem<MyPrivateTestAction>(
+        value: MyPrivateTestAction.delete,
+        height: SizeConfig.h(0.036),
+        padding: EdgeInsets.zero,
+        child: _MyPrivateTestMenuItem(
+          title: 'حذف الاختبار',
+          color: AppPalette.greyMedium,
+        ),
+      ),
+    ],
+  );
+
+  if (selectedAction == null) {
+    debugPrint("→ my private test menu dismissed");
+    return;
+  }
+
+  switch (selectedAction) {
+    case MyPrivateTestAction.edit:
+      onEdit();
+      break;
+
+    case MyPrivateTestAction.delete:
+      onDelete();
+      break;
+  }
+}
+
+class _MyPrivateTestMenuItem extends StatelessWidget {
+  final String title;
+  final Color color;
+
+  const _MyPrivateTestMenuItem({required this.title, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: SizeConfig.w(0.3),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.w(0.025),
+          vertical: SizeConfig.h(0.004),
+        ),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: CustomTextWidget(
+            title,
+            color: color,
+            fontSize: SizeConfig.text(0.03),
+            textAlign: TextAlign.right,
+          ),
+        ),
+      ),
     );
   }
 }

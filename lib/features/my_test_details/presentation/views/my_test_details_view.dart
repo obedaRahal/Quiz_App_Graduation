@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_confirmation_dialog.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -17,6 +18,7 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_state.dart';
+import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_private_test_details_view.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/widgets/my_test_details_tabs_section.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
 import 'package:share_plus/share_plus.dart';
@@ -49,7 +51,8 @@ class _MyTestDetailsViewState extends State<MyTestDetailsView> {
     return BlocListener<MyTestDetailsCubit, MyTestDetailsState>(
       listenWhen: (previous, current) =>
           previous.downloadStatus != current.downloadStatus ||
-          previous.shareLinkStatus != current.shareLinkStatus,
+          previous.shareLinkStatus != current.shareLinkStatus ||
+          previous.deleteMyTestStatus != current.deleteMyTestStatus,
       listener: (context, state) async {
         if (state.isDownloadLoading) {
           showValidationTopSnackBar(
@@ -139,6 +142,30 @@ class _MyTestDetailsViewState extends State<MyTestDetailsView> {
 
           context.read<MyTestDetailsCubit>().resetShareLinkState();
         }
+
+        if (state.isDeleteMyTestLoading) {
+          showValidationTopSnackBar(
+            context,
+            title: 'حذف الاختبار',
+            message: 'جاري حذف الاختبار...',
+            type: AppValidationSnackBarType.hint,
+          );
+        }
+
+        if (state.isDeleteMyTestSuccess) {
+          final deleteResponse = state.deleteMyTestDetails;
+
+          showValidationTopSnackBar(
+            context,
+            title: deleteResponse?.title ?? 'تم الحذف',
+            message: deleteResponse?.message ?? 'تم حذف الاختبار بنجاح',
+            type: AppValidationSnackBarType.success,
+          );
+
+          context.read<MyTestDetailsCubit>().resetDeleteMyTestState();
+
+          safeBackToHome(context);
+        }
       },
       child: Scaffold(
         body: SafeArea(
@@ -152,14 +179,40 @@ class _MyTestDetailsViewState extends State<MyTestDetailsView> {
                   return TopPageHeader(
                     title: 'تفاصيل اختباري',
                     onBack: () => safeBackToHome(context),
-                    icon: Icons.info_outline_rounded,
+                    icon: Icons.more_vert_rounded,
                     onIconTap: () {
-                      showValidationTopSnackBar(
-                        context,
-                        title: 'تفاصيل اختباري',
-                        message:
-                            'هذه الصفحة تعرض تفاصيل الاختبار الذي قمت بإنشائه',
-                        type: AppValidationSnackBarType.hint,
+                      debugPrint(
+                        "============ MyPrivateTest More Menu Tap ============",
+                      );
+
+                      showMyPrivateTestMoreMenu(
+                        context: context,
+                        onEdit: () {
+                          debugPrint("→ edit my private test");
+                          // TODO: go to edit test page
+                        },
+                        onDelete: () {
+                          debugPrint("→ delete my private test");
+                          showCustomConfirmationDialog(
+                            context: context,
+                            title: 'هل تريد حذف هذا الاختبار حقاً ؟',
+                            message:
+                                'لن تعد قادر الى العودة لهذا الاختبار او التفاعل معه مجددا بعد اتمام عملية الحذف',
+                            icon: Icons.delete_forever_outlined,
+                            confirmText: 'حذف',
+                            cancelText: 'إلغاء',
+                            iconColor: AppPalette.red,
+                            iconBackgroundColor: AppPalette.red.withOpacity(
+                              0.09,
+                            ),
+                            confirmBackgroundColor: AppPalette.red,
+                            onConfirm: () {
+                              context.read<MyTestDetailsCubit>().deleteMyTest(
+                                testId: widget.testId,
+                              );
+                            },
+                          );
+                        },
                       );
                     },
                   );

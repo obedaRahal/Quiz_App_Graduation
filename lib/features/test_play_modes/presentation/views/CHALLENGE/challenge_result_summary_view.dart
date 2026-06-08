@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/params/register_test_attempt_interaction_params.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/views/MCQ/mcq_result_summary_view.dart';
@@ -13,8 +14,44 @@ import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHAL
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/CHALLENGE/result/challenge_result_question_card.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/challenge/challenge_characters_data.dart';
 
-class ChallengeResultSummaryView extends StatelessWidget {
+class ChallengeResultSummaryView extends StatefulWidget {
   const ChallengeResultSummaryView({super.key});
+
+  @override
+  State<ChallengeResultSummaryView> createState() =>
+      _ChallengeResultSummaryViewState();
+}
+
+class _ChallengeResultSummaryViewState
+    extends State<ChallengeResultSummaryView> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      final cubit = context.read<TestPlayModesCubit>();
+      final testId = cubit.state.test?.testId;
+
+      debugPrint(
+        "============ ChallengeResultSummaryView.initState ============",
+      );
+      debugPrint("→ try register challenge attempt interaction");
+      debugPrint("→ testId: $testId");
+
+      if (testId == null) {
+        debugPrint("✗ testId is null");
+        debugPrint("=================================================");
+        return;
+      }
+
+      cubit.registerTestAttemptInteractionSilently(
+        testId: testId,
+        mode: TestAttemptInteractionMode.challenge,
+      );
+
+      debugPrint("=================================================");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -9,11 +9,13 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/d
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/get_test_share_link_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/review_feedback_action_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/entities/my_public_test_reviews_entity.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/delete_my_test_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_private_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_status_history_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_test_modifications_use_case.dart';
+import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/delete_my_test_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/get_my_private_test_details_overview_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/get_my_public_test_details_overview_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/get_my_public_test_reviews_params.dart';
@@ -36,6 +38,7 @@ class MyTestDetailsCubit extends Cubit<MyTestDetailsState> {
   final GetMyTestModificationsUseCase getMyTestModificationsUseCase;
 
   final GetMyPrivateTestDetailsOverviewUseCase getOverviewPrivateUseCase;
+  final DeleteMyTestUseCase deleteMyTestUseCase;
 
   MyTestDetailsCubit({
     required this.getMyPublicTestDetailsOverviewUseCase,
@@ -47,6 +50,7 @@ class MyTestDetailsCubit extends Cubit<MyTestDetailsState> {
     required this.getTestShareLinkUseCase,
     required this.getMyTestModificationsUseCase,
     required this.getOverviewPrivateUseCase,
+    required this.deleteMyTestUseCase,
   }) : super(const MyTestDetailsState()) {
     debugPrint("============ MyTestDetailsCubit INIT ============");
   }
@@ -790,6 +794,77 @@ class MyTestDetailsCubit extends Cubit<MyTestDetailsState> {
         errorMessage: null,
       ),
     );
+    debugPrint("=================================================");
+  }
+
+  Future<void> deleteMyTest({required int testId}) async {
+    debugPrint("============ MyTestDetailsCubit.deleteMyTest ============");
+    debugPrint("→ params: {testId: $testId}");
+
+    if (state.isDeleteMyTestLoading) {
+      debugPrint("✗ delete my test already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        deleteMyTestStatus: DeleteMyTestStatus.loading,
+        clearError: true,
+        clearDeleteMyTestDetails: true,
+      ),
+    );
+
+    final result = await deleteMyTestUseCase(
+      DeleteMyTestParams(testId: testId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ delete my test failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            deleteMyTestStatus: DeleteMyTestStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ delete my test success");
+        debugPrint("→ title: ${response.title}");
+        debugPrint("→ message: ${response.message}");
+        debugPrint("→ statusCode: ${response.statusCode}");
+
+        emit(
+          state.copyWith(
+            deleteMyTestStatus: DeleteMyTestStatus.success,
+            deleteMyTestDetails: response,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetDeleteMyTestState() {
+    debugPrint(
+      "============ MyTestDetailsCubit.resetDeleteMyTestState ============",
+    );
+
+    emit(
+      state.copyWith(
+        deleteMyTestStatus: DeleteMyTestStatus.initial,
+        clearDeleteMyTestDetails: true,
+        clearError: true,
+      ),
+    );
+
     debugPrint("=================================================");
   }
 }
