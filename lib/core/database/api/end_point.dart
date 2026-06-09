@@ -43,6 +43,15 @@ class EndPoints {
   static const String recommendedUsers = '/home/recommended-users';
   static const String allInterests = '/home/all-interests';
 
+  // Create Test
+  static const String createManualTest = '/lab/create-test';
+
+  static const String aiQuestionGenerations = '/lab/ai-question-generations';
+
+  static String aiQuestionGenerationStatus(int generationRequestId) {
+    return '/lab/ai-question-generations/$generationRequestId';
+  }
+
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';

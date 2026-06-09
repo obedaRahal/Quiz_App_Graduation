@@ -14,6 +14,9 @@ import 'package:quiz_app_grad/features/auth/presentation/view/forgot_password_ot
 import 'package:quiz_app_grad/features/auth/presentation/view/login_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/view/create_test_ai_loading_view.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/view/create_test_page.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/views/shared_test_redirect_view.dart';
@@ -294,6 +297,33 @@ class AppRouter {
             return const LaboratoryPage();
           },
         ),
+        // GoRoute(
+        //   path: AppRouterPath.createTestPage,
+        //   name: AppRouterName.createTestPage,
+        //   builder: (context, state) {
+        //     return const CreateTestView();
+        //   },
+        // ),
+        GoRoute(
+  path: AppRouterPath.createTestPage,
+  name: AppRouterName.createTestPage,
+  builder: (context, state) {
+    return CreateTestView(
+      initialArgs: state.extra is CreateTestInitialArgs
+          ? state.extra as CreateTestInitialArgs
+          : null,
+    );
+  },
+),
+        GoRoute(
+  path: AppRouterPath.createTestAiLoadingPage,
+  name: AppRouterName.createTestAiLoadingPage,
+  builder: (context, state) {
+    final args = state.extra as CreateTestInitialArgs;
+
+    return CreateTestAiLoadingView(args: args);
+  },
+),
         GoRoute(
           path: AppRouterPath.detailsOfTest,
           name: AppRouterName.detailsOfTest,

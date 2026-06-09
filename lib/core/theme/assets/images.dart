@@ -104,6 +104,25 @@ class AppImage {
   static String get library => '$_baseImageLight/library-svgrepo-com.svg';
   static String get bookmark =>
       '$_baseImageLight/book-bookmark-minimalistic-svgrepo-com.svg';
+  // create Test
+  static String get syria => '$_baseImageLight/syria.svg';
+  static String get menu => '$_baseImageLight/menu-3.svg';
+  static String get selfie => '$_baseImageLight/selfie-2.svg';
+  static String get cubes => '$_baseImageLight/cubes-2.svg';
+  static String get layers => '$_baseImageLight/layers.svg';
+  static String get academic => '$_baseImageLight/academic.svg';
+  static String get grid => '$_baseImageLight/grid-2.svg';
+  static String get gridList => '$_baseImageLight/grid-list.svg';
+  static String get checkDouble => '$_baseImageLight/check-double.svg';
+  static String get stopwatch => '$_baseImageLight/stopwatch.svg';
+  static String get savedItems => '$_baseImageLight/saved-items.svg';
+  static String get language => '$_baseImageLight/language.svg';
+  static String get earth => '$_baseImageLight/earth.svg';
+  static String get school => '$_baseImageLight/school-svgrepo-com (1).svg';
+  static String get shapes => '$_baseImageLight/shapes-2.svg';
+  static String get journals => '$_baseImageLight/journals-svgrepo-com.svg';
+
+
 
   //// play mode
   static String get challengeMainCardDark =>

@@ -74,7 +74,6 @@ class SizeConfig {
 
   // Optional helpers
   static bool get isSmallPhone => shortestSide < 360;
-  static bool get isMediumPhone =>
-      shortestSide >= 360 && shortestSide < 400;
+  static bool get isMediumPhone => shortestSide >= 360 && shortestSide < 400;
   static bool get isLargePhone => shortestSide >= 400;
 }

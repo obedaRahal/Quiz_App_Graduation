@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_cubit.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_state.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_filter_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_filter_item.dart';
 
 class LaboratoryTabsSection extends StatelessWidget {
@@ -89,19 +90,29 @@ class LaboratoryTabsSection extends StatelessWidget {
 
                     SizedBox(width: SizeConfig.w(0.092)),
 
-                    Container(
-                      width: SizeConfig.w(0.075),
-                      height: SizeConfig.w(0.075),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? AppPalette.fieldColorNDark
-                            : AppPalette.whiteToGrey,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.filter_alt_outlined,
-                        size: SizeConfig.text(0.045),
-                        color: AppPalette.greyMedium,
+                    InkWell(
+                      onTap: () async {
+    final result = await showLaboratoryFilterBottomSheet(context);
+
+    if (result == null) return;
+
+    // لاحقاً اربطي النتيجة بالكيوبت:
+    // context.read<LaboratoryCubit>().applyFilter(result);
+  },
+                      child: Container(
+                        width: SizeConfig.w(0.075),
+                        height: SizeConfig.w(0.075),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? AppPalette.fieldColorNDark
+                              : AppPalette.whiteToGrey,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.filter_alt_outlined,
+                          size: SizeConfig.text(0.045),
+                          color: AppPalette.greyMedium,
+                        ),
                       ),
                     ),
                   ],

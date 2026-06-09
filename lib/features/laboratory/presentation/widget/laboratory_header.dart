@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/widget/create_test_bottom_sheet.dart';
 
 class LaboratoryHeader extends StatelessWidget {
   const LaboratoryHeader({super.key});
@@ -36,9 +37,10 @@ class LaboratoryHeader extends StatelessWidget {
                     textDirection: TextDirection.rtl,
                   ),
                 ),
-
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                  showCreateTestBottomSheet(context);
+                  },
                   borderRadius: BorderRadius.circular(30),
                   child: Container(
                     width: SizeConfig.w(0.095),
@@ -58,6 +60,27 @@ class LaboratoryHeader extends StatelessWidget {
                     ),
                   ),
                 ),
+                // InkWell(
+                //   onTap: () {},
+                //   borderRadius: BorderRadius.circular(30),
+                //   child: Container(
+                //     width: SizeConfig.w(0.095),
+                //     height: SizeConfig.w(0.095),
+                //     decoration: BoxDecoration(
+                //       color: isDark
+                //           ? AppPalette.fieldColorNDark
+                //           : const Color(0xFFF6F6F6),
+                //       shape: BoxShape.circle,
+                //     ),
+                //     child: Icon(
+                //       Icons.add,
+                //       size: SizeConfig.text(0.045),
+                //       color: isDark
+                //           ? AppPalette.textWhiteINDark
+                //           : AppPalette.textColorInHome,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

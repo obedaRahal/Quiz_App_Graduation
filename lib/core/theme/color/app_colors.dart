@@ -8,6 +8,7 @@ abstract class AppPalette {
   static const primarySoftMore = Color(0XFFF7F9FF);
 
   static const borderFieldColorNLight = Color(0xffDFDFDF);
+  static const smallContainerGrey = Color(0xffCBCBCB);
 
   // Neutrals
   static const white = Colors.white;
@@ -18,14 +19,24 @@ abstract class AppPalette {
   static const orange = Color(0xFFFEB200);
   static const yellow = Color(0xFFFFD52C);
 
+  static const correctAnswerBorder = Color(0xFF52CD44);
+  static const correctAnswerLightContainer = Color(0xFFC9FFC3);
+  static const correctAnswerDarkContainer = Color(0xFF1E4A24);
+  static const answerLightContainer = Color(0xFFF5F5F5);
+  static const answerContainerText = Color(0xFF6E6E6E);
+  static const purple = Color(0xFF9463CF);
+  static const purpleLight = Color(0xFFF0E4FF);
+  static const edirDeletQuestionText = Color(0xFFF0E4FF);
 
   static const grey = Color(0xFFF9F9F9);
+  static const grey2 = Color(0xFFBEBEBE);
+  static const grey3 = Color(0xFFACACAC);
+
   static const greyLight = Color(0xFFEAEAEA);
   static const greyMedium = Color(0xFF8D8D8D);
   static const greyBorder = Color(0xFFD6D6D6);
   static const greyBorderCart = Color(0xFFD9D9D9);
   static const textColorInHome = Color(0xFF263238);
-
 
   static const black = Color(0xFF121212);
   static const homeContainer1 = Color(0xFF5583FF);
@@ -34,8 +45,6 @@ abstract class AppPalette {
   static const circleContainer1 = Color(0xFFBED0FF);
   static const circleContainer2 = Color(0xFFC9C4FF);
   static const circleContainer3 = Color(0xFFDBBDFF);
-
-
 
   // dark
   static const primaryDark = Color(0XFF7298FF);
@@ -46,7 +55,7 @@ abstract class AppPalette {
   static const titleWhiteINDark = Color(0xffC0C0C0);
   static const fieldColorNDark = Color(0xff2E2E2E);
   static const borderFieldColorNDark = Color(0xff484848);
-  
+
   //  details of test
   //static const red = Color(0xffFF7D7D);
   static const violet = Color(0xff7a73c4);
@@ -55,11 +64,6 @@ abstract class AppPalette {
   static const greenSoft = Color(0xffE3FFE5);
 
   // play mode
-    static const blueDark = Color(0xff35519C);
-    static const blueLight = Color(0xff5583FF);
-
-
-
-
-
+  static const blueDark = Color(0xff35519C);
+  static const blueLight = Color(0xff5583FF);
 }
