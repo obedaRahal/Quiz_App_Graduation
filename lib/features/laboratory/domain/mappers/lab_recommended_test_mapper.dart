@@ -1,3 +1,4 @@
+import 'package:quiz_app_grad/features/laboratory/domain/entities/filter_tests_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/lab_recommended_tests_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/test_by_interest_response_entity.dart';
 
@@ -20,6 +21,29 @@ extension LabRecommendedTestItemMapper on LabRecommendedTestItemEntity {
       price: test.price,
       averageRating: test.averageRating,
       publishedAgo: test.publishedAtHuman,
+    );
+  }
+}
+
+extension FilteredTestMapper on FilteredTestEntity {
+  TestByInterestEntity toExamSessionEntity() {
+    return TestByInterestEntity(
+      id: id,
+      title: title,
+      description: description,
+      interests: interests
+          .map(
+            (name) => TestInterestEntity(
+              id: 0,
+              name: name,
+            ),
+          )
+          .toList(),
+      questionCount: questionCount,
+      difficultyLevel: difficultyLevel,
+      price: double.tryParse(price) ?? 0,
+      averageRating: double.tryParse(averageRating) ?? 0,
+      publishedAgo: publishedAt,
     );
   }
 }

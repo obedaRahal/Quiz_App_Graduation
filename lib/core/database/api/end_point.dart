@@ -48,6 +48,8 @@ class EndPoints {
 
   static const String aiQuestionGenerations = '/lab/ai-question-generations';
 
+  static const String filterTests = '/test/tests/filter';
+
   static String aiQuestionGenerationStatus(int generationRequestId) {
     return '/lab/ai-question-generations/$generationRequestId';
   }
