@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -43,20 +45,22 @@ class CreateTestView extends StatelessWidget {
             return;
           }
 
-          if (response != null && response.success) {
-            _showCreateTestSnackBar(
-              context: context,
-              message: response.message.trim().isNotEmpty
-                  ? response.message
-                  : 'تم إنشاء الاختبار بنجاح',
-              backgroundColor: AppPalette.green,
-            );
+         if (response != null && response.success) {
+  _showCreateTestSnackBar(
+    context: context,
+    message: response.message.trim().isNotEmpty
+        ? response.message
+        : 'تم إنشاء الاختبار بنجاح',
+    backgroundColor: AppPalette.green,
+  );
 
-            context.read<CreateTestCubit>().clearCreateManualTestResult();
+  context.read<CreateTestCubit>().clearCreateManualTestResult();
 
-            // إذا بدك ترجعي للخلف بعد نجاح إنشاء الاختبار:
-            // Navigator.of(context).pop();
-          }
+  Future.delayed(const Duration(milliseconds: 700), () {
+    if (!context.mounted) return;
+    context.goNamed(AppRouterName.mainLayout);
+  });
+}
         },
         child: const Scaffold(
           body: SafeArea(

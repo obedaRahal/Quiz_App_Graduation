@@ -63,55 +63,51 @@ class AiQuestionGenerationStatusModel {
     this.failure,
   });
 
-  factory AiQuestionGenerationStatusModel.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory AiQuestionGenerationStatusModel.fromJson(Map<String, dynamic> json) {
     return AiQuestionGenerationStatusModel(
       id: int.tryParse((json['id'] ?? 0).toString()) ?? 0,
       status: json['status']?.toString() ?? '',
       sourceType: json['source_type']?.toString() ?? '',
       requestedQuestionCount:
-          int.tryParse((json['requested_question_count'] ?? 0).toString()) ??
-              0,
+          int.tryParse((json['requested_question_count'] ?? 0).toString()) ?? 0,
       questionActuallyGenerated:
           int.tryParse((json['question_actually_generated'] ?? 0).toString()) ??
-              0,
+          0,
       difficultyLevel: json['difficulty_level']?.toString() ?? '',
       language: json['language']?.toString() ?? '',
       provider: json['provider']?.toString() ?? '',
-      questions: (json['questions'] as List? ?? [])
-          .map((item) {
-            if (item is Map<String, dynamic>) {
-              return GeneratedAiQuestionModel.fromJson(item);
-            }
+      questions: (json['questions'] as List? ?? []).map((item) {
+        if (item is Map<String, dynamic>) {
+          return GeneratedAiQuestionModel.fromJson(item);
+        }
 
-            return GeneratedAiQuestionModel.fromJson(const {});
-          })
-          .toList(),
+        return GeneratedAiQuestionModel.fromJson(const {});
+      }).toList(),
       failure: _parseFailure(json['failure']),
     );
   }
-static String? _parseFailure(dynamic failure) {
-  if (failure == null) return null;
+  static String? _parseFailure(dynamic failure) {
+    if (failure == null) return null;
 
-  if (failure is String) {
-    return failure.trim().isEmpty ? null : failure;
-  }
-
-  if (failure is Map<String, dynamic>) {
-    final message = failure['message']?.toString();
-    if (message != null && message.trim().isNotEmpty) {
-      return message;
+    if (failure is String) {
+      return failure.trim().isEmpty ? null : failure;
     }
 
-    final code = failure['code']?.toString();
-    if (code != null && code.trim().isNotEmpty) {
-      return code;
+    if (failure is Map<String, dynamic>) {
+      final message = failure['message']?.toString();
+      if (message != null && message.trim().isNotEmpty) {
+        return message;
+      }
+
+      final code = failure['code']?.toString();
+      if (code != null && code.trim().isNotEmpty) {
+        return code;
+      }
     }
+
+    return failure.toString();
   }
 
-  return failure.toString();
-}
   AiQuestionGenerationStatusEntity toEntity() {
     return AiQuestionGenerationStatusEntity(
       id: id,
@@ -143,15 +139,13 @@ class GeneratedAiQuestionModel {
     return GeneratedAiQuestionModel(
       questionText: json['question_text']?.toString() ?? '',
       hintText: json['hint_text']?.toString(),
-      options: (json['options'] as List? ?? [])
-          .map((item) {
-            if (item is Map<String, dynamic>) {
-              return GeneratedAiQuestionOptionModel.fromJson(item);
-            }
+      options: (json['options'] as List? ?? []).map((item) {
+        if (item is Map<String, dynamic>) {
+          return GeneratedAiQuestionOptionModel.fromJson(item);
+        }
 
-            return GeneratedAiQuestionOptionModel.fromJson(const {});
-          })
-          .toList(),
+        return GeneratedAiQuestionOptionModel.fromJson(const {});
+      }).toList(),
     );
   }
 
@@ -173,9 +167,7 @@ class GeneratedAiQuestionOptionModel {
     required this.isCorrect,
   });
 
-  factory GeneratedAiQuestionOptionModel.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory GeneratedAiQuestionOptionModel.fromJson(Map<String, dynamic> json) {
     return GeneratedAiQuestionOptionModel(
       optionText: json['option_text']?.toString() ?? '',
       isCorrect: json['is_correct'] == true,

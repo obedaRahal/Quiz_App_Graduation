@@ -14,10 +14,10 @@ import 'package:quiz_app_grad/features/create_test/presentation/manager/create_t
 enum _CreateTestSheetMode { methods, aiImages, aiFile }
 
 class CreateAiGenerationSheetRequest {
-  final String sourceType; 
+  final String sourceType;
   final int questionCount;
-  final String difficultyLevel; 
-  final String language; 
+  final String difficultyLevel;
+  final String language;
   final List<PlatformFile> files;
 
   const CreateAiGenerationSheetRequest({
@@ -42,6 +42,7 @@ class CreateAiGenerationSheetRequest {
 Future<void> showCreateTestBottomSheet(
   BuildContext context, {
   ValueChanged<CreateAiGenerationSheetRequest>? onAiGenerationRequested,
+  bool hasReachedAiDailyLimit = false,
 }) {
   return showGeneralDialog<void>(
     context: context,
@@ -62,6 +63,7 @@ Future<void> showCreateTestBottomSheet(
             alignment: Alignment.bottomCenter,
             child: CreateTestBottomSheet(
               onAiGenerationRequested: onAiGenerationRequested,
+              hasReachedAiDailyLimit: hasReachedAiDailyLimit,
             ),
           ),
         ],
@@ -86,8 +88,13 @@ Future<void> showCreateTestBottomSheet(
 
 class CreateTestBottomSheet extends StatefulWidget {
   final ValueChanged<CreateAiGenerationSheetRequest>? onAiGenerationRequested;
+  final bool hasReachedAiDailyLimit;
 
-  const CreateTestBottomSheet({super.key, this.onAiGenerationRequested});
+  const CreateTestBottomSheet({
+    super.key,
+    this.onAiGenerationRequested,
+    this.hasReachedAiDailyLimit = false,
+  });
 
   @override
   State<CreateTestBottomSheet> createState() => _CreateTestBottomSheetState();
@@ -103,11 +110,6 @@ class _CreateTestBottomSheetState extends State<CreateTestBottomSheet> {
   String _selectedLevel = 'سهل';
   String _selectedLanguage = 'عربية';
 
-  // // مؤقتاً للواجهة فقط. لاحقاً عند ربط picker:
-  // // - الصور: خزني paths أو XFile داخل هذه القائمة.
-  // // - الملف: خزني path أو File داخل هذا المتغير.
-  // final List<String> _selectedImageNames = const [];
-  // String? _selectedFileName;
   List<PlatformFile> _selectedImages = [];
   PlatformFile? _selectedFile;
 
@@ -166,76 +168,28 @@ class _CreateTestBottomSheetState extends State<CreateTestBottomSheet> {
       _mode = _CreateTestSheetMode.methods;
     });
   }
-void _requestAiGeneration() {
-  if (!_canRequestGeneration) return;
 
-  final count = int.parse(_questionCountController.text.trim());
+  void _requestAiGeneration() {
+    if (!_canRequestGeneration) return;
 
-  final args = CreateTestInitialArgs(
-    mode: _mode == _CreateTestSheetMode.aiImages
-        ? CreateTestCreationMode.aiImages
-        : CreateTestCreationMode.aiFile,
-    mediaFiles: _mode == _CreateTestSheetMode.aiImages
-        ? _selectedImages
-        : [_selectedFile!],
-    aiQuestionCount: count,
-    aiLevel: _selectedLevel,
-    aiLanguage: _selectedLanguage,
-  );
+    final count = int.parse(_questionCountController.text.trim());
 
-  Navigator.of(context).pop();
+    final args = CreateTestInitialArgs(
+      mode: _mode == _CreateTestSheetMode.aiImages
+          ? CreateTestCreationMode.aiImages
+          : CreateTestCreationMode.aiFile,
+      mediaFiles: _mode == _CreateTestSheetMode.aiImages
+          ? _selectedImages
+          : [_selectedFile!],
+      aiQuestionCount: count,
+      aiLevel: _selectedLevel,
+      aiLanguage: _selectedLanguage,
+    );
 
-  context.pushNamed(
-    AppRouterName.createTestAiLoadingPage,
-    extra: args,
-  );
-}
-  // void _requestAiGeneration() {
-  //   if (!_canRequestGeneration) return;
+    Navigator.of(context).pop();
 
-  //   final count = int.parse(_questionCountController.text.trim());
-
-  //   final args = CreateTestInitialArgs(
-  //     mode: _mode == _CreateTestSheetMode.aiImages
-  //         ? CreateTestCreationMode.aiImages
-  //         : CreateTestCreationMode.aiFile,
-  //     mediaFiles: _mode == _CreateTestSheetMode.aiImages
-  //         ? _selectedImages
-  //         : [_selectedFile!],
-  //     aiQuestionCount: count,
-  //     aiLevel: _selectedLevel,
-  //     aiLanguage: _selectedLanguage,
-  //   );
-
-  //   Navigator.of(context).pop();
-
-  //   context.pushNamed(AppRouterName.createTestPage, extra: args);
-  // }
-  // void _requestAiGeneration() {
-  //   if (!_canRequestGeneration) return;
-
-  //   final count = int.parse(_questionCountController.text.trim());
-
-  //   final files = _mode == _CreateTestSheetMode.aiImages
-  //       ? _selectedImages
-  //       : [_selectedFile!];
-
-  //   final request = CreateAiGenerationSheetRequest(
-  //     sourceType: _mode == _CreateTestSheetMode.aiImages ? 'Images' : 'Pdf',
-  //     questionCount: count,
-  //     difficultyLevel: _mapDifficultyLevelToBackend(_selectedLevel),
-  //     language: _mapLanguageToBackend(_selectedLanguage),
-  //     files: files,
-  //   );
-
-  //   debugPrint('AI generation request => ${request.toDebugMap()}');
-
-  //   widget.onAiGenerationRequested?.call(request);
-
-  //   // لاحقاً لما نجهز صفحة loading:
-  //   // Navigator.of(context).pop();
-  //   // context.pushNamed(AppRouterName.aiGenerationLoadingPage, extra: request);
-  // }
+    context.pushNamed(AppRouterName.createTestAiLoadingPage, extra: args);
+  }
 
   Future<void> _pickMedia() async {
     if (_mode == _CreateTestSheetMode.aiImages) {
@@ -445,10 +399,8 @@ void _requestAiGeneration() {
                             key: const ValueKey('methods'),
                             primaryTextColor: primaryTextColor,
                             secondaryTextColor: secondaryTextColor,
-                            // onManualTap: () {
-                            //   Navigator.of(context).pop();
-                            //   context.pushNamed(AppRouterName.createTestPage);
-                            // },
+                            hasReachedAiDailyLimit:
+                                widget.hasReachedAiDailyLimit,
                             onManualTap: () {
                               Navigator.of(context).pop();
 
@@ -505,6 +457,7 @@ void _requestAiGeneration() {
 class _MethodsContent extends StatelessWidget {
   final Color primaryTextColor;
   final Color secondaryTextColor;
+  final bool hasReachedAiDailyLimit;
   final VoidCallback onManualTap;
   final VoidCallback onAiImagesTap;
   final VoidCallback onAiFileTap;
@@ -513,6 +466,7 @@ class _MethodsContent extends StatelessWidget {
     super.key,
     required this.primaryTextColor,
     required this.secondaryTextColor,
+    required this.hasReachedAiDailyLimit,
     required this.onManualTap,
     required this.onAiImagesTap,
     required this.onAiFileTap,
@@ -528,7 +482,7 @@ class _MethodsContent extends StatelessWidget {
     final borderColor = isDark
         ? AppPalette.borderFieldColorNDark
         : const Color(0xFFE8E8E8);
-
+    final aiDisabled = hasReachedAiDailyLimit;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.045)),
       child: Column(
@@ -576,7 +530,10 @@ class _MethodsContent extends StatelessWidget {
             borderColor: borderColor,
             textColor: secondaryTextColor,
             iconColor: primaryTextColor,
-            onTap: onAiImagesTap,
+            isDisabled: aiDisabled,
+            disabledMessage:
+                'لقد وصلت إلى الحد اليومي لاستخدام الذكاء الاصطناعي',
+            onTap: aiDisabled ? null : onAiImagesTap,
           ),
 
           SizedBox(height: SizeConfig.h(0.014)),
@@ -588,10 +545,71 @@ class _MethodsContent extends StatelessWidget {
             borderColor: borderColor,
             textColor: secondaryTextColor,
             iconColor: primaryTextColor,
-            onTap: onAiFileTap,
+            isDisabled: aiDisabled,
+            disabledMessage:
+                'لقد وصلت إلى الحد اليومي لاستخدام الذكاء الاصطناعي',
+            onTap: aiDisabled ? null : onAiFileTap,
           ),
+          if (aiDisabled) ...[
+            SizedBox(height: SizeConfig.h(0.012)),
+            _AiDailyLimitMessage(
+              text:
+                  'تم استهلاك جميع محاولات توليد الأسئلة بالذكاء الاصطناعي لهذا اليوم. يمكنك إنشاء اختبار يدوياً حالياً.',
+            ),
+            SizedBox(height: SizeConfig.h(0.01)),
+          ],
+          SizedBox(height: SizeConfig.h(0.01)),
+        ],
+      ),
+    );
+  }
+}
 
-          SizedBox(height: SizeConfig.h(0.022)),
+class _AiDailyLimitMessage extends StatelessWidget {
+  final String text;
+
+  const _AiDailyLimitMessage({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.w(0.030),
+        vertical: SizeConfig.h(0.010),
+      ),
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppPalette.greyMediumDark
+            : AppPalette.red.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: AppPalette.red.withOpacity(isDark ? 0.55 : 0.35),
+        ),
+      ),
+      child: Row(
+        textDirection: TextDirection.rtl,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            size: SizeConfig.text(0.038),
+            color: AppPalette.red,
+          ),
+          SizedBox(width: SizeConfig.w(0.018)),
+          Expanded(
+            child: CustomTextWidget(
+              text,
+              fontSize: SizeConfig.text(0.026),
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppPalette.textWhiteINDark : AppPalette.red,
+              textAlign: TextAlign.right,
+              textDirection: TextDirection.rtl,
+              maxLines: 3,
+            ),
+          ),
         ],
       ),
     );
@@ -1140,7 +1158,9 @@ class _CreateTestMethodField extends StatelessWidget {
   final Color borderColor;
   final Color textColor;
   final Color iconColor;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+  final bool isDisabled;
+  final String? disabledMessage;
 
   const _CreateTestMethodField({
     required this.title,
@@ -1150,40 +1170,75 @@ class _CreateTestMethodField extends StatelessWidget {
     required this.textColor,
     required this.iconColor,
     required this.onTap,
+    this.isDisabled = false,
+    this.disabledMessage,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final resolvedFieldColor = isDisabled
+        ? (isDark ? AppPalette.greyMediumDark : AppPalette.whiteToGrey)
+        : fieldColor;
+
+    final resolvedBorderColor = isDisabled
+        ? (isDark ? AppPalette.borderFieldColorNDark : AppPalette.greyLight)
+        : borderColor;
+
+    final resolvedTextColor = isDisabled
+        ? (isDark ? AppPalette.greyLightDark : AppPalette.greyMedium)
+        : textColor;
+
+    final resolvedIconColor = isDisabled
+        ? (isDark ? AppPalette.greyLightDark : AppPalette.greyMedium)
+        : iconColor;
+
     return SizedBox(
       height: SizeConfig.h(0.062),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(6),
-        child: Container(
-          decoration: BoxDecoration(
-            color: fieldColor,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: borderColor, width: 1),
-          ),
-          child: Row(
-            textDirection: TextDirection.rtl,
-            children: [
-              SizedBox(width: SizeConfig.w(0.025)),
-              Icon(icon, size: SizeConfig.text(0.062), color: iconColor),
-              SizedBox(width: SizeConfig.w(0.025)),
-              Expanded(
-                child: CustomTextWidget(
-                  title,
-                  fontSize: SizeConfig.text(0.035),
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                  textAlign: TextAlign.right,
-                  textDirection: TextDirection.rtl,
-                  maxLines: 1,
+        child: Opacity(
+          opacity: isDisabled ? 0.62 : 1,
+          child: Container(
+            decoration: BoxDecoration(
+              color: resolvedFieldColor,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: resolvedBorderColor, width: 1),
+            ),
+            child: Row(
+              textDirection: TextDirection.rtl,
+              children: [
+                SizedBox(width: SizeConfig.w(0.025)),
+                Icon(
+                  icon,
+                  size: SizeConfig.text(0.062),
+                  color: resolvedIconColor,
                 ),
-              ),
-              SizedBox(width: SizeConfig.w(0.02)),
-            ],
+                SizedBox(width: SizeConfig.w(0.025)),
+                Expanded(
+                  child: CustomTextWidget(
+                    title,
+                    fontSize: SizeConfig.text(0.035),
+                    fontWeight: FontWeight.w600,
+                    color: resolvedTextColor,
+                    textAlign: TextAlign.right,
+                    textDirection: TextDirection.rtl,
+                    maxLines: 1,
+                  ),
+                ),
+                if (isDisabled) ...[
+                  Icon(
+                    Icons.lock_outline_rounded,
+                    size: SizeConfig.text(0.040),
+                    color: resolvedTextColor,
+                  ),
+                  SizedBox(width: SizeConfig.w(0.018)),
+                ],
+                SizedBox(width: SizeConfig.w(0.02)),
+              ],
+            ),
           ),
         ),
       ),

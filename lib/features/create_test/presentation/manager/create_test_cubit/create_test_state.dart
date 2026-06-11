@@ -46,6 +46,7 @@ class CreateTestState {
   final String selectedAcademicLevel;
 
   final List<CreateTestQuestionState> questions;
+  final String aiProvider;
 
   final String draftQuestionText;
   final List<CreateTestQuestionOptionState> draftOptions;
@@ -86,6 +87,7 @@ final List<GeneratedAiQuestionEntity> aiGeneratedQuestions;
     this.pendingScientificCategories = const [],
     this.selectedAcademicLevel = '',
     this.questions = const [],
+    this.aiProvider = '',
     this.draftQuestionText = '',
     this.draftOptions = const [
       CreateTestQuestionOptionState(),
@@ -149,6 +151,7 @@ Object? aiQuestionGenerationError = _sentinel,
 Object? aiGenerationRequestId = _sentinel,
 bool? isAiQuestionGenerationCompleted,
 List<GeneratedAiQuestionEntity>? aiGeneratedQuestions,
+String? aiProvider,
   }) {
     return CreateTestState(
       title: title ?? this.title,
@@ -230,6 +233,7 @@ isAiQuestionGenerationCompleted:
     isAiQuestionGenerationCompleted ?? this.isAiQuestionGenerationCompleted,
 
 aiGeneratedQuestions: aiGeneratedQuestions ?? this.aiGeneratedQuestions,
+aiProvider: aiProvider ?? this.aiProvider,
     );
   }
 

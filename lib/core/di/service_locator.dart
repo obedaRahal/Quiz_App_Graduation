@@ -63,6 +63,7 @@ import 'package:quiz_app_grad/features/laboratory/data/datasource/laboratory_rem
 import 'package:quiz_app_grad/features/laboratory/data/repositories/laboratory_repository_impl.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/repositories/laboratory_repository.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/filter_tests_use_case.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_ai_generation_daily_limit_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
@@ -671,6 +672,11 @@ void _registerAuthFeature() {
       () => GetLabRecommendedTestsUseCase(sl<LaboratoryRepository>()),
     );
   }
+  if (!sl.isRegistered<GetAiGenerationDailyLimitUseCase>()) {
+  sl.registerLazySingleton<GetAiGenerationDailyLimitUseCase>(
+    () => GetAiGenerationDailyLimitUseCase(sl<LaboratoryRepository>()),
+  );
+}
   if (!sl.isRegistered<FilterTestsUseCase>()) {
   sl.registerLazySingleton<FilterTestsUseCase>(
     () => FilterTestsUseCase(sl<LaboratoryRepository>()),

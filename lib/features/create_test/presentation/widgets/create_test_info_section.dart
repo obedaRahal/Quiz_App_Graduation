@@ -190,43 +190,55 @@ class CreateTestInfoItem extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: SizedBox(
-        height: SizeConfig.h(0.09),
+        height: SizeConfig.h(0.105),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CustomAppImage(path: image, color: iconColor),
+            SizedBox(
+              width: SizeConfig.w(0.060),
+              height: SizeConfig.w(0.060),
+              child: CustomAppImage(
+                path: image,
+                color: iconColor,
+                fit: BoxFit.contain,
+              ),
+            ),
 
-            SizedBox(height: SizeConfig.h(0.0066)),
+            SizedBox(height: SizeConfig.h(0.004)),
 
             CustomTextWidget(
               title,
-              fontSize: SizeConfig.text(0.036),
+              fontSize: SizeConfig.text(0.032),
               fontWeight: FontWeight.w800,
               color: isDark
                   ? AppPalette.textWhiteINDark
                   : AppPalette.textColorInHome,
               textAlign: TextAlign.center,
               maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
 
-            SizedBox(height: SizeConfig.h(0.002)),
+            SizedBox(height: SizeConfig.h(0.001)),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(
                   child: CustomTextWidget(
                     value,
-                    fontSize: SizeConfig.text(0.028),
+                    fontSize: SizeConfig.text(0.025),
                     fontWeight: FontWeight.w600,
                     color: AppPalette.greyMedium,
                     textAlign: TextAlign.center,
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                SizedBox(width: SizeConfig.w(0.003)),
+                SizedBox(width: SizeConfig.w(0.002)),
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
-                  size: SizeConfig.text(0.043),
+                  size: SizeConfig.text(0.036),
                   color: AppPalette.greyMedium,
                 ),
               ],

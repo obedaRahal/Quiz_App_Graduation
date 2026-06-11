@@ -73,7 +73,6 @@ class CreateTestCubit extends Cubit<CreateTestState> {
   static const int aiMinQuestionCount = 10;
   static const int aiMaxQuestionCount = 40;
   static const int aiPollingIntervalSeconds = 5;
-  static const int aiMaxPollingAttempts = 12;
   void changeTitle(String value) {
     final limited = value.length > titleMaxLength
         ? value.substring(0, titleMaxLength)
@@ -750,6 +749,7 @@ class CreateTestCubit extends Cubit<CreateTestState> {
             ? state.questions
             : generatedQuestions,
         selectedSampleQuestions: const [],
+        aiProvider: args.aiProvider ?? '',
       ),
     );
   }
@@ -839,18 +839,22 @@ await _pollAiQuestionGenerationStatus(requestId);
     }
   }
 
-  Future<void> _pollAiQuestionGenerationStatus(int requestId) async {
-  for (int attempt = 0; attempt < aiMaxPollingAttempts; attempt++) {
-    if (isClosed) return;
+Future<void> _pollAiQuestionGenerationStatus(int requestId) async {
+  int attempt = 0;
+
+  while (!isClosed) {
+    attempt++;
 
     try {
       final response = await getAiQuestionGenerationStatusUseCase(
         generationRequestId: requestId,
       );
 
+      if (isClosed) return;
+
       final data = response.data;
 
-      print('AI POLLING ATTEMPT: ${attempt + 1}');
+      print('AI POLLING ATTEMPT: $attempt');
       print('requestId: $requestId');
       print('status: ${data.status}');
       print('failure: ${data.failure}');
@@ -865,6 +869,7 @@ await _pollAiQuestionGenerationStatus(requestId);
                   'تمت عملية التوليد لكن لم يتم إنشاء أي سؤال',
               isAiQuestionGenerationCompleted: false,
               aiGeneratedQuestions: const [],
+              
             ),
           );
           return;
@@ -876,6 +881,7 @@ await _pollAiQuestionGenerationStatus(requestId);
             aiQuestionGenerationError: null,
             isAiQuestionGenerationCompleted: true,
             aiGeneratedQuestions: data.questions,
+            aiProvider: data.provider,
           ),
         );
         return;
@@ -900,35 +906,15 @@ await _pollAiQuestionGenerationStatus(requestId);
         const Duration(seconds: aiPollingIntervalSeconds),
       );
     } catch (e) {
-      print('AI POLLING ERROR attempt ${attempt + 1}: $e');
+      print('AI POLLING ERROR attempt $attempt: $e');
 
-      if (attempt == aiMaxPollingAttempts - 1) {
-        emit(
-          state.copyWith(
-            isAiQuestionGenerationLoading: false,
-            aiQuestionGenerationError: e.toString(),
-            isAiQuestionGenerationCompleted: false,
-          ),
-        );
-        return;
-      }
+      if (isClosed) return;
 
       await Future.delayed(
         const Duration(seconds: aiPollingIntervalSeconds),
       );
     }
   }
-
-  if (isClosed) return;
-
-  emit(
-    state.copyWith(
-      isAiQuestionGenerationLoading: false,
-      aiQuestionGenerationError:
-          'استغرقت عملية توليد الأسئلة وقتاً أطول من المتوقع، حاول مرة أخرى',
-      isAiQuestionGenerationCompleted: false,
-    ),
-  );
 }
   String? _validateAiGenerationArgs(CreateTestInitialArgs args) {
     if (!args.isAiMode) {

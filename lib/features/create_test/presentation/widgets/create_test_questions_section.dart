@@ -12,6 +12,7 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_cubit.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_state.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/widgets/create_test_top_explanation_banner.dart';
 
 class CreateTestQuestionsSection extends StatelessWidget {
   const CreateTestQuestionsSection({super.key});
@@ -20,7 +21,9 @@ class CreateTestQuestionsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CreateTestCubit, CreateTestState>(
       buildWhen: (previous, current) {
-        return previous.questions != current.questions;
+        return previous.questions != current.questions ||
+            previous.creationMode != current.creationMode ||
+            previous.aiProvider != current.aiProvider;
       },
       builder: (context, state) {
         return Column(
@@ -29,7 +32,12 @@ class CreateTestQuestionsSection extends StatelessWidget {
             const _QuestionsHeader(),
 
             SizedBox(height: SizeConfig.h(0.016)),
-
+            if (state.isAiMode &&
+                state.aiProvider.trim().isNotEmpty &&
+                state.questions.isNotEmpty) ...[
+              _AiProviderBanner(provider: state.aiProvider),
+              SizedBox(height: SizeConfig.h(0.012)),
+            ],
             if (state.questions.isNotEmpty) ...[
               ...List.generate(
                 state.questions.length,
@@ -302,7 +310,7 @@ class _QuestionPreviewCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     PopupMenuItem<String>(
                       value: 'delete',
                       height: SizeConfig.h(0.036),
@@ -369,18 +377,10 @@ class _QuestionPreviewCard extends StatelessWidget {
               if (question.explanation.trim().isNotEmpty)
                 InkWell(
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          question.explanation,
-                          style: TextStyle(fontSize: SizeConfig.text(0.025)),
-                        ),
-                        duration: const Duration(seconds: 4),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: isDark
-                            ? AppPalette.greyMediumDark
-                            : AppPalette.textColorInHome,
-                      ),
+                    showTopExplanationBanner(
+                      context: context,
+                      title: 'الشرح',
+                      message: question.explanation,
                     );
                   },
                   child: Padding(
@@ -453,33 +453,43 @@ class _PreviewOptionTile extends StatelessWidget {
         : AppPalette.answerContainerText;
 
     return Container(
-      height: SizeConfig.h(0.038),
-      padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.020)),
+      constraints: BoxConstraints(minHeight: SizeConfig.h(0.038)),
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.w(0.020),
+        vertical: SizeConfig.h(0.006),
+      ),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: borderColor),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: CustomTextWidget(
               label,
-              fontSize: SizeConfig.text(0.036),
-              fontWeight: FontWeight.w500,
+              fontSize: SizeConfig.text(0.032),
+              fontWeight: FontWeight.w600,
               color: labelColor,
               textAlign: TextAlign.center,
+              maxLines: 1,
             ),
           ),
 
-          CustomTextWidget(
-            text,
-            fontSize: SizeConfig.text(0.036),
-            fontWeight: FontWeight.w500,
-            color: textColor,
-            textAlign: TextAlign.right,
-            maxLines: 1,
+          SizedBox(width: SizeConfig.w(0.010)),
+
+          Expanded(
+            child: CustomTextWidget(
+              text,
+              fontSize: SizeConfig.text(0.032),
+              fontWeight: FontWeight.w500,
+              color: textColor,
+              textAlign: TextAlign.right,
+              maxLines: 3,
+              //overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -1104,6 +1114,68 @@ class _DashedLinePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _DashedLinePainter oldDelegate) {
     return oldDelegate.color != color;
+  }
+}
+
+class _AiProviderBanner extends StatelessWidget {
+  final String provider;
+
+  const _AiProviderBanner({required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final appColors = context.appColors;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.w(0.030),
+        vertical: SizeConfig.h(0.010),
+      ),
+      decoration: BoxDecoration(
+        color: isDark ? AppPalette.fieldColorNDark : AppPalette.primarySoft,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isDark
+              ? AppPalette.borderFieldColorNDark
+              : appColors.primaryToPrimaryDark.withOpacity(0.35),
+        ),
+      ),
+      child: Row(
+        textDirection: TextDirection.rtl,
+        children: [
+          Container(
+            width: SizeConfig.w(0.075),
+            height: SizeConfig.w(0.075),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isDark ? AppPalette.greyMediumDark : AppPalette.white,
+            ),
+            child: Icon(
+              Icons.auto_awesome_rounded,
+              size: SizeConfig.text(0.044),
+              color: appColors.primaryToPrimaryDark,
+            ),
+          ),
+
+          SizedBox(width: SizeConfig.w(0.020)),
+
+          Expanded(
+            child: CustomTextWidget(
+              'تم توليد الأسئلة باستخدام الأداة $provider',
+              fontSize: SizeConfig.text(0.030),
+              fontWeight: FontWeight.w800,
+              color: isDark
+                  ? AppPalette.textWhiteINDark
+                  : AppPalette.textColorInHome,
+              textAlign: TextAlign.right,
+              maxLines: 2,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

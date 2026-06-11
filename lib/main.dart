@@ -13,7 +13,7 @@ import 'package:quiz_app_grad/core/theme/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  //await TokenStorage.clear();
+  //  await TokenStorage.clear();
 
   await CacheHelper.init();
   await initSl();

@@ -74,6 +74,7 @@ class CreateTestAiLoadingView extends StatelessWidget {
               AppRouterName.createTestPage,
               extra: args.copyWith(
                 generatedQuestions: state.aiGeneratedQuestions,
+                aiProvider: state.aiProvider,
               ),
             );
           }

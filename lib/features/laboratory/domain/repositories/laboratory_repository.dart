@@ -1,3 +1,4 @@
+import 'package:quiz_app_grad/features/laboratory/domain/entities/ai_generation_daily_limit_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/filter_tests_params.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/filter_tests_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/lab_recommended_tests_response_entity.dart';
@@ -21,4 +22,5 @@ Future<LabRecommendedTestsResponseEntity> getLabRecommendedTests({
 Future<FilterTestsResponseEntity> filterTests({
   required FilterTestsParams params,
 });
+Future<AiGenerationDailyLimitEntity> getAiGenerationDailyLimit();
 }

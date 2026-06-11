@@ -11,6 +11,7 @@ import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_use
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/filter_tests_use_case.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_ai_generation_daily_limit_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
@@ -36,27 +37,16 @@ class MainLayoutBody extends StatelessWidget {
               children: [
                 BlocProvider(
                   create: (_) => HomeCubit(
-                    getRecommendedTestsUseCase: sl<GetRecommendedTestsUseCase>(),
+                    getRecommendedTestsUseCase:
+                        sl<GetRecommendedTestsUseCase>(),
                     getRecommendedInterestsUseCase:
                         sl<GetRecommendedInterestsUseCase>(),
-                    getRecommendedUsersUseCase: sl<GetRecommendedUsersUseCase>(),
+                    getRecommendedUsersUseCase:
+                        sl<GetRecommendedUsersUseCase>(),
                   )..getHomeData(),
                   child: const HomePage(),
                 ),
                 const Center(child: Text('المكتبة')),
-                // const Center(child: Text('المختبر')),
-                // Center(
-                //   child: InkWell(
-                //     onTap: () {
-                //       //context.pushNamed(AppRouterName.detailsOfTest);
-                //       context.pushNamed(
-                //         AppRouterName.detailsOfTest,
-                //         extra: DetailsOfTestRouteArgs(testId: 4),
-                //       );
-                //     },
-                //     child: Text("details of test"),
-                //   ),
-                // ),
                 BlocProvider(
                   create: (_) =>
                       LaboratoryCubit(
@@ -66,15 +56,17 @@ class MainLayoutBody extends StatelessWidget {
                               sl<SearchTestsByInterestUseCase>(),
                           getLabRecommendedTestsUseCase:
                               sl<GetLabRecommendedTestsUseCase>(),
-                               filterTestsUseCase: sl<FilterTestsUseCase>(),
-                               getAllInterestsUseCase:  sl<GetAllInterestsUseCase>(),
+                          getAllInterestsUseCase: sl<GetAllInterestsUseCase>(),
+                          filterTestsUseCase: sl<FilterTestsUseCase>(),
+                          getAiGenerationDailyLimitUseCase:
+                              sl<GetAiGenerationDailyLimitUseCase>(),
                         )
                         ..initScrollListener()
-                        
+                        ..getAiGenerationDailyLimit()
                         ..getInitialLabTests(tab: 'trending'),
                   child: const LaboratoryPage(),
                 ),
-            
+
                 Center(
                   child: Column(
                     children: [
@@ -90,9 +82,8 @@ class MainLayoutBody extends StatelessWidget {
                           child: Text("details of test"),
                         ),
                       ),
-                  
-                  
-                      SizedBox(height: 40,),
+
+                      SizedBox(height: 40),
                       Center(
                         child: InkWell(
                           onTap: () {
@@ -106,8 +97,7 @@ class MainLayoutBody extends StatelessWidget {
                         ),
                       ),
 
-
-                      SizedBox(height: 40,),
+                      SizedBox(height: 40),
                       Center(
                         child: InkWell(
                           onTap: () {
@@ -123,9 +113,8 @@ class MainLayoutBody extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 //const Center(child: Text('الخطة')),
-            
-                
               ],
             ),
           ),

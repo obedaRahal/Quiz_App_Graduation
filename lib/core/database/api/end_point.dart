@@ -48,6 +48,9 @@ class EndPoints {
 
   static const String aiQuestionGenerations = '/lab/ai-question-generations';
 
+  static const String aiQuestionGenerationDailyLimit =
+      '/lab/ai-question-generation/daily-limit';
+
   static const String filterTests = '/test/tests/filter';
 
   static String aiQuestionGenerationStatus(int generationRequestId) {
