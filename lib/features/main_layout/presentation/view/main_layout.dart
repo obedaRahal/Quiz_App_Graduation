@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
+import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
 import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/filter_tests_use_case.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_ai_generation_daily_limit_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
@@ -36,28 +39,17 @@ class MainLayoutBody extends StatelessWidget {
                 BlocProvider(
                   create: (_) => HomeCubit(
                     getRecommendedTestsUseCase:
+                       
                         sl<GetRecommendedTestsUseCase>(),
                     getRecommendedInterestsUseCase:
                         sl<GetRecommendedInterestsUseCase>(),
                     getRecommendedUsersUseCase:
+                       
                         sl<GetRecommendedUsersUseCase>(),
                   )..getHomeData(),
                   child: const HomePage(),
                 ),
                 const Center(child: Text('المكتبة')),
-                // const Center(child: Text('المختبر')),
-                // Center(
-                //   child: InkWell(
-                //     onTap: () {
-                //       //context.pushNamed(AppRouterName.detailsOfTest);
-                //       context.pushNamed(
-                //         AppRouterName.detailsOfTest,
-                //         extra: DetailsOfTestRouteArgs(testId: 4),
-                //       );
-                //     },
-                //     child: Text("details of test"),
-                //   ),
-                // ),
                 BlocProvider(
                   create: (_) =>
                       LaboratoryCubit(
@@ -67,8 +59,13 @@ class MainLayoutBody extends StatelessWidget {
                               sl<SearchTestsByInterestUseCase>(),
                           getLabRecommendedTestsUseCase:
                               sl<GetLabRecommendedTestsUseCase>(),
+                          getAllInterestsUseCase: sl<GetAllInterestsUseCase>(),
+                          filterTestsUseCase: sl<FilterTestsUseCase>(),
+                          getAiGenerationDailyLimitUseCase:
+                              sl<GetAiGenerationDailyLimitUseCase>(),
                         )
                         ..initScrollListener()
+                        ..getAiGenerationDailyLimit()
                         ..getInitialLabTests(tab: 'trending'),
                   child: const LaboratoryPage(),
                 ),
@@ -90,6 +87,8 @@ class MainLayoutBody extends StatelessWidget {
                       ),
 
                       SizedBox(height: 40),
+
+                      SizedBox(height: 40),
                       Center(
                         child: InkWell(
                           onTap: () {
@@ -103,6 +102,7 @@ class MainLayoutBody extends StatelessWidget {
                         ),
                       ),
 
+                      SizedBox(height: 40),
                       SizedBox(height: 40),
                       Center(
                         child: InkWell(
@@ -133,6 +133,7 @@ class MainLayoutBody extends StatelessWidget {
                     ],
                   ),
                 ),
+
 
                 //const Center(child: Text('الخطة')),
               ],

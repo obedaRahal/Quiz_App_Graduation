@@ -16,6 +16,14 @@ import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_ca
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
+import 'package:quiz_app_grad/features/create_test/data/datasource/create_test_remote_data_source.dart';
+import 'package:quiz_app_grad/features/create_test/data/repositories/create_test_repository_impl.dart';
+import 'package:quiz_app_grad/features/create_test/domain/repositories/create_test_repository.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/create_manual_test_use_case.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/get_ai_question_generation_status_use_case.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/get_scientific_classifications_use_case.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/start_ai_question_generation_use_case.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/data_sources/details_of_test_remote_data_source.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/repo_impl/details_of_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/repositories/details_of_test_repository.dart';
@@ -54,6 +62,8 @@ import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_use
 import 'package:quiz_app_grad/features/laboratory/data/datasource/laboratory_remote_data_source.dart';
 import 'package:quiz_app_grad/features/laboratory/data/repositories/laboratory_repository_impl.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/repositories/laboratory_repository.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/filter_tests_use_case.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_ai_generation_daily_limit_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
@@ -122,6 +132,7 @@ Future<void> initSl() async {
   _registerDetailsOfTestFeature();
   _registerTestsByInterestFeature();
   _registerTestPlayModeFeature();
+  _registerCreateTestFeature();
 
   _registerMyTestDetailsFeature();
   _registerOtherProfileFeature();
@@ -663,6 +674,16 @@ void _registerAuthFeature() {
       () => GetLabRecommendedTestsUseCase(sl<LaboratoryRepository>()),
     );
   }
+  if (!sl.isRegistered<GetAiGenerationDailyLimitUseCase>()) {
+  sl.registerLazySingleton<GetAiGenerationDailyLimitUseCase>(
+    () => GetAiGenerationDailyLimitUseCase(sl<LaboratoryRepository>()),
+  );
+}
+  if (!sl.isRegistered<FilterTestsUseCase>()) {
+  sl.registerLazySingleton<FilterTestsUseCase>(
+    () => FilterTestsUseCase(sl<LaboratoryRepository>()),
+  );
+}
 
   if (!sl.isRegistered<GetTestsByInterestUseCase>()) {
     sl.registerLazySingleton<GetTestsByInterestUseCase>(
@@ -719,7 +740,51 @@ void _registerTestsByInterestFeature() {
     );
   }
 }
+// ================= Create Test  =================
+void _registerCreateTestFeature() {
+  if (!sl.isRegistered<CreateTestRemoteDataSource>()) {
+    sl.registerLazySingleton<CreateTestRemoteDataSource>(
+      () => CreateTestRemoteDataSourceImpl(api: sl<ApiConsumer>()),
+    );
+  }
 
+  if (!sl.isRegistered<CreateTestRepository>()) {
+    sl.registerLazySingleton<CreateTestRepository>(
+      () => CreateTestRepositoryImpl(
+        remoteDataSource: sl<CreateTestRemoteDataSource>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<GetScientificClassificationsUseCase>()) {
+    sl.registerLazySingleton<GetScientificClassificationsUseCase>(
+      () => GetScientificClassificationsUseCase(sl<CreateTestRepository>()),
+    );
+    sl.registerLazySingleton<StartAiQuestionGenerationUseCase>(
+      () => StartAiQuestionGenerationUseCase(sl()),
+    );
+
+    sl.registerLazySingleton<GetAiQuestionGenerationStatusUseCase>(
+      () => GetAiQuestionGenerationStatusUseCase(sl()),
+    );
+  }
+
+  if (!sl.isRegistered<CreateTestCubit>()) {
+    sl.registerFactory<CreateTestCubit>(
+      () => CreateTestCubit(
+        getScientificClassificationsUseCase: sl(),
+        createManualTestUseCase: sl(),
+        startAiQuestionGenerationUseCase: sl(),
+        getAiQuestionGenerationStatusUseCase: sl(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<CreateManualTestUseCase>()) {
+    sl.registerLazySingleton<CreateManualTestUseCase>(
+      () => CreateManualTestUseCase(sl<CreateTestRepository>()),
+    );
+  }
+}
 // ================= My Public Test Details =================
 void _registerMyTestDetailsFeature() {
   if (!sl.isRegistered<MyPublicTestDetailsRemoteDataSource>()) {

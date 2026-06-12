@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_cubit.dart';
@@ -55,9 +57,12 @@ class LaboratoryPage extends StatelessWidget {
               controller: scrollController,
               child: BlocBuilder<LaboratoryCubit, LaboratoryState>(
                 builder: (context, state) {
+                  final shouldShowTopCards =
+                      !state.isSearchMode && !state.isFilterMode;
+
                   return Column(
                     children: [
-                      if (!state.isSearchMode) ...[
+                      if (shouldShowTopCards) ...[
                         const LaboratoryTabsSection(),
 
                         LaboratoryTestsSliderSection(
@@ -65,6 +70,73 @@ class LaboratoryPage extends StatelessWidget {
                           isDark: isDark,
                           appColors: appColors,
                           colorScheme: colorScheme,
+                        ),
+                      ],
+
+                      if (state.isFilterMode) ...[
+                        Padding(
+                          padding: EdgeInsets.only(
+                            right: SizeConfig.w(0.045),
+                            left: SizeConfig.w(0.045),
+                            bottom: SizeConfig.h(0.010),
+                          ),
+                          child: Row(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  context.read<LaboratoryCubit>().clearFilter();
+                                },
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  height: SizeConfig.h(0.034),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: SizeConfig.w(0.026),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? AppPalette.fieldColorNDark
+                                        : AppPalette.primarySoft,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? AppPalette.borderFieldColorNDark
+                                          : AppPalette.primary,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.close_rounded,
+                                        size: SizeConfig.text(0.034),
+                                        color: appColors.primaryToPrimaryDark,
+                                      ),
+                                      SizedBox(width: SizeConfig.w(0.008)),
+                                      CustomTextWidget(
+                                        'إلغاء ',
+                                        fontSize: SizeConfig.text(0.026),
+                                        fontWeight: FontWeight.w800,
+                                        color: appColors.primaryToPrimaryDark,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              const Spacer(),
+
+                              CustomTextWidget(
+                                'نتائج البحث',
+                                fontSize: SizeConfig.text(0.034),
+                                fontWeight: FontWeight.w900,
+                                color: isDark
+                                    ? AppPalette.textWhiteINDark
+                                    : AppPalette.textColorInHome,
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
 

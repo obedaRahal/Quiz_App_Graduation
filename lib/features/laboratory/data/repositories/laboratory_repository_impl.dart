@@ -1,4 +1,7 @@
 import 'package:quiz_app_grad/features/laboratory/data/datasource/laboratory_remote_data_source.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/entities/ai_generation_daily_limit_entity.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/entities/filter_tests_params.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/entities/filter_tests_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/lab_recommended_tests_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/search_tests_by_interest_response_entity.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/test_by_interest_response_entity.dart';
@@ -7,9 +10,7 @@ import 'package:quiz_app_grad/features/laboratory/domain/repositories/laboratory
 class LaboratoryRepositoryImpl implements LaboratoryRepository {
   final LaboratoryRemoteDataSource remoteDataSource;
 
-  const LaboratoryRepositoryImpl({
-    required this.remoteDataSource,
-  });
+  const LaboratoryRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<TestsByInterestResponseEntity> getTestsByInterest({
@@ -23,30 +24,48 @@ class LaboratoryRepositoryImpl implements LaboratoryRepository {
 
     return response.toEntity();
   }
- @override
-Future<SearchTestsByInterestResponseEntity> searchTestsByInterest({
-  required String query,
-  required int page,
-  int perPage = 20,
-}) async {
-  final response = await remoteDataSource.searchTestsByInterest(
-    query: query,
-    page: page,
-    perPage: perPage,
-  );
 
-  return response.toEntity();
-}
-@override
-Future<LabRecommendedTestsResponseEntity> getLabRecommendedTests({
-  required String tab,
-  required int page,
-}) async {
-  final response = await remoteDataSource.getLabRecommendedTests(
-    tab: tab,
-    page: page,
-  );
+  @override
+  Future<SearchTestsByInterestResponseEntity> searchTestsByInterest({
+    required String query,
+    required int page,
+    int perPage = 20,
+  }) async {
+    final response = await remoteDataSource.searchTestsByInterest(
+      query: query,
+      page: page,
+      perPage: perPage,
+    );
 
-  return response.toEntity();
-}
+    return response.toEntity();
+  }
+
+  @override
+  Future<LabRecommendedTestsResponseEntity> getLabRecommendedTests({
+    required String tab,
+    required int page,
+  }) async {
+    final response = await remoteDataSource.getLabRecommendedTests(
+      tab: tab,
+      page: page,
+    );
+
+    return response.toEntity();
+  }
+
+  @override
+  Future<FilterTestsResponseEntity> filterTests({
+    required FilterTestsParams params,
+  }) async {
+    final response = await remoteDataSource.filterTests(params: params);
+
+    return response.toEntity();
+  }
+
+  @override
+  Future<AiGenerationDailyLimitEntity> getAiGenerationDailyLimit() async {
+    final response = await remoteDataSource.getAiGenerationDailyLimit();
+
+    return response.toEntity();
+  }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_cubit.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_state.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_filter_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_filter_item.dart';
 
 class LaboratoryTabsSection extends StatelessWidget {
@@ -89,19 +91,51 @@ class LaboratoryTabsSection extends StatelessWidget {
 
                     SizedBox(width: SizeConfig.w(0.092)),
 
-                    Container(
-                      width: SizeConfig.w(0.075),
-                      height: SizeConfig.w(0.075),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? AppPalette.fieldColorNDark
-                            : AppPalette.whiteToGrey,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.filter_alt_outlined,
-                        size: SizeConfig.text(0.045),
-                        color: AppPalette.greyMedium,
+                    InkWell(
+                     onTap: () async {
+  final cubit = context.read<LaboratoryCubit>();
+
+  await cubit.getFilterInterests();
+
+  if (!context.mounted) return;
+
+  if (cubit.state.filterInterestsError != null) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: CustomTextWidget(
+          'حدث خطأ أثناء جلب التصنيفات العلمية',
+          color: AppPalette.white,
+        ),
+        backgroundColor: AppPalette.red,
+      ),
+    );
+    return;
+  }
+
+  final result = await showLaboratoryFilterBottomSheet(
+    context,
+    interestCategories: cubit.state.filterInterestCategories,
+  );
+
+  if (result == null) return;
+
+  await cubit.applyFilter(result);
+},
+                      child: Container(
+                        width: SizeConfig.w(0.075),
+                        height: SizeConfig.w(0.075),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? AppPalette.fieldColorNDark
+                              : AppPalette.whiteToGrey,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.filter_alt_outlined,
+                          size: SizeConfig.text(0.045),
+                          color: AppPalette.greyMedium,
+                        ),
                       ),
                     ),
                   ],

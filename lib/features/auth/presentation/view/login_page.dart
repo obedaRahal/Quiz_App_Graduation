@@ -85,25 +85,6 @@ class LoginPage extends StatelessWidget {
               );
               break;
 
-            // case LoginFailureType.onboardingNotCompleted:
-            //   showValidationTopSnackBar(
-            //     context,
-            //     title: title,
-            //     message: state.errorMessage!,
-            //     type: AppValidationSnackBarType.error,
-            //     actionText: 'الذهاب لاستكمال المعلومات',
-            //     onActionTap: () {
-            //       debugPrint(
-            //         'Go to onboarding step: ${state.lastCompletedStep}',
-            //       );
-            //       debugPrint(
-            //         'and email is : ${cubit.emailController.text}',
-            //       );
-            //     },
-            //     displayDuration: const Duration(seconds: 6),
-            //   );
-            //   break;
-
             case LoginFailureType.onboardingNotCompleted:
               showValidationTopSnackBar(
                 context,

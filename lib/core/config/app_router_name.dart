@@ -17,6 +17,9 @@ abstract class AppRouterName {
   static const String sharedTestRedirect = '/shared-test/:slug';
   static const allCategoriesPage = 'allCategoriesPage';
   static const laboratoryPage = 'laboratoryPage';
+  static const createTestPage = 'createTestPage';
+  static const createTestAiLoadingPage = 'createTestAiLoadingPage';
+
 
   static const mcqTestSessionView = 'mcqTestSessionView';
   static const challengeSetupView = 'challengeSetupView';
@@ -52,7 +55,8 @@ abstract class AppRouterPath {
   static const String sharedTestRedirect = '/shared-test/:slug';
   static const allCategoriesPage = '/allCategoriesPage';
   static const laboratoryPage = '/laboratoryPage';
-
+  static const createTestPage = '/createTestPage';
+  static const createTestAiLoadingPage = '/createTestAiLoadingPage';
   static const mcqTestSessionView = '/mcqTestSessionView';
   static const challengeSetupView = '/challengeSetupView';
   static const flashcardView = '/flashcardView';

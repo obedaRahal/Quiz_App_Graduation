@@ -217,9 +217,7 @@ class CustomTextField extends StatelessWidget {
           suffixIconColor: const Color(0xffACACAC),
           filled: true,
           fillColor: isDark ? AppPalette.fieldColorNDark : AppPalette.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius),
             borderSide: BorderSide(
@@ -231,9 +229,7 @@ class CustomTextField extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: appColors.primaryToPrimaryDark,
-            ),
+            borderSide: BorderSide(color: appColors.primaryToPrimaryDark),
           ),
         ),
       ),

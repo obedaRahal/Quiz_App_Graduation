@@ -1,8 +1,11 @@
 import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
+import 'package:quiz_app_grad/features/create_test/data/models/filter_tests_response_model.dart';
+import 'package:quiz_app_grad/features/laboratory/data/models/ai_generation_daily_limit_model.dart';
 import 'package:quiz_app_grad/features/laboratory/data/models/lab_recommended_tests_response_model.dart';
 import 'package:quiz_app_grad/features/laboratory/data/models/search_tests_by_interest_response_model.dart';
 import 'package:quiz_app_grad/features/laboratory/data/models/tests_by_interest_response_model.dart';
+import 'package:quiz_app_grad/features/laboratory/domain/entities/filter_tests_params.dart';
 
 abstract class LaboratoryRemoteDataSource {
   Future<TestsByInterestResponseModel> getTestsByInterest({
@@ -18,6 +21,10 @@ abstract class LaboratoryRemoteDataSource {
     required String tab,
     required int page,
   });
+  Future<FilterTestsResponseModel> filterTests({
+    required FilterTestsParams params,
+  });
+  Future<AiGenerationDailyLimitModel> getAiGenerationDailyLimit();
 }
 
 class LaboratoryRemoteDataSourceImpl implements LaboratoryRemoteDataSource {
@@ -64,4 +71,24 @@ class LaboratoryRemoteDataSourceImpl implements LaboratoryRemoteDataSource {
 
     return LabRecommendedTestsResponseModel.fromJson(response);
   }
+
+  @override
+  Future<FilterTestsResponseModel> filterTests({
+    required FilterTestsParams params,
+  }) async {
+    final response = await api.get(
+      EndPoints.filterTests,
+      queryParameters: params.toQueryParameters(),
+    );
+
+    return FilterTestsResponseModel.fromJson(response);
+  }
+  @override
+Future<AiGenerationDailyLimitModel> getAiGenerationDailyLimit() async {
+  final response = await api.get(
+    EndPoints.aiQuestionGenerationDailyLimit,
+  );
+
+  return AiGenerationDailyLimitModel.fromJson(response);
+}
 }
