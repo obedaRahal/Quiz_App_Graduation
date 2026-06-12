@@ -74,6 +74,12 @@ class AppImage {
   static String get reportedIcon => '$_baseIcon/reportedIcon.svg';
   static String get underReviewIcon => '$_baseIcon/underReviewIcon.svg';
 
+  /////////////////// profile ////////////////////////
+  static String get educationIcon => '$_baseIcon/educationIcon.svg';
+  static String get jenderIcon => '$_baseIcon/jenderIcon.svg';
+  static String get locationIcon => '$_baseIcon/locationIcon.svg';
+  static String get folderIcon => '$_baseIcon/folder.svg';
+
   /////////////////////////////////////////////////////////////////
   ////////////////////// darkkkk image ////////////////////////////
   //////////////////////////////////////////////////////////////

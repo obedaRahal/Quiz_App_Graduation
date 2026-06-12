@@ -14,7 +14,6 @@ import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/FLAS
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/FLASH_CARD/flashcard_progress_dots.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/FLASH_CARD/flashcard_session_info_header.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/FLASH_CARD/flashcard_summary_dialog.dart';
-import 'package:quiz_app_grad/features/test_play_modes/presentation/widgets/exit_test_play_mode_dialog.dart';
 
 import '../../manager/test_play_mode/test_play_modes_state.dart';
 

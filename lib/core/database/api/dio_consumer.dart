@@ -191,6 +191,18 @@ class DioConsumer extends ApiConsumer {
     );
   }
 
+  Options? _mergeOptionsWithHeaders({
+    Options? options,
+    Map<String, String>? headers,
+  }) {
+    if (headers == null || headers.isEmpty) {
+      return options;
+    }
+
+    return options?.copyWith(headers: {...?options.headers, ...headers}) ??
+        Options(headers: headers);
+  }
+
   dynamic _prepareData(dynamic data, bool isFormData) {
     if (!isFormData || data == null) return data;
     if (data is FormData) return data;
@@ -233,6 +245,11 @@ class DioConsumer extends ApiConsumer {
     Map<String, String>? headers,
   }) async {
     try {
+      final mergedOptions = _mergeOptionsWithHeaders(
+        options: options,
+        headers: headers,
+      );
+
       final response = await dio.post(
         path,
         data: _prepareData(data, isFormData),
@@ -240,7 +257,8 @@ class DioConsumer extends ApiConsumer {
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
-        options: options,
+        //options: options,
+        options: mergedOptions,
       );
       return response.data;
     } on DioException catch (e) {
@@ -312,12 +330,18 @@ class DioConsumer extends ApiConsumer {
     Map<String, String>? headers,
   }) async {
     try {
+      final mergedOptions = _mergeOptionsWithHeaders(
+        options: options,
+        headers: headers,
+      );
+
       final response = await dio.delete(
         path,
         data: data,
         queryParameters: queryParameters,
         cancelToken: cancelToken,
-        options: options,
+        //options: options,
+        options: mergedOptions,
       );
       return response.data;
     } on DioException catch (e) {

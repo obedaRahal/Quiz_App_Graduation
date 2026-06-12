@@ -6,8 +6,12 @@ import 'package:quiz_app_grad/features/laboratory/domain/entities/test_by_intere
 
 class LaboratoryExamSessionCard extends StatelessWidget {
   final TestByInterestEntity item;
-
-  const LaboratoryExamSessionCard({super.key, required this.item});
+  final double? horizonMargin;
+  const LaboratoryExamSessionCard({
+    super.key,
+    required this.item,
+    this.horizonMargin = 0.035,
+  });
 
   Color _difficultyColor() {
     switch (item.difficultyLevel.trim()) {
@@ -35,7 +39,9 @@ class LaboratoryExamSessionCard extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Container(
         height: SizeConfig.h(0.17),
-        margin: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.035)),
+        margin: EdgeInsets.symmetric(
+          horizontal: SizeConfig.w(horizonMargin ?? 0.035),
+        ),
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(

@@ -78,6 +78,7 @@ import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_educat
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_graduate_academic_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_school_stage_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_user_interests_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repository_impl.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/theme_repository.dart';
@@ -123,6 +124,7 @@ Future<void> initSl() async {
   _registerTestPlayModeFeature();
 
   _registerMyTestDetailsFeature();
+  _registerOtherProfileFeature();
 }
 
 Future<void> _registerCore() async {
@@ -809,5 +811,12 @@ void _registerMyTestDetailsFeature() {
         deleteMyTestUseCase: sl<DeleteMyTestUseCase>(),
       ),
     );
+  }
+}
+
+// ================= Other Profile =================
+void _registerOtherProfileFeature() {
+  if (!sl.isRegistered<OtherProfileCubit>()) {
+    sl.registerFactory<OtherProfileCubit>(() => OtherProfileCubit());
   }
 }

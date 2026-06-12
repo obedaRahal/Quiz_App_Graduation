@@ -44,6 +44,9 @@ import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_user_i
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/models/onboarding_route_args.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_view.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/views/other_profile_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
@@ -428,6 +431,29 @@ class AppRouter {
             return BlocProvider<MyTestDetailsCubit>(
               create: (_) => sl<MyTestDetailsCubit>(),
               child: MyPrivateTestDetailsView(testId: args.testId),
+            );
+          },
+        ),
+
+        ///////////////// other profile ////////////////////////////
+        GoRoute(
+          path: AppRouterPath.otherProfile,
+          name: AppRouterName.otherProfile,
+          pageBuilder: (context, state) {
+            debugPrint("============ OtherProfile Route ============");
+
+            final args = state.extra as OtherProfileRouteArgs;
+            final userId = args.userId;
+
+            debugPrint("→ received userId: $userId");
+            debugPrint("=================================================");
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider<OtherProfileCubit>(
+                create: (_) => sl<OtherProfileCubit>(),
+                child: OtherProfileView(userId: userId),
+              ),
             );
           },
         ),

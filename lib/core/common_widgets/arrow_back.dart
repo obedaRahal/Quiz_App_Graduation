@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
-import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 
 class ArrowBack extends StatelessWidget {
   final VoidCallback? onTap;

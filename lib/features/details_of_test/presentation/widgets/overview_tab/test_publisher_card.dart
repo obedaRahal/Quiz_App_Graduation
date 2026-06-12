@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/compact_count_formatter.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class TestPublisherCard extends StatelessWidget {
@@ -100,12 +101,18 @@ class TestPublisherCard extends StatelessWidget {
                     children: [
                       _PublisherStat(
                         label: "اختبار",
-                        value: "$publishedTestsCount",
+                        value: formatCompactCount(publishedTestsCount),
                       ),
                       _DotSeparator(),
-                      _PublisherStat(label: "يتابع", value: "$followingCount"),
+                      _PublisherStat(
+                        label: "يتابع",
+                        value: formatCompactCount(followingCount),
+                      ),
                       _DotSeparator(),
-                      _PublisherStat(label: "متابع", value: "$followersCount"),
+                      _PublisherStat(
+                        label: "متابع",
+                        value: formatCompactCount(followersCount),
+                      ),
                     ],
                   ),
                 ],
@@ -144,7 +151,7 @@ class _PublisherStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        final appColors = context.appColors;
+    final appColors = context.appColors;
 
     return Row(
       mainAxisSize: MainAxisSize.min,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -38,7 +37,7 @@ class OtpInputSection extends StatelessWidget {
     final seconds = (remainingSeconds % 60).toString().padLeft(2, '0');
 
     final appColors = context.appColors;
-    final colorScheme = context.colorScheme;
+    // final colorScheme = context.colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final fieldWidth = (SizeConfig.safeWidth * (compact ? 0.115 : 0.125))

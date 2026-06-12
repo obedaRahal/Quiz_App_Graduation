@@ -24,6 +24,9 @@ abstract class AppRouterName {
 
   static const myTestDetails = 'myTestDetails';
   static const myPrivateTestDetails = 'myPrivateTestDetails';
+
+
+  static const otherProfile = 'otherProfile';
 }
 
 abstract class AppRouterPath {
@@ -57,4 +60,7 @@ abstract class AppRouterPath {
 
   static const myTestDetails = '/myTestDetails';
   static const myPrivateTestDetails = '/myPrivateTestDetails';
+
+
+  static const otherProfile = '/otherProfile';
 }

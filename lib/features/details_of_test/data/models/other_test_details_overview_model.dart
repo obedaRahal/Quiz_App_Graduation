@@ -1,3 +1,5 @@
+import 'package:quiz_app_grad/core/utils/compact_count_formatter.dart';
+
 import '../../domain/entities/other_test_details_overview_entity.dart';
 
 class OtherTestDetailsOverviewModel {
@@ -97,9 +99,12 @@ class TestBasicInfoModel {
       description: json['description']?.toString() ?? '',
       difficultyLevel: json['difficulty_level']?.toString() ?? '',
       price: double.tryParse(json['price']?.toString() ?? '0') ?? 0,
-      likesCount: json['likes_count'] as int? ?? 0,
-      reviewsCount: json['reviews_count'] as int? ?? 0,
-      bookmarksCount: json['bookmarks_count'] as int? ?? 0,
+      // likesCount: json['likes_count'] as int? ?? 0,
+      // reviewsCount: json['reviews_count'] as int? ?? 0,
+      // bookmarksCount: json['bookmarks_count'] as int? ?? 0,
+      likesCount: parseCompactCount(json['likes_count']),
+      reviewsCount: parseCompactCount(json['reviews_count']),
+      bookmarksCount: parseCompactCount(json['bookmarks_count']),
     );
   }
 
@@ -141,9 +146,9 @@ class TestCreatorModel {
       name: json['name']?.toString() ?? '',
       isAcademicallyVerified:
           json['is_academically_verified'] as bool? ?? false,
-      followersCount: json['followers_count'] as int? ?? 0,
-      followingCount: json['following_count'] as int? ?? 0,
-      publishedTestsCount: json['published_tests_count'] as int? ?? 0,
+      followersCount: parseCompactCount(json['followers_count']),
+      followingCount: parseCompactCount(json['following_count']),
+      publishedTestsCount: parseCompactCount(json['published_tests_count']),
       profilePicture: json['profile_picture']?.toString() ?? '',
     );
   }

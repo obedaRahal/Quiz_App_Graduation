@@ -17,6 +17,7 @@ import 'package:quiz_app_grad/features/laboratory/presentation/view/laboratory_p
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_state.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/widget/custom_bottom_nav_bar.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 
 class MainLayoutBody extends StatelessWidget {
   const MainLayoutBody({super.key});
@@ -34,10 +35,12 @@ class MainLayoutBody extends StatelessWidget {
               children: [
                 BlocProvider(
                   create: (_) => HomeCubit(
-                    getRecommendedTestsUseCase: sl<GetRecommendedTestsUseCase>(),
+                    getRecommendedTestsUseCase:
+                        sl<GetRecommendedTestsUseCase>(),
                     getRecommendedInterestsUseCase:
                         sl<GetRecommendedInterestsUseCase>(),
-                    getRecommendedUsersUseCase: sl<GetRecommendedUsersUseCase>(),
+                    getRecommendedUsersUseCase:
+                        sl<GetRecommendedUsersUseCase>(),
                   )..getHomeData(),
                   child: const HomePage(),
                 ),
@@ -66,11 +69,10 @@ class MainLayoutBody extends StatelessWidget {
                               sl<GetLabRecommendedTestsUseCase>(),
                         )
                         ..initScrollListener()
-                        
                         ..getInitialLabTests(tab: 'trending'),
                   child: const LaboratoryPage(),
                 ),
-            
+
                 Center(
                   child: Column(
                     children: [
@@ -86,24 +88,22 @@ class MainLayoutBody extends StatelessWidget {
                           child: Text("details of test"),
                         ),
                       ),
-                  
-                  
-                      SizedBox(height: 40,),
+
+                      SizedBox(height: 40),
                       Center(
                         child: InkWell(
                           onTap: () {
                             //context.pushNamed(AppRouterName.detailsOfTest);
                             context.pushNamed(
                               AppRouterName.myTestDetails,
-                              extra: DetailsOfTestRouteArgs(testId: 640),
+                              extra: DetailsOfTestRouteArgs(testId: 799),
                             );
                           },
                           child: Text("my test detailssssssssss"),
                         ),
                       ),
 
-
-                      SizedBox(height: 40,),
+                      SizedBox(height: 40),
                       Center(
                         child: InkWell(
                           onTap: () {
@@ -116,12 +116,25 @@ class MainLayoutBody extends StatelessWidget {
                           child: Text("my test private detailssssssssss"),
                         ),
                       ),
+
+                      SizedBox(height: 40),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.otherProfile,
+                              extra: OtherProfileRouteArgs(userId: 1),
+                            );
+                          },
+                          child: Text(" other profile "),
+                        ),
+                      ),
                     ],
                   ),
                 ),
+
                 //const Center(child: Text('الخطة')),
-            
-                
               ],
             ),
           ),
