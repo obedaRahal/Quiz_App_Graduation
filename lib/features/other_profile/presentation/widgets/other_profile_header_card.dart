@@ -7,10 +7,12 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_overview_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 
 class OtherProfileHeaderCard extends StatelessWidget {
-  final OtherProfileUiModel profile;
+  final OtherProfileHeaderEntity profile;
+  //final OtherProfileUiModel profile;
   final VoidCallback onFollowTap;
 
   const OtherProfileHeaderCard({
@@ -66,7 +68,7 @@ class OtherProfileHeaderCard extends StatelessWidget {
                   children: [
                     _PublisherStat(
                       label: "اختبار",
-                      value: "${profile.testsCount}",
+                      value: "${profile.publishedTestsCount}",
                     ),
                     _DotSeparator(),
                     _PublisherStat(
@@ -84,7 +86,7 @@ class OtherProfileHeaderCard extends StatelessWidget {
                 SizedBox(height: SizeConfig.h(0.01)),
 
                 _OtherProfileFollowButton(
-                  isFollowing: profile.isFollowing,
+                  isFollowing: profile.viewerIsFollowing,
                   onTap: onFollowTap,
                 ),
               ],
@@ -118,12 +120,14 @@ class _OtherProfileCoverAndAvatar extends StatelessWidget {
                 top: Radius.circular(14),
                 bottom: Radius.circular(14),
               ),
-              child: coverUrl.trim().isEmpty
-                  ? CustomPaint(painter: _OtherProfileCoverPainter())
-                  : CustomAppImage(
+              child: 
+              // coverUrl.trim().isEmpty
+              //     ? CustomPaint(painter: _OtherProfileCoverPainter())
+              //     : 
+                  CustomAppImage(
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      path: coverUrl,
+                      path: avatarUrl,
                     ),
             ),
           ),

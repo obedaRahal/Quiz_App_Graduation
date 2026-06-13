@@ -188,4 +188,8 @@ class EndPoints {
 
   static String registerTestAttemptInteraction(int testId) =>
       '$baseUrl/test/attempts/$testId';
+
+  /////////////////// other profileeeeeeeeeee //////////////////////
+  static String otherProfileOverview(int userId) =>
+      '$baseUrl/users-profile/overview/$userId';
 }

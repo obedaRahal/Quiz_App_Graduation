@@ -88,6 +88,10 @@ import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_educat
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_graduate_academic_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_school_stage_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_user_interests_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/data/data_source/other_profile_remote_data_source.dart';
+import 'package:quiz_app_grad/features/other_profile/data/repo_impl/other_profile_repository_impl.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/repository/other_profile_repository.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repository_impl.dart';
@@ -675,15 +679,15 @@ void _registerAuthFeature() {
     );
   }
   if (!sl.isRegistered<GetAiGenerationDailyLimitUseCase>()) {
-  sl.registerLazySingleton<GetAiGenerationDailyLimitUseCase>(
-    () => GetAiGenerationDailyLimitUseCase(sl<LaboratoryRepository>()),
-  );
-}
+    sl.registerLazySingleton<GetAiGenerationDailyLimitUseCase>(
+      () => GetAiGenerationDailyLimitUseCase(sl<LaboratoryRepository>()),
+    );
+  }
   if (!sl.isRegistered<FilterTestsUseCase>()) {
-  sl.registerLazySingleton<FilterTestsUseCase>(
-    () => FilterTestsUseCase(sl<LaboratoryRepository>()),
-  );
-}
+    sl.registerLazySingleton<FilterTestsUseCase>(
+      () => FilterTestsUseCase(sl<LaboratoryRepository>()),
+    );
+  }
 
   if (!sl.isRegistered<GetTestsByInterestUseCase>()) {
     sl.registerLazySingleton<GetTestsByInterestUseCase>(
@@ -740,6 +744,7 @@ void _registerTestsByInterestFeature() {
     );
   }
 }
+
 // ================= Create Test  =================
 void _registerCreateTestFeature() {
   if (!sl.isRegistered<CreateTestRemoteDataSource>()) {
@@ -785,6 +790,7 @@ void _registerCreateTestFeature() {
     );
   }
 }
+
 // ================= My Public Test Details =================
 void _registerMyTestDetailsFeature() {
   if (!sl.isRegistered<MyPublicTestDetailsRemoteDataSource>()) {
@@ -881,7 +887,36 @@ void _registerMyTestDetailsFeature() {
 
 // ================= Other Profile =================
 void _registerOtherProfileFeature() {
+  // 1. Remote Data Source
+  if (!sl.isRegistered<OtherProfileRemoteDataSource>()) {
+    sl.registerLazySingleton<OtherProfileRemoteDataSource>(
+      () => OtherProfileRemoteDataSourceImpl(apiConsumer: sl<ApiConsumer>()),
+    );
+  }
+
+  // 2. Repository
+  if (!sl.isRegistered<OtherProfileRepository>()) {
+    sl.registerLazySingleton<OtherProfileRepository>(
+      () => OtherProfileRepositoryImpl(
+        remoteDataSource: sl<OtherProfileRemoteDataSource>(),
+      ),
+    );
+  }
+
+  // 3. Use Case
+  if (!sl.isRegistered<FetchOtherProfileOverviewUseCase>()) {
+    sl.registerLazySingleton<FetchOtherProfileOverviewUseCase>(
+      () => FetchOtherProfileOverviewUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  // 4. Cubit (نستخدم registerFactory للـ Cubit لإنشاء نسخة جديدة منه عند دخول الصفحة)
   if (!sl.isRegistered<OtherProfileCubit>()) {
-    sl.registerFactory<OtherProfileCubit>(() => OtherProfileCubit());
+    sl.registerFactory<OtherProfileCubit>(
+      () => OtherProfileCubit(
+        fetchOtherProfileOverviewUseCase:
+            sl<FetchOtherProfileOverviewUseCase>(),
+      ),
+    );
   }
 }

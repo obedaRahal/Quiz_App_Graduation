@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_overview_params.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 
 class OtherProfileCubit extends Cubit<OtherProfileState> {
-  OtherProfileCubit() : super(const OtherProfileState()) {
+  final FetchOtherProfileOverviewUseCase fetchOtherProfileOverviewUseCase;
+
+  OtherProfileCubit({required this.fetchOtherProfileOverviewUseCase})
+    : super(const OtherProfileState()) {
     debugPrint("============ OtherProfileCubit INIT ============");
   }
 
@@ -206,5 +211,59 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     debugPrint("→ isLiked: $nextIsLiked");
     debugPrint("→ likesCount: $nextLikesCount");
     debugPrint("=================================================");
+  }
+
+  //////////////////////////////// APIs ////////////////////////
+
+  Future<void> getOtherProfileOverview({required int userId}) async {
+    debugPrint(
+      "============ OtherProfileCubit.getOtherProfileOverview ============",
+    );
+    debugPrint("→ params: {userId: $userId}");
+
+    emit(
+      state.copyWith(
+        fetchOverviewStatus: FetchOtherProfileOverviewStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await fetchOtherProfileOverviewUseCase(
+      FetchOtherProfileOverviewParams(userId: userId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ OtherProfileCubit.getOtherProfileOverview Failure");
+        debugPrint("→ Title: ${failure.title}, Message: ${failure.message}");
+        debugPrint("=================================================");
+        emit(
+          state.copyWith(
+            fetchOverviewStatus: FetchOtherProfileOverviewStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ OtherProfileCubit.getOtherProfileOverview Success");
+        debugPrint("=================================================");
+        emit(
+          state.copyWith(
+            fetchOverviewStatus: FetchOtherProfileOverviewStatus.success,
+            overview: response,
+            clearError: true,
+          ),
+        );
+      },
+    );
+  }
+
+  void resetFetchOverviewState() {
+    emit(
+      state.copyWith(
+        fetchOverviewStatus: FetchOtherProfileOverviewStatus.initial,
+      ),
+    );
   }
 }

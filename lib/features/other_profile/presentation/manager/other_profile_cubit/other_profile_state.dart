@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_overview_entity.dart';
 
 enum OtherProfileTab { overview, tests, lists, content }
 
@@ -8,6 +9,8 @@ enum OtherProfileTestsFilter { paid, free, latest, mostTaken }
 enum OtherProfileContentFilter { latest, popular, files, images }
 
 enum OtherProfileContentType { image, file }
+
+enum FetchOtherProfileOverviewStatus { initial, loading, success, failure }
 
 class OtherProfileContentUiModel {
   final int id;
@@ -117,7 +120,7 @@ class OtherProfileMockData {
       likesCount: 234,
       publishedAt: '15 س',
       isSaved: false,
-      isLiked: false
+      isLiked: false,
     ),
     OtherProfileContentUiModel(
       id: 2,
@@ -129,7 +132,7 @@ class OtherProfileMockData {
       likesCount: 12,
       publishedAt: 'منذ يومان',
       isSaved: false,
-      isLiked:  true
+      isLiked: true,
     ),
   ];
 }
@@ -238,6 +241,13 @@ class OtherProfileState {
   final OtherProfileContentFilter selectedContentFilter;
 
   final List<OtherProfileContentUiModel> contents;
+
+  final OtherProfileOverviewEntity? overview;
+  final FetchOtherProfileOverviewStatus fetchOverviewStatus;
+
+  final String? errorTitle;
+  final String? errorMessage;
+
   const OtherProfileState({
     this.selectedTab = OtherProfileTab.overview,
     this.profile,
@@ -249,7 +259,22 @@ class OtherProfileState {
     this.selectedContentFilter = OtherProfileContentFilter.latest,
 
     this.contents = const [],
+
+    this.overview,
+    this.fetchOverviewStatus = FetchOtherProfileOverviewStatus.initial,
+
+    this.errorTitle,
+    this.errorMessage,
   });
+
+  bool get isFetchOverviewInitial =>
+      fetchOverviewStatus == FetchOtherProfileOverviewStatus.initial;
+  bool get isFetchOverviewLoading =>
+      fetchOverviewStatus == FetchOtherProfileOverviewStatus.loading;
+  bool get isFetchOverviewSuccess =>
+      fetchOverviewStatus == FetchOtherProfileOverviewStatus.success;
+  bool get isFetchOverviewFailure =>
+      fetchOverviewStatus == FetchOtherProfileOverviewStatus.failure;
 
   OtherProfileState copyWith({
     OtherProfileTab? selectedTab,
@@ -262,6 +287,12 @@ class OtherProfileState {
     OtherProfileContentFilter? selectedContentFilter,
 
     List<OtherProfileContentUiModel>? contents,
+
+    OtherProfileOverviewEntity? overview,
+    FetchOtherProfileOverviewStatus? fetchOverviewStatus,
+    String? errorTitle,
+    String? errorMessage,
+    bool clearError = false,
   }) {
     return OtherProfileState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -275,6 +306,11 @@ class OtherProfileState {
           selectedContentFilter ?? this.selectedContentFilter,
 
       contents: contents ?? this.contents,
+
+      overview: overview ?? this.overview,
+      fetchOverviewStatus: fetchOverviewStatus ?? this.fetchOverviewStatus,
+      errorTitle: clearError ? null : errorTitle ?? this.errorTitle,
+      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );
   }
 }
