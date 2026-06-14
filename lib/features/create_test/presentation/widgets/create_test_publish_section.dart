@@ -21,7 +21,9 @@ class CreateTestPublishSection extends StatelessWidget {
     return BlocBuilder<CreateTestCubit, CreateTestState>(
       buildWhen: (previous, current) {
         return previous.isPublished != current.isPublished ||
-            previous.price != current.price;
+            previous.price != current.price ||
+            previous.isEditMode != current.isEditMode ||
+            previous.wasInitiallyPublished != current.wasInitiallyPublished;
       },
       builder: (context, state) {
         return Column(
@@ -83,9 +85,12 @@ class CreateTestPublishSection extends StatelessWidget {
                       scale: 0.62,
                       child: Switch(
                         value: state.isPublished,
-                        onChanged: context
-                            .read<CreateTestCubit>()
-                            .changePublishStatus,
+                        onChanged:
+                            state.isEditMode && state.wasInitiallyPublished
+                            ? null
+                            : context
+                                  .read<CreateTestCubit>()
+                                  .changePublishStatus,
 
                         activeColor: isDark
                             ? AppPalette.black
@@ -133,7 +138,7 @@ class CreateTestPublishSection extends StatelessWidget {
 
             if (state.isPublished) ...[
               SizedBox(height: SizeConfig.h(0.012)),
-              const _PriceField(),
+             _PriceField(value: state.price),
             ],
           ],
         );
@@ -142,16 +147,53 @@ class CreateTestPublishSection extends StatelessWidget {
   }
 }
 
-class _PriceField extends StatelessWidget {
-  const _PriceField();
+class _PriceField extends StatefulWidget {
+  final String value;
+
+  const _PriceField({
+    required this.value,
+  });
+
+  @override
+  State<_PriceField> createState() => _PriceFieldState();
+}
+
+class _PriceFieldState extends State<_PriceField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void didUpdateWidget(covariant _PriceField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.value != oldWidget.value && widget.value != _controller.text) {
+      _controller.text = widget.value;
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final appColors = context.appColors;
+
     return SizedBox(
       height: SizeConfig.h(0.054),
       child: TextField(
+        controller: _controller,
         keyboardType: TextInputType.number,
         textDirection: TextDirection.rtl,
         textAlign: TextAlign.right,
@@ -164,6 +206,7 @@ class _PriceField extends StatelessWidget {
           color: isDark
               ? AppPalette.textWhiteINDark
               : AppPalette.textColorInHome,
+          fontFamily: AppFont.elMessiriRegular,
         ),
         decoration: InputDecoration(
           hintText: 'السعر',
@@ -176,19 +219,13 @@ class _PriceField extends StatelessWidget {
           ),
           filled: true,
           fillColor: isDark ? AppPalette.fieldColorNDark : AppPalette.white,
-
           contentPadding: EdgeInsets.only(
             right: SizeConfig.w(0.030),
             left: SizeConfig.w(0.020),
           ),
-
           suffixIcon: Container(
             width: SizeConfig.w(0.25),
-            margin: EdgeInsets.only(
-              left: SizeConfig.w(0.006),
-              //top: SizeConfig.h(0.006),
-              //bottom: SizeConfig.h(0.006),
-            ),
+            margin: EdgeInsets.only(left: SizeConfig.w(0.006)),
             decoration: BoxDecoration(
               border: Border(
                 right: BorderSide(
@@ -214,7 +251,6 @@ class _PriceField extends StatelessWidget {
               ],
             ),
           ),
-
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(7),
             borderSide: BorderSide(

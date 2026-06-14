@@ -300,33 +300,27 @@ class AppRouter {
             return const LaboratoryPage();
           },
         ),
-        // GoRoute(
-        //   path: AppRouterPath.createTestPage,
-        //   name: AppRouterName.createTestPage,
-        //   builder: (context, state) {
-        //     return const CreateTestView();
-        //   },
-        // ),
-        GoRoute(
-  path: AppRouterPath.createTestPage,
-  name: AppRouterName.createTestPage,
-  builder: (context, state) {
-    return CreateTestView(
-      initialArgs: state.extra is CreateTestInitialArgs
-          ? state.extra as CreateTestInitialArgs
-          : null,
-    );
-  },
-),
-        GoRoute(
-  path: AppRouterPath.createTestAiLoadingPage,
-  name: AppRouterName.createTestAiLoadingPage,
-  builder: (context, state) {
-    final args = state.extra as CreateTestInitialArgs;
 
-    return CreateTestAiLoadingView(args: args);
-  },
-),
+        GoRoute(
+          path: AppRouterPath.createTestPage,
+          name: AppRouterName.createTestPage,
+          builder: (context, state) {
+            return CreateTestView(
+              initialArgs: state.extra is CreateTestInitialArgs
+                  ? state.extra as CreateTestInitialArgs
+                  : null,
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRouterPath.createTestAiLoadingPage,
+          name: AppRouterName.createTestAiLoadingPage,
+          builder: (context, state) {
+            final args = state.extra as CreateTestInitialArgs;
+
+            return CreateTestAiLoadingView(args: args);
+          },
+        ),
         GoRoute(
           path: AppRouterPath.detailsOfTest,
           name: AppRouterName.detailsOfTest,

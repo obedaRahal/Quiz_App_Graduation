@@ -42,6 +42,7 @@ class CreateTestTitleDescriptionSection extends StatelessWidget {
             SizedBox(height: SizeConfig.h(0.016)),
 
             CreateTestCounterTextField(
+              value: state.title,
               hintText: 'العنوان',
               image: AppImage.selfie,
               maxLength: CreateTestCubit.titleMaxLength,
@@ -50,10 +51,10 @@ class CreateTestTitleDescriptionSection extends StatelessWidget {
               maxLines: 1,
               onChanged: context.read<CreateTestCubit>().changeTitle,
             ),
-
             SizedBox(height: SizeConfig.h(0.014)),
 
             CreateTestCounterTextField(
+              value: state.description,
               hintText: 'الوصف',
               image: AppImage.menu,
               maxLength: CreateTestCubit.descriptionMaxLength,
@@ -102,7 +103,8 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-class CreateTestCounterTextField extends StatelessWidget {
+class CreateTestCounterTextField extends StatefulWidget {
+  final String value;
   final String hintText;
   final String image;
   final int maxLength;
@@ -114,6 +116,7 @@ class CreateTestCounterTextField extends StatelessWidget {
 
   const CreateTestCounterTextField({
     super.key,
+    required this.value,
     required this.hintText,
     required this.image,
     required this.maxLength,
@@ -125,23 +128,63 @@ class CreateTestCounterTextField extends StatelessWidget {
   });
 
   @override
+  State<CreateTestCounterTextField> createState() =>
+      _CreateTestCounterTextFieldState();
+}
+
+class _CreateTestCounterTextFieldState
+    extends State<CreateTestCounterTextField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void didUpdateWidget(covariant CreateTestCounterTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.value != oldWidget.value &&
+        widget.value != _controller.text) {
+      _controller.text = widget.value;
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final appColors = context.appColors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          height: SizeConfig.h(0.057),
+          height: widget.height ?? SizeConfig.h(0.057),
           child: TextField(
+            controller: _controller,
             textDirection: TextDirection.rtl,
             textAlign: TextAlign.right,
             textAlignVertical: TextAlignVertical.center,
-            minLines: minLines,
-            maxLines: maxLines,
-            maxLength: maxLength,
-            inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
-            onChanged: onChanged,
+            minLines: widget.minLines,
+            maxLines: widget.maxLines,
+            maxLength: widget.maxLength,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(widget.maxLength),
+            ],
+            onChanged: widget.onChanged,
             style: TextStyle(
               fontSize: SizeConfig.text(0.038),
               fontWeight: FontWeight.w500,
@@ -152,7 +195,7 @@ class CreateTestCounterTextField extends StatelessWidget {
             ),
             decoration: InputDecoration(
               counterText: '',
-              hintText: hintText,
+              hintText: widget.hintText,
               hintTextDirection: TextDirection.rtl,
               hintStyle: TextStyle(
                 fontSize: SizeConfig.text(0.038),
@@ -161,20 +204,20 @@ class CreateTestCounterTextField extends StatelessWidget {
                 fontFamily: AppFont.elMessiriRegular,
               ),
               filled: true,
-              fillColor: isDark ? AppPalette.fieldColorNDark : AppPalette.white,
-
+              fillColor:
+                  isDark ? AppPalette.fieldColorNDark : AppPalette.white,
               contentPadding: EdgeInsets.only(
                 right: SizeConfig.w(0.030),
                 left: SizeConfig.w(0.020),
                 top: SizeConfig.h(0.012),
                 bottom: SizeConfig.h(0.012),
               ),
-
               suffixIcon: SizedBox(
                 width: SizeConfig.w(0.105),
-                child: Center(child: CustomAppImage(path: image)),
+                child: Center(
+                  child: CustomAppImage(path: widget.image),
+                ),
               ),
-
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
                 borderSide: BorderSide(
@@ -202,7 +245,7 @@ class CreateTestCounterTextField extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.only(left: SizeConfig.w(0.010)),
             child: CustomTextWidget(
-              '$maxLength/$currentLength',
+              '${widget.maxLength}/${widget.currentLength}',
               fontSize: SizeConfig.text(0.028),
               fontWeight: FontWeight.w700,
               color: AppPalette.greyMedium,

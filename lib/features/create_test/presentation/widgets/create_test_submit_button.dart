@@ -16,13 +16,15 @@ class CreateTestSubmitButton extends StatelessWidget {
       buildWhen: (previous, current) {
         return previous.canSubmit != current.canSubmit ||
             previous.isCreateManualTestLoading !=
-                current.isCreateManualTestLoading;
+                current.isCreateManualTestLoading ||
+            previous.isUpdateTestLoading != current.isUpdateTestLoading ||
+            previous.isEditMode != current.isEditMode;
       },
       builder: (context, state) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final appColors = context.appColors;
 
-        final canPress = state.canSubmit && !state.isCreateManualTestLoading;
+        //final canPress = state.canSubmit && !state.isCreateManualTestLoading;
 
         final containerColor = isDark ? AppPalette.black : AppPalette.white;
 
@@ -37,7 +39,11 @@ class CreateTestSubmitButton extends StatelessWidget {
         final disabledTextColor = isDark
             ? AppPalette.grey2Dark
             : AppPalette.white;
+        final isLoading = state.isEditMode
+            ? state.isUpdateTestLoading
+            : state.isCreateManualTestLoading;
 
+        final canPress = state.canSubmit && !isLoading;
         return Container(
           padding: EdgeInsets.only(
             left: SizeConfig.w(0.04),
@@ -67,9 +73,16 @@ class CreateTestSubmitButton extends StatelessWidget {
             width: double.infinity,
             height: SizeConfig.h(0.052),
             child: ElevatedButton(
+              // onPressed: canPress
+              //     ? () {
+              //         context.read<CreateTestCubit>().submitCreateManualTest();
+              //       }
+              //     : null,
               onPressed: canPress
                   ? () {
-                      context.read<CreateTestCubit>().submitCreateManualTest();
+                      context
+                          .read<CreateTestCubit>()
+                          .submitCreateOrUpdateTest();
                     }
                   : null,
               style: ElevatedButton.styleFrom(
@@ -82,7 +95,7 @@ class CreateTestSubmitButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(7),
                 ),
               ),
-              child: state.isCreateManualTestLoading
+              child: isLoading
                   ? SizedBox(
                       width: SizeConfig.w(0.052),
                       height: SizeConfig.w(0.052),
@@ -92,7 +105,7 @@ class CreateTestSubmitButton extends StatelessWidget {
                       ),
                     )
                   : CustomTextWidget(
-                      'حفظ ومشاركة',
+                      state.isEditMode ? 'حفظ التعديلات' : 'حفظ ومشاركة',
                       fontSize: SizeConfig.text(0.032),
                       fontWeight: FontWeight.w800,
                       color: canPress ? enabledTextColor : disabledTextColor,
