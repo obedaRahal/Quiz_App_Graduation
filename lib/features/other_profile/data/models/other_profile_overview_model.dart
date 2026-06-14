@@ -252,13 +252,6 @@ class OtherProfileGeneralStatsModel {
   }
 }
 
-// --- Helpers المنيعة والمطابقة تماماً لملفك ---
-// int _asInt(dynamic value) {
-//   if (value is int) return value;
-//   if (value is double) return value.toInt();
-//   if (value is String) return int.tryParse(value) ?? 0;
-//   return 0;
-// }
 
 double _asDouble(dynamic value) {
   if (value is double) return value;

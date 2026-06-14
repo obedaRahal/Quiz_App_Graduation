@@ -91,7 +91,11 @@ import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_user_i
 import 'package:quiz_app_grad/features/other_profile/data/data_source/other_profile_remote_data_source.dart';
 import 'package:quiz_app_grad/features/other_profile/data/repo_impl/other_profile_repository_impl.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/repository/other_profile_repository.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_content_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folders_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_tests_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_overview_params.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repository_impl.dart';
@@ -910,12 +914,31 @@ void _registerOtherProfileFeature() {
     );
   }
 
-  // 4. Cubit (نستخدم registerFactory للـ Cubit لإنشاء نسخة جديدة منه عند دخول الصفحة)
+  if (!sl.isRegistered<FetchOtherProfileTestsUseCase>()) {
+    sl.registerLazySingleton<FetchOtherProfileTestsUseCase>(
+      () => FetchOtherProfileTestsUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<FetchOtherProfileFoldersUseCase>()) {
+    sl.registerLazySingleton<FetchOtherProfileFoldersUseCase>(
+      () => FetchOtherProfileFoldersUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+  if (!sl.isRegistered<FetchOtherProfileContentUseCase>()) {
+    sl.registerLazySingleton<FetchOtherProfileContentUseCase>(
+      () => FetchOtherProfileContentUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
   if (!sl.isRegistered<OtherProfileCubit>()) {
     sl.registerFactory<OtherProfileCubit>(
       () => OtherProfileCubit(
         fetchOtherProfileOverviewUseCase:
             sl<FetchOtherProfileOverviewUseCase>(),
+        fetchOtherProfileTestsUseCase: sl<FetchOtherProfileTestsUseCase>(),
+        fetchOtherProfileFoldersUseCase: sl<FetchOtherProfileFoldersUseCase>(),
+        fetchOtherProfileContentUseCase: sl<FetchOtherProfileContentUseCase>(),
       ),
     );
   }

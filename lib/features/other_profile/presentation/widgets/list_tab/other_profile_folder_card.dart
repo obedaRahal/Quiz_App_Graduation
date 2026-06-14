@@ -9,10 +9,11 @@ import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folders_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 
 class OtherProfileFolderCard extends StatelessWidget {
-  final OtherProfileFolderUiModel folder;
+  final OtherProfileFolderItemEntity folder;
   final VoidCallback onSaveTap;
 
   const OtherProfileFolderCard({
@@ -33,7 +34,7 @@ class OtherProfileFolderCard extends StatelessWidget {
         backgroundColor: appColors.whiteToblack,
         borderRadius: BorderRadius.circular(14),
         padding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.w(0.03),
+          //horizontal: SizeConfig.w(0.03),
           vertical: SizeConfig.h(0.012),
         ),
         child: Row(
@@ -42,7 +43,7 @@ class OtherProfileFolderCard extends StatelessWidget {
             // _FolderImage(),
             ColoredFolderSvg(
               assetPath: AppImage.folderIcon,
-              topColor: folder.color,
+              topColor: _parseHexColor(folder.colorCode),
               width: SizeConfig.w(0.16),
               height: SizeConfig.w(0.16),
             ),
@@ -53,11 +54,30 @@ class OtherProfileFolderCard extends StatelessWidget {
 
             SizedBox(width: SizeConfig.w(0.02)),
 
-            _SaveButton(isSaved: folder.isSaved, onTap: onSaveTap),
+            _SaveButton(isSaved: folder.viewerHasBookmarked, onTap: onSaveTap),
           ],
         ),
       ),
     );
+  }
+
+  Color _parseHexColor(String value, {Color fallback = AppPalette.greyMedium}) {
+    var hex = value.trim();
+
+    if (hex.isEmpty) return fallback;
+
+    if (hex.startsWith('#')) {
+      hex = hex.substring(1);
+    }
+
+    if (hex.length == 6) {
+      hex = 'FF$hex';
+    }
+
+    final colorValue = int.tryParse(hex, radix: 16);
+    if (colorValue == null) return fallback;
+
+    return Color(colorValue);
   }
 }
 
@@ -110,7 +130,7 @@ class ColoredFolderSvg extends StatelessWidget {
 }
 
 class _FolderInfo extends StatelessWidget {
-  final OtherProfileFolderUiModel folder;
+  final OtherProfileFolderItemEntity folder;
 
   const _FolderInfo({required this.folder});
 
@@ -122,7 +142,7 @@ class _FolderInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomTextWidget(
-          folder.title,
+          folder.name,
           color: appColors.blackToGrey2Dark,
           fontFamily: AppFont.elMessiriBold,
           fontSize: SizeConfig.text(0.038),
@@ -151,7 +171,7 @@ class _FolderInfo extends StatelessWidget {
             Flexible(
               child: _SmallInfo(
                 svgIcon: AppImage.timer,
-                text: folder.createdAt,
+                text: folder.publishedAt,
                 maxTextWidth: SizeConfig.w(0.28),
               ),
             ),
@@ -167,10 +187,10 @@ class _FolderInfo extends StatelessWidget {
             child: ListView.separated(
               reverse: true,
               scrollDirection: Axis.horizontal,
-              itemCount: folder.tags.length,
+              itemCount: folder.scientificInterests.length,
               separatorBuilder: (_, __) => SizedBox(width: SizeConfig.w(0.012)),
               itemBuilder: (context, index) {
-                final tag = folder.tags[index];
+                final tag = folder.scientificInterests[index];
 
                 return CustomBackgroundWithChild(
                   backgroundColor: AppPalette.primarySoft,

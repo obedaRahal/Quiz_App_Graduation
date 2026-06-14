@@ -27,8 +27,8 @@ class OtherProfileTabsSection extends StatelessWidget {
       tab: OtherProfileTab.tests,
     ),
     _OtherProfileTabItem(
-      title: 'قوائم',
-      tab: OtherProfileTab.lists,
+      title: 'المجلدات',
+      tab: OtherProfileTab.folder,
     ),
     _OtherProfileTabItem(
       title: 'المحتوى',

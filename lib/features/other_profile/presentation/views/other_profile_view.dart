@@ -26,9 +26,9 @@ class _OtherProfileViewState extends State<OtherProfileView> {
     Future.microtask(() {
       if (!mounted) return;
 
-      context.read<OtherProfileCubit>().loadMockOtherProfile(
-            userId: widget.userId,
-          );
+      // context.read<OtherProfileCubit>().loadMockOtherProfile(
+      //       userId: widget.userId,
+      //     );
     });
   }
 

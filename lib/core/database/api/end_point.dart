@@ -192,4 +192,56 @@ class EndPoints {
   /////////////////// other profileeeeeeeeeee //////////////////////
   static String otherProfileOverview(int userId) =>
       '$baseUrl/users-profile/overview/$userId';
+
+  static String otherProfileTests({
+    required int userId,
+    required String tab,
+    String? cursor,
+  }) {
+    final query = <String, String>{'tab': tab};
+
+    if (cursor != null && cursor.trim().isNotEmpty) {
+      query['cursor'] = cursor.trim();
+    }
+
+    final queryString = query.entries
+        .map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value)}')
+        .join('&');
+
+    return '$baseUrl/users-profile/test/$userId?$queryString';
+  }
+
+  static String otherProfileFolders({required int userId, String? cursor}) {
+    final query = <String, String>{};
+
+    if (cursor != null && cursor.trim().isNotEmpty) {
+      query['cursor'] = cursor.trim();
+    }
+
+    final queryString = query.entries
+        .map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value)}')
+        .join('&');
+
+    final base = '$baseUrl/users-profile/folder/$userId';
+
+    return queryString.isEmpty ? base : '$base?$queryString';
+  }
+
+  static String otherProfileContent({
+    required int userId,
+    required String tab,
+    String? cursor,
+  }) {
+    final query = <String, String>{'tab': tab};
+
+    if (cursor != null && cursor.trim().isNotEmpty) {
+      query['cursor'] = cursor.trim();
+    }
+
+    final queryString = query.entries
+        .map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value)}')
+        .join('&');
+
+    return '$baseUrl/users-profile/content/$userId?$queryString';
+  }
 }

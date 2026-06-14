@@ -6,10 +6,11 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/compact_count_formatter.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 
 class OtherProfileContentCard extends StatelessWidget {
-  final OtherProfileContentUiModel content;
+  final OtherProfileContentItemEntity content;
   final VoidCallback onSaveTap;
   final VoidCallback onLikeTap;
 
@@ -34,7 +35,7 @@ class OtherProfileContentCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ContentThumbnail(imageUrl: content.imageUrl, type: content.type),
+            _ContentThumbnail(imageUrl: content.urlContent, type: content.type),
 
             SizedBox(width: SizeConfig.w(0.025)),
 
@@ -45,7 +46,7 @@ class OtherProfileContentCard extends StatelessWidget {
                   _ContentHeaderRow(
                     title: content.title,
                     type: content.type,
-                    isSaved: content.isSaved,
+                    isSaved: content.viewerHasBookmarked,
                     onSaveTap: onSaveTap,
                   ),
 
@@ -63,9 +64,9 @@ class OtherProfileContentCard extends StatelessWidget {
                   SizedBox(height: SizeConfig.h(0.008)),
 
                   _ContentFooterRow(
-                    tags: content.tags,
-                    likesCount: content.likesCount,
-                    isLiked: content.isLiked,
+                    tags: content.interests,
+                    likesCount: content.likeCount,
+                    isLiked: false,
                     publishedAt: content.publishedAt,
                     onLikeTap: onLikeTap,
                   ),
@@ -81,9 +82,11 @@ class OtherProfileContentCard extends StatelessWidget {
 
 class _ContentThumbnail extends StatelessWidget {
   final String imageUrl;
-  final OtherProfileContentType type;
+  final String type;
 
   const _ContentThumbnail({required this.imageUrl, required this.type});
+
+  bool get isImage => type.trim() == 'صورة';
 
   @override
   Widget build(BuildContext context) {
@@ -96,9 +99,7 @@ class _ContentThumbnail extends StatelessWidget {
       child: imageUrl.trim().isEmpty
           ? Center(
               child: Icon(
-                type == OtherProfileContentType.image
-                    ? Icons.image_rounded
-                    : Icons.insert_drive_file_rounded,
+                isImage ? Icons.image_rounded : Icons.insert_drive_file_rounded,
                 color: AppPalette.greyMedium,
                 size: SizeConfig.w(0.06),
               ),
@@ -113,7 +114,7 @@ class _ContentThumbnail extends StatelessWidget {
 
 class _ContentHeaderRow extends StatelessWidget {
   final String title;
-  final OtherProfileContentType type;
+  final String type;
   final bool isSaved;
   final VoidCallback onSaveTap;
 
@@ -158,16 +159,16 @@ class _ContentHeaderRow extends StatelessWidget {
 }
 
 class _ContentTypeBadge extends StatelessWidget {
-  final OtherProfileContentType type;
+  final String type;
 
   const _ContentTypeBadge({required this.type});
 
+  bool get isImage => type.trim() == 'صورة';
+
   @override
   Widget build(BuildContext context) {
-    final isImage = type == OtherProfileContentType.image;
-
     return CustomBackgroundWithChild(
-      backgroundColor: isImage ? AppPalette.violetMedium : AppPalette.primary,
+      backgroundColor: isImage ? AppPalette.violetMedium : AppPalette.blueDark,
       borderRadius: BorderRadius.circular(4),
       childHorizontalPad: SizeConfig.w(0.018),
       childVerticalPad: SizeConfig.h(0.002),
