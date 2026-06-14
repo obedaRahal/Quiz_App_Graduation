@@ -57,6 +57,15 @@ class EndPoints {
     return '/lab/ai-question-generations/$generationRequestId';
   }
 
+  // Edit My Tests
+  static String getEditableTestQuestions(int testId) {
+    return '$baseUrl/test/content/$testId';
+  }
+
+  static String updateTest(int testId) {
+    return '$baseUrl/test/update/test/$testId';
+  }
+
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';

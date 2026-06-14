@@ -30,28 +30,14 @@ class CreateTestHeader extends StatelessWidget {
         child: Stack(
           alignment: Alignment.topRight,
           children: [
-            // CustomTextWidget(
-            //   'الطريقة اليدوية',
-            //   fontSize: SizeConfig.text(0.05),
-            //   fontWeight: FontWeight.w800,
-            //   color: isDark
-            //       ? AppPalette.textWhiteINDark
-            //       : AppPalette.textColorInHome,
-            //   textAlign: TextAlign.center,
-            // ),
             BlocBuilder<CreateTestCubit, CreateTestState>(
               buildWhen: (previous, current) {
-                return previous.creationMode != current.creationMode;
+                return previous.creationMode != current.creationMode ||
+                    previous.isEditMode != current.isEditMode;
               },
               builder: (context, state) {
-                final title = switch (state.creationMode) {
-                  CreateTestCreationMode.manual => 'الطريقة اليدوية',
-                  CreateTestCreationMode.aiImages => 'الطريقة الآلية (صور)',
-                  CreateTestCreationMode.aiFile => 'الطريقة الآلية (ملف)',
-                };
-
                 return CustomTextWidget(
-                  title,
+                  state.headerTitle,
                   fontSize: SizeConfig.text(0.05),
                   fontWeight: FontWeight.w800,
                   color: isDark
@@ -101,6 +87,9 @@ class CreateTestHeader extends StatelessWidget {
 }
 
 Future<void> showExitCreateTestDialog(BuildContext context) {
+  final parentContext = context;
+  final cubit = context.read<CreateTestCubit>();
+
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -110,50 +99,47 @@ Future<void> showExitCreateTestDialog(BuildContext context) {
     pageBuilder: (dialogContext, animation, secondaryAnimation) {
       final isDark = Theme.of(dialogContext).brightness == Brightness.dark;
 
-      return Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: const SizedBox.expand(),
+      return BlocProvider.value(
+        value: cubit,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: const SizedBox.expand(),
+              ),
             ),
-          ),
-
-          Center(
-            child: Material(
-              color: Colors.transparent,
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: Container(
-                  width: SizeConfig.w(0.90),
-                  padding: EdgeInsets.only(
-                    left: SizeConfig.w(0.050),
-                    right: SizeConfig.w(0.050),
-                    top: SizeConfig.h(0.024),
-                    bottom: SizeConfig.h(0.020),
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark ? AppPalette.black : AppPalette.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: isDark
-                          ? AppPalette.borderFieldColorNDark
-                          : AppPalette.borderFieldColorNLight,
+            Center(
+              child: Material(
+                color: Colors.transparent,
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Container(
+                    width: SizeConfig.w(0.90),
+                    padding: EdgeInsets.only(
+                      left: SizeConfig.w(0.050),
+                      right: SizeConfig.w(0.050),
+                      top: SizeConfig.h(0.024),
+                      bottom: SizeConfig.h(0.020),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(isDark ? 0.35 : 0.18),
-                        blurRadius: 18,
-                        offset: const Offset(0, 8),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppPalette.black : AppPalette.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isDark
+                            ? AppPalette.borderFieldColorNDark
+                            : AppPalette.borderFieldColorNLight,
                       ),
-                    ],
+                    ),
+                    child: _ExitCreateTestDialogContent(
+                      parentContext: parentContext,
+                    ),
                   ),
-                  child: const _ExitCreateTestDialogContent(),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     },
     transitionBuilder: (context, animation, secondaryAnimation, child) {
@@ -173,14 +159,88 @@ Future<void> showExitCreateTestDialog(BuildContext context) {
   );
 }
 
-class _ExitCreateTestDialogContent extends StatelessWidget {
-  const _ExitCreateTestDialogContent();
+// Future<void> showExitCreateTestDialog(BuildContext context) {
+//   return showGeneralDialog<void>(
+//     context: context,
+//     barrierDismissible: true,
+//     barrierLabel: 'exit_create_test_dialog',
+//     barrierColor: Colors.black.withOpacity(0.18),
+//     transitionDuration: const Duration(milliseconds: 220),
+//     pageBuilder: (dialogContext, animation, secondaryAnimation) {
+//       final isDark = Theme.of(dialogContext).brightness == Brightness.dark;
 
+//       return Stack(
+//         children: [
+//           Positioned.fill(
+//             child: BackdropFilter(
+//               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+//               child: const SizedBox.expand(),
+//             ),
+//           ),
+
+//           Center(
+//             child: Material(
+//               color: Colors.transparent,
+//               child: Directionality(
+//                 textDirection: TextDirection.rtl,
+//                 child: Container(
+//                   width: SizeConfig.w(0.90),
+//                   padding: EdgeInsets.only(
+//                     left: SizeConfig.w(0.050),
+//                     right: SizeConfig.w(0.050),
+//                     top: SizeConfig.h(0.024),
+//                     bottom: SizeConfig.h(0.020),
+//                   ),
+//                   decoration: BoxDecoration(
+//                     color: isDark ? AppPalette.black : AppPalette.white,
+//                     borderRadius: BorderRadius.circular(14),
+//                     border: Border.all(
+//                       color: isDark
+//                           ? AppPalette.borderFieldColorNDark
+//                           : AppPalette.borderFieldColorNLight,
+//                     ),
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Colors.black.withOpacity(isDark ? 0.35 : 0.18),
+//                         blurRadius: 18,
+//                         offset: const Offset(0, 8),
+//                       ),
+//                     ],
+//                   ),
+//                   child: const _ExitCreateTestDialogContent(),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       );
+//     },
+//     transitionBuilder: (context, animation, secondaryAnimation, child) {
+//       final curvedAnimation = CurvedAnimation(
+//         parent: animation,
+//         curve: Curves.easeOutCubic,
+//       );
+
+//       return FadeTransition(
+//         opacity: curvedAnimation,
+//         child: Transform.scale(
+//           scale: 0.96 + (curvedAnimation.value * 0.04),
+//           child: child,
+//         ),
+//       );
+//     },
+//   );
+// }
+class _ExitCreateTestDialogContent extends StatelessWidget {
+  final BuildContext parentContext;
+
+  const _ExitCreateTestDialogContent({required this.parentContext});
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final appColors = context.appColors;
-
+    final state = context.read<CreateTestCubit>().state;
+    final isEditMode = state.isEditMode;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -207,7 +267,9 @@ class _ExitCreateTestDialogContent extends StatelessWidget {
         SizedBox(height: SizeConfig.h(0.018)),
 
         CustomTextWidget(
-          'هل تريد مغادرة صفحة إنشاء الاختبار ؟',
+          isEditMode
+              ? 'هل تريد مغادرة صفحة تعديل الاختبار ؟'
+              : 'هل تريد مغادرة صفحة إنشاء الاختبار ؟',
           fontSize: SizeConfig.text(0.040),
           fontWeight: FontWeight.w900,
           color: isDark
@@ -221,7 +283,9 @@ class _ExitCreateTestDialogContent extends StatelessWidget {
         SizedBox(height: SizeConfig.h(0.008)),
 
         CustomTextWidget(
-          'في حال غادرت هذه الصفحة ستخسر جميع البيانات التي قمت بإدخالها لإنشاء هذا الاختبار',
+          isEditMode
+              ? 'في حال غادرت هذه الصفحة ستخسر جميع التعديلات التي قمت بها على هذا الاختبار'
+              : 'في حال غادرت هذه الصفحة ستخسر جميع البيانات التي قمت بإدخالها لإنشاء هذا الاختبار',
           fontSize: SizeConfig.text(0.030),
           fontWeight: FontWeight.w600,
           color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
@@ -239,7 +303,12 @@ class _ExitCreateTestDialogContent extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    context.goNamed(AppRouterName.mainLayout);
+
+                    if (parentContext.canPop()) {
+                      parentContext.pop();
+                    } else {
+                      parentContext.goNamed(AppRouterName.mainLayout);
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: appColors.primaryToPrimaryDark,

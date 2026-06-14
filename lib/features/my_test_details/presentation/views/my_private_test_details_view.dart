@@ -12,6 +12,8 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/core/utils/safe_back_to_home.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart'
+    show CreateTestInitialArgs;
 import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/test_details_playmode_section_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/test_overview_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_info_details_section.dart';
@@ -156,9 +158,48 @@ class _MyPrivateTestDetailsViewState extends State<MyPrivateTestDetailsView> {
 
                       showMyPrivateTestMoreMenu(
                         context: context,
+                        // onEdit: () {
+                        //   debugPrint("→ edit my private test");
+                        //   // TODO: go to edit test page
+                        // },
                         onEdit: () {
-                          debugPrint("→ edit my private test");
-                          // TODO: go to edit test page
+                          final overview = context
+                              .read<MyTestDetailsCubit>()
+                              .state
+                              .overviewPrivateDetails;
+                          if (overview == null) return;
+
+                          final data = overview.data;
+                          final basic = data.basicInfo;
+                          final extra = data.extraInfo;
+
+                          context.pushNamed(
+                            AppRouterName.createTestPage,
+                            extra: CreateTestInitialArgs(
+                              isEditMode: true,
+                              editingTestId: data.id,
+                              initialTitle: basic.title,
+                              initialDescription: basic.description,
+                              initialIsPublished: false,
+                              initialPrice: '',
+                              initialLevel: basic.difficultyLevel,
+                              initialDurationSeconds: extra.durationSeconds,
+                              initialSuccessLimit: extra.passMarkPercentage,
+                              initialLanguage: _mapBackendLanguageToUi(
+                                extra.language,
+                              ),
+                              initialAcademicLevel: extra.targetLevel,
+                              initialScientificInterestIds: extra.interests
+                                  .map((e) => e.id)
+                                  .toList(),
+                              initialScientificCategories: extra.interests
+                                  .map((e) => e.name)
+                                  .toList(),
+
+                              initialPreviewQuestionIds: const [],
+                              shouldFetchEditQuestions: true,
+                            ),
+                          );
                         },
                         onDelete: () {
                           debugPrint("→ delete my private test");
@@ -523,5 +564,19 @@ class _MyPrivateTestMenuItem extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+//////////////// carmen editing
+String _mapBackendLanguageToUi(String value) {
+  switch (value.trim()) {
+    case 'العربية':
+      return 'عربية';
+    case 'الإنكليزية':
+      return 'إنكليزية';
+    case 'مختلطة':
+      return 'مختلطة';
+    default:
+      return value.trim().isEmpty ? 'عربية' : value.trim();
   }
 }

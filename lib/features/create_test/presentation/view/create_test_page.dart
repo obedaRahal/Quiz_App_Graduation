@@ -14,10 +14,7 @@ import 'package:quiz_app_grad/features/create_test/presentation/widgets/create_t
 class CreateTestView extends StatelessWidget {
   final CreateTestInitialArgs? initialArgs;
 
-  const CreateTestView({
-    super.key,
-    this.initialArgs,
-  });
+  const CreateTestView({super.key, this.initialArgs});
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +25,48 @@ class CreateTestView extends StatelessWidget {
           return previous.createManualTestError !=
                   current.createManualTestError ||
               previous.createManualTestResponse !=
-                  current.createManualTestResponse;
+                  current.createManualTestResponse ||
+              previous.updateTestError != current.updateTestError ||
+              previous.updateTestResponse != current.updateTestResponse;
         },
         listener: (context, state) {
           final error = state.createManualTestError;
           final response = state.createManualTestResponse;
+          final updateError = state.updateTestError;
+          final updateResponse = state.updateTestResponse;
 
+          if (updateError != null && updateError.trim().isNotEmpty) {
+            _showCreateTestSnackBar(
+              context: context,
+              message: updateError,
+              backgroundColor: AppPalette.red,
+            );
+
+            context.read<CreateTestCubit>().clearUpdateTestResult();
+            return;
+          }
+
+          if (updateResponse != null && updateResponse.success) {
+            _showCreateTestSnackBar(
+              context: context,
+              message: updateResponse.data.message.trim().isNotEmpty
+                  ? updateResponse.data.message
+                  : 'تم حفظ التعديلات بنجاح',
+              backgroundColor: AppPalette.green,
+            );
+
+            context.read<CreateTestCubit>().clearUpdateTestResult();
+
+            Future.delayed(const Duration(milliseconds: 700), () {
+              if (!context.mounted) return;
+
+              if (context.canPop()) {
+                context.pop(true);
+              } else {
+                context.goNamed(AppRouterName.mainLayout);
+              }
+            });
+          }
           if (error != null && error.trim().isNotEmpty) {
             _showCreateTestSnackBar(
               context: context,
@@ -45,28 +78,24 @@ class CreateTestView extends StatelessWidget {
             return;
           }
 
-         if (response != null && response.success) {
-  _showCreateTestSnackBar(
-    context: context,
-    message: response.message.trim().isNotEmpty
-        ? response.message
-        : 'تم إنشاء الاختبار بنجاح',
-    backgroundColor: AppPalette.green,
-  );
+          if (response != null && response.success) {
+            _showCreateTestSnackBar(
+              context: context,
+              message: response.message.trim().isNotEmpty
+                  ? response.message
+                  : 'تم إنشاء الاختبار بنجاح',
+              backgroundColor: AppPalette.green,
+            );
 
-  context.read<CreateTestCubit>().clearCreateManualTestResult();
+            context.read<CreateTestCubit>().clearCreateManualTestResult();
 
-  Future.delayed(const Duration(milliseconds: 700), () {
-    if (!context.mounted) return;
-    context.goNamed(AppRouterName.mainLayout);
-  });
-}
+            Future.delayed(const Duration(milliseconds: 700), () {
+              if (!context.mounted) return;
+              context.goNamed(AppRouterName.mainLayout);
+            });
+          }
         },
-        child: const Scaffold(
-          body: SafeArea(
-            child: CreateTestBody(),
-          ),
-        ),
+        child: const Scaffold(body: SafeArea(child: CreateTestBody())),
       ),
     );
   }
@@ -94,9 +123,7 @@ void _showCreateTestSnackBar({
         horizontal: SizeConfig.w(0.035),
         vertical: SizeConfig.h(0.014),
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       content: Directionality(
         textDirection: TextDirection.rtl,
         child: CustomTextWidget(

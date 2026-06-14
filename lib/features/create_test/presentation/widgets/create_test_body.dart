@@ -38,10 +38,17 @@ class CreateTestBody extends StatelessWidget {
                   BlocBuilder<CreateTestCubit, CreateTestState>(
                     buildWhen: (previous, current) {
                       return previous.creationMode != current.creationMode ||
-                          previous.aiMediaFiles != current.aiMediaFiles;
+                          previous.aiMediaFiles != current.aiMediaFiles ||
+                          previous.existingAiMedia != current.existingAiMedia ||
+                          previous.isEditMode != current.isEditMode;
                     },
                     builder: (context, state) {
-                      if (!state.isAiMode) {
+                      final hasLocalMedia = state.aiMediaFiles.isNotEmpty;
+                      final hasExistingMedia = state.existingAiMedia.isNotEmpty;
+                      final shouldShowMedia =
+                          state.isAiMode && (hasLocalMedia || hasExistingMedia);
+
+                      if (!shouldShowMedia) {
                         return const SizedBox.shrink();
                       }
 

@@ -2,30 +2,70 @@ import 'package:file_picker/file_picker.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_status_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_manual_test_response_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/scientific_classification_entity.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/update_test_response_entity.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_existing_media_state.dart';
 
 class CreateTestQuestionOptionState {
+  final int? id;
   final String text;
 
-  const CreateTestQuestionOptionState({this.text = ''});
+  const CreateTestQuestionOptionState({this.id, this.text = ''});
 
-  CreateTestQuestionOptionState copyWith({String? text}) {
-    return CreateTestQuestionOptionState(text: text ?? this.text);
+  CreateTestQuestionOptionState copyWith({
+    Object? id = _sentinel,
+    String? text,
+  }) {
+    return CreateTestQuestionOptionState(
+      id: id == _sentinel ? this.id : id as int?,
+      text: text ?? this.text,
+    );
   }
 }
 
 class CreateTestQuestionState {
+  final int? id;
   final String questionText;
   final List<String> options;
+  final List<int?> optionIds;
   final int correctOptionIndex;
   final String explanation;
 
   const CreateTestQuestionState({
+    this.id,
     required this.questionText,
     required this.options,
+    this.optionIds = const [],
     required this.correctOptionIndex,
     this.explanation = '',
   });
+
+  List<int?> get normalizedOptionIds {
+    if (optionIds.length == options.length) return optionIds;
+
+    return List<int?>.generate(
+      options.length,
+      (index) => index < optionIds.length ? optionIds[index] : null,
+    );
+  }
+
+  CreateTestQuestionState copyWith({
+    Object? id = _sentinel,
+    String? questionText,
+    List<String>? options,
+    List<int?>? optionIds,
+    int? correctOptionIndex,
+    String? explanation,
+  }) {
+    return CreateTestQuestionState(
+      id: id == _sentinel ? this.id : id as int?,
+      questionText: questionText ?? this.questionText,
+      options: options ?? this.options,
+      optionIds: optionIds ?? this.optionIds,
+      correctOptionIndex: correctOptionIndex ?? this.correctOptionIndex,
+      explanation: explanation ?? this.explanation,
+    );
+  }
 }
 
 class CreateTestState {
@@ -46,6 +86,7 @@ class CreateTestState {
   final String selectedAcademicLevel;
 
   final List<CreateTestQuestionState> questions;
+  final List<CreateTestExistingMediaState> existingAiMedia;
   final String aiProvider;
 
   final String draftQuestionText;
@@ -69,10 +110,19 @@ class CreateTestState {
   final List<PlatformFile> aiMediaFiles;
   final int? aiRequestedQuestionCount;
   final bool isAiQuestionGenerationLoading;
-final String? aiQuestionGenerationError;
-final int? aiGenerationRequestId;
-final bool isAiQuestionGenerationCompleted;
-final List<GeneratedAiQuestionEntity> aiGeneratedQuestions;
+  final String? aiQuestionGenerationError;
+  final int? aiGenerationRequestId;
+  final bool isAiQuestionGenerationCompleted;
+  final List<GeneratedAiQuestionEntity> aiGeneratedQuestions;
+  final bool isEditMode;
+  final int? editingTestId;
+  final bool wasInitiallyPublished;
+  final bool isEditableQuestionsLoading;
+  final String? editableQuestionsError;
+  final List<int> initialPreviewQuestionIds;
+  final bool isUpdateTestLoading;
+  final String? updateTestError;
+  final UpdateTestResponseEntity? updateTestResponse;
   const CreateTestState({
     this.title = '',
     this.description = '',
@@ -87,6 +137,7 @@ final List<GeneratedAiQuestionEntity> aiGeneratedQuestions;
     this.pendingScientificCategories = const [],
     this.selectedAcademicLevel = '',
     this.questions = const [],
+    this.existingAiMedia = const [],
     this.aiProvider = '',
     this.draftQuestionText = '',
     this.draftOptions = const [
@@ -109,10 +160,19 @@ final List<GeneratedAiQuestionEntity> aiGeneratedQuestions;
     this.aiMediaFiles = const [],
     this.aiRequestedQuestionCount,
     this.isAiQuestionGenerationLoading = false,
-this.aiQuestionGenerationError,
-this.aiGenerationRequestId,
-this.isAiQuestionGenerationCompleted = false,
-this.aiGeneratedQuestions = const [],
+    this.aiQuestionGenerationError,
+    this.aiGenerationRequestId,
+    this.isAiQuestionGenerationCompleted = false,
+    this.aiGeneratedQuestions = const [],
+    this.isEditMode = false,
+    this.editingTestId,
+    this.wasInitiallyPublished = false,
+    this.isEditableQuestionsLoading = false,
+    this.editableQuestionsError,
+    this.initialPreviewQuestionIds = const [],
+    this.isUpdateTestLoading = false,
+    this.updateTestError,
+    this.updateTestResponse,
   });
 
   CreateTestState copyWith({
@@ -128,6 +188,8 @@ this.aiGeneratedQuestions = const [],
     List<String>? selectedScientificCategories,
     String? selectedAcademicLevel,
     List<CreateTestQuestionState>? questions,
+    List<CreateTestExistingMediaState>? existingAiMedia,
+
     String? draftQuestionText,
     List<CreateTestQuestionOptionState>? draftOptions,
     Object? draftCorrectOptionIndex = _sentinel,
@@ -147,11 +209,20 @@ this.aiGeneratedQuestions = const [],
     List<PlatformFile>? aiMediaFiles,
     Object? aiRequestedQuestionCount = _sentinel,
     bool? isAiQuestionGenerationLoading,
-Object? aiQuestionGenerationError = _sentinel,
-Object? aiGenerationRequestId = _sentinel,
-bool? isAiQuestionGenerationCompleted,
-List<GeneratedAiQuestionEntity>? aiGeneratedQuestions,
-String? aiProvider,
+    Object? aiQuestionGenerationError = _sentinel,
+    Object? aiGenerationRequestId = _sentinel,
+    bool? isAiQuestionGenerationCompleted,
+    List<GeneratedAiQuestionEntity>? aiGeneratedQuestions,
+    String? aiProvider,
+    bool? isEditMode,
+    Object? editingTestId = _sentinel,
+    bool? wasInitiallyPublished,
+    bool? isEditableQuestionsLoading,
+    Object? editableQuestionsError = _sentinel,
+    List<int>? initialPreviewQuestionIds,
+    bool? isUpdateTestLoading,
+    Object? updateTestError = _sentinel,
+    Object? updateTestResponse = _sentinel,
   }) {
     return CreateTestState(
       title: title ?? this.title,
@@ -173,6 +244,8 @@ String? aiProvider,
       selectedAcademicLevel:
           selectedAcademicLevel ?? this.selectedAcademicLevel,
       questions: questions ?? this.questions,
+      existingAiMedia: existingAiMedia ?? this.existingAiMedia,
+
       draftQuestionText: draftQuestionText ?? this.draftQuestionText,
       draftOptions: draftOptions ?? this.draftOptions,
       draftCorrectOptionIndex: draftCorrectOptionIndex == _sentinel
@@ -197,12 +270,12 @@ String? aiProvider,
 
       scientificClassificationGroups:
           scientificClassificationGroups ?? this.scientificClassificationGroups,
-
       selectedScientificInterestIds:
           selectedScientificInterestIds ?? this.selectedScientificInterestIds,
 
       pendingScientificInterestIds:
           pendingScientificInterestIds ?? this.pendingScientificInterestIds,
+
       isCreateManualTestLoading:
           isCreateManualTestLoading ?? this.isCreateManualTestLoading,
 
@@ -218,22 +291,47 @@ String? aiProvider,
       aiRequestedQuestionCount: aiRequestedQuestionCount == _sentinel
           ? this.aiRequestedQuestionCount
           : aiRequestedQuestionCount as int?,
-          isAiQuestionGenerationLoading:
-    isAiQuestionGenerationLoading ?? this.isAiQuestionGenerationLoading,
+      isAiQuestionGenerationLoading:
+          isAiQuestionGenerationLoading ?? this.isAiQuestionGenerationLoading,
 
-aiQuestionGenerationError: aiQuestionGenerationError == _sentinel
-    ? this.aiQuestionGenerationError
-    : aiQuestionGenerationError as String?,
+      aiQuestionGenerationError: aiQuestionGenerationError == _sentinel
+          ? this.aiQuestionGenerationError
+          : aiQuestionGenerationError as String?,
 
-aiGenerationRequestId: aiGenerationRequestId == _sentinel
-    ? this.aiGenerationRequestId
-    : aiGenerationRequestId as int?,
+      aiGenerationRequestId: aiGenerationRequestId == _sentinel
+          ? this.aiGenerationRequestId
+          : aiGenerationRequestId as int?,
 
-isAiQuestionGenerationCompleted:
-    isAiQuestionGenerationCompleted ?? this.isAiQuestionGenerationCompleted,
+      isAiQuestionGenerationCompleted:
+          isAiQuestionGenerationCompleted ??
+          this.isAiQuestionGenerationCompleted,
 
-aiGeneratedQuestions: aiGeneratedQuestions ?? this.aiGeneratedQuestions,
-aiProvider: aiProvider ?? this.aiProvider,
+      aiGeneratedQuestions: aiGeneratedQuestions ?? this.aiGeneratedQuestions,
+      aiProvider: aiProvider ?? this.aiProvider,
+      isEditMode: isEditMode ?? this.isEditMode,
+      editingTestId: editingTestId == _sentinel
+          ? this.editingTestId
+          : editingTestId as int?,
+      wasInitiallyPublished:
+          wasInitiallyPublished ?? this.wasInitiallyPublished,
+      isEditableQuestionsLoading:
+          isEditableQuestionsLoading ?? this.isEditableQuestionsLoading,
+
+      editableQuestionsError: editableQuestionsError == _sentinel
+          ? this.editableQuestionsError
+          : editableQuestionsError as String?,
+
+      initialPreviewQuestionIds:
+          initialPreviewQuestionIds ?? this.initialPreviewQuestionIds,
+      isUpdateTestLoading: isUpdateTestLoading ?? this.isUpdateTestLoading,
+
+      updateTestError: updateTestError == _sentinel
+          ? this.updateTestError
+          : updateTestError as String?,
+
+      updateTestResponse: updateTestResponse == _sentinel
+          ? this.updateTestResponse
+          : updateTestResponse as UpdateTestResponseEntity?,
     );
   }
 
@@ -285,12 +383,23 @@ aiProvider: aiProvider ?? this.aiProvider,
         questions.length <= 100;
 
     if (!hasBasicRequiredFields) return false;
+    if (isCreateManualTestLoading || isUpdateTestLoading) return false;
 
     if (!isPublished) {
       return true;
     }
 
     return hasValidSampleQuestions;
+  }
+
+  String get headerTitle {
+    if (isEditMode) return 'تعديل اختبار';
+
+    return switch (creationMode) {
+      CreateTestCreationMode.manual => 'الطريقة اليدوية',
+      CreateTestCreationMode.aiImages => 'الطريقة الآلية (صور)',
+      CreateTestCreationMode.aiFile => 'الطريقة الآلية (ملف)',
+    };
   }
 
   bool get isAiMode {

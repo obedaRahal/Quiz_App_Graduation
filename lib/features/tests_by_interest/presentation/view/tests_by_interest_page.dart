@@ -116,16 +116,16 @@ class _TestsByInterestViewState extends State<_TestsByInterestView> {
                   vertical: SizeConfig.h(0.012),
                 ),
                 child: TestsByInterestSearchField(
-  onChanged: (value) {
-    context.read<TestsByInterestCubit>().searchTests(
-          interestId: widget.interestId,
-          query: value,
-        );
-  },
-  onClear: () {
-    context.read<TestsByInterestCubit>().clearSearch();
-  },
-),
+                  onChanged: (value) {
+                    context.read<TestsByInterestCubit>().searchTests(
+                      interestId: widget.interestId,
+                      query: value,
+                    );
+                  },
+                  onClear: () {
+                    context.read<TestsByInterestCubit>().clearSearch();
+                  },
+                ),
               ),
 
               TestsByInterestSectionTitle(title: widget.interestName),
@@ -180,67 +180,70 @@ class _TestsByInterestViewState extends State<_TestsByInterestView> {
               //   ),
               // ),
               Expanded(
-  child: BlocBuilder<TestsByInterestCubit, TestsByInterestState>(
-    builder: (context, state) {
-      final visibleTests =
-          state.isSearchMode ? state.searchResults : state.tests;
+                child: BlocBuilder<TestsByInterestCubit, TestsByInterestState>(
+                  builder: (context, state) {
+                    final visibleTests = state.isSearchMode
+                        ? state.searchResults
+                        : state.tests;
 
-      final isLoading =
-          state.isSearchMode ? state.isSearchLoading : state.isInitialLoading;
+                    final isLoading = state.isSearchMode
+                        ? state.isSearchLoading
+                        : state.isInitialLoading;
 
-      final errorMessage =
-          state.isSearchMode ? state.searchErrorMessage : state.errorMessage;
+                    final errorMessage = state.isSearchMode
+                        ? state.searchErrorMessage
+                        : state.errorMessage;
 
-      if (isLoading) {
-        return const Center(child: CircularProgressIndicator());
-      }
+                    if (isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-      if (errorMessage != null && visibleTests.isEmpty) {
-        return Center(
-          child: CustomTextWidget(
-            state.isSearchMode
-                ? 'حدث خطأ أثناء البحث عن الاختبارات'
-                : 'حدث خطأ أثناء جلب الاختبارات',
-            color: AppPalette.greyMedium,
-            fontSize: SizeConfig.text(0.038),
-          ),
-        );
-      }
+                    if (errorMessage != null && visibleTests.isEmpty) {
+                      return Center(
+                        child: CustomTextWidget(
+                          state.isSearchMode
+                              ? 'حدث خطأ أثناء البحث عن الاختبارات'
+                              : 'حدث خطأ أثناء جلب الاختبارات',
+                          color: AppPalette.greyMedium,
+                          fontSize: SizeConfig.text(0.038),
+                        ),
+                      );
+                    }
 
-      if (visibleTests.isEmpty) {
-        return Center(
-          child: CustomTextWidget(
-            state.isSearchMode
-                ? 'لا توجد نتائج مطابقة'
-                : 'لا توجد اختبارات ضمن هذا التصنيف حالياً',
-            color: AppPalette.greyMedium,
-            fontSize: SizeConfig.text(0.038),
-          ),
-        );
-      }
+                    if (visibleTests.isEmpty) {
+                      return Center(
+                        child: CustomTextWidget(
+                          state.isSearchMode
+                              ? 'لا توجد نتائج مطابقة'
+                              : 'لا توجد اختبارات ضمن هذا التصنيف حالياً',
+                          color: AppPalette.greyMedium,
+                          fontSize: SizeConfig.text(0.038),
+                        ),
+                      );
+                    }
 
-      return RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: ListView.separated(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.only(
-            top: SizeConfig.h(0.014),
-            bottom: SizeConfig.h(0.03),
-          ),
-          itemCount: visibleTests.length,
-          separatorBuilder: (_, __) =>
-              SizedBox(height: SizeConfig.h(0.018)),
-          itemBuilder: (context, index) {
-            return TestsByInterestTicketCard(
-              item: visibleTests[index],
-            );
-          },
-        ),
-      );
-    },
-  ),
-),
+                    return RefreshIndicator(
+                      onRefresh: _onRefresh,
+                      child: ListView.separated(
+                        controller: _scrollController,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.only(
+                          top: SizeConfig.h(0.014),
+                          bottom: SizeConfig.h(0.03),
+                        ),
+                        itemCount: visibleTests.length,
+                        separatorBuilder: (_, __) =>
+                            SizedBox(height: SizeConfig.h(0.018)),
+                        itemBuilder: (context, index) {
+                          return TestsByInterestTicketCard(
+                            item: visibleTests[index],
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),

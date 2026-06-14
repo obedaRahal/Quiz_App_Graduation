@@ -23,16 +23,18 @@ class CreateTestQuestionsSection extends StatelessWidget {
       buildWhen: (previous, current) {
         return previous.questions != current.questions ||
             previous.creationMode != current.creationMode ||
-            previous.aiProvider != current.aiProvider;
+            previous.aiProvider != current.aiProvider ||
+            previous.isEditMode != current.isEditMode;
       },
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            const _QuestionsHeader(),
+           _QuestionsHeader(isEditMode: state.isEditMode),
 
             SizedBox(height: SizeConfig.h(0.016)),
-            if (state.isAiMode &&
+            if (!state.isEditMode &&
+                state.isAiMode &&
                 state.aiProvider.trim().isNotEmpty &&
                 state.questions.isNotEmpty) ...[
               _AiProviderBanner(provider: state.aiProvider),
@@ -77,11 +79,16 @@ class CreateTestQuestionsSection extends StatelessWidget {
 }
 
 class _QuestionsHeader extends StatelessWidget {
-  const _QuestionsHeader();
+  final bool isEditMode;
+
+  const _QuestionsHeader({
+    required this.isEditMode,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -106,15 +113,16 @@ class _QuestionsHeader extends StatelessWidget {
             ),
           ],
         ),
-
         SizedBox(height: SizeConfig.h(0.006)),
         CustomTextWidget(
-          'قم بكتابة الأسئلة الخاصة بالاختبار، يمكنك إضافة من خيارين إلى خمس خيارات لكل سؤال وإجابة واحدة صحيحة فقط',
+          isEditMode
+              ? 'يمكنك تعديل أسئلة الاختبار أو حذفها أو إضافة أسئلة جديدة، وسيتم حفظ القائمة النهائية كما تظهر هنا.'
+              : 'قم بكتابة الأسئلة الخاصة بالاختبار، يمكنك إضافة من خيارين إلى خمس خيارات لكل سؤال وإجابة واحدة صحيحة فقط',
           fontSize: SizeConfig.text(0.033),
           fontWeight: FontWeight.w500,
           color: AppPalette.greyMedium,
           textAlign: TextAlign.right,
-          maxLines: 2,
+          maxLines: 3,
         ),
       ],
     );

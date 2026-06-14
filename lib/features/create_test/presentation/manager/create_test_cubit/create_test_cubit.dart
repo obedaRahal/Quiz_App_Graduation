@@ -1,12 +1,18 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_status_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_manual_test_params.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/editable_test_questions_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/scientific_classification_entity.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/update_test_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/create_manual_test_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/get_ai_question_generation_status_use_case.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/get_editable_test_questions_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/get_scientific_classifications_use_case.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/params/get_editable_test_questions_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/start_ai_question_generation_use_case.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/update_test_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_state.dart';
 
@@ -16,12 +22,15 @@ class CreateTestCubit extends Cubit<CreateTestState> {
   final StartAiQuestionGenerationUseCase startAiQuestionGenerationUseCase;
   final GetAiQuestionGenerationStatusUseCase
   getAiQuestionGenerationStatusUseCase;
-
+  final GetEditableTestQuestionsUseCase getEditableTestQuestionsUseCase;
+  final UpdateTestUseCase updateTestUseCase;
   CreateTestCubit({
     required this.getScientificClassificationsUseCase,
     required this.createManualTestUseCase,
     required this.startAiQuestionGenerationUseCase,
     required this.getAiQuestionGenerationStatusUseCase,
+    required this.getEditableTestQuestionsUseCase,
+    required this.updateTestUseCase,
   }) : super(const CreateTestState());
 
   static const int titleMaxLength = 150;
@@ -38,6 +47,7 @@ class CreateTestCubit extends Cubit<CreateTestState> {
   static const int maxOptionsCount = 5;
 
   static const int questionMaxLength = 500;
+  static const int questionMinLength = 10;
   static const int optionMaxLength = 150;
   static const int explanationMaxLength = 1000;
   static const int maxScientificCategoriesCount = 3;
@@ -139,6 +149,15 @@ class CreateTestCubit extends Cubit<CreateTestState> {
   }
 
   void changePublishStatus(bool value) {
+    if (state.isEditMode && state.wasInitiallyPublished && value == false) {
+      emit(
+        state.copyWith(
+          createManualTestError: 'لا يمكن تحويل اختبار عام إلى خاص',
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         isPublished: value,
@@ -177,16 +196,20 @@ class CreateTestCubit extends Cubit<CreateTestState> {
     if (index < 0 || index >= state.questions.length) return;
 
     final question = state.questions[index];
+    final optionIds = question.normalizedOptionIds;
 
     emit(
       state.copyWith(
-        draftQuestionText: question.questionText,
-        draftOptions: question.options
-            .map((option) => CreateTestQuestionOptionState(text: option))
-            .toList(),
-        draftCorrectOptionIndex: question.correctOptionIndex,
-        draftExplanation: question.explanation,
         editingQuestionIndex: index,
+        draftQuestionText: question.questionText,
+        draftExplanation: question.explanation,
+        draftCorrectOptionIndex: question.correctOptionIndex,
+        draftOptions: List.generate(question.options.length, (optionIndex) {
+          return CreateTestQuestionOptionState(
+            id: optionIds[optionIndex],
+            text: question.options[optionIndex],
+          );
+        }),
       ),
     );
   }
@@ -273,54 +296,50 @@ class CreateTestCubit extends Cubit<CreateTestState> {
   }
 
   void createDraftQuestion() {
-    if (!state.canCreateDraftQuestion) return;
+  final questionText = state.draftQuestionText.trim();
 
-    final options = state.draftOptions
-        .map((option) => option.text.trim())
-        .where((text) => text.isNotEmpty)
+  if (questionText.length < questionMinLength) {
+    emit(
+      state.copyWith(
+        createManualTestError:
+            'نص السؤال يجب أن يكون 10 محارف على الأقل',
+      ),
+    );
+    return;
+  }
+
+  if (!state.canCreateDraftQuestion) return;
+
+  final editingIndex = state.editingQuestionIndex;
+
+    final validDraftOptions = state.draftOptions
+        .where((option) => option.text.trim().isNotEmpty)
         .toList();
 
-    final correctIndex = state.draftCorrectOptionIndex!;
+    final oldQuestion = editingIndex == null
+        ? null
+        : state.questions[editingIndex];
 
-    final question = CreateTestQuestionState(
+    final newQuestion = CreateTestQuestionState(
+      id: oldQuestion?.id,
       questionText: state.draftQuestionText.trim(),
-      options: options,
-      correctOptionIndex: correctIndex,
+      options: validDraftOptions.map((option) => option.text.trim()).toList(),
+      optionIds: validDraftOptions.map((option) => option.id).toList(),
+      correctOptionIndex: state.draftCorrectOptionIndex!,
       explanation: state.draftExplanation.trim(),
     );
 
-    final editingIndex = state.editingQuestionIndex;
+    final updatedQuestions = [...state.questions];
 
-    if (editingIndex != null) {
-      // تعديل سؤال موجود
-      if (editingIndex < 0 || editingIndex >= state.questions.length) return;
-
-      final updatedQuestions = [...state.questions];
-      updatedQuestions[editingIndex] = question;
-
-      emit(
-        state.copyWith(
-          questions: updatedQuestions,
-          draftQuestionText: '',
-          draftOptions: const [
-            CreateTestQuestionOptionState(),
-            CreateTestQuestionOptionState(),
-          ],
-          draftCorrectOptionIndex: null,
-          draftExplanation: '',
-          editingQuestionIndex: null,
-          selectedSampleQuestions: [], // <--- أضف هذا لتصفير العينة عند تعديل
-        ),
-      );
-      return;
+    if (editingIndex == null) {
+      updatedQuestions.add(newQuestion);
+    } else {
+      updatedQuestions[editingIndex] = newQuestion;
     }
-
-    // إنشاء سؤال جديد
-    if (state.questions.length >= maxQuestionsCount) return;
 
     emit(
       state.copyWith(
-        questions: [...state.questions, question],
+        questions: updatedQuestions,
         draftQuestionText: '',
         draftOptions: const [
           CreateTestQuestionOptionState(),
@@ -329,7 +348,7 @@ class CreateTestCubit extends Cubit<CreateTestState> {
         draftCorrectOptionIndex: null,
         draftExplanation: '',
         editingQuestionIndex: null,
-        selectedSampleQuestions: [], // <--- أضف هذا لتصفير العينة عند الإضافة
+        selectedSampleQuestions: const [],
       ),
     );
   }
@@ -401,40 +420,93 @@ class CreateTestCubit extends Cubit<CreateTestState> {
     }
   }
 
-  void prepareScientificCategoriesPicker() {
-    emit(
-      state.copyWith(
-        pendingScientificInterestIds: [...state.selectedScientificInterestIds],
+void prepareScientificCategoriesPicker() {
+  debugPrint('prepare selected ids => ${state.selectedScientificInterestIds}');
+
+  emit(
+    state.copyWith(
+      pendingScientificInterestIds: List<int>.from(
+        state.selectedScientificInterestIds,
       ),
-    );
+    ),
+  );
+}
+
+void togglePendingScientificInterest(int interestId) {
+  final selected = List<int>.from(state.pendingScientificInterestIds);
+
+  if (selected.contains(interestId)) {
+    selected.remove(interestId);
+  } else {
+    if (selected.length >= maxScientificCategoriesCount) return;
+    selected.add(interestId);
   }
 
-  void togglePendingScientificInterest(int interestId) {
-    final selected = [...state.pendingScientificInterestIds];
+  debugPrint('toggle pending ids => $selected');
 
-    if (selected.contains(interestId)) {
-      selected.remove(interestId);
-    } else {
-      if (selected.length >= maxScientificCategoriesCount) return;
-      selected.add(interestId);
-    }
+  emit(
+    state.copyWith(
+      pendingScientificInterestIds: selected,
+    ),
+  );
+}
 
-    emit(state.copyWith(pendingScientificInterestIds: selected));
-  }
+void confirmScientificCategories() {
+  final selectedIds = List<int>.from(state.pendingScientificInterestIds)
+    ..sort();
 
-  void confirmScientificCategories() {
-    final selectedIds = [...state.pendingScientificInterestIds]..sort();
+  final selectedNames = _getScientificInterestNamesByIds(selectedIds);
 
-    final selectedNames = _getScientificInterestNamesByIds(selectedIds);
+  debugPrint('confirm selected ids => $selectedIds');
+  debugPrint('confirm selected names => $selectedNames');
 
-    emit(
-      state.copyWith(
-        selectedScientificInterestIds: selectedIds,
-        selectedScientificCategories: selectedNames,
-        pendingScientificInterestIds: selectedIds,
-      ),
-    );
-  }
+  emit(
+    state.copyWith(
+      selectedScientificInterestIds: selectedIds,
+      pendingScientificInterestIds: selectedIds,
+      selectedScientificCategories: selectedNames,
+      pendingScientificCategories: selectedNames,
+    ),
+  );
+
+  debugPrint(
+    'after confirm state ids => ${state.selectedScientificInterestIds}',
+  );
+}
+  // void prepareScientificCategoriesPicker() {
+  //   emit(
+  //     state.copyWith(
+  //       pendingScientificInterestIds: [...state.selectedScientificInterestIds],
+  //     ),
+  //   );
+  // }
+
+  // void togglePendingScientificInterest(int interestId) {
+  //   final selected = [...state.pendingScientificInterestIds];
+
+  //   if (selected.contains(interestId)) {
+  //     selected.remove(interestId);
+  //   } else {
+  //     if (selected.length >= maxScientificCategoriesCount) return;
+  //     selected.add(interestId);
+  //   }
+
+  //   emit(state.copyWith(pendingScientificInterestIds: selected));
+  // }
+
+  // void confirmScientificCategories() {
+  //   final selectedIds = [...state.pendingScientificInterestIds]..sort();
+
+  //   final selectedNames = _getScientificInterestNamesByIds(selectedIds);
+
+  //   emit(
+  //     state.copyWith(
+  //       selectedScientificInterestIds: selectedIds,
+  //       selectedScientificCategories: selectedNames,
+  //       pendingScientificInterestIds: selectedIds,
+  //     ),
+  //   );
+  // }
 
   List<String> _getScientificInterestNamesByIds(List<int> ids) {
     final names = <String>[];
@@ -584,7 +656,12 @@ class CreateTestCubit extends Cubit<CreateTestState> {
     if (!allowedAcademicLevels.contains(state.selectedAcademicLevel.trim())) {
       return 'المستوى الدراسي المختار غير صالح';
     }
-
+    debugPrint(
+      'VALIDATION selectedScientificInterestIds => ${state.selectedScientificInterestIds}',
+    );
+    debugPrint(
+      'VALIDATION selectedScientificCategories => ${state.selectedScientificCategories}',
+    );
     if (state.selectedScientificInterestIds.isEmpty) {
       return 'يرجى اختيار تصنيف علمي واحد على الأقل';
     }
@@ -601,7 +678,6 @@ class CreateTestCubit extends Cubit<CreateTestState> {
     if (state.questions.length > maxQuestionsCount) {
       return 'أكبر عدد أسئلة مسموح هو $maxQuestionsCount';
     }
-
     if (state.durationSeconds != null) {
       if (state.durationSeconds! < minDurationSeconds ||
           state.durationSeconds! > maxDurationSeconds) {
@@ -624,7 +700,9 @@ class CreateTestCubit extends Cubit<CreateTestState> {
       if (question.questionText.trim().isEmpty) {
         return 'السؤال رقم ${questionIndex + 1} لا يحتوي على نص';
       }
-
+if (question.questionText.trim().length < questionMinLength) {
+  return 'السؤال رقم ${questionIndex + 1} يجب أن يكون 10 محارف على الأقل';
+}
       final validOptions = question.options
           .where((option) => option.trim().isNotEmpty)
           .toList();
@@ -738,20 +816,152 @@ class CreateTestCubit extends Cubit<CreateTestState> {
         })
         .toList();
 
+    final isEditMode = args.isEditMode;
+
     emit(
       state.copyWith(
+        isEditMode: isEditMode,
+        editingTestId: args.editingTestId,
+
         creationMode: args.mode,
         aiMediaFiles: args.mediaFiles,
         aiRequestedQuestionCount: args.aiQuestionCount,
-        level: args.aiLevel ?? state.level,
-        language: args.aiLanguage ?? state.language,
-        questions: generatedQuestions.isEmpty
-            ? state.questions
-            : generatedQuestions,
-        selectedSampleQuestions: const [],
+
+        title: args.initialTitle ?? state.title,
+        description: args.initialDescription ?? state.description,
+
+        level: args.initialLevel ?? args.aiLevel ?? state.level,
+        durationSeconds: args.initialDurationSeconds ?? state.durationSeconds,
+        pendingDurationSeconds:
+            args.initialDurationSeconds ?? state.pendingDurationSeconds,
+        successLimit: args.initialSuccessLimit ?? state.successLimit,
+        language: args.initialLanguage ?? args.aiLanguage ?? state.language,
+
+        isPublished: args.initialIsPublished ?? state.isPublished,
+        wasInitiallyPublished: args.initialIsPublished ?? false,
+        price: args.initialPrice ?? state.price,
+
+        selectedAcademicLevel:
+            args.initialAcademicLevel ?? state.selectedAcademicLevel,
+
+        selectedScientificInterestIds: args.initialScientificInterestIds.isEmpty
+            ? state.selectedScientificInterestIds
+            : args.initialScientificInterestIds,
+        pendingScientificInterestIds: args.initialScientificInterestIds.isEmpty
+            ? state.pendingScientificInterestIds
+            : args.initialScientificInterestIds,
+
+        selectedScientificCategories: args.initialScientificCategories.isEmpty
+            ? state.selectedScientificCategories
+            : args.initialScientificCategories,
+        pendingScientificCategories: args.initialScientificCategories.isEmpty
+            ? state.pendingScientificCategories
+            : args.initialScientificCategories,
+        existingAiMedia: args.existingAiMedia,
+        questions: isEditMode
+            ? (args.initialQuestions.isEmpty
+                  ? state.questions
+                  : args.initialQuestions)
+            : (generatedQuestions.isEmpty
+                  ? state.questions
+                  : generatedQuestions),
+
+        selectedSampleQuestions: isEditMode
+            ? args.initialSelectedSampleQuestions
+            : const [],
+
         aiProvider: args.aiProvider ?? '',
+        initialPreviewQuestionIds: args.initialPreviewQuestionIds,
       ),
     );
+    if (args.shouldFetchEditQuestions && args.editingTestId != null) {
+      getEditableTestQuestionsForEdit(testId: args.editingTestId!);
+    }
+  }
+
+  Future<void> getEditableTestQuestionsForEdit({required int testId}) async {
+    if (state.isEditableQuestionsLoading) return;
+
+    emit(
+      state.copyWith(
+        isEditableQuestionsLoading: true,
+        editableQuestionsError: null,
+      ),
+    );
+
+    try {
+      final response = await getEditableTestQuestionsUseCase(
+        GetEditableTestQuestionsParams(testId: testId),
+      );
+
+      final editableQuestions = response.data.test.questions
+          .map(_mapEditableQuestionToState)
+          .where((question) {
+            return question.questionText.trim().isNotEmpty &&
+                question.options.length >= minOptionsCount &&
+                question.correctOptionIndex >= 0 &&
+                question.correctOptionIndex < question.options.length;
+          })
+          .toList();
+
+      final selectedSamples = _mapPreviewQuestionIdsToIndexes(
+        questions: editableQuestions,
+        previewQuestionIds: state.initialPreviewQuestionIds,
+      );
+
+      emit(
+        state.copyWith(
+          isEditableQuestionsLoading: false,
+          editableQuestionsError: null,
+          questions: editableQuestions,
+          selectedSampleQuestions: selectedSamples,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isEditableQuestionsLoading: false,
+          editableQuestionsError: e.toString(),
+        ),
+      );
+    }
+  }
+
+  CreateTestQuestionState _mapEditableQuestionToState(
+    EditableQuestionEntity question,
+  ) {
+    final options = [...question.options]
+      ..sort((a, b) => a.position.compareTo(b.position));
+
+    final correctIndex = options.indexWhere((option) => option.isCorrect);
+
+    return CreateTestQuestionState(
+      id: question.id,
+      questionText: question.questionText.trim(),
+      options: options.map((option) => option.optionText.trim()).toList(),
+      optionIds: options.map((option) => option.id).toList(),
+      correctOptionIndex: correctIndex < 0 ? 0 : correctIndex,
+      explanation: question.hintText?.trim() ?? '',
+    );
+  }
+
+  List<int> _mapPreviewQuestionIdsToIndexes({
+    required List<CreateTestQuestionState> questions,
+    required List<int> previewQuestionIds,
+  }) {
+    if (previewQuestionIds.isEmpty) return const [];
+
+    final selectedIndexes = <int>[];
+
+    for (int i = 0; i < questions.length; i++) {
+      final questionId = questions[i].id;
+
+      if (questionId != null && previewQuestionIds.contains(questionId)) {
+        selectedIndexes.add(i);
+      }
+    }
+
+    return selectedIndexes;
   }
 
   Future<void> startAiQuestionGenerationAndPoll(
@@ -815,17 +1025,11 @@ class CreateTestCubit extends Cubit<CreateTestState> {
         return;
       }
 
-      emit(
-  state.copyWith(
-    aiGenerationRequestId: requestId,
-  ),
-);
+      emit(state.copyWith(aiGenerationRequestId: requestId));
 
-await Future.delayed(
-  const Duration(seconds: aiPollingIntervalSeconds),
-);
+      await Future.delayed(const Duration(seconds: aiPollingIntervalSeconds));
 
-await _pollAiQuestionGenerationStatus(requestId);
+      await _pollAiQuestionGenerationStatus(requestId);
     } catch (e) {
       if (isClosed) return;
 
@@ -839,83 +1043,78 @@ await _pollAiQuestionGenerationStatus(requestId);
     }
   }
 
-Future<void> _pollAiQuestionGenerationStatus(int requestId) async {
-  int attempt = 0;
+  Future<void> _pollAiQuestionGenerationStatus(int requestId) async {
+    int attempt = 0;
 
-  while (!isClosed) {
-    attempt++;
+    while (!isClosed) {
+      attempt++;
 
-    try {
-      final response = await getAiQuestionGenerationStatusUseCase(
-        generationRequestId: requestId,
-      );
+      try {
+        final response = await getAiQuestionGenerationStatusUseCase(
+          generationRequestId: requestId,
+        );
 
-      if (isClosed) return;
+        if (isClosed) return;
 
-      final data = response.data;
+        final data = response.data;
 
-      print('AI POLLING ATTEMPT: $attempt');
-      print('requestId: $requestId');
-      print('status: ${data.status}');
-      print('failure: ${data.failure}');
-      print('questions count: ${data.questions.length}');
+        print('AI POLLING ATTEMPT: $attempt');
+        print('requestId: $requestId');
+        print('status: ${data.status}');
+        print('failure: ${data.failure}');
+        print('questions count: ${data.questions.length}');
 
-      if (data.isCompleted) {
-        if (data.questions.isEmpty) {
+        if (data.isCompleted) {
+          if (data.questions.isEmpty) {
+            emit(
+              state.copyWith(
+                isAiQuestionGenerationLoading: false,
+                aiQuestionGenerationError:
+                    'تمت عملية التوليد لكن لم يتم إنشاء أي سؤال',
+                isAiQuestionGenerationCompleted: false,
+                aiGeneratedQuestions: const [],
+              ),
+            );
+            return;
+          }
+
           emit(
             state.copyWith(
               isAiQuestionGenerationLoading: false,
-              aiQuestionGenerationError:
-                  'تمت عملية التوليد لكن لم يتم إنشاء أي سؤال',
-              isAiQuestionGenerationCompleted: false,
-              aiGeneratedQuestions: const [],
-              
+              aiQuestionGenerationError: null,
+              isAiQuestionGenerationCompleted: true,
+              aiGeneratedQuestions: data.questions,
+              aiProvider: data.provider,
             ),
           );
           return;
         }
 
-        emit(
-          state.copyWith(
-            isAiQuestionGenerationLoading: false,
-            aiQuestionGenerationError: null,
-            isAiQuestionGenerationCompleted: true,
-            aiGeneratedQuestions: data.questions,
-            aiProvider: data.provider,
-          ),
-        );
-        return;
+        if (data.isFailed) {
+          emit(
+            state.copyWith(
+              isAiQuestionGenerationLoading: false,
+              aiQuestionGenerationError: data.failure?.trim().isNotEmpty == true
+                  ? data.failure
+                  : 'فشلت عملية توليد الأسئلة',
+              isAiQuestionGenerationCompleted: false,
+              aiGeneratedQuestions: const [],
+            ),
+          );
+          return;
+        }
+
+        await Future.delayed(const Duration(seconds: aiPollingIntervalSeconds));
+      } catch (e) {
+        print('AI POLLING ERROR attempt $attempt: $e');
+
+        if (isClosed) return;
+
+        await Future.delayed(const Duration(seconds: aiPollingIntervalSeconds));
       }
-
-      if (data.isFailed) {
-        emit(
-          state.copyWith(
-            isAiQuestionGenerationLoading: false,
-            aiQuestionGenerationError:
-                data.failure?.trim().isNotEmpty == true
-                    ? data.failure
-                    : 'فشلت عملية توليد الأسئلة',
-            isAiQuestionGenerationCompleted: false,
-            aiGeneratedQuestions: const [],
-          ),
-        );
-        return;
-      }
-
-      await Future.delayed(
-        const Duration(seconds: aiPollingIntervalSeconds),
-      );
-    } catch (e) {
-      print('AI POLLING ERROR attempt $attempt: $e');
-
-      if (isClosed) return;
-
-      await Future.delayed(
-        const Duration(seconds: aiPollingIntervalSeconds),
-      );
     }
   }
-}
+
   String? _validateAiGenerationArgs(CreateTestInitialArgs args) {
     if (!args.isAiMode) {
       return 'طريقة توليد الأسئلة غير صالحة';
@@ -1036,6 +1235,119 @@ Future<void> _pollAiQuestionGenerationStatus(int requestId) async {
         aiGeneratedQuestions: const [],
       ),
     );
+  }
+
+  // Update Test
+  Future<void> submitCreateOrUpdateTest() async {
+    if (state.isEditMode) {
+      await submitUpdateTest();
+      return;
+    }
+
+    await submitCreateManualTest();
+  }
+
+  Future<void> submitUpdateTest() async {
+    if (state.isUpdateTestLoading) return;
+
+    final validationError = _validateCreateManualTestBeforeSubmit();
+
+    if (validationError != null) {
+      emit(
+        state.copyWith(
+          updateTestError: validationError,
+          updateTestResponse: null,
+        ),
+      );
+      return;
+    }
+
+    final testId = state.editingTestId;
+
+    if (testId == null || testId <= 0) {
+      emit(
+        state.copyWith(
+          updateTestError: 'تعذر تحديد الاختبار المطلوب تعديله',
+          updateTestResponse: null,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        isUpdateTestLoading: true,
+        updateTestError: null,
+        updateTestResponse: null,
+      ),
+    );
+
+    try {
+      final params = _buildUpdateTestParams(testId: testId);
+
+      final response = await updateTestUseCase(params: params);
+
+      emit(
+        state.copyWith(
+          isUpdateTestLoading: false,
+          updateTestError: null,
+          updateTestResponse: response,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isUpdateTestLoading: false,
+          updateTestError: e.toString(),
+        ),
+      );
+    }
+  }
+
+  UpdateTestParams _buildUpdateTestParams({required int testId}) {
+    final testType = state.isPublished ? 'عام' : 'خاص';
+
+    return UpdateTestParams(
+      testId: testId,
+      title: state.title.trim(),
+      description: state.description.trim(),
+      durationSeconds: state.durationSeconds,
+      passMarkPercentage: state.successLimit,
+      testType: testType,
+      language: _mapLanguageToBackend(state.language),
+      difficultyLevel: state.level.trim(),
+      targetLevel: state.selectedAcademicLevel.trim(),
+      price: state.isPublished ? _parseOptionalPrice() : null,
+      interestIds: state.selectedScientificInterestIds,
+      questions: List.generate(state.questions.length, (questionIndex) {
+        final question = state.questions[questionIndex];
+        final optionIds = question.normalizedOptionIds;
+
+        return UpdateTestQuestionParams(
+          id: question.id,
+          position: questionIndex + 1,
+          questionText: question.questionText.trim(),
+          hintText: question.explanation.trim().isEmpty
+              ? null
+              : question.explanation.trim(),
+          isPreview:
+              state.isPublished &&
+              state.selectedSampleQuestions.contains(questionIndex),
+          options: List.generate(question.options.length, (optionIndex) {
+            return UpdateTestOptionParams(
+              id: optionIds[optionIndex],
+              position: optionIndex + 1,
+              optionText: question.options[optionIndex].trim(),
+              isCorrect: optionIndex == question.correctOptionIndex,
+            );
+          }).where((option) => option.optionText.isNotEmpty).toList(),
+        );
+      }),
+    );
+  }
+
+  void clearUpdateTestResult() {
+    emit(state.copyWith(updateTestError: null, updateTestResponse: null));
   }
 }
 

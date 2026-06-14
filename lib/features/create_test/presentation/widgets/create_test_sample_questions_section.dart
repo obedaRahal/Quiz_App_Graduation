@@ -22,7 +22,9 @@ class CreateTestSampleQuestionsSection extends StatelessWidget {
       buildWhen: (previous, current) {
         return previous.isPublished != current.isPublished ||
             previous.questions.length != current.questions.length ||
-            previous.selectedSampleQuestions != current.selectedSampleQuestions;
+            previous.selectedSampleQuestions !=
+                current.selectedSampleQuestions ||
+            previous.isEditMode != current.isEditMode;
       },
       builder: (context, state) {
         if (!state.isPublished ||
@@ -37,7 +39,7 @@ class CreateTestSampleQuestionsSection extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _SampleHeader(),
+            _SampleHeader(isEditMode: state.isEditMode),
 
             SizedBox(height: SizeConfig.h(0.014)),
 
@@ -607,7 +609,9 @@ class _SampleCheckBox extends StatelessWidget {
 }
 
 class _SampleHeader extends StatelessWidget {
-  const _SampleHeader();
+  final bool isEditMode;
+
+  const _SampleHeader({required this.isEditMode});
 
   @override
   Widget build(BuildContext context) {
@@ -616,7 +620,6 @@ class _SampleHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -638,11 +641,11 @@ class _SampleHeader extends StatelessWidget {
             ),
           ],
         ),
-
         SizedBox(height: SizeConfig.h(0.004)),
-
         CustomTextWidget(
-          'قم بتحديد عينة من الأسئلة ليتمكن المستخدمون من مطالعة المحتوى قبل المشاركة في هذه الجلسة بشكل مختصر',
+          isEditMode
+              ? 'يمكنك تعديل عينة الأسئلة التي تظهر للمستخدمين قبل المشاركة في الاختبار.'
+              : 'قم بتحديد عينة من الأسئلة ليتمكن المستخدمون من مطالعة المحتوى قبل المشاركة في هذه الجلسة بشكل مختصر',
           fontSize: SizeConfig.text(0.033),
           fontWeight: FontWeight.w500,
           color: AppPalette.greyMedium,
@@ -653,6 +656,7 @@ class _SampleHeader extends StatelessWidget {
     );
   }
 }
+
 class _SampleChip extends StatelessWidget {
   final String title;
 
