@@ -253,4 +253,20 @@ class EndPoints {
 
     return '$baseUrl/users-profile/content/$userId?$queryString';
   }
+
+  static String folderBookmarkAction({required int folderId}) {
+    return '$baseUrl/users-profile/folder-bookmarks/$folderId';
+  }
+
+  static String saveContentBookmark({required int contentId}) {
+    return '$baseUrl/library/bookmark/$contentId';
+  }
+
+  static String removeContentBookmark({required int contentId}) {
+    return '$baseUrl/library/unbookmark/$contentId';
+  }
+
+  static String otherProfileFolderDetails({required int folderId}) {
+    return '$baseUrl/users-profile/folder-details/$folderId';
+  }
 }

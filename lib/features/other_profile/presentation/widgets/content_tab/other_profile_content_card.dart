@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
@@ -7,7 +8,6 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/compact_count_formatter.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
-import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 
 class OtherProfileContentCard extends StatelessWidget {
   final OtherProfileContentItemEntity content;
@@ -106,7 +106,7 @@ class _ContentThumbnail extends StatelessWidget {
             )
           : ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(imageUrl, fit: BoxFit.cover),
+              child: CustomAppImage(path: imageUrl, fit: BoxFit.cover),
             ),
     );
   }

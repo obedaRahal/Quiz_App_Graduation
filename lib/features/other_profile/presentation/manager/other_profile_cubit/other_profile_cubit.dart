@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/utils/compact_count_formatter.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_follow_action_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folder_details_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folders_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_content_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folder_details_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folders_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_tests_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/content_bookmark_action_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_content_params.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_folder_details_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_folders_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_overview_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_tests_params.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/folder_bookmark_action_params.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_content_bookmark_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_folder_bookmark_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_content_bookmark_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_folder_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 
 class OtherProfileCubit extends Cubit<OtherProfileState> {
@@ -23,11 +36,30 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
   final FetchOtherProfileContentUseCase fetchOtherProfileContentUseCase;
   bool _isFetchingMoreContent = false;
 
+  final FollowCreatorUseCase followCreatorUseCase;
+  final UnfollowCreatorUseCase unfollowCreatorUseCase;
+
+  final SaveFolderBookmarkUseCase saveFolderBookmarkUseCase;
+  final RemoveFolderBookmarkUseCase removeFolderBookmarkUseCase;
+
+  final SaveContentBookmarkUseCase saveContentBookmarkUseCase;
+  final RemoveContentBookmarkUseCase removeContentBookmarkUseCase;
+
+  final FetchOtherProfileFolderDetailsUseCase
+  fetchOtherProfileFolderDetailsUseCase;
   OtherProfileCubit({
     required this.fetchOtherProfileOverviewUseCase,
     required this.fetchOtherProfileTestsUseCase,
     required this.fetchOtherProfileFoldersUseCase,
     required this.fetchOtherProfileContentUseCase,
+    required this.followCreatorUseCase,
+    required this.unfollowCreatorUseCase,
+    required this.saveFolderBookmarkUseCase,
+    required this.removeFolderBookmarkUseCase,
+
+    required this.saveContentBookmarkUseCase,
+    required this.removeContentBookmarkUseCase,
+    required this.fetchOtherProfileFolderDetailsUseCase,
   }) : super(const OtherProfileState()) {
     debugPrint("============ OtherProfileCubit INIT ============");
   }
@@ -625,5 +657,406 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     _isFetchingMoreContent = false;
 
     debugPrint("=================================================");
+  }
+
+  /////////////////// follow and unfollow //////////////////
+  Future<void> toggleOtherProfileFollow() async {
+    debugPrint(
+      "============ OtherProfileCubit.toggleOtherProfileFollow ============",
+    );
+
+    final overview = state.overview;
+
+    if (overview == null) {
+      debugPrint("✗ overview is null, cannot toggle follow");
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (state.isFollowActionLoading) {
+      debugPrint("✗ follow action already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final header = overview.data.header;
+
+    final userId = header.userId;
+    final currentIsFollowing = header.viewerIsFollowing;
+    final currentFollowersCount = parseCompactCount(header.followersCount);
+
+    debugPrint("→ userId: $userId");
+    debugPrint("→ currentIsFollowing: $currentIsFollowing");
+    debugPrint("→ currentFollowersCount: $currentFollowersCount");
+
+    emit(
+      state.copyWith(
+        followActionStatus: OtherProfileFollowActionStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = currentIsFollowing
+        ? await unfollowCreatorUseCase(
+            TestFollowActionParams(creatorId: userId),
+          )
+        : await followCreatorUseCase(TestFollowActionParams(creatorId: userId));
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ toggle follow failure title: ${failure.title}");
+        debugPrint("✗ toggle follow failure message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            followActionStatus: OtherProfileFollowActionStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        final newIsFollowing = !currentIsFollowing;
+
+        final int updatedFollowersCount = newIsFollowing
+            ? currentFollowersCount + 1
+            : (currentFollowersCount - 1).clamp(0, 999999999);
+
+        debugPrint("✓ toggle follow success");
+        debugPrint("→ response message: ${response.message}");
+        debugPrint("→ newIsFollowing: $newIsFollowing");
+        debugPrint("→ updatedFollowersCount: $updatedFollowersCount");
+
+        final updatedOverview = overview.copyWith(
+          data: overview.data.copyWith(
+            header: header.copyWith(
+              viewerIsFollowing: newIsFollowing,
+              followersCount: updatedFollowersCount,
+            ),
+          ),
+        );
+
+        emit(
+          state.copyWith(
+            followActionStatus: OtherProfileFollowActionStatus.success,
+            overview: updatedOverview,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetFollowActionState() {
+    emit(
+      state.copyWith(
+        followActionStatus: OtherProfileFollowActionStatus.initial,
+        clearError: true,
+      ),
+    );
+  }
+
+  ////////////// save folder unsave //////////
+  Future<void> toggleFolderBookmark({required int folderId}) async {
+    debugPrint(
+      "============ OtherProfileCubit.toggleFolderBookmark ============",
+    );
+    debugPrint("→ params: {folderId: $folderId}");
+
+    if (state.isFolderBookmarkLoading &&
+        state.activeBookmarkFolderId == folderId) {
+      debugPrint("✗ bookmark action already loading for this folder");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final foldersResponse = state.foldersResponse;
+    if (foldersResponse == null) {
+      debugPrint("✗ foldersResponse is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final index = foldersResponse.data.indexWhere(
+      (folder) => folder.id == folderId,
+    );
+
+    if (index == -1) {
+      debugPrint("✗ folder not found");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final folder = foldersResponse.data[index];
+    final currentIsBookmarked = folder.viewerHasBookmarked;
+    final newIsBookmarked = !currentIsBookmarked;
+
+    debugPrint("→ currentIsBookmarked: $currentIsBookmarked");
+
+    emit(
+      state.copyWith(
+        folderBookmarkActionStatus: FolderBookmarkActionStatus.loading,
+        activeBookmarkFolderId: folderId,
+        clearError: true,
+      ),
+    );
+
+    final result = currentIsBookmarked
+        ? await removeFolderBookmarkUseCase(
+            FolderBookmarkActionParams(folderId: folderId),
+          )
+        : await saveFolderBookmarkUseCase(
+            FolderBookmarkActionParams(folderId: folderId),
+          );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ toggleFolderBookmark failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            folderBookmarkActionStatus: FolderBookmarkActionStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearActiveBookmarkFolderId: true,
+          ),
+        );
+      },
+      (response) {
+        final updatedFolders = List<OtherProfileFolderItemEntity>.from(
+          foldersResponse.data,
+        );
+
+        updatedFolders[index] = folder.copyWith(
+          viewerHasBookmarked: newIsBookmarked,
+        );
+
+        final updatedResponse = OtherProfileFoldersResponseEntity(
+          success: foldersResponse.success,
+          message: foldersResponse.message,
+          data: updatedFolders,
+          meta: foldersResponse.meta,
+          statusCode: foldersResponse.statusCode,
+        );
+
+        OtherProfileFolderDetailsEntity? updatedFolderDetails =
+            state.folderDetails;
+
+        if (updatedFolderDetails != null &&
+            updatedFolderDetails.data.folder.id == folderId) {
+          updatedFolderDetails = OtherProfileFolderDetailsEntity(
+            success: updatedFolderDetails.success,
+            title: updatedFolderDetails.title,
+            statusCode: updatedFolderDetails.statusCode,
+            data: OtherProfileFolderDetailsDataEntity(
+              folder: updatedFolderDetails.data.folder.copyWith(
+                viewerHasBookmarked: newIsBookmarked,
+              ),
+              items: updatedFolderDetails.data.items,
+            ),
+          );
+        }
+
+        debugPrint("✓ toggleFolderBookmark success");
+        debugPrint("→ response message: ${response.message}");
+        debugPrint("→ newIsBookmarked: $newIsBookmarked");
+
+        emit(
+          state.copyWith(
+            folderBookmarkActionStatus: FolderBookmarkActionStatus.success,
+            foldersResponse: updatedResponse,
+            folderDetails: updatedFolderDetails,
+            clearError: true,
+            clearActiveBookmarkFolderId: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetFolderBookmarkActionState() {
+    emit(
+      state.copyWith(
+        folderBookmarkActionStatus: FolderBookmarkActionStatus.initial,
+        clearActiveBookmarkFolderId: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  Future<void> toggleContentBookmark({required int contentId}) async {
+    debugPrint(
+      "============ OtherProfileCubit.toggleContentBookmark ============",
+    );
+    debugPrint("→ params: {contentId: $contentId}");
+
+    if (state.isContentBookmarkLoading &&
+        state.activeBookmarkContentId == contentId) {
+      debugPrint("✗ bookmark action already loading for this content");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final contentResponse = state.contentResponse;
+
+    if (contentResponse == null) {
+      debugPrint("✗ contentResponse is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final index = contentResponse.data.indexWhere(
+      (content) => content.id == contentId,
+    );
+
+    if (index == -1) {
+      debugPrint("✗ content not found");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final content = contentResponse.data[index];
+    final currentIsBookmarked = content.viewerHasBookmarked;
+
+    emit(
+      state.copyWith(
+        contentBookmarkActionStatus: ContentBookmarkActionStatus.loading,
+        activeBookmarkContentId: contentId,
+        clearError: true,
+      ),
+    );
+
+    final result = currentIsBookmarked
+        ? await removeContentBookmarkUseCase(
+            ContentBookmarkActionParams(contentId: contentId),
+          )
+        : await saveContentBookmarkUseCase(
+            ContentBookmarkActionParams(contentId: contentId),
+          );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ toggleContentBookmark failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            contentBookmarkActionStatus: ContentBookmarkActionStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearActiveBookmarkContentId: true,
+          ),
+        );
+      },
+      (response) {
+        final updatedContents = List<OtherProfileContentItemEntity>.from(
+          contentResponse.data,
+        );
+
+        updatedContents[index] = content.copyWith(
+          viewerHasBookmarked: !currentIsBookmarked,
+        );
+
+        final updatedResponse = OtherProfileContentResponseEntity(
+          success: contentResponse.success,
+          message: contentResponse.message,
+          data: updatedContents,
+          meta: contentResponse.meta,
+          statusCode: contentResponse.statusCode,
+        );
+
+        debugPrint("✓ toggleContentBookmark success");
+        debugPrint("→ response message: ${response.message}");
+        debugPrint("→ newIsBookmarked: ${!currentIsBookmarked}");
+
+        emit(
+          state.copyWith(
+            contentBookmarkActionStatus: ContentBookmarkActionStatus.success,
+            contentResponse: updatedResponse,
+            clearError: true,
+            clearActiveBookmarkContentId: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetContentBookmarkActionState() {
+    emit(
+      state.copyWith(
+        contentBookmarkActionStatus: ContentBookmarkActionStatus.initial,
+        clearActiveBookmarkContentId: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  /////////////// get folder details ///////////////////////
+  Future<void> getOtherProfileFolderDetails({required int folderId}) async {
+    debugPrint(
+      "============ OtherProfileCubit.getOtherProfileFolderDetails ============",
+    );
+    debugPrint("→ params: {folderId: $folderId}");
+
+    emit(
+      state.copyWith(
+        getFolderDetailsStatus: GetOtherProfileFolderDetailsStatus.loading,
+        clearFolderDetails: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await fetchOtherProfileFolderDetailsUseCase(
+      FetchOtherProfileFolderDetailsParams(folderId: folderId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ OtherProfileCubit.getOtherProfileFolderDetails Failure");
+        debugPrint("→ Title: ${failure.title}, Message: ${failure.message}");
+        debugPrint("=================================================");
+
+        emit(
+          state.copyWith(
+            getFolderDetailsStatus: GetOtherProfileFolderDetailsStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ OtherProfileCubit.getOtherProfileFolderDetails Success");
+        debugPrint("→ folder id: ${response.data.folder.id}");
+        debugPrint("→ tests count: ${response.data.items.length}");
+        debugPrint("=================================================");
+
+        emit(
+          state.copyWith(
+            getFolderDetailsStatus: GetOtherProfileFolderDetailsStatus.success,
+            folderDetails: response,
+            clearError: true,
+          ),
+        );
+      },
+    );
+  }
+
+  void resetFolderDetailsState() {
+    emit(
+      state.copyWith(
+        getFolderDetailsStatus: GetOtherProfileFolderDetailsStatus.initial,
+        clearFolderDetails: true,
+        clearError: true,
+      ),
+    );
   }
 }

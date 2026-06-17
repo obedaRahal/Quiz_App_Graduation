@@ -49,6 +49,7 @@ class OtherProfileFolderItemModel extends OtherProfileFolderItemEntity {
   }
 }
 
+
 class OtherProfileFoldersMetaModel extends OtherProfileFoldersMetaEntity {
   const OtherProfileFoldersMetaModel({
     required super.perPage,

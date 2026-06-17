@@ -32,6 +32,26 @@ class OtherProfileFolderItemEntity {
     required this.colorCode,
     required this.viewerHasBookmarked,
   });
+
+  OtherProfileFolderItemEntity copyWith({
+    int? id,
+    String? name,
+    int? testsCount,
+    String? publishedAt,
+    List<String>? scientificInterests,
+    String? colorCode,
+    bool? viewerHasBookmarked,
+  }) {
+    return OtherProfileFolderItemEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      testsCount: testsCount ?? this.testsCount,
+      publishedAt: publishedAt ?? this.publishedAt,
+      scientificInterests: scientificInterests ?? this.scientificInterests,
+      colorCode: colorCode ?? this.colorCode,
+      viewerHasBookmarked: viewerHasBookmarked ?? this.viewerHasBookmarked,
+    );
+  }
 }
 
 class OtherProfileFoldersMetaEntity {

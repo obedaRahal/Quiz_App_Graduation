@@ -1,6 +1,5 @@
-import 'package:flutter/widgets.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folder_details_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folders_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_overview_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_tests_entity.dart';
@@ -26,6 +25,14 @@ enum GetMoreOtherProfileFoldersStatus { initial, loading, success, failure }
 enum GetOtherProfileContentStatus { initial, loading, success, failure }
 
 enum GetMoreOtherProfileContentStatus { initial, loading, success, failure }
+
+enum OtherProfileFollowActionStatus { initial, loading, success, failure }
+
+enum FolderBookmarkActionStatus { initial, loading, success, failure }
+
+enum ContentBookmarkActionStatus { initial, loading, success, failure }
+
+enum GetOtherProfileFolderDetailsStatus { initial, loading, success, failure }
 
 class OtherProfileState {
   final OtherProfileTab selectedTab;
@@ -53,6 +60,17 @@ class OtherProfileState {
   final GetOtherProfileContentStatus getContentStatus;
   final GetMoreOtherProfileContentStatus getMoreContentStatus;
 
+  final OtherProfileFollowActionStatus followActionStatus;
+
+  final FolderBookmarkActionStatus folderBookmarkActionStatus;
+  final int? activeBookmarkFolderId;
+
+  final ContentBookmarkActionStatus contentBookmarkActionStatus;
+  final int? activeBookmarkContentId;
+
+  final OtherProfileFolderDetailsEntity? folderDetails;
+  final GetOtherProfileFolderDetailsStatus getFolderDetailsStatus;
+
   const OtherProfileState({
     this.selectedTab = OtherProfileTab.overview,
 
@@ -78,6 +96,17 @@ class OtherProfileState {
     this.contentResponse,
     this.getContentStatus = GetOtherProfileContentStatus.initial,
     this.getMoreContentStatus = GetMoreOtherProfileContentStatus.initial,
+
+    this.followActionStatus = OtherProfileFollowActionStatus.initial,
+
+    this.folderBookmarkActionStatus = FolderBookmarkActionStatus.initial,
+    this.activeBookmarkFolderId,
+
+    this.contentBookmarkActionStatus = ContentBookmarkActionStatus.initial,
+    this.activeBookmarkContentId,
+
+    this.folderDetails,
+    this.getFolderDetailsStatus = GetOtherProfileFolderDetailsStatus.initial,
   });
 
   bool get isFetchOverviewInitial =>
@@ -144,14 +173,38 @@ class OtherProfileState {
   bool get hasMoreContentPages => contentResponse?.meta.hasMorePages == true;
   String? get nextContentCursor => contentResponse?.meta.nextCursor;
 
+  bool get isFollowActionLoading =>
+      followActionStatus == OtherProfileFollowActionStatus.loading;
+  bool get isFollowActionFailure =>
+      followActionStatus == OtherProfileFollowActionStatus.failure;
+  bool get isFollowActionSuccess =>
+      followActionStatus == OtherProfileFollowActionStatus.success;
+
+  bool get isFolderBookmarkLoading =>
+      folderBookmarkActionStatus == FolderBookmarkActionStatus.loading;
+  bool get isFolderBookmarkFailure =>
+      folderBookmarkActionStatus == FolderBookmarkActionStatus.failure;
+
+  bool get isContentBookmarkLoading =>
+      contentBookmarkActionStatus == ContentBookmarkActionStatus.loading;
+  bool get isContentBookmarkFailure =>
+      contentBookmarkActionStatus == ContentBookmarkActionStatus.failure;
+
+  bool get isGetFolderDetailsInitial =>
+      getFolderDetailsStatus == GetOtherProfileFolderDetailsStatus.initial;
+  bool get isGetFolderDetailsLoading =>
+      getFolderDetailsStatus == GetOtherProfileFolderDetailsStatus.loading;
+  bool get isGetFolderDetailsSuccess =>
+      getFolderDetailsStatus == GetOtherProfileFolderDetailsStatus.success;
+  bool get isGetFolderDetailsFailure =>
+      getFolderDetailsStatus == GetOtherProfileFolderDetailsStatus.failure;
+
   OtherProfileState copyWith({
     OtherProfileTab? selectedTab,
 
     OtherProfileTestsFilter? selectedTestsFilter,
 
-
     OtherProfileContentFilter? selectedContentFilter,
-
 
     OtherProfileOverviewEntity? overview,
     FetchOtherProfileOverviewStatus? fetchOverviewStatus,
@@ -174,6 +227,20 @@ class OtherProfileState {
     GetOtherProfileContentStatus? getContentStatus,
     GetMoreOtherProfileContentStatus? getMoreContentStatus,
     bool clearContentResponse = false,
+
+    OtherProfileFollowActionStatus? followActionStatus,
+
+    FolderBookmarkActionStatus? folderBookmarkActionStatus,
+    int? activeBookmarkFolderId,
+    bool clearActiveBookmarkFolderId = false,
+
+    ContentBookmarkActionStatus? contentBookmarkActionStatus,
+    int? activeBookmarkContentId,
+    bool clearActiveBookmarkContentId = false,
+
+    OtherProfileFolderDetailsEntity? folderDetails,
+    GetOtherProfileFolderDetailsStatus? getFolderDetailsStatus,
+    bool clearFolderDetails = false,
   }) {
     return OtherProfileState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -204,6 +271,26 @@ class OtherProfileState {
           : contentResponse ?? this.contentResponse,
       getContentStatus: getContentStatus ?? this.getContentStatus,
       getMoreContentStatus: getMoreContentStatus ?? this.getMoreContentStatus,
+
+      followActionStatus: followActionStatus ?? this.followActionStatus,
+
+      folderBookmarkActionStatus:
+          folderBookmarkActionStatus ?? this.folderBookmarkActionStatus,
+      activeBookmarkFolderId: clearActiveBookmarkFolderId
+          ? null
+          : activeBookmarkFolderId ?? this.activeBookmarkFolderId,
+
+      contentBookmarkActionStatus:
+          contentBookmarkActionStatus ?? this.contentBookmarkActionStatus,
+      activeBookmarkContentId: clearActiveBookmarkContentId
+          ? null
+          : activeBookmarkContentId ?? this.activeBookmarkContentId,
+
+      folderDetails: clearFolderDetails
+          ? null
+          : folderDetails ?? this.folderDetails,
+      getFolderDetailsStatus:
+          getFolderDetailsStatus ?? this.getFolderDetailsStatus,
     );
   }
 }

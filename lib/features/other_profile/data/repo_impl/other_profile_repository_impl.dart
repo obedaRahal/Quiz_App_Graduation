@@ -4,7 +4,10 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:quiz_app_grad/core/errors/exceptions.dart'; // تأكد من مسار الـ Exceptions الفعلي في مشروعك
 import 'package:quiz_app_grad/core/errors/failure.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/content_bookmark_action_entity.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/folder_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folder_details_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folders_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_tests_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/repository/other_profile_repository.dart';
@@ -239,6 +242,230 @@ class OtherProfileRepositoryImpl implements OtherProfileRepository {
         ServerFailure(
           title: 'حدث خطأ',
           message: 'حدث خطأ غير متوقع أثناء جلب محتوى الملف الشخصي الآخر',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, FolderBookmarkActionEntity>> saveFolderBookmark({
+    required int folderId,
+  }) async {
+    debugPrint(
+      "============ OtherProfileRepositoryImpl.saveFolderBookmark ============",
+    );
+    debugPrint("→ params: {folderId: $folderId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.saveFolderBookmark");
+
+      final model = await remoteDataSource.saveFolderBookmark(
+        folderId: folderId,
+      );
+
+      debugPrint("← remoteDataSource.saveFolderBookmark success");
+      debugPrint("=================================================");
+
+      return Right(model);
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.saveFolderBookmark ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.saveFolderBookmark CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.saveFolderBookmark Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء حفظ القائمة',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, FolderBookmarkActionEntity>> removeFolderBookmark({
+    required int folderId,
+  }) async {
+    debugPrint(
+      "============ OtherProfileRepositoryImpl.removeFolderBookmark ============",
+    );
+    debugPrint("→ params: {folderId: $folderId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.removeFolderBookmark");
+
+      final model = await remoteDataSource.removeFolderBookmark(
+        folderId: folderId,
+      );
+
+      debugPrint("← remoteDataSource.removeFolderBookmark success");
+      debugPrint("=================================================");
+
+      return Right(model);
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.removeFolderBookmark ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.removeFolderBookmark CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.removeFolderBookmark Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء إزالة القائمة من المحفوظات',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, ContentBookmarkActionEntity>> saveContentBookmark({
+    required int contentId,
+  }) async {
+    debugPrint(
+      "============ OtherProfileRepositoryImpl.saveContentBookmark ============",
+    );
+    debugPrint("→ params: {contentId: $contentId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.saveContentBookmark");
+
+      final model = await remoteDataSource.saveContentBookmark(
+        contentId: contentId,
+      );
+
+      debugPrint("← remoteDataSource.saveContentBookmark success");
+      debugPrint("=================================================");
+
+      return Right(model);
+    } on ServerException catch (e) {
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء حفظ المحتوى',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, ContentBookmarkActionEntity>> removeContentBookmark({
+    required int contentId,
+  }) async {
+    debugPrint(
+      "============ OtherProfileRepositoryImpl.removeContentBookmark ============",
+    );
+    debugPrint("→ params: {contentId: $contentId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.removeContentBookmark");
+
+      final model = await remoteDataSource.removeContentBookmark(
+        contentId: contentId,
+      );
+
+      debugPrint("← remoteDataSource.removeContentBookmark success");
+      debugPrint("=================================================");
+
+      return Right(model);
+    } on ServerException catch (e) {
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء إزالة المحتوى من المحفوظات',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, OtherProfileFolderDetailsEntity>>
+  getOtherProfileFolderDetails({required int folderId}) async {
+    debugPrint(
+      "============ OtherProfileRepositoryImpl.getOtherProfileFolderDetails ============",
+    );
+    debugPrint("→ params: {folderId: $folderId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.getOtherProfileFolderDetails");
+
+      final model = await remoteDataSource.getOtherProfileFolderDetails(
+        folderId: folderId,
+      );
+
+      debugPrint("← remoteDataSource.getOtherProfileFolderDetails success");
+      debugPrint("=================================================");
+
+      return Right(model);
+    } on ServerException catch (e) {
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء جلب تفاصيل القائمة',
         ),
       );
     }

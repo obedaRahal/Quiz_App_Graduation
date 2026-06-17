@@ -36,6 +36,30 @@ class OtherProfileContentItemEntity {
     required this.publishedAt,
     required this.viewerHasBookmarked,
   });
+
+  OtherProfileContentItemEntity copyWith({
+    int? id,
+    String? urlContent,
+    String? title,
+    String? description,
+    String? type,
+    List<String>? interests,
+    int? likeCount,
+    String? publishedAt,
+    bool? viewerHasBookmarked,
+  }) {
+    return OtherProfileContentItemEntity(
+      id: id ?? this.id,
+      urlContent: urlContent ?? this.urlContent,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      interests: interests ?? this.interests,
+      likeCount: likeCount ?? this.likeCount,
+      publishedAt: publishedAt ?? this.publishedAt,
+      viewerHasBookmarked: viewerHasBookmarked ?? this.viewerHasBookmarked,
+    );
+  }
 }
 
 class OtherProfileContentMetaEntity {

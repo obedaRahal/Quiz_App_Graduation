@@ -94,10 +94,15 @@ import 'package:quiz_app_grad/features/other_profile/data/data_source/other_prof
 import 'package:quiz_app_grad/features/other_profile/data/repo_impl/other_profile_repository_impl.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/repository/other_profile_repository.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_content_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folder_details_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folders_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_tests_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_overview_params.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_content_bookmark_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_folder_bookmark_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_content_bookmark_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_folder_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repository_impl.dart';
@@ -934,9 +939,52 @@ void _registerOtherProfileFeature() {
       () => FetchOtherProfileFoldersUseCase(sl<OtherProfileRepository>()),
     );
   }
+
   if (!sl.isRegistered<FetchOtherProfileContentUseCase>()) {
     sl.registerLazySingleton<FetchOtherProfileContentUseCase>(
       () => FetchOtherProfileContentUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<FollowCreatorUseCase>()) {
+    sl.registerLazySingleton<FollowCreatorUseCase>(
+      () => FollowCreatorUseCase(sl()),
+    );
+  }
+
+  if (!sl.isRegistered<UnfollowCreatorUseCase>()) {
+    sl.registerLazySingleton<UnfollowCreatorUseCase>(
+      () => UnfollowCreatorUseCase(sl()),
+    );
+  }
+
+  if (!sl.isRegistered<SaveFolderBookmarkUseCase>()) {
+    sl.registerLazySingleton<SaveFolderBookmarkUseCase>(
+      () => SaveFolderBookmarkUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<RemoveFolderBookmarkUseCase>()) {
+    sl.registerLazySingleton<RemoveFolderBookmarkUseCase>(
+      () => RemoveFolderBookmarkUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<SaveContentBookmarkUseCase>()) {
+    sl.registerLazySingleton<SaveContentBookmarkUseCase>(
+      () => SaveContentBookmarkUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<RemoveContentBookmarkUseCase>()) {
+    sl.registerLazySingleton<RemoveContentBookmarkUseCase>(
+      () => RemoveContentBookmarkUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<FetchOtherProfileFolderDetailsUseCase>()) {
+    sl.registerLazySingleton<FetchOtherProfileFolderDetailsUseCase>(
+      () => FetchOtherProfileFolderDetailsUseCase(sl<OtherProfileRepository>()),
     );
   }
 
@@ -948,6 +996,14 @@ void _registerOtherProfileFeature() {
         fetchOtherProfileTestsUseCase: sl<FetchOtherProfileTestsUseCase>(),
         fetchOtherProfileFoldersUseCase: sl<FetchOtherProfileFoldersUseCase>(),
         fetchOtherProfileContentUseCase: sl<FetchOtherProfileContentUseCase>(),
+        followCreatorUseCase: sl<FollowCreatorUseCase>(),
+        unfollowCreatorUseCase: sl<UnfollowCreatorUseCase>(),
+        removeFolderBookmarkUseCase: sl<RemoveFolderBookmarkUseCase>(),
+        saveFolderBookmarkUseCase: sl<SaveFolderBookmarkUseCase>(),
+        saveContentBookmarkUseCase: sl<SaveContentBookmarkUseCase>(),
+        removeContentBookmarkUseCase: sl<RemoveContentBookmarkUseCase>(),
+        fetchOtherProfileFolderDetailsUseCase:
+            sl<FetchOtherProfileFolderDetailsUseCase>(),
       ),
     );
   }
