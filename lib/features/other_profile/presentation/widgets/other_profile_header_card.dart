@@ -8,17 +8,18 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_overview_entity.dart';
-import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 
 class OtherProfileHeaderCard extends StatelessWidget {
   final OtherProfileHeaderEntity profile;
-  //final OtherProfileUiModel profile;
   final VoidCallback onFollowTap;
-
+  final VoidCallback? onFollowersTap;
+  final VoidCallback? onFollowingTap;
   const OtherProfileHeaderCard({
     super.key,
     required this.profile,
     required this.onFollowTap,
+    this.onFollowersTap,
+    this.onFollowingTap,
   });
 
   @override
@@ -74,11 +75,13 @@ class OtherProfileHeaderCard extends StatelessWidget {
                     _PublisherStat(
                       label: "يتابع",
                       value: "${profile.followingCount}",
+                      onTap: onFollowingTap,
                     ),
                     _DotSeparator(),
                     _PublisherStat(
                       label: "متابع",
                       value: "${profile.followersCount}",
+                      onTap: onFollowersTap,
                     ),
                   ],
                 ),
@@ -120,15 +123,15 @@ class _OtherProfileCoverAndAvatar extends StatelessWidget {
                 top: Radius.circular(14),
                 bottom: Radius.circular(14),
               ),
-              child: 
-              // coverUrl.trim().isEmpty
-              //     ? CustomPaint(painter: _OtherProfileCoverPainter())
-              //     : 
+              child:
+                  // coverUrl.trim().isEmpty
+                  //     ? CustomPaint(painter: _OtherProfileCoverPainter())
+                  //     :
                   CustomAppImage(
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      path: avatarUrl,
-                    ),
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    path: coverUrl,
+                  ),
             ),
           ),
 
@@ -309,30 +312,34 @@ class _OtherProfileCoverPainter extends CustomPainter {
 class _PublisherStat extends StatelessWidget {
   final String label;
   final String value;
+  final VoidCallback? onTap;
 
-  const _PublisherStat({required this.label, required this.value});
+  const _PublisherStat({required this.label, required this.value, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      textDirection: TextDirection.rtl,
-      children: [
-        CustomTextWidget(
-          value,
-          color: appColors.blackToGrey2Dark,
-          fontSize: SizeConfig.text(0.035),
-          fontFamily: AppFont.elMessiriBold,
-        ),
-        SizedBox(width: 3),
-        CustomTextWidget(
-          label,
-          color: AppPalette.greyMedium,
-          fontSize: SizeConfig.text(0.032),
-        ),
-      ],
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        textDirection: TextDirection.rtl,
+        children: [
+          CustomTextWidget(
+            value,
+            color: appColors.blackToGrey2Dark,
+            fontSize: SizeConfig.text(0.035),
+            fontFamily: AppFont.elMessiriBold,
+          ),
+          SizedBox(width: 3),
+          CustomTextWidget(
+            label,
+            color: AppPalette.greyMedium,
+            fontSize: SizeConfig.text(0.032),
+          ),
+        ],
+      ),
     );
   }
 }

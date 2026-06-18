@@ -1,8 +1,9 @@
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 class EndPoints {
-  //static const String baseUrl = 'http://192.168.1.108/api/v1/user-mobile';
-  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  static const String baseUrl = 'http://10.195.254.44/api/v1/user-mobile';
+  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -268,5 +269,43 @@ class EndPoints {
 
   static String otherProfileFolderDetails({required int folderId}) {
     return '$baseUrl/users-profile/folder-details/$folderId';
+  }
+
+  static String otherProfileShareLink({required int userId}) {
+    return '$baseUrl/users-profile/share-link/$userId';
+  }
+
+  static String otherProfileReceive({required String slug}) {
+    return '$baseUrl/users-profile/shared/${Uri.encodeComponent(slug)}';
+  }
+
+  static String otherProfileConnections({
+    required int userId,
+    required OtherProfileConnectionsType type,
+    String search = '',
+    String? cursor,
+  }) {
+    final query = <String, String>{};
+
+    if (search.trim().isNotEmpty) {
+      query['search'] = search.trim();
+    }
+
+    if (cursor != null && cursor.trim().isNotEmpty) {
+      query['cursor'] = cursor.trim();
+    }
+
+    final queryString = query.entries
+        .map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value)}')
+        .join('&');
+
+    final path = switch (type) {
+      OtherProfileConnectionsType.followers => 'followers',
+      OtherProfileConnectionsType.following => 'following',
+    };
+
+    final base = '$baseUrl/users-profile/$path/$userId';
+
+    return queryString.isEmpty ? base : '$base?$queryString';
   }
 }

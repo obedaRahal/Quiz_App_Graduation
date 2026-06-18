@@ -149,17 +149,15 @@ class MyPublicTestExtraInfoModel {
 
   factory MyPublicTestExtraInfoModel.fromJson(Map<String, dynamic> json) {
     final rawDuration = json['duration_seconds'];
-    final parsedDuration = _asNullableInt(rawDuration);
 
     return MyPublicTestExtraInfoModel(
       questionCount: _asInt(json['question_count']),
       rawDurationSeconds: rawDuration,
-      durationSeconds: parsedDuration,
-      durationText: rawDuration?.toString() ?? 'غير محدد',
+      durationSeconds: _asNullableInt(rawDuration),
+      durationText: _asDisplayText(rawDuration, fallback: 'غير محدد'),
       passMarkPercentage: _asNullableInt(json['pass_mark_percentage']),
       publishedAt: json['published_at']?.toString() ?? '',
-      lastContentUpdatedAt:
-          json['last_content_updated_at']?.toString() ?? '',
+      lastContentUpdatedAt: json['last_content_updated_at']?.toString() ?? '',
       targetLevel: json['target_level']?.toString() ?? '',
       language: json['language']?.toString() ?? '',
       participantsCount: _asInt(json['participants_count']),
@@ -208,10 +206,7 @@ class MyPublicTestInterestModel {
   }
 
   MyPublicTestInterestEntity toEntity() {
-    return MyPublicTestInterestEntity(
-      id: id,
-      name: name,
-    );
+    return MyPublicTestInterestEntity(id: id, name: name);
   }
 }
 
@@ -335,26 +330,50 @@ class MyPublicTestViewerContextModel {
   }
 }
 
-int _asInt(dynamic value) {
+int _asInt(dynamic value, {int fallback = 0}) {
   if (value is int) return value;
   if (value is double) return value.toInt();
-  if (value is String) return int.tryParse(value) ?? 0;
-  return 0;
+
+  if (value is String) {
+    final text = value.trim();
+    if (text.isEmpty) return fallback;
+    if (text.toLowerCase() == 'null') return fallback;
+    if (text == 'غير محدد') return fallback;
+    return int.tryParse(text) ?? fallback;
+  }
+
+  return fallback;
 }
 
 int? _asNullableInt(dynamic value) {
   if (value == null) return null;
   if (value is int) return value;
   if (value is double) return value.toInt();
-  if (value is String) return int.tryParse(value);
+
+  if (value is String) {
+    final text = value.trim();
+    if (text.isEmpty) return null;
+    if (text.toLowerCase() == 'null') return null;
+    if (text == 'غير محدد') return null;
+    return int.tryParse(text);
+  }
+
   return null;
 }
 
-double _asDouble(dynamic value) {
+double _asDouble(dynamic value, {double fallback = 0}) {
   if (value is double) return value;
   if (value is int) return value.toDouble();
-  if (value is String) return double.tryParse(value) ?? 0;
-  return 0;
+
+  if (value is String) {
+    final text = value.trim();
+    if (text.isEmpty) return fallback;
+    if (text.toLowerCase() == 'null') return fallback;
+    if (text == 'غير محدد') return fallback;
+    return double.tryParse(text) ?? fallback;
+  }
+
+  return fallback;
 }
 
 String? _asNullableString(dynamic value) {
@@ -363,7 +382,18 @@ String? _asNullableString(dynamic value) {
   final text = value.toString().trim();
 
   if (text.isEmpty) return null;
-  if (text == 'null') return null;
+  if (text.toLowerCase() == 'null') return null;
+
+  return text;
+}
+
+String _asDisplayText(dynamic value, {String fallback = ''}) {
+  if (value == null) return fallback;
+
+  final text = value.toString().trim();
+
+  if (text.isEmpty) return fallback;
+  if (text.toLowerCase() == 'null') return fallback;
 
   return text;
 }

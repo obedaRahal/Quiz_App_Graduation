@@ -12,6 +12,8 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_othe
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folders_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_tests_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_receive_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/content_bookmark_action_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_content_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_folder_details_params.dart';
@@ -19,6 +21,8 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fet
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_overview_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_tests_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/folder_bookmark_action_params.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/get_other_profile_receive_params.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/get_other_profile_share_link_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_content_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_folder_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_content_bookmark_use_case.dart';
@@ -45,6 +49,9 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
   final SaveContentBookmarkUseCase saveContentBookmarkUseCase;
   final RemoveContentBookmarkUseCase removeContentBookmarkUseCase;
 
+  final GetOtherProfileShareLinkUseCase getOtherProfileShareLinkUseCase;
+  final GetOtherProfileReceiveUseCase getOtherProfileReceiveUseCase;
+
   final FetchOtherProfileFolderDetailsUseCase
   fetchOtherProfileFolderDetailsUseCase;
   OtherProfileCubit({
@@ -60,6 +67,9 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     required this.saveContentBookmarkUseCase,
     required this.removeContentBookmarkUseCase,
     required this.fetchOtherProfileFolderDetailsUseCase,
+
+    required this.getOtherProfileShareLinkUseCase,
+    required this.getOtherProfileReceiveUseCase,
   }) : super(const OtherProfileState()) {
     debugPrint("============ OtherProfileCubit INIT ============");
   }
@@ -1055,6 +1065,128 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
       state.copyWith(
         getFolderDetailsStatus: GetOtherProfileFolderDetailsStatus.initial,
         clearFolderDetails: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  ////////////// share profile  and receive ////////////////
+  Future<void> getOtherProfileShareLink({required int userId}) async {
+    debugPrint(
+      "============ OtherProfileCubit.getOtherProfileShareLink ============",
+    );
+    debugPrint("→ params: {userId: $userId}");
+
+    if (state.isShareLinkLoading) return;
+
+    emit(
+      state.copyWith(
+        shareLinkStatus: OtherProfileShareLinkStatus.loading,
+        clearShareUrl: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await getOtherProfileShareLinkUseCase(
+      GetOtherProfileShareLinkParams(userId: userId),
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            shareLinkStatus: OtherProfileShareLinkStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearShareUrl: true,
+          ),
+        );
+      },
+      (response) {
+        emit(
+          state.copyWith(
+            shareLinkStatus: OtherProfileShareLinkStatus.success,
+            shareUrl: response.data.shareUrl,
+            clearError: true,
+          ),
+        );
+      },
+    );
+  }
+
+  void resetOtherProfileShareLinkState() {
+    emit(
+      state.copyWith(
+        shareLinkStatus: OtherProfileShareLinkStatus.initial,
+        clearShareUrl: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  Future<void> getOtherProfileReceive({required String slug}) async {
+    debugPrint(
+      "============ OtherProfileCubit.getOtherProfileReceive ============",
+    );
+    debugPrint("→ params: {slug: $slug}");
+
+    if (state.isReceiveLoading) return;
+
+    final cleanSlug = slug.trim();
+
+    if (cleanSlug.isEmpty) {
+      emit(
+        state.copyWith(
+          receiveStatus: OtherProfileReceiveStatus.failure,
+          errorTitle: "خطأ",
+          errorMessage: "رابط الملف الشخصي غير صالح",
+          clearReceiveData: true,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        receiveStatus: OtherProfileReceiveStatus.loading,
+        clearReceiveData: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await getOtherProfileReceiveUseCase(
+      GetOtherProfileReceiveParams(slug: cleanSlug),
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            receiveStatus: OtherProfileReceiveStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearReceiveData: true,
+          ),
+        );
+      },
+      (response) {
+        emit(
+          state.copyWith(
+            receiveStatus: OtherProfileReceiveStatus.success,
+            receivedUserId: response.data.userId,
+            receivedIsThisYourProfile: response.data.isThisYourProfile,
+            clearError: true,
+          ),
+        );
+      },
+    );
+  }
+
+  void resetOtherProfileReceiveState() {
+    emit(
+      state.copyWith(
+        receiveStatus: OtherProfileReceiveStatus.initial,
+        clearReceiveData: true,
         clearError: true,
       ),
     );

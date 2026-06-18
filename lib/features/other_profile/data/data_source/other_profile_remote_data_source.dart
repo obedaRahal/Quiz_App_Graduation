@@ -5,11 +5,15 @@ import 'package:quiz_app_grad/core/database/api/api_consumer.dart'; // تأكد 
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/content_bookmark_action_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/folder_bookmark_action_model.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_connections_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_content_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_folder_details_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_folders_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_overview_model.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_receive_model.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_share_link_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_tests_model.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 abstract class OtherProfileRemoteDataSource {
   Future<OtherProfileOverviewModel> getOtherProfileOverview({
@@ -49,6 +53,21 @@ abstract class OtherProfileRemoteDataSource {
 
   Future<OtherProfileFolderDetailsModel> getOtherProfileFolderDetails({
     required int folderId,
+  });
+
+  Future<OtherProfileShareLinkModel> getOtherProfileShareLink({
+    required int userId,
+  });
+
+  Future<OtherProfileReceiveModel> getOtherProfileReceive({
+    required String slug,
+  });
+
+  Future<OtherProfileConnectionsResponseModel> getOtherProfileConnections({
+    required int userId,
+    required OtherProfileConnectionsType type,
+    String search = '',
+    String? cursor,
   });
 }
 
@@ -276,6 +295,87 @@ class OtherProfileRemoteDataSourceImpl implements OtherProfileRemoteDataSource {
     debugPrint("=================================================");
 
     return OtherProfileFolderDetailsModel.fromJson(
+      response as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<OtherProfileShareLinkModel> getOtherProfileShareLink({
+    required int userId,
+  }) async {
+    debugPrint(
+      "============ OtherProfileRemoteDataSourceImpl.getOtherProfileShareLink ============",
+    );
+    debugPrint(
+      "→ endpoint: ${EndPoints.otherProfileShareLink(userId: userId)}",
+    );
+    debugPrint("→ method: GET");
+    debugPrint("→ params: {userId: $userId}");
+
+    final response = await apiConsumer.get(
+      EndPoints.otherProfileShareLink(userId: userId),
+    );
+
+    debugPrint("← response (getOtherProfileShareLink): $response");
+    debugPrint("=================================================");
+
+    return OtherProfileShareLinkModel.fromJson(
+      response as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<OtherProfileReceiveModel> getOtherProfileReceive({
+    required String slug,
+  }) async {
+    debugPrint(
+      "============ OtherProfileRemoteDataSourceImpl.getOtherProfileReceive ============",
+    );
+    debugPrint("→ endpoint: ${EndPoints.otherProfileReceive(slug: slug)}");
+    debugPrint("→ method: GET");
+    debugPrint("→ params: {slug: $slug}");
+
+    final response = await apiConsumer.get(
+      EndPoints.otherProfileReceive(slug: slug),
+    );
+
+    debugPrint("← response (getOtherProfileReceive): $response");
+    debugPrint("=================================================");
+
+    return OtherProfileReceiveModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<OtherProfileConnectionsResponseModel> getOtherProfileConnections({
+    required int userId,
+    required OtherProfileConnectionsType type,
+    String search = '',
+    String? cursor,
+  }) async {
+    debugPrint(
+      "============ OtherProfileRemoteDataSourceImpl.getOtherProfileConnections ============",
+    );
+    debugPrint(
+      "→ endpoint: ${EndPoints.otherProfileConnections(userId: userId, type: type, search: search, cursor: cursor)}",
+    );
+    debugPrint("→ method: GET");
+    debugPrint(
+      "→ params: {userId: $userId, type: $type, search: $search, cursor: $cursor}",
+    );
+
+    final response = await apiConsumer.get(
+      EndPoints.otherProfileConnections(
+        userId: userId,
+        type: type,
+        search: search,
+        cursor: cursor,
+      ),
+    );
+
+    debugPrint("← response (getOtherProfileConnections): $response");
+    debugPrint("=================================================");
+
+    return OtherProfileConnectionsResponseModel.fromJson(
       response as Map<String, dynamic>,
     );
   }

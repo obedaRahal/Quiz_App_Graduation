@@ -77,6 +77,8 @@ class _FlashcardActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+        final appColors = context.appColors;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -85,7 +87,7 @@ class _FlashcardActionButton extends StatelessWidget {
         padding: EdgeInsets.all(SizeConfig.w(0.05)),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppPalette.white,
+          color: appColors.whiteToblack,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: color, width: 2),
           boxShadow: [BoxShadow(color: color, blurRadius: 5)],
@@ -106,7 +108,7 @@ class _FlashcardActionButton extends StatelessWidget {
             SizedBox(width: SizeConfig.w(0.012)),
             CustomTextWidget(
               desc,
-              color: AppPalette.black,
+              color: appColors.blackToGrey2Dark,
               fontFamily: AppFont.elMessiriSemiBold,
               fontSize: SizeConfig.text(0.028),
             ),

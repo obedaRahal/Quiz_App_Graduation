@@ -34,6 +34,10 @@ enum ContentBookmarkActionStatus { initial, loading, success, failure }
 
 enum GetOtherProfileFolderDetailsStatus { initial, loading, success, failure }
 
+enum OtherProfileShareLinkStatus { initial, loading, success, failure }
+
+enum OtherProfileReceiveStatus { initial, loading, success, failure }
+
 class OtherProfileState {
   final OtherProfileTab selectedTab;
 
@@ -71,6 +75,13 @@ class OtherProfileState {
   final OtherProfileFolderDetailsEntity? folderDetails;
   final GetOtherProfileFolderDetailsStatus getFolderDetailsStatus;
 
+  final OtherProfileShareLinkStatus shareLinkStatus;
+  final String? shareUrl;
+
+  final OtherProfileReceiveStatus receiveStatus;
+  final int? receivedUserId;
+  final bool? receivedIsThisYourProfile;
+
   const OtherProfileState({
     this.selectedTab = OtherProfileTab.overview,
 
@@ -107,6 +118,13 @@ class OtherProfileState {
 
     this.folderDetails,
     this.getFolderDetailsStatus = GetOtherProfileFolderDetailsStatus.initial,
+
+    this.shareLinkStatus = OtherProfileShareLinkStatus.initial,
+    this.shareUrl,
+
+    this.receiveStatus = OtherProfileReceiveStatus.initial,
+    this.receivedUserId,
+    this.receivedIsThisYourProfile,
   });
 
   bool get isFetchOverviewInitial =>
@@ -199,6 +217,20 @@ class OtherProfileState {
   bool get isGetFolderDetailsFailure =>
       getFolderDetailsStatus == GetOtherProfileFolderDetailsStatus.failure;
 
+  bool get isShareLinkLoading =>
+      shareLinkStatus == OtherProfileShareLinkStatus.loading;
+  bool get isShareLinkSuccess =>
+      shareLinkStatus == OtherProfileShareLinkStatus.success;
+  bool get isShareLinkFailure =>
+      shareLinkStatus == OtherProfileShareLinkStatus.failure;
+
+  bool get isReceiveLoading =>
+      receiveStatus == OtherProfileReceiveStatus.loading;
+  bool get isReceiveSuccess =>
+      receiveStatus == OtherProfileReceiveStatus.success;
+  bool get isReceiveFailure =>
+      receiveStatus == OtherProfileReceiveStatus.failure;
+
   OtherProfileState copyWith({
     OtherProfileTab? selectedTab,
 
@@ -241,6 +273,15 @@ class OtherProfileState {
     OtherProfileFolderDetailsEntity? folderDetails,
     GetOtherProfileFolderDetailsStatus? getFolderDetailsStatus,
     bool clearFolderDetails = false,
+
+    OtherProfileShareLinkStatus? shareLinkStatus,
+    String? shareUrl,
+    bool clearShareUrl = false,
+
+    OtherProfileReceiveStatus? receiveStatus,
+    int? receivedUserId,
+    bool? receivedIsThisYourProfile,
+    bool clearReceiveData = false,
   }) {
     return OtherProfileState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -291,6 +332,17 @@ class OtherProfileState {
           : folderDetails ?? this.folderDetails,
       getFolderDetailsStatus:
           getFolderDetailsStatus ?? this.getFolderDetailsStatus,
+
+      shareLinkStatus: shareLinkStatus ?? this.shareLinkStatus,
+      shareUrl: clearShareUrl ? null : shareUrl ?? this.shareUrl,
+
+      receiveStatus: receiveStatus ?? this.receiveStatus,
+      receivedUserId: clearReceiveData
+          ? null
+          : receivedUserId ?? this.receivedUserId,
+      receivedIsThisYourProfile: clearReceiveData
+          ? null
+          : receivedIsThisYourProfile ?? this.receivedIsThisYourProfile,
     );
   }
 }

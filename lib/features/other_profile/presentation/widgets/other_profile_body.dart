@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_connections/other_profile_connections_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_connections_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_header_card.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_selected_tab_content.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_tabs_section.dart';
@@ -186,6 +190,28 @@ class _OtherProfileBodyState extends State<OtherProfileBody> {
                       context
                           .read<OtherProfileCubit>()
                           .toggleOtherProfileFollow();
+                    },
+
+                    onFollowersTap: () {
+                      showOtherProfileConnectionsBottomSheet(
+                        context: context,
+                        userId: widget.userId,
+                        type: OtherProfileConnectionsType.followers,
+                        cubit: sl<OtherProfileConnectionsCubit>(),
+                        title: 'المتابعون',
+                        searchHint: 'ابحث عن متابع',
+                      );
+                    },
+
+                    onFollowingTap: () {
+                      showOtherProfileConnectionsBottomSheet(
+                        context: context,
+                        userId: widget.userId,
+                        type: OtherProfileConnectionsType.following,
+                        cubit: sl<OtherProfileConnectionsCubit>(),
+                        title: 'يتابع',
+                        searchHint: 'ابحث عن مستخدم',
+                      );
                     },
                   ),
                 ),

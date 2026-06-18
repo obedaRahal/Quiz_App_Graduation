@@ -1,0 +1,1 @@
+enum OtherProfileConnectionsType { followers, following }

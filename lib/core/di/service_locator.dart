@@ -98,11 +98,15 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_othe
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folders_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_tests_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_connections_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_receive_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_overview_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_content_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_folder_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_content_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_folder_bookmark_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_connections/other_profile_connections_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repository_impl.dart';
@@ -988,6 +992,34 @@ void _registerOtherProfileFeature() {
     );
   }
 
+  if (!sl.isRegistered<GetOtherProfileShareLinkUseCase>()) {
+    sl.registerLazySingleton<GetOtherProfileShareLinkUseCase>(
+      () => GetOtherProfileShareLinkUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetOtherProfileReceiveUseCase>()) {
+    sl.registerLazySingleton<GetOtherProfileReceiveUseCase>(
+      () => GetOtherProfileReceiveUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetOtherProfileConnectionsUseCase>()) {
+    sl.registerLazySingleton<GetOtherProfileConnectionsUseCase>(
+      () => GetOtherProfileConnectionsUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<OtherProfileConnectionsCubit>()) {
+    sl.registerFactory<OtherProfileConnectionsCubit>(
+      () => OtherProfileConnectionsCubit(
+        getOtherProfileConnectionsUseCase: sl(),
+        followCreatorUseCase: sl(),
+        unfollowCreatorUseCase: sl(),
+      ),
+    );
+  }
+
   if (!sl.isRegistered<OtherProfileCubit>()) {
     sl.registerFactory<OtherProfileCubit>(
       () => OtherProfileCubit(
@@ -1004,6 +1036,9 @@ void _registerOtherProfileFeature() {
         removeContentBookmarkUseCase: sl<RemoveContentBookmarkUseCase>(),
         fetchOtherProfileFolderDetailsUseCase:
             sl<FetchOtherProfileFolderDetailsUseCase>(),
+
+        getOtherProfileShareLinkUseCase: sl<GetOtherProfileShareLinkUseCase>(),
+        getOtherProfileReceiveUseCase: sl<GetOtherProfileReceiveUseCase>(),
       ),
     );
   }

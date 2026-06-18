@@ -232,7 +232,6 @@ class _MyTestDetailsViewState extends State<MyTestDetailsView> {
                               initialQuestions: const [],
 
                               // حالياً overview عنده previewQuestions فقط، بس لاحقاً من API الأسئلة بنثبت IDs الصح
-                              
                               initialPreviewQuestionIds: extra.previewQuestions
                                   .map((q) => q.id)
                                   .toList(),
@@ -502,13 +501,13 @@ class _MyTestDetailsBottomBar extends StatelessWidget {
                             ? 'جاري التحميل...'
                             : 'تحميل الاختبار',
                         fontSize: SizeConfig.text(0.025),
-                        color: AppPalette.white,
+                        color: appColors.whiteToblack,
                       ),
                       SizedBox(width: SizeConfig.w(0.012)),
                       Icon(
                         Icons.download,
                         size: SizeConfig.h(0.02),
-                        color: AppPalette.white,
+                        color: appColors.whiteToblack,
                       ),
                     ],
                   ),

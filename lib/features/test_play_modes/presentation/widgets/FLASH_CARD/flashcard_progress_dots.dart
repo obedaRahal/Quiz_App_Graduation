@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/app_theme_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
 
@@ -10,6 +12,8 @@ class FlashcardProgressDots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     return SizedBox(
       height: SizeConfig.h(0.03),
       child: ListView.separated(
@@ -20,6 +24,7 @@ class FlashcardProgressDots extends StatelessWidget {
         separatorBuilder: (_, __) => SizedBox(width: SizeConfig.w(0.018)),
         itemBuilder: (context, index) {
           final question = state.questions[index];
+
           final isCurrent =
               state.currentFlashcardQuestion?.questionId == question.questionId;
 
@@ -29,9 +34,16 @@ class FlashcardProgressDots extends StatelessWidget {
             height: isCurrent ? SizeConfig.w(0.045) : SizeConfig.w(0.035),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _dotColor(state, question.questionId),
+              color: _dotColor(
+                state,
+                question.questionId,
+                appColors,
+              ),
               border: isCurrent
-                  ? Border.all(color: AppPalette.primary, width: 2)
+                  ? Border.all(
+                      color: appColors.primaryToPrimaryDark,
+                      width: 2,
+                    )
                   : null,
             ),
           );
@@ -40,7 +52,11 @@ class FlashcardProgressDots extends StatelessWidget {
     );
   }
 
-  Color _dotColor(TestPlayModesState state, int questionId) {
+  Color _dotColor(
+    TestPlayModesState state,
+    int questionId,
+    AppThemeColors appColors,
+  ) {
     if (state.flashcardKnownQuestionIds.contains(questionId)) {
       return AppPalette.green;
     }
@@ -49,6 +65,6 @@ class FlashcardProgressDots extends StatelessWidget {
       return AppPalette.red;
     }
 
-    return AppPalette.greyLight;
+    return appColors.blackToGreyLightDark;
   }
 }

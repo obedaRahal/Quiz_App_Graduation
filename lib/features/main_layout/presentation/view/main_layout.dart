@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
@@ -21,6 +24,7 @@ import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bo
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_state.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/widget/custom_bottom_nav_bar.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 
 class MainLayoutBody extends StatelessWidget {
   const MainLayoutBody({super.key});
@@ -39,12 +43,10 @@ class MainLayoutBody extends StatelessWidget {
                 BlocProvider(
                   create: (_) => HomeCubit(
                     getRecommendedTestsUseCase:
-                       
                         sl<GetRecommendedTestsUseCase>(),
                     getRecommendedInterestsUseCase:
                         sl<GetRecommendedInterestsUseCase>(),
                     getRecommendedUsersUseCase:
-                       
                         sl<GetRecommendedUsersUseCase>(),
                   )..getHomeData(),
                   child: const HomePage(),
@@ -95,7 +97,7 @@ class MainLayoutBody extends StatelessWidget {
                             //context.pushNamed(AppRouterName.detailsOfTest);
                             context.pushNamed(
                               AppRouterName.myTestDetails,
-                             extra: DetailsOfTestRouteArgs(testId: 2),
+                              extra: DetailsOfTestRouteArgs(testId: 2),
                             );
                           },
                           child: Text("my test detailssssssssss"),
@@ -110,7 +112,7 @@ class MainLayoutBody extends StatelessWidget {
                             //context.pushNamed(AppRouterName.detailsOfTest);
                             context.pushNamed(
                               AppRouterName.myPrivateTestDetails,
-                              extra: DetailsOfTestRouteArgs(testId: 3),
+                              extra: DetailsOfTestRouteArgs(testId: 801),
                             );
                           },
                           child: Text("my test private detailssssssssss"),
@@ -130,10 +132,20 @@ class MainLayoutBody extends StatelessWidget {
                           child: Text(" other profile "),
                         ),
                       ),
+
+                      CustomButtonWidget(
+                        onTap: () {
+                          debugPrint("change mode ");
+                          context.read<ThemeCubit>().toggleTheme();
+                        },
+                        child: ThemedAppImage(
+                          darkPath: AppImage.logoDark,
+                          lightPath: AppImage.logoLight,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-
 
                 //const Center(child: Text('الخطة')),
               ],

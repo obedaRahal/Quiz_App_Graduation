@@ -50,6 +50,7 @@ import 'package:quiz_app_grad/features/onboarding/presentation/view/onboarding_v
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/views/other_profile_view.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/views/shared_profile_redirect_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
@@ -95,6 +96,34 @@ class AppRouter {
                   return cubit;
                 },
                 child: SharedTestRedirectView(slug: slug),
+              ),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.sharedProfileRedirect,
+          name: AppRouterName.sharedProfileRedirect,
+          pageBuilder: (context, state) {
+            final slug = state.pathParameters['slug'] ?? '';
+
+            debugPrint("============ SharedProfileRedirect Route ============");
+            debugPrint("→ received slug: $slug");
+            debugPrint("=================================================");
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider(
+                create: (_) {
+                  final cubit = sl<OtherProfileCubit>();
+
+                  if (slug.trim().isNotEmpty) {
+                    cubit.getOtherProfileReceive(slug: slug);
+                  }
+
+                  return cubit;
+                },
+                child: SharedProfileRedirectView(slug: slug),
               ),
             );
           },
@@ -498,6 +527,19 @@ class AppRouter {
 
       if (slug.isNotEmpty) {
         return AppRouterPath.sharedTestRedirectPath(slug);
+      }
+    }
+
+    if (uri.scheme == 'nerd' && uri.host == 'profiles') {
+      final slug = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : '';
+
+      debugPrint("============ Profile Deep Link Redirect ============");
+      debugPrint("→ original uri: $uri");
+      debugPrint("→ slug: $slug");
+      debugPrint("===================================================");
+
+      if (slug.isNotEmpty) {
+        return AppRouterPath.sharedProfileRedirectPath(slug);
       }
     }
 
