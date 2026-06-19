@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
-import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_state.dart';
+import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_cubit.dart';
+import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 
 import 'home_top_banner_indicator.dart';
 import 'home_top_banner_slider.dart';

@@ -52,7 +52,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
+import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_cubit.dart';
 
 import 'home_top_banner_card.dart';
 

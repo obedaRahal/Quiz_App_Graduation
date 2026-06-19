@@ -5,7 +5,7 @@ import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_state.dart';
+import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/home_category_card.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/presentation/view/tests_by_interest_page.dart';
 
