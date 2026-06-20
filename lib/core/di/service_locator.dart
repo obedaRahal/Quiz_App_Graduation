@@ -73,6 +73,7 @@ import 'package:quiz_app_grad/features/library/data/datasources/library_remote_d
 import 'package:quiz_app_grad/features/library/data/repositories/library_repository_impl.dart';
 import 'package:quiz_app_grad/features/library/domain/repositories/library_repository.dart';
 import 'package:quiz_app_grad/features/library/domain/usecases/get_library_content_usecase.dart';
+import 'package:quiz_app_grad/features/library/domain/usecases/search_library_content_usecase.dart';
 import 'package:quiz_app_grad/features/library/presentation/manager/library_cubit/library_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/data_sources/my_public_test_details_remote_data_source.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/repo_impl/my_public_test_details_repository_impl.dart';
@@ -829,8 +830,7 @@ void _registerCreateTestFeature() {
             sl<StartAiQuestionGenerationUseCase>(),
         getAiQuestionGenerationStatusUseCase:
             sl<GetAiQuestionGenerationStatusUseCase>(),
-        getEditableTestQuestionsUseCase:
-            sl<GetEditableTestQuestionsUseCase>(),
+        getEditableTestQuestionsUseCase: sl<GetEditableTestQuestionsUseCase>(),
         updateTestUseCase: sl<UpdateTestUseCase>(),
       ),
     );
@@ -909,15 +909,21 @@ void _registerLibraryFeature() {
       () => GetLibraryContentUseCase(sl<LibraryRepository>()),
     );
   }
-
+  if (!sl.isRegistered<SearchLibraryContentUseCase>()) {
+    sl.registerLazySingleton<SearchLibraryContentUseCase>(
+      () => SearchLibraryContentUseCase(sl<LibraryRepository>()),
+    );
+  }
   if (!sl.isRegistered<LibraryCubit>()) {
     sl.registerFactory<LibraryCubit>(
       () => LibraryCubit(
         getLibraryContentUseCase: sl<GetLibraryContentUseCase>(),
+        searchLibraryContentUseCase: sl<SearchLibraryContentUseCase>(),
       ),
     );
   }
 }
+
 // ================= My Public Test Details =================
 void _registerMyTestDetailsFeature() {
   if (!sl.isRegistered<MyPublicTestDetailsRemoteDataSource>()) {
