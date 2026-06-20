@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_overview_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
@@ -9,6 +10,7 @@ import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/content_tab/other_profile_content_tab.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/folder_tab/other_profile_folder_details_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/folder_tab/other_profile_folders_tab.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/widgets/overview_tab/other_profile_academic_certificate_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/overview_tab/other_profile_overview_tab.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/test_tab/other_profile_tests_tab.dart';
 
@@ -28,7 +30,25 @@ class OtherProfileSelectedTabContent extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (selectedTab) {
       case OtherProfileTab.overview:
-        return OtherProfileOverviewTab(dataEntity: overviewDataEntity);
+        return OtherProfileOverviewTab(
+          dataEntity: overviewDataEntity,
+          onAcademicCertificateTap:
+              overviewDataEntity.header.isAcademicallyVerified
+              ? () {
+                  showOtherProfileAcademicCertificateBottomSheet(
+                    context: context,
+                    userId: userId,
+                  );
+                }
+              : () {
+                  showValidationTopSnackBar(
+                    context,
+                    title: "لا يوجد شهادة",
+                    message: "لم تقم بتوثيق حسابك بعد",
+                    type: AppValidationSnackBarType.hint,
+                  );
+                },
+        );
 
       case OtherProfileTab.tests:
         return _TestsTabBlocContent(userId: userId);

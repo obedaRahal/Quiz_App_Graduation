@@ -418,6 +418,7 @@ class OtherProfileConnectionUserTile extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: SizeConfig.h(0.004)),
+                if(educationLevel.isNotEmpty)
                 CustomBackgroundWithChild(
                   childHorizontalPad: SizeConfig.w(0.015),
                   childVerticalPad: SizeConfig.h(0.005),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/core/utils/safe_back_to_home.dart';
@@ -7,6 +10,7 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_body.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:share_plus/share_plus.dart';
 
 class OtherProfileView extends StatefulWidget {
@@ -40,7 +44,6 @@ class _OtherProfileViewState extends State<OtherProfileView> {
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: SizeConfig.h(0.01)),
             BlocConsumer<OtherProfileCubit, OtherProfileState>(
               listenWhen: (previous, current) =>
                   previous.shareLinkStatus != current.shareLinkStatus,
@@ -106,6 +109,17 @@ class _OtherProfileViewState extends State<OtherProfileView> {
                         },
                 );
               },
+            ),
+            SizedBox(height: SizeConfig.h(0.01)),
+            CustomButtonWidget(
+              onTap: () {
+                debugPrint("change mode ");
+                context.read<ThemeCubit>().toggleTheme();
+              },
+              child: ThemedAppImage(
+                darkPath: AppImage.logoDark,
+                lightPath: AppImage.logoLight,
+              ),
             ),
 
             Expanded(child: OtherProfileBody(userId: widget.userId)),

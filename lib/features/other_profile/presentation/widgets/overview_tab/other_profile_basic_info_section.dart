@@ -34,6 +34,7 @@ class OtherProfileBasicInfoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -43,7 +44,9 @@ class OtherProfileBasicInfoSection extends StatelessWidget {
           children: [
             if (isThereCertificate)
               CustomButtonWidget(
-                backgroundColor: AppPalette.greyLight,
+                backgroundColor: isDark
+                    ? AppPalette.greyLightDark
+                    : AppPalette.greyLight,
                 childHorizontalPad: SizeConfig.w(0.02),
                 childVerticalPad: SizeConfig.h(0.004),
                 borderRadius: 5,
@@ -125,15 +128,17 @@ class OtherProfileBasicInfoSection extends StatelessWidget {
               runSpacing: SizeConfig.h(0.012),
               children: interestsList.map((interest) {
                 return CustomBackgroundWithChild(
+                  
                   borderRadius: BorderRadius.circular(4),
                   childHorizontalPad: SizeConfig.w(0.02),
                   childVerticalPad: SizeConfig.h(0.004),
-                  backgroundColor: AppPalette.primarySoft,
+                  backgroundColor: appColors.primarySoftTogreyLightDark,
                   child: CustomTextWidget(
                     "# $interest",
                     color: appColors.primaryToPrimaryDark,
                     fontSize: SizeConfig.text(0.033),
                     textDirection: TextDirection.rtl,
+                    
                   ),
                 );
               }).toList(),

@@ -1,3 +1,4 @@
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_academic_certificate_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folder_details_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folders_entity.dart';
@@ -37,6 +38,13 @@ enum GetOtherProfileFolderDetailsStatus { initial, loading, success, failure }
 enum OtherProfileShareLinkStatus { initial, loading, success, failure }
 
 enum OtherProfileReceiveStatus { initial, loading, success, failure }
+
+enum GetOtherProfileAcademicCertificateStatus {
+  initial,
+  loading,
+  success,
+  failure,
+}
 
 class OtherProfileState {
   final OtherProfileTab selectedTab;
@@ -82,6 +90,9 @@ class OtherProfileState {
   final int? receivedUserId;
   final bool? receivedIsThisYourProfile;
 
+  final OtherProfileAcademicCertificateEntity? academicCertificate;
+  final GetOtherProfileAcademicCertificateStatus academicCertificateStatus;
+
   const OtherProfileState({
     this.selectedTab = OtherProfileTab.overview,
 
@@ -125,6 +136,10 @@ class OtherProfileState {
     this.receiveStatus = OtherProfileReceiveStatus.initial,
     this.receivedUserId,
     this.receivedIsThisYourProfile,
+
+    this.academicCertificate,
+    this.academicCertificateStatus =
+        GetOtherProfileAcademicCertificateStatus.initial,
   });
 
   bool get isFetchOverviewInitial =>
@@ -231,6 +246,16 @@ class OtherProfileState {
   bool get isReceiveFailure =>
       receiveStatus == OtherProfileReceiveStatus.failure;
 
+  bool get isAcademicCertificateLoading =>
+      academicCertificateStatus ==
+      GetOtherProfileAcademicCertificateStatus.loading;
+  bool get isAcademicCertificateSuccess =>
+      academicCertificateStatus ==
+      GetOtherProfileAcademicCertificateStatus.success;
+  bool get isAcademicCertificateFailure =>
+      academicCertificateStatus ==
+      GetOtherProfileAcademicCertificateStatus.failure;
+
   OtherProfileState copyWith({
     OtherProfileTab? selectedTab,
 
@@ -282,6 +307,10 @@ class OtherProfileState {
     int? receivedUserId,
     bool? receivedIsThisYourProfile,
     bool clearReceiveData = false,
+
+    OtherProfileAcademicCertificateEntity? academicCertificate,
+    GetOtherProfileAcademicCertificateStatus? academicCertificateStatus,
+    bool clearAcademicCertificate = false,
   }) {
     return OtherProfileState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -343,6 +372,13 @@ class OtherProfileState {
       receivedIsThisYourProfile: clearReceiveData
           ? null
           : receivedIsThisYourProfile ?? this.receivedIsThisYourProfile,
+
+      academicCertificate: clearAcademicCertificate
+          ? null
+          : academicCertificate ?? this.academicCertificate,
+
+      academicCertificateStatus:
+          academicCertificateStatus ?? this.academicCertificateStatus,
     );
   }
 }

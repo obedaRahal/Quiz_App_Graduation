@@ -98,6 +98,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_othe
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folders_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_tests_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_academic_certificate_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_connections_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_receive_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_share_link_use_case.dart';
@@ -1020,6 +1021,14 @@ void _registerOtherProfileFeature() {
     );
   }
 
+  if (!sl.isRegistered<GetOtherProfileAcademicCertificateUseCase>()) {
+    sl.registerLazySingleton<GetOtherProfileAcademicCertificateUseCase>(
+      () => GetOtherProfileAcademicCertificateUseCase(
+        sl<OtherProfileRepository>(),
+      ),
+    );
+  }
+
   if (!sl.isRegistered<OtherProfileCubit>()) {
     sl.registerFactory<OtherProfileCubit>(
       () => OtherProfileCubit(
@@ -1039,6 +1048,9 @@ void _registerOtherProfileFeature() {
 
         getOtherProfileShareLinkUseCase: sl<GetOtherProfileShareLinkUseCase>(),
         getOtherProfileReceiveUseCase: sl<GetOtherProfileReceiveUseCase>(),
+
+        getOtherProfileAcademicCertificateUseCase:
+            sl<GetOtherProfileAcademicCertificateUseCase>(),
       ),
     );
   }

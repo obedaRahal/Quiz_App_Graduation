@@ -8,48 +8,34 @@ import 'package:quiz_app_grad/features/other_profile/presentation/widgets/overvi
 
 class OtherProfileOverviewTab extends StatefulWidget {
   final OtherProfileOverviewDataEntity dataEntity;
-  const OtherProfileOverviewTab({super.key, required this.dataEntity});
+  final VoidCallback onAcademicCertificateTap;
+  const OtherProfileOverviewTab({
+    super.key,
+    required this.dataEntity,
+    required this.onAcademicCertificateTap,
+  });
 
   @override
-  State<OtherProfileOverviewTab> createState() => _OtherProfileOverviewTabState();
+  State<OtherProfileOverviewTab> createState() =>
+      _OtherProfileOverviewTabState();
 }
 
 class _OtherProfileOverviewTabState extends State<OtherProfileOverviewTab> {
-
-  
   @override
   Widget build(BuildContext context) {
-    final interestsList = widget.dataEntity.basicInfo.interests ;
-    // [
-    //   'غير مصنف',
-    //   'علوم اساسية',
-    //   'برمجة',
-    //   'غير مصنف',
-    //   'علوم اساسية',
-    //   'برمجة',
-    // ];
-
-    final mockRatingDistribution = <RatingDistributionEntity>[
-      const RatingDistributionEntity(stars: 5, count: 8, percentage: 40),
-      const RatingDistributionEntity(stars: 4, count: 5, percentage: 25),
-      const RatingDistributionEntity(stars: 3, count: 4, percentage: 20),
-      const RatingDistributionEntity(stars: 2, count: 2, percentage: 10),
-      const RatingDistributionEntity(stars: 1, count: 1, percentage: 5),
-    ];
+    final interestsList = widget.dataEntity.basicInfo.interests;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         OtherProfileBasicInfoSection(
-          educationLevel: 'مدرسة',
-          governorate: 'لم يتم التحديد',
-          gender: 'انثى',
-          joinedAt: '16 May 2026',
+          educationLevel: widget.dataEntity.basicInfo.educationLevel,
+          governorate: widget.dataEntity.basicInfo.governorate,
+          gender: widget.dataEntity.basicInfo.gender,
+          joinedAt: widget.dataEntity.basicInfo.joinedAt,
           interestsList: interestsList,
           isThereCertificate: true,
-          onCertificateTap: () {
-            debugPrint('show academic certificate');
-          },
+          onCertificateTap:widget.onAcademicCertificateTap ,
         ),
 
         CustomDivider(height: 30, thickness: 3),
@@ -57,7 +43,9 @@ class _OtherProfileOverviewTabState extends State<OtherProfileOverviewTab> {
           averageRating: widget.dataEntity.reviews.averageRating,
           totalReviewsCount: widget.dataEntity.reviews.totalReviewsCount,
           commentsCount: widget.dataEntity.reviews.totalReviewsCount,
-          ratingDistribution: widget.dataEntity.reviews.ratingDistribution.map((item) {
+          ratingDistribution: widget.dataEntity.reviews.ratingDistribution.map((
+            item,
+          ) {
             return RatingDistributionEntity(
               stars: item.count,
               count: item.count,
@@ -70,8 +58,10 @@ class _OtherProfileOverviewTabState extends State<OtherProfileOverviewTab> {
 
         OtherProfileGeneralStatsSection(
           likesCount: '${widget.dataEntity.generalStatistics.testLikesCount}',
-          commentsCount: '${widget.dataEntity.generalStatistics.testCommentsCount}',
-          bookMarksCount: '${widget.dataEntity.generalStatistics.testBookmarksCount}',
+          commentsCount:
+              '${widget.dataEntity.generalStatistics.testCommentsCount}',
+          bookMarksCount:
+              '${widget.dataEntity.generalStatistics.testBookmarksCount}',
         ),
       ],
     );

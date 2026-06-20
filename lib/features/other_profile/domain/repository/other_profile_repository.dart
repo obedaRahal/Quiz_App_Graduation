@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:quiz_app_grad/core/errors/failure.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/content_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/folder_bookmark_action_entity.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_academic_certificate_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
@@ -69,4 +70,7 @@ abstract class OtherProfileRepository {
     String search = '',
     String? cursor,
   });
+
+  Future<Either<Failure, OtherProfileAcademicCertificateEntity>>
+  getOtherProfileAcademicCertificate({required int userId});
 }

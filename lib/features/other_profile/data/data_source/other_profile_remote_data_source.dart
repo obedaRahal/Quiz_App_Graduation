@@ -1,10 +1,17 @@
 // lib/features/other_profile/data/data_source/other_profile_remote_data_source.dart
 
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:quiz_app_grad/core/database/api/api_consumer.dart'; // تأكد من اسم الكلاس والمشروع لديك
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
+import 'package:quiz_app_grad/core/errors/error_model.dart';
+import 'package:quiz_app_grad/core/errors/exceptions.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/content_bookmark_action_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/folder_bookmark_action_model.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_academic_certificate_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_connections_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_content_model.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_folder_details_model.dart';
@@ -69,6 +76,9 @@ abstract class OtherProfileRemoteDataSource {
     String search = '',
     String? cursor,
   });
+
+  Future<OtherProfileAcademicCertificateModel>
+  getOtherProfileAcademicCertificate({required int userId});
 }
 
 class OtherProfileRemoteDataSourceImpl implements OtherProfileRemoteDataSource {
@@ -379,4 +389,67 @@ class OtherProfileRemoteDataSourceImpl implements OtherProfileRemoteDataSource {
       response as Map<String, dynamic>,
     );
   }
+
+  @override
+  Future<OtherProfileAcademicCertificateModel>
+  getOtherProfileAcademicCertificate({required int userId}) async {
+    debugPrint(
+      "============ OtherProfileRemoteDataSourceImpl.getOtherProfileAcademicCertificate ============",
+    );
+    debugPrint(
+      "→ endpoint: ${EndPoints.otherProfileAcademicCertificate(userId: userId)}",
+    );
+    debugPrint("→ method: GET");
+    debugPrint("→ params: {userId: $userId}");
+
+    try {
+      final response = await apiConsumer.get(
+        EndPoints.otherProfileAcademicCertificate(userId: userId),
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      debugPrint("← response (getOtherProfileAcademicCertificate): bytes");
+      debugPrint("=================================================");
+
+      return OtherProfileAcademicCertificateModel.fromBytes(response);
+    } on ServerException catch (e) {
+      final decodedError = _tryDecodeBytesError(e.errorModel.errorMessage);
+
+      if (decodedError != null) {
+        throw NotFoundException(decodedError);
+      }
+
+      rethrow;
+    }
+  }
+  ErrorModel? _tryDecodeBytesError(String rawText) {
+  final trimmed = rawText.trim();
+
+  if (!trimmed.startsWith('[') || !trimmed.endsWith(']')) {
+    return null;
+  }
+
+  try {
+    final decodedList = jsonDecode(trimmed);
+
+    if (decodedList is! List) return null;
+
+    final bytes = decodedList.map((e) => e as int).toList();
+    final jsonText = utf8.decode(Uint8List.fromList(bytes));
+
+    final decodedJson = jsonDecode(jsonText);
+
+    if (decodedJson is! Map<String, dynamic>) return null;
+
+    return ErrorModel.fromJson(
+      decodedJson,
+      fallbackStatusCode: decodedJson['status_code'] is int
+          ? decodedJson['status_code']
+          : 404,
+      fallbackMessage: decodedJson['message']?.toString(),
+    );
+  } catch (_) {
+    return null;
+  }
+}
 }

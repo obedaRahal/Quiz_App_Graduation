@@ -112,6 +112,8 @@ class _OtherProfileCoverAndAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+        final appColors = context.appColors;
+
     return SizedBox(
       height: SizeConfig.h(0.16),
       child: Stack(
@@ -144,7 +146,7 @@ class _OtherProfileCoverAndAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppPalette.grey,
-                border: Border.all(color: AppPalette.white, width: 3),
+                border: Border.all(color: appColors.whiteToblack, width: 3),
               ),
               child: ClipOval(
                 child: avatarUrl.trim().isEmpty
@@ -242,7 +244,7 @@ class _OtherProfileFollowButton extends StatelessWidget {
       childVerticalPad: SizeConfig.h(0.0055),
       child: CustomTextWidget(
         isFollowing ? 'إلغاء المتابعة' : 'متابعة',
-        color: isFollowing ? appColors.blackToGrey2Dark : AppPalette.white,
+        color: isFollowing ? appColors.blackToGrey2Dark :appColors.whiteToblack,
         fontFamily: AppFont.elMessiriBold,
         fontSize: SizeConfig.text(0.026),
       ),
@@ -250,64 +252,6 @@ class _OtherProfileFollowButton extends StatelessWidget {
   }
 }
 
-class _OtherProfileCoverPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final basePaint = Paint()
-      ..color = const Color(0xFFB8D4CF)
-      ..style = PaintingStyle.fill;
-
-    final patternPaint = Paint()
-      ..color = const Color(0xFFF4F4F4)
-      ..style = PaintingStyle.fill;
-
-    final orangePaint = Paint()
-      ..color = const Color(0xFFE8A236)
-      ..style = PaintingStyle.fill;
-
-    canvas.drawRect(Offset.zero & size, basePaint);
-
-    final path = Path()
-      ..moveTo(0, 0)
-      ..lineTo(size.width * 0.48, 0)
-      ..quadraticBezierTo(
-        size.width * 0.34,
-        size.height * 0.45,
-        size.width * 0.02,
-        size.height * 0.55,
-      )
-      ..lineTo(0, size.height)
-      ..close();
-
-    canvas.drawPath(path, patternPaint);
-
-    final stones = [
-      Offset(size.width * 0.08, size.height * 0.18),
-      Offset(size.width * 0.18, size.height * 0.36),
-      Offset(size.width * 0.30, size.height * 0.20),
-      Offset(size.width * 0.38, size.height * 0.08),
-      Offset(size.width * 0.24, size.height * 0.58),
-    ];
-
-    for (int i = 0; i < stones.length; i++) {
-      final paint = i.isEven ? orangePaint : basePaint;
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromCenter(
-            center: stones[i],
-            width: size.width * 0.045,
-            height: size.height * 0.10,
-          ),
-          const Radius.circular(6),
-        ),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
 
 class _PublisherStat extends StatelessWidget {
   final String label;

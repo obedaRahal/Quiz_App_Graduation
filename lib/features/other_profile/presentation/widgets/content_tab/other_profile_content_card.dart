@@ -191,6 +191,8 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       borderRadius: BorderRadius.circular(10),
       onTap: onTap,
@@ -200,6 +202,8 @@ class _SaveButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSaved
               ? AppPalette.red.withOpacity(0.7)
+              : isDark
+              ? AppPalette.greyLightDark
               : AppPalette.greyLight,
           borderRadius: BorderRadius.circular(5),
         ),
@@ -330,7 +334,7 @@ class _TagChip extends StatelessWidget {
     final appColors = context.appColors;
 
     return CustomBackgroundWithChild(
-      backgroundColor: AppPalette.primarySoft,
+      backgroundColor: appColors.primarySoftTogreyLightDark,
       borderRadius: BorderRadius.circular(5),
       childHorizontalPad: SizeConfig.w(0.018),
       childVerticalPad: SizeConfig.h(0.002),

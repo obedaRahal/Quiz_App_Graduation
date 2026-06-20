@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/core/errors/exceptions.dart'; // تأكد من م�
 import 'package:quiz_app_grad/core/errors/failure.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/content_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/folder_bookmark_action_entity.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_academic_certificate_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
@@ -550,67 +551,123 @@ class OtherProfileRepositoryImpl implements OtherProfileRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, OtherProfileConnectionsResponseEntity>>
+  getOtherProfileConnections({
+    required int userId,
+    required OtherProfileConnectionsType type,
+    String search = '',
+    String? cursor,
+  }) async {
+    debugPrint(
+      "============ OtherProfileRepositoryImpl.getOtherProfileConnections ============",
+    );
+    debugPrint(
+      "→ params: {userId: $userId, type: $type, search: $search, cursor: $cursor}",
+    );
+
+    try {
+      debugPrint("→ calling remoteDataSource.getOtherProfileConnections");
+
+      final model = await remoteDataSource.getOtherProfileConnections(
+        userId: userId,
+        type: type,
+        search: search,
+        cursor: cursor,
+      );
+
+      debugPrint("← remoteDataSource.getOtherProfileConnections success");
+      debugPrint("=================================================");
+
+      return Right(model);
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.getOtherProfileConnections ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.getOtherProfileConnections CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.getOtherProfileConnections Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء جلب قائمة المستخدمين',
+        ),
+      );
+    }
+  }
 
   @override
-Future<Either<Failure, OtherProfileConnectionsResponseEntity>>
-getOtherProfileConnections({
-  required int userId,
-  required OtherProfileConnectionsType type,
-  String search = '',
-  String? cursor,
-}) async {
-  debugPrint(
-    "============ OtherProfileRepositoryImpl.getOtherProfileConnections ============",
-  );
-  debugPrint(
-    "→ params: {userId: $userId, type: $type, search: $search, cursor: $cursor}",
-  );
-
-  try {
-    debugPrint("→ calling remoteDataSource.getOtherProfileConnections");
-
-    final model = await remoteDataSource.getOtherProfileConnections(
-      userId: userId,
-      type: type,
-      search: search,
-      cursor: cursor,
-    );
-
-    debugPrint("← remoteDataSource.getOtherProfileConnections success");
-    debugPrint("=================================================");
-
-    return Right(model);
-  } on ServerException catch (e) {
+  Future<Either<Failure, OtherProfileAcademicCertificateEntity>>
+  getOtherProfileAcademicCertificate({required int userId}) async {
     debugPrint(
-      "✗ OtherProfileRepositoryImpl.getOtherProfileConnections ServerException: ${e.errorModel.errorMessage}",
+      "============ OtherProfileRepositoryImpl.getOtherProfileAcademicCertificate ============",
     );
-    debugPrint("=================================================");
+    debugPrint("→ params: {userId: $userId}");
 
-    return Left(
-      ServerFailure(
-        title: e.errorModel.errorTitle,
-        message: e.errorModel.errorMessage,
-      ),
-    );
-  } on CacheException catch (e) {
-    debugPrint(
-      "✗ OtherProfileRepositoryImpl.getOtherProfileConnections CacheException: ${e.errorMessage}",
-    );
-    debugPrint("=================================================");
+    try {
+      debugPrint(
+        "→ calling remoteDataSource.getOtherProfileAcademicCertificate",
+      );
 
-    return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
-  } catch (e) {
-    debugPrint(
-      "✗ OtherProfileRepositoryImpl.getOtherProfileConnections Unexpected error: $e",
-    );
-    debugPrint("=================================================");
+      final model = await remoteDataSource.getOtherProfileAcademicCertificate(
+        userId: userId,
+      );
 
-    return Left(
-      ServerFailure(
-        title: 'حدث خطأ',
-        message: 'حدث خطأ غير متوقع أثناء جلب قائمة المستخدمين',
-      ),
-    );
+      debugPrint(
+        "← remoteDataSource.getOtherProfileAcademicCertificate success",
+      );
+      debugPrint("=================================================");
+
+      return Right(model);
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.getOtherProfileAcademicCertificate ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.getOtherProfileAcademicCertificate CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ OtherProfileRepositoryImpl.getOtherProfileAcademicCertificate Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء جلب الشهادة الجامعية',
+        ),
+      );
+    }
   }
-}
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
+import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/overview_tab/other_profile_stat_card.dart';
@@ -21,6 +22,7 @@ class OtherProfileGeneralStatsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -38,7 +40,11 @@ class OtherProfileGeneralStatsSection extends StatelessWidget {
           children: [
             Expanded(
               child: OtherProfileStatCard(
+                backgroundColor: isDark
+                    ? AppPalette.greyLightDark
+                    : AppPalette.greyLight,
                 icon: FontAwesomeIcons.solidBookmark,
+
                 value: bookMarksCount,
                 description: 'اختبارًا منشورًا',
               ),
@@ -51,6 +57,9 @@ class OtherProfileGeneralStatsSection extends StatelessWidget {
                 icon: FontAwesomeIcons.solidComment,
                 value: commentsCount,
                 description: 'تعليقًا للاختبارات',
+                backgroundColor: isDark
+                    ? AppPalette.greyLightDark
+                    : AppPalette.greyLight,
               ),
             ),
 
@@ -61,6 +70,9 @@ class OtherProfileGeneralStatsSection extends StatelessWidget {
                 icon: FontAwesomeIcons.solidThumbsUp,
                 value: likesCount,
                 description: 'إعجابًا للاختبارات',
+                backgroundColor: isDark
+                    ? AppPalette.greyLightDark
+                    : AppPalette.greyLight,
               ),
             ),
           ],

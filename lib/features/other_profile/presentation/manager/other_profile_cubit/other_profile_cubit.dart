@@ -12,6 +12,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_othe
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folders_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_tests_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_academic_certificate_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_receive_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/content_bookmark_action_params.dart';
@@ -21,6 +22,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fet
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_overview_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_tests_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/folder_bookmark_action_params.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/get_other_profile_academic_certificate_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/get_other_profile_receive_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/get_other_profile_share_link_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_content_bookmark_use_case.dart';
@@ -54,6 +56,10 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
 
   final FetchOtherProfileFolderDetailsUseCase
   fetchOtherProfileFolderDetailsUseCase;
+
+  final GetOtherProfileAcademicCertificateUseCase
+  getOtherProfileAcademicCertificateUseCase;
+
   OtherProfileCubit({
     required this.fetchOtherProfileOverviewUseCase,
     required this.fetchOtherProfileTestsUseCase,
@@ -70,6 +76,8 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
 
     required this.getOtherProfileShareLinkUseCase,
     required this.getOtherProfileReceiveUseCase,
+
+    required this.getOtherProfileAcademicCertificateUseCase,
   }) : super(const OtherProfileState()) {
     debugPrint("============ OtherProfileCubit INIT ============");
   }
@@ -1187,6 +1195,76 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
       state.copyWith(
         receiveStatus: OtherProfileReceiveStatus.initial,
         clearReceiveData: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  Future<void> getOtherProfileAcademicCertificate({required int userId}) async {
+    debugPrint(
+      "============ OtherProfileCubit.getOtherProfileAcademicCertificate ============",
+    );
+    debugPrint("→ params: {userId: $userId}");
+
+    if (state.isAcademicCertificateLoading) {
+      debugPrint("✗ academic certificate already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        academicCertificateStatus:
+            GetOtherProfileAcademicCertificateStatus.loading,
+        clearAcademicCertificate: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await getOtherProfileAcademicCertificateUseCase(
+      GetOtherProfileAcademicCertificateParams(userId: userId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ get academic certificate failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            academicCertificateStatus:
+                GetOtherProfileAcademicCertificateStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearAcademicCertificate: true,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ get academic certificate success");
+        debugPrint("→ bytes length: ${response.imageBytes.length}");
+
+        emit(
+          state.copyWith(
+            academicCertificateStatus:
+                GetOtherProfileAcademicCertificateStatus.success,
+            academicCertificate: response,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetAcademicCertificateState() {
+    emit(
+      state.copyWith(
+        academicCertificateStatus:
+            GetOtherProfileAcademicCertificateStatus.initial,
+        clearAcademicCertificate: true,
         clearError: true,
       ),
     );

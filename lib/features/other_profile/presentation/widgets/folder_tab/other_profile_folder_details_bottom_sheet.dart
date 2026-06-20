@@ -40,6 +40,9 @@ class OtherProfileFolderDetailsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return DraggableScrollableSheet(
       initialChildSize: 0.78,
       minChildSize: 0.45,
@@ -112,7 +115,9 @@ class OtherProfileFolderDetailsBottomSheet extends StatelessWidget {
                     width: SizeConfig.w(0.12),
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppPalette.greyLight,
+                      color: isDark
+                          ? AppPalette.greyLightDark
+                          : AppPalette.greyLight,
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
@@ -151,7 +156,7 @@ class OtherProfileFolderDetailsBottomSheet extends StatelessWidget {
                   ),
 
                   SizedBox(height: SizeConfig.h(0.01)),
-                  const CustomDivider(height: 10, thickness: 2 , isDashed: true,),
+                  const CustomDivider(height: 10, thickness: 2, isDashed: true),
 
                   Expanded(
                     child: SingleChildScrollView(
@@ -224,7 +229,9 @@ class _FolderDetailsSaveButton extends StatelessWidget {
       onTap: onTap,
       child: Icon(
         isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-        color: isSaved ? AppPalette.red : AppPalette.greyMedium,
+        color: isSaved
+            ? AppPalette.red.withOpacity(0.7)
+            : AppPalette.greyMedium,
         size: SizeConfig.w(0.075),
       ),
     );
@@ -244,14 +251,16 @@ class OtherProfileFolderDetailsInfoCard extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: CustomBackgroundWithChild(
         width: double.infinity,
-        backgroundColor: AppPalette.primary.withOpacity(0.85),
+        backgroundColor: appColors.primaryToPrimaryDark.withOpacity(0.85),
         borderRadius: BorderRadius.circular(8),
         padding: EdgeInsets.symmetric(
           horizontal: SizeConfig.w(0.035),
           vertical: SizeConfig.h(0.014),
         ),
-        border: Border.all(color: AppPalette.white),
-        boxShadow: [BoxShadow(color: AppPalette.primary, blurRadius: 4)],
+        border: Border.all(color: appColors.whiteToblack),
+        boxShadow: [
+          BoxShadow(color: appColors.primaryToPrimaryDark, blurRadius: 4),
+        ],
         child: Row(
           children: [
             Expanded(
@@ -260,7 +269,7 @@ class OtherProfileFolderDetailsInfoCard extends StatelessWidget {
                 children: [
                   CustomTextWidget(
                     folder.name,
-                    color: Colors.white,
+                    color: appColors.whiteToblack,
                     fontFamily: AppFont.elMessiriBold,
                     fontSize: SizeConfig.text(0.038),
                     maxLines: 1,
@@ -280,7 +289,7 @@ class OtherProfileFolderDetailsInfoCard extends StatelessWidget {
                           SizedBox(width: SizeConfig.w(0.01)),
                           CustomTextWidget(
                             '${folder.testsCount} عناصر',
-                            color: Colors.white,
+                            color: appColors.whiteToblack,
                             fontSize: SizeConfig.text(0.026),
                           ),
                         ],
@@ -296,7 +305,7 @@ class OtherProfileFolderDetailsInfoCard extends StatelessWidget {
                           SizedBox(width: SizeConfig.w(0.01)),
                           CustomTextWidget(
                             folder.publishedAt,
-                            color: Colors.white,
+                            color: appColors.whiteToblack,
                             fontSize: SizeConfig.text(0.026),
                           ),
                         ],
