@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
-import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_state.dart';
+import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final GetRecommendedTestsUseCase getRecommendedTestsUseCase;

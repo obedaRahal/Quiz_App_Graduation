@@ -10,7 +10,7 @@ import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_ai_generat
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_lab_recommended_tests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/get_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_by_interest_use_case.dart';
-import 'package:quiz_app_grad/features/laboratory/presentation/managet/laboratory_cubit/laboratory_state.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/manager/laboratory_cubit/laboratory_state.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_filter_bottom_sheet.dart';
 
 class LaboratoryCubit extends Cubit<LaboratoryState> {

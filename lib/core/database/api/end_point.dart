@@ -167,7 +167,8 @@ class EndPoints {
 
   static const String searchLabTests = '/lab/search';
   static const String labRecommendedTests = '/lab/recommended-tests';
-
+// Library 
+static const String libraryShow = '/library/show';
   // Test By Interest
   static const String testByInterest = '/home/test-by-interest';
   static const String searchTestByInterest = '/home/search-test-by-interest';

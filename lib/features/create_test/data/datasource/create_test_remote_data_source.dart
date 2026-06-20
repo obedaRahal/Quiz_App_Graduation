@@ -11,6 +11,7 @@ import 'package:quiz_app_grad/features/create_test/data/models/start_ai_question
 import 'package:quiz_app_grad/features/create_test/data/models/update_test_request_model.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/update_test_response_model.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_params.dart';
+import 'package:uuid/uuid.dart';
 
 abstract class CreateTestRemoteDataSource {
   Future<ScientificClassificationsResponseModel> getScientificClassifications();
@@ -37,6 +38,14 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
   final ApiConsumer api;
 
   const CreateTestRemoteDataSourceImpl({required this.api});
+  static const _uuid = Uuid();
+  Map<String, String> _idempotencyHeaders() {
+    final idempotencyKey = _uuid.v4();
+
+    debugPrint('→ Idempotency-Key: $idempotencyKey');
+
+    return {'Idempotency-Key': idempotencyKey};
+  }
 
   @override
   Future<ScientificClassificationsResponseModel>
@@ -53,6 +62,7 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
     final response = await api.post(
       EndPoints.createManualTest,
       data: request.toJson(),
+      headers: _idempotencyHeaders(),
     );
 
     return CreateManualTestResponseModel.fromJson(response);
@@ -78,7 +88,7 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
 
       formData.files.add(
         MapEntry(
-          'files[]', // مهم: طابق Postman
+          'files[]',
           await MultipartFile.fromFile(file.path!, filename: file.name),
         ),
       );
@@ -154,52 +164,17 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
     debugPrint('→ method: POST');
     debugPrint('→ body: $body');
 
-    final response = await api.post(endpoint, data: body);
+    final response = await api.post(
+      endpoint,
+      data: body,
+      headers: _idempotencyHeaders(),
+    );
 
     debugPrint('← response (updateTest): $response');
     debugPrint('=================================================');
 
     return UpdateTestResponseModel.fromJson(response as Map<String, dynamic>);
   }
-  //   @override
-  // Future<StartAiQuestionGenerationResponseModel> startAiQuestionGeneration({
-  //   required AiQuestionGenerationParams params,
-  // }) async {
-  //   final formData = FormData();
-
-  //   formData.fields.addAll([
-  //     MapEntry('source_type', params.sourceType),
-  //     MapEntry('question_count', params.questionCount.toString()),
-  //     MapEntry('difficulty_level', params.difficultyLevel),
-  //     MapEntry('language', params.language),
-  //   ]);
-
-  //   for (int i = 0; i < params.files.length; i++) {
-  //     final file = params.files[i];
-
-  //     if (file.path == null || file.path!.trim().isEmpty) {
-  //       continue;
-  //     }
-
-  //     formData.files.add(
-  //       MapEntry(
-  //         'files[$i]',
-  //         await MultipartFile.fromFile(
-  //           file.path!,
-  //           filename: file.name,
-  //         ),
-  //       ),
-  //     );
-  //   }
-
-  //   final response = await api.post(
-  //     EndPoints.aiQuestionGenerations,
-  //     data: formData,
-  //     isFormData: true,
-  //   );
-
-  //   return StartAiQuestionGenerationResponseModel.fromJson(response);
-  // }
 
   @override
   Future<AiQuestionGenerationStatusResponseModel>

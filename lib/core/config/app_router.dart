@@ -21,13 +21,13 @@ import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_te
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/views/shared_test_redirect_view.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
-import 'package:quiz_app_grad/features/get_all_interests/presentation/managet/all_categories_cubit/all_interests_cubit.dart';
+import 'package:quiz_app_grad/features/get_all_interests/presentation/manager/all_categories_cubit/all_interests_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/presentation/view/get_all_categories.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_users_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/views/details_of_test_view.dart';
-import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_cubit.dart';
+import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/view/laboratory_page.dart';

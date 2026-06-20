@@ -55,7 +55,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/home/presentation/managet/home_cubit/home_state.dart';
+import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/home_instructor_card.dart';
 
 class InstructorsSection extends StatelessWidget {

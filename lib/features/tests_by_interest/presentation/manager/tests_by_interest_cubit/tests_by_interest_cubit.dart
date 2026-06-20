@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/domain/use_cases/search_tests_by_interest_use_case.dart';
 import 'package:quiz_app_grad/features/tests_by_interest/domain/use_cases/get_tests_by_interest_use_case.dart';
-import 'package:quiz_app_grad/features/tests_by_interest/presentation/managet/tests_by_interest_cubit/tests_by_interest_state.dart';
+import 'package:quiz_app_grad/features/tests_by_interest/presentation/manager/tests_by_interest_cubit/tests_by_interest_state.dart';
 
 class TestsByInterestCubit extends Cubit<TestsByInterestState> {
   Timer? _searchDebounce;

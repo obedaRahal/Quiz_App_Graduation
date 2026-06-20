@@ -57,7 +57,7 @@
 // }
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
-import 'package:quiz_app_grad/features/get_all_interests/presentation/managet/all_categories_cubit/all_interests_state.dart';
+import 'package:quiz_app_grad/features/get_all_interests/presentation/manager/all_categories_cubit/all_interests_state.dart';
 
 class AllInterestsCubit extends Cubit<AllInterestsState> {
   final GetAllInterestsUseCase getAllInterestsUseCase;
