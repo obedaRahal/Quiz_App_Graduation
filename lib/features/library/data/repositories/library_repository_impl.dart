@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:quiz_app_grad/features/library/domain/entities/library_search_params.dart';
+import 'package:quiz_app_grad/features/library/domain/entities/library_search_response_entity.dart';
 
 import '../../domain/entities/library_params.dart';
 import '../../domain/entities/library_response_entity.dart';
@@ -19,4 +21,15 @@ class LibraryRepositoryImpl implements LibraryRepository {
 
     return remoteDataSource.getLibraryContent(params);
   }
+  @override
+Future<LibrarySearchResponseEntity> searchLibraryContent(
+  LibrarySearchParams params,
+) async {
+  debugPrint('================ LibraryRepositoryImpl Search ================');
+  debugPrint(
+    'query: ${params.query}, mode: ${params.mode}, cursor: ${params.cursor}',
+  );
+
+  return remoteDataSource.searchLibraryContent(params);
+}
 }

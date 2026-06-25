@@ -66,8 +66,10 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
+import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/library/domain/entities/library_featured_entity.dart';
 import 'package:quiz_app_grad/features/library/domain/entities/library_material_entity.dart';
@@ -106,8 +108,13 @@ class LibraryPage extends StatelessWidget {
                     ),
                     child: LibrarySearchField(
                       controller: searchController,
-                      onChanged: (value) {},
-                      onClear: () => searchController.clear(),
+                      onChanged: (value) {
+                        context.read<LibraryCubit>().onSearchChanged(value);
+                      },
+                      onClear: () {
+                        searchController.clear();
+                        context.read<LibraryCubit>().clearSearch();
+                      },
                       onTap: () {},
                     ),
                   ),
@@ -130,6 +137,12 @@ class LibraryPage extends StatelessWidget {
                   Expanded(
                     child: BlocBuilder<LibraryCubit, LibraryState>(
                       builder: (context, state) {
+                        final isDark =
+                            Theme.of(context).brightness == Brightness.dark;
+                        final messageColor = isDark
+                            ? AppPalette.titleWhiteINDark
+                            : AppPalette.textColorInHome;
+
                         if (state.status == LibraryStatus.loading) {
                           return const Center(
                             child: CircularProgressIndicator(),
@@ -138,20 +151,59 @@ class LibraryPage extends StatelessWidget {
 
                         if (state.status == LibraryStatus.failure) {
                           return Center(
-                            child: Text(state.errorMessage ?? 'حدث خطأ ما'),
+                            child: CustomTextWidget(
+                              state.errorMessage ?? 'حدث خطأ ما',
+                              textAlign: TextAlign.center,
+                              color: messageColor,
+                              fontSize: SizeConfig.text(
+                                0.036,
+                              ).clamp(13.0, 16.0).toDouble(),
+                              fontWeight: FontWeight.w600,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        }
+
+                        if (state.isSearching &&
+                            state.searchMaterials.isEmpty) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (state.isSearchMode &&
+                            !state.isSearching &&
+                            state.searchMaterials.isEmpty) {
+                          return Center(
+                            child: CustomTextWidget(
+                              state.errorMessage ?? 'لا توجد نتائج مطابقة',
+                              textAlign: TextAlign.center,
+                              color: messageColor,
+                              fontSize: SizeConfig.text(
+                                0.036,
+                              ).clamp(13.0, 16.0).toDouble(),
+                              fontWeight: FontWeight.w600,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           );
                         }
 
                         return Column(
                           children: [
-                            LibraryMediaCarousel(
-                              items: state.featured.map(_mapFeatured).toList(),
-                            ),
+                            if (!state.isSearchMode)
+                              LibraryMediaCarousel(
+                                items: state.featured
+                                    .map(_mapFeatured)
+                                    .toList(),
+                              ),
 
                             Expanded(
                               child: LibraryContentList(
-                                items:
-                                    state.materials.map(_mapMaterial).toList(),
+                                items: state.displayedMaterials
+                                    .map(_mapMaterial)
+                                    .toList(),
                                 onItemBuild: (index) {
                                   context
                                       .read<LibraryCubit>()
@@ -161,6 +213,26 @@ class LibraryPage extends StatelessWidget {
                             ),
                           ],
                         );
+                        // return Column(
+                        //   children: [
+                        //     LibraryMediaCarousel(
+                        //       items: state.featured.map(_mapFeatured).toList(),
+                        //     ),
+
+                        //     Expanded(
+                        //       child: LibraryContentList(
+                        //         items: state.materials
+                        //             .map(_mapMaterial)
+                        //             .toList(),
+                        //         onItemBuild: (index) {
+                        //           context
+                        //               .read<LibraryCubit>()
+                        //               .loadMoreWhenNeeded(index);
+                        //         },
+                        //       ),
+                        //     ),
+                        //   ],
+                        // );
                       },
                     ),
                   ),

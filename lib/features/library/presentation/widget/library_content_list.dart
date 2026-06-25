@@ -300,7 +300,7 @@ class _TypeBadge extends StatelessWidget {
         vertical: SizeConfig.h(0.002),
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
+        color: AppPalette.purple,
         borderRadius: BorderRadius.circular(5),
       ),
       child: CustomTextWidget(
