@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_tests_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_tests_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/test_tab/other_profile_test_card.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/test_tab/other_profile_tests_filter_section.dart';
 
@@ -37,7 +38,7 @@ class OtherProfileTestsTab extends StatelessWidget {
         SizedBox(height: SizeConfig.h(0.018)),
 
         if (isLoading)
-          shimmerLoader ?? const Center(child: CircularProgressIndicator())
+          shimmerLoader ?? const OtherProfileTestsTabShimmer()
         else if (tests.isEmpty)
           Center(
             child: Padding(
@@ -49,6 +50,7 @@ class OtherProfileTestsTab extends StatelessWidget {
             ),
           )
         else
+        //OtherProfileTestsTabShimmer(),
           Column(
             children: [
               ...tests.map((test) {

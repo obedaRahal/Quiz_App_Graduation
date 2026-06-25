@@ -16,9 +16,11 @@ class TestPlayContentModel {
   factory TestPlayContentModel.fromJson(Map<String, dynamic> json) {
     return TestPlayContentModel(
       success: json['success'] == true,
-      title: (json['title'] ?? '').toString(),
-      data: TestPlayDataModel.fromJson(json['data'] ?? {}),
-      statusCode: json['status_code'] ?? 0,
+      title: json['title']?.toString() ?? '',
+      data: TestPlayDataModel.fromJson(
+        (json['data'] as Map?)?.cast<String, dynamic>() ?? {},
+      ),
+      statusCode: _asInt(json['status_code']),
     );
   }
 
@@ -43,8 +45,12 @@ class TestPlayDataModel {
 
   factory TestPlayDataModel.fromJson(Map<String, dynamic> json) {
     return TestPlayDataModel(
-      test: TestPlayInfoModel.fromJson(json['test'] ?? {}),
-      viewer: TestPlayViewerModel.fromJson(json['viewer'] ?? {}),
+      test: TestPlayInfoModel.fromJson(
+        (json['test'] as Map?)?.cast<String, dynamic>() ?? {},
+      ),
+      viewer: TestPlayViewerModel.fromJson(
+        (json['viewer'] as Map?)?.cast<String, dynamic>() ?? {},
+      ),
     );
   }
 
@@ -60,8 +66,8 @@ class TestPlayInfoModel {
   final int testId;
   final String title;
   final int questionCount;
-  final int durationSeconds;
-  final int passMarkPercentage;
+  final int? durationSeconds;
+  final int? passMarkPercentage;
   final List<TestPlayQuestionModel> questions;
 
   const TestPlayInfoModel({
@@ -75,12 +81,12 @@ class TestPlayInfoModel {
 
   factory TestPlayInfoModel.fromJson(Map<String, dynamic> json) {
     return TestPlayInfoModel(
-      testId: json['test_id'] ?? 0,
-      title: (json['title'] ?? '').toString(),
-      questionCount: json['question_count'] ?? 0,
-      durationSeconds: json['duration_seconds'] ?? 0,
-      passMarkPercentage: json['pass_mark_percentage'] ?? 0,
-      questions: ((json['questions'] ?? []) as List)
+      testId: _asInt(json['test_id']),
+      title: json['title']?.toString() ?? '',
+      questionCount: _asInt(json['question_count']),
+      durationSeconds: _asNullableInt(json['duration_seconds']),
+      passMarkPercentage: _asNullableInt(json['pass_mark_percentage']),
+      questions: _asList(json['questions'])
           .map((item) => TestPlayQuestionModel.fromJson(item))
           .toList(),
     );
@@ -92,7 +98,7 @@ class TestPlayInfoModel {
       title: title,
       questionCount: questionCount,
       durationSeconds: durationSeconds,
-      passMarkPercentage: passMarkPercentage,
+      passMarkPercentage: passMarkPercentage ?? 0,
       questions: questions.map((question) => question.toEntity()).toList(),
     );
   }
@@ -115,11 +121,11 @@ class TestPlayQuestionModel {
 
   factory TestPlayQuestionModel.fromJson(Map<String, dynamic> json) {
     return TestPlayQuestionModel(
-      questionId: json['question_id'] ?? 0,
-      position: json['position'] ?? 0,
-      questionText: (json['question_text'] ?? '').toString(),
-      hintText: json['hint_text']?.toString(),
-      options: ((json['options'] ?? []) as List)
+      questionId: _asInt(json['question_id']),
+      position: _asInt(json['position']),
+      questionText: json['question_text']?.toString() ?? '',
+      hintText: _asNullableString(json['hint_text']),
+      options: _asList(json['options'])
           .map((item) => TestPlayOptionModel.fromJson(item))
           .toList(),
     );
@@ -151,10 +157,10 @@ class TestPlayOptionModel {
 
   factory TestPlayOptionModel.fromJson(Map<String, dynamic> json) {
     return TestPlayOptionModel(
-      optionId: json['option_id'] ?? 0,
-      position: json['position'] ?? 0,
-      optionText: (json['option_text'] ?? '').toString(),
-      isCorrect: json['is_correct'] == true,
+      optionId: _asInt(json['option_id']),
+      position: _asInt(json['position']),
+      optionText: json['option_text']?.toString() ?? '',
+      isCorrect: _asBool(json['is_correct']),
     );
   }
 
@@ -181,9 +187,9 @@ class TestPlayViewerModel {
 
   factory TestPlayViewerModel.fromJson(Map<String, dynamic> json) {
     return TestPlayViewerModel(
-      userId: json['user_id'] ?? 0,
-      name: (json['name'] ?? '').toString(),
-      avatarUrl: json['avatar_url']?.toString(),
+      userId: _asInt(json['user_id']),
+      name: json['name']?.toString() ?? '',
+      avatarUrl: _asNullableString(json['avatar_url']),
     );
   }
 
@@ -194,4 +200,78 @@ class TestPlayViewerModel {
       avatarUrl: avatarUrl,
     );
   }
+}
+
+int _asInt(dynamic value, {int fallback = 0}) {
+  if (value is int) return value;
+  if (value is double) return value.toInt();
+
+  if (value is String) {
+    final text = value.trim();
+
+    if (text.isEmpty) return fallback;
+    if (text.toLowerCase() == 'null') return fallback;
+    if (text == 'غير محدد') return fallback;
+
+    return int.tryParse(text) ?? fallback;
+  }
+
+  return fallback;
+}
+
+int? _asNullableInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is double) return value.toInt();
+
+  if (value is String) {
+    final text = value.trim();
+
+    if (text.isEmpty) return null;
+    if (text.toLowerCase() == 'null') return null;
+    if (text == 'غير محدد') return null;
+
+    return int.tryParse(text);
+  }
+
+  return null;
+}
+
+bool _asBool(dynamic value, {bool fallback = false}) {
+  if (value is bool) return value;
+  if (value is int) return value == 1;
+
+  if (value is String) {
+    final text = value.trim().toLowerCase();
+
+    if (text == 'true') return true;
+    if (text == '1') return true;
+    if (text == 'yes') return true;
+
+    if (text == 'false') return false;
+    if (text == '0') return false;
+    if (text == 'no') return false;
+  }
+
+  return fallback;
+}
+
+String? _asNullableString(dynamic value) {
+  if (value == null) return null;
+
+  final text = value.toString().trim();
+
+  if (text.isEmpty) return null;
+  if (text.toLowerCase() == 'null') return null;
+
+  return text;
+}
+
+List<Map<String, dynamic>> _asList(dynamic value) {
+  if (value is! List) return [];
+
+  return value
+      .whereType<Map>()
+      .map((item) => item.cast<String, dynamic>())
+      .toList();
 }

@@ -7,7 +7,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profi
 
 enum OtherProfileTab { overview, tests, folder, content }
 
-enum OtherProfileTestsFilter { paid, free, latest, mostTaken }
+enum OtherProfileTestsFilter { paid, free, latest, popular }
 
 enum OtherProfileContentFilter { latest, popular, files, images }
 

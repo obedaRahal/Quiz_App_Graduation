@@ -46,40 +46,40 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     voiceAssistantService.onError = _handleVoiceError;
   }
 
-  void loadMockTestContent() {
-    debugPrint(
-      "============ TestPlayModesCubit.loadMockTestContent ============",
-    );
+  // void loadMockTestContent() {
+  //   debugPrint(
+  //     "============ TestPlayModesCubit.loadMockTestContent ============",
+  //   );
 
-    emit(
-      state.copyWith(
-        contentStatus: TestPlayContentStatus.loading,
-        clearError: true,
-      ),
-    );
+  //   emit(
+  //     state.copyWith(
+  //       contentStatus: TestPlayContentStatus.loading,
+  //       clearError: true,
+  //     ),
+  //   );
 
-    final mockContent = _buildMockContent();
+  //   final mockContent = _buildMockContent();
 
-    emit(
-      state.copyWith(
-        contentStatus: TestPlayContentStatus.success,
-        content: mockContent,
-        currentQuestionIndex: 0,
-        clearSelectedOption: true,
-        mcqQuestionPhase: McqQuestionPhase.idle,
-        answersByQuestionId: {},
-        elapsedSeconds: 0,
-        sessionStatus: TestPlaySessionStatus.playing,
-        clearError: true,
-      ),
-    );
+  //   emit(
+  //     state.copyWith(
+  //       contentStatus: TestPlayContentStatus.success,
+  //       content: mockContent,
+  //       currentQuestionIndex: 0,
+  //       clearSelectedOption: true,
+  //       mcqQuestionPhase: McqQuestionPhase.idle,
+  //       answersByQuestionId: {},
+  //       elapsedSeconds: 0,
+  //       sessionStatus: TestPlaySessionStatus.playing,
+  //       clearError: true,
+  //     ),
+  //   );
 
-    _startSessionTimer();
+  //   _startSessionTimer();
 
-    debugPrint("✓ mock test content loaded");
-    debugPrint("→ questions count: ${mockContent.data.test.questions.length}");
-    debugPrint("=================================================");
-  }
+  //   debugPrint("✓ mock test content loaded");
+  //   debugPrint("→ questions count: ${mockContent.data.test.questions.length}");
+  //   debugPrint("=================================================");
+  // }
 
   void selectMcqOption({required int optionId}) {
     debugPrint("============ TestPlayModesCubit.selectMcqOption ============");
@@ -244,6 +244,13 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
       "============ TestPlayModesCubit._startSessionTimer ============",
     );
 
+    final durationSeconds = state.content?.data.test.durationSeconds;
+    if (durationSeconds == null || durationSeconds <= 0) {
+      debugPrint("→ durationSeconds is null or zero, timer will not start");
+      debugPrint("=================================================");
+      return;
+    }
+
     _sessionTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       final remainingSeconds = state.remainingSeconds;
 
@@ -267,128 +274,6 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
   void _stopSessionTimer() {
     _sessionTimer?.cancel();
     _sessionTimer = null;
-  }
-
-  TestPlayContentEntity _buildMockContent() {
-    return const TestPlayContentEntity(
-      success: true,
-      title: "! تم جلب محتوى الاختبار بنجاح",
-      statusCode: 200,
-      data: TestPlayDataEntity(
-        viewer: TestPlayViewerEntity(
-          userId: 801,
-          name: "محمد منصور",
-          avatarUrl: "http://localhost/storage/defaults/default-avatar.svg",
-        ),
-        test: TestPlayInfoEntity(
-          testId: 1,
-          title: "اختبار توصية 001 - الذكاء الاصطناعي",
-          questionCount: 3,
-          durationSeconds: 12,
-          passMarkPercentage: 51,
-          questions: [
-            TestPlayQuestionEntity(
-              questionId: 1,
-              position: 1,
-              questionText:
-                  "أي عبارة تعبّر بدقة أكبر عن best practice المرتبطة بـ الذكاء الاصطناعي لهذه الفئة الدراسية؟",
-              hintText:
-                  "ابدأ بالفكرة الأساسية في الذكاء الاصطناعي ثم استبعد الخيارات التي تركز على تفاصيل جانبية.",
-              options: [
-                TestPlayOptionEntity(
-                  optionId: 1,
-                  position: 1,
-                  optionText:
-                      "اختيار أول إجابة تبدو مألوفة حتى لو لم ترتبط بسياق السؤال.",
-                  isCorrect: false,
-                ),
-                TestPlayOptionEntity(
-                  optionId: 2,
-                  position: 2,
-                  optionText:
-                      "الاعتماد على حفظ المصطلح فقط دون فهم طريقة استخدامه.",
-                  isCorrect: false,
-                ),
-                TestPlayOptionEntity(
-                  optionId: 3,
-                  position: 3,
-                  optionText:
-                      "مقارنة الخيارات وفق المعنى العملي للمفهوم وليس وفق الكلمات المتشابهة فقط.",
-                  isCorrect: true,
-                ),
-                TestPlayOptionEntity(
-                  optionId: 4,
-                  position: 4,
-                  optionText:
-                      "مقارنة الخيارات وفق المعنى العملي للمفهوم وليس وفق الكلمات المتشابهة فقط.",
-                  isCorrect: false,
-                ),
-                TestPlayOptionEntity(
-                  optionId: 5,
-                  position: 5,
-                  optionText:
-                      "مقارنة الخيارات وفق المعنى العملي للمفهوم وليس وفق الكلمات المتشابهة فقط.",
-                  isCorrect: false,
-                ),
-              ],
-            ),
-            TestPlayQuestionEntity(
-              questionId: 2,
-              position: 2,
-              questionText:
-                  "عند حل مسألة ضمن الذكاء الاصطناعي، ما التصرف الأنسب الذي يعكس فهمًا عمليًا للمحتوى؟",
-              hintText: null,
-              options: [
-                TestPlayOptionEntity(
-                  optionId: 4,
-                  position: 1,
-                  optionText:
-                      "البدء بفهم الفكرة المركزية ثم تطبيقها على مثال واضح.",
-                  isCorrect: true,
-                ),
-                TestPlayOptionEntity(
-                  optionId: 5,
-                  position: 2,
-                  optionText:
-                      "اختيار الإجابة الأطول على افتراض أنها الأدق دائمًا.",
-                  isCorrect: false,
-                ),
-                TestPlayOptionEntity(
-                  optionId: 6,
-                  position: 3,
-                  optionText: "تبديل الخطوات المنطقية والاكتفاء بتخمين سريع.",
-                  isCorrect: false,
-                ),
-              ],
-            ),
-            TestPlayQuestionEntity(
-              questionId: 3,
-              position: 3,
-              questionText:
-                  "ما الهدف الأساسي من توظيف الذكاء الاصطناعي في سؤال موجه بدرجة صعب؟",
-              hintText:
-                  "فكّر بالهدف التعليمي وليس فقط بالكلمات الموجودة في السؤال.",
-              options: [
-                TestPlayOptionEntity(
-                  optionId: 7,
-                  position: 1,
-                  optionText:
-                      "تحليل المعطيات أولًا ثم اختيار الإجراء الذي يحقق الهدف التعليمي بدقة.",
-                  isCorrect: true,
-                ),
-                TestPlayOptionEntity(
-                  optionId: 8,
-                  position: 2,
-                  optionText:
-                      "تجاهل المعطيات الأساسية والتركيز على كلمة واحدة.",
-                  isCorrect: false,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Future<void> toggleVoiceAssistantForCurrentQuestion() async {

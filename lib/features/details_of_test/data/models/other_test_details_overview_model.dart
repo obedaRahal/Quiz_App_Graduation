@@ -17,11 +17,11 @@ class OtherTestDetailsOverviewModel {
 
   factory OtherTestDetailsOverviewModel.fromJson(Map<String, dynamic> json) {
     return OtherTestDetailsOverviewModel(
-      success: json['success'] as bool? ?? false,
+      success: json['success'] == true,
       title: json['title']?.toString() ?? '',
-      statusCode: json['status_code'] as int? ?? 0,
+      statusCode: _asInt(json['status_code']),
       data: TestDetailsOverviewDataModel.fromJson(
-        json['data'] as Map<String, dynamic>? ?? {},
+        (json['data'] as Map?)?.cast<String, dynamic>() ?? {},
       ),
     );
   }
@@ -51,15 +51,15 @@ class TestDetailsOverviewDataModel {
 
   factory TestDetailsOverviewDataModel.fromJson(Map<String, dynamic> json) {
     return TestDetailsOverviewDataModel(
-      id: json['id'] as int? ?? 0,
+      id: _asInt(json['id']),
       basicInfo: TestBasicInfoModel.fromJson(
-        json['basic_info'] as Map<String, dynamic>? ?? {},
+        (json['basic_info'] as Map?)?.cast<String, dynamic>() ?? {},
       ),
       creator: TestCreatorModel.fromJson(
-        json['creator'] as Map<String, dynamic>? ?? {},
+        (json['creator'] as Map?)?.cast<String, dynamic>() ?? {},
       ),
       extraInfo: TestExtraInfoModel.fromJson(
-        json['extra_info'] as Map<String, dynamic>? ?? {},
+        (json['extra_info'] as Map?)?.cast<String, dynamic>() ?? {},
       ),
     );
   }
@@ -98,10 +98,7 @@ class TestBasicInfoModel {
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       difficultyLevel: json['difficulty_level']?.toString() ?? '',
-      price: double.tryParse(json['price']?.toString() ?? '0') ?? 0,
-      // likesCount: json['likes_count'] as int? ?? 0,
-      // reviewsCount: json['reviews_count'] as int? ?? 0,
-      // bookmarksCount: json['bookmarks_count'] as int? ?? 0,
+      price: _asDouble(json['price']),
       likesCount: parseCompactCount(json['likes_count']),
       reviewsCount: parseCompactCount(json['reviews_count']),
       bookmarksCount: parseCompactCount(json['bookmarks_count']),
@@ -142,10 +139,9 @@ class TestCreatorModel {
 
   factory TestCreatorModel.fromJson(Map<String, dynamic> json) {
     return TestCreatorModel(
-      id: json['id'] as int? ?? 0,
+      id: _asInt(json['id']),
       name: json['name']?.toString() ?? '',
-      isAcademicallyVerified:
-          json['is_academically_verified'] as bool? ?? false,
+      isAcademicallyVerified: json['is_academically_verified'] == true,
       followersCount: parseCompactCount(json['followers_count']),
       followingCount: parseCompactCount(json['following_count']),
       publishedTestsCount: parseCompactCount(json['published_tests_count']),
@@ -194,26 +190,21 @@ class TestExtraInfoModel {
   });
 
   factory TestExtraInfoModel.fromJson(Map<String, dynamic> json) {
-    final interestsJson = json['interests'] as List<dynamic>? ?? [];
-
     return TestExtraInfoModel(
-      questionCount: json['question_count'] as int? ?? 0,
-      durationSeconds: json['duration_seconds'] as int?,
-      passMarkPercentage: json['pass_mark_percentage'] as int?,
+      questionCount: _asInt(json['question_count']),
+      durationSeconds: _asNullableInt(json['duration_seconds']),
+      passMarkPercentage: _asNullableInt(json['pass_mark_percentage']),
       publishedAt: json['published_at']?.toString() ?? '',
       lastContentUpdatedAt: json['last_content_updated_at']?.toString() ?? '',
       targetLevel: json['target_level']?.toString() ?? '',
       language: json['language']?.toString() ?? '',
-      participantsCount: json['participants_count'] as int? ?? 0,
+      participantsCount: _asInt(json['participants_count']),
       reviewStatus: json['review_status']?.toString() ?? '',
-      interests: interestsJson
-          .map(
-            (item) =>
-                TestInterestModel.fromJson(item as Map<String, dynamic>? ?? {}),
-          )
+      interests: _asList(json['interests'])
+          .map((item) => TestInterestModel.fromJson(item))
           .toList(),
       viewerContext: TestViewerContextModel.fromJson(
-        json['viewer_context'] as Map<String, dynamic>? ?? {},
+        (json['viewer_context'] as Map?)?.cast<String, dynamic>() ?? {},
       ),
     );
   }
@@ -239,11 +230,14 @@ class TestInterestModel {
   final int id;
   final String name;
 
-  const TestInterestModel({required this.id, required this.name});
+  const TestInterestModel({
+    required this.id,
+    required this.name,
+  });
 
   factory TestInterestModel.fromJson(Map<String, dynamic> json) {
     return TestInterestModel(
-      id: json['id'] as int? ?? 0,
+      id: _asInt(json['id']),
       name: json['name']?.toString() ?? '',
     );
   }
@@ -264,7 +258,6 @@ class TestViewerContextModel {
   final bool canReport;
   final bool hasLiked;
   final bool hasBookmarked;
-
   final bool isAttemptIt;
 
   const TestViewerContextModel({
@@ -283,17 +276,17 @@ class TestViewerContextModel {
 
   factory TestViewerContextModel.fromJson(Map<String, dynamic> json) {
     return TestViewerContextModel(
-      isOwner: json['is_owner'] as bool? ?? false,
-      isFree: json['is_free'] as bool? ?? false,
-      isPaid: json['is_paid'] as bool? ?? false,
-      hasPurchased: json['has_purchased'] as bool? ?? false,
-      isFollowingCreator: json['is_following_creator'] as bool? ?? false,
-      canPurchase: json['can_purchase'] as bool? ?? false,
-      canDownload: json['can_download'] as bool? ?? false,
-      canReport: json['can_report'] as bool? ?? false,
-      hasLiked: json['has_liked'] as bool? ?? false,
-      hasBookmarked: json['has_bookmarked'] as bool? ?? false,
-      isAttemptIt: json['is_Attempt_it'] as bool? ?? false,
+      isOwner: _asBool(json['is_owner']),
+      isFree: _asBool(json['is_free']),
+      isPaid: _asBool(json['is_paid']),
+      hasPurchased: _asBool(json['has_purchased']),
+      isFollowingCreator: _asBool(json['is_following_creator']),
+      canPurchase: _asBool(json['can_purchase']),
+      canDownload: _asBool(json['can_download']),
+      canReport: _asBool(json['can_report']),
+      hasLiked: _asBool(json['has_liked']),
+      hasBookmarked: _asBool(json['has_bookmarked']),
+      isAttemptIt: _asBool(json['is_Attempt_it']),
     );
   }
 
@@ -312,4 +305,85 @@ class TestViewerContextModel {
       isAttemptIt: isAttemptIt,
     );
   }
+}
+
+int _asInt(dynamic value, {int fallback = 0}) {
+  if (value is int) return value;
+  if (value is double) return value.toInt();
+
+  if (value is String) {
+    final text = value.trim();
+
+    if (text.isEmpty) return fallback;
+    if (text.toLowerCase() == 'null') return fallback;
+    if (text == 'غير محدد') return fallback;
+
+    return int.tryParse(text) ?? fallback;
+  }
+
+  return fallback;
+}
+
+int? _asNullableInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is double) return value.toInt();
+
+  if (value is String) {
+    final text = value.trim();
+
+    if (text.isEmpty) return null;
+    if (text.toLowerCase() == 'null') return null;
+    if (text == 'غير محدد') return null;
+
+    return int.tryParse(text);
+  }
+
+  return null;
+}
+
+double _asDouble(dynamic value, {double fallback = 0}) {
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+
+  if (value is String) {
+    final text = value.trim();
+
+    if (text.isEmpty) return fallback;
+    if (text.toLowerCase() == 'null') return fallback;
+    if (text == 'غير محدد') return fallback;
+
+    return double.tryParse(text) ?? fallback;
+  }
+
+  return fallback;
+}
+
+bool _asBool(dynamic value, {bool fallback = false}) {
+  if (value is bool) return value;
+
+  if (value is int) return value == 1;
+
+  if (value is String) {
+    final text = value.trim().toLowerCase();
+
+    if (text == 'true') return true;
+    if (text == '1') return true;
+    if (text == 'yes') return true;
+
+    if (text == 'false') return false;
+    if (text == '0') return false;
+    if (text == 'no') return false;
+  }
+
+  return fallback;
+}
+
+List<Map<String, dynamic>> _asList(dynamic value) {
+  if (value is! List) return [];
+
+  return value
+      .whereType<Map>()
+      .map((item) => item.cast<String, dynamic>())
+      .toList();
 }

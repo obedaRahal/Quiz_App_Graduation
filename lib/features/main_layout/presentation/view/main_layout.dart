@@ -127,7 +127,8 @@ class MainLayoutBody extends StatelessWidget {
                             //context.pushNamed(AppRouterName.detailsOfTest);
                             context.pushNamed(
                               AppRouterName.otherProfile,
-                              extra: OtherProfileRouteArgs(userId: 815),
+                              //extra: OtherProfileRouteArgs(userId: 815),
+                              extra: OtherProfileRouteArgs(userId: 1),
                             );
                           },
                           child: Text(" other profile "),

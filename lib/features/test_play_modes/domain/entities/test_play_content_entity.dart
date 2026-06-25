@@ -23,7 +23,7 @@ class TestPlayInfoEntity {
   final int testId;
   final String title;
   final int questionCount;
-  final int durationSeconds;
+  final int? durationSeconds;
   final int passMarkPercentage;
   final List<TestPlayQuestionEntity> questions;
 

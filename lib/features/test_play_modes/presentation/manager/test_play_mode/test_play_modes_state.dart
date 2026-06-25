@@ -208,10 +208,15 @@ class TestPlayModesState {
 
   int get answeredQuestionsCount => answersByQuestionId.length;
 
+  int? get totalDurationSeconds => content?.data.test.durationSeconds;
+  bool get hasLimitedTime =>
+      totalDurationSeconds != null && totalDurationSeconds! > 0;
   int get remainingSeconds {
-    final duration = test?.durationSeconds ?? 0;
-    final remaining = duration - elapsedSeconds;
-    return remaining < 0 ? 0 : remaining;
+    final duration = totalDurationSeconds;
+    if (duration == null || duration <= 0) {
+      return 0;
+    }
+    return (duration - elapsedSeconds).clamp(0, duration);
   }
 
   double get progressValue {

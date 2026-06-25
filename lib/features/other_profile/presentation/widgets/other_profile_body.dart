@@ -9,6 +9,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profi
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_connections/other_profile_connections_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_body_shimmer.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_connections_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_header_card.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_selected_tab_content.dart';
@@ -96,7 +97,7 @@ class _OtherProfileBodyState extends State<OtherProfileBody> {
 
       builder: (context, state) {
         if (state.isFetchOverviewLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const OtherProfileBodyShimmer();
         }
 
         // 2. حالة الفشل (Failure)
