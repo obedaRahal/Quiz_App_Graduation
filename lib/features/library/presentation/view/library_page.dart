@@ -1,69 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-// import 'package:quiz_app_grad/features/library/presentation/widget/libaray_tabs_section.dart';
-// import 'package:quiz_app_grad/features/library/presentation/widget/library_content_list.dart';
-// import 'package:quiz_app_grad/features/library/presentation/widget/library_header.dart';
-// import 'package:quiz_app_grad/features/library/presentation/widget/library_media_carousel.dart';
-// import 'package:quiz_app_grad/features/library/presentation/widget/library_search_field.dart';
-
-// class LibraryPage extends StatelessWidget {
-//   const LibraryPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final searchController = TextEditingController();
-
-//     return Scaffold(
-//       body: SafeArea(
-//         child: Column(
-//           children: [
-//             const Padding(
-//               padding: EdgeInsets.only(top: 8),
-//               child: LibraryHeader(),
-//             ),
-
-//             Padding(
-//               padding: EdgeInsets.symmetric(
-//                 horizontal: SizeConfig.w(0.045),
-//                 vertical: SizeConfig.h(0.012),
-//               ),
-//               child: LibrarySearchField(
-//                 controller: searchController,
-//                 onChanged: (value) {
-//                   // لاحقاً:
-//                   // context.read<LibraryCubit>().onSearchChanged(value);
-//                 },
-//                 onClear: () {
-//                   searchController.clear();
-
-//                   // لاحقاً:
-//                   // context.read<LibraryCubit>().clearSearch();
-//                 },
-//                 onTap: () {
-//                   // لاحقاً:
-//                   // context.read<LibraryCubit>().enterSearchMode();
-//                 },
-//               ),
-//             ),
-
-//             LibraryTabsSection(
-//               selectedIndex: 0,
-//               onChanged: (index) {
-//                 // لاحقاً:
-//                 // context.read<LibraryCubit>().changeSelectedTab(index);
-//               },
-//             ),
-
-//             SizedBox(height: SizeConfig.h(0.014)),
-
-//             const LibraryMediaCarousel(),
-//             Expanded(child: LibraryContentList()),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
@@ -246,18 +180,19 @@ class LibraryPage extends StatelessWidget {
   }
 
   LibraryMediaItem _mapFeatured(LibraryFeaturedEntity item) {
-    return LibraryMediaItem(
-      id: item.id,
-      title: '',
-      scientificSpecialties: item.interests,
-      imageUrl: item.urlContent,
-      likesCount: item.likeCount,
-      savesCount: item.bookmarksCount,
-      downloadsCount: item.downloadCount,
-      editsCount: 0,
-      publishedAgo: item.publishedAt,
-    );
-  }
+  return LibraryMediaItem(
+    id: item.id,
+    title: '',
+    scientificSpecialties: item.interests,
+    imageUrl: item.urlContent, // هون خليها من الباك
+    imageAsset: AppImage.carmen, // fallback بس
+    likesCount: item.likeCount,
+    savesCount: item.bookmarksCount,
+    downloadsCount: item.downloadCount,
+    editsCount: 0,
+    publishedAgo: item.publishedAt,
+  );
+}
 
   LibraryContentItem _mapMaterial(LibraryMaterialEntity item) {
     return LibraryContentItem(

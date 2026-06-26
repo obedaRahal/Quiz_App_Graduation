@@ -14,7 +14,10 @@ class CreateTestSubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CreateTestCubit, CreateTestState>(
       buildWhen: (previous, current) {
-        return previous.canSubmit != current.canSubmit ||
+        return previous.isCreateContentLoading !=
+                current.isCreateContentLoading ||
+            previous.creationMode != current.creationMode ||
+            previous.canSubmit != current.canSubmit ||
             previous.isCreateManualTestLoading !=
                 current.isCreateManualTestLoading ||
             previous.isUpdateTestLoading != current.isUpdateTestLoading ||
@@ -23,6 +26,11 @@ class CreateTestSubmitButton extends StatelessWidget {
       builder: (context, state) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final appColors = context.appColors;
+        final buttonText = state.isEditMode
+            ? 'حفظ التعديلات'
+            : state.isContentMode
+            ? 'حفظ ومشاركة'
+            : 'حفظ ومشاركة';
 
         //final canPress = state.canSubmit && !state.isCreateManualTestLoading;
 
@@ -39,7 +47,9 @@ class CreateTestSubmitButton extends StatelessWidget {
         final disabledTextColor = isDark
             ? AppPalette.grey2Dark
             : AppPalette.white;
-        final isLoading = state.isEditMode
+        final isLoading = state.isContentMode
+            ? state.isCreateContentLoading
+            : state.isEditMode
             ? state.isUpdateTestLoading
             : state.isCreateManualTestLoading;
 
@@ -105,7 +115,7 @@ class CreateTestSubmitButton extends StatelessWidget {
                       ),
                     )
                   : CustomTextWidget(
-                      state.isEditMode ? 'حفظ التعديلات' : 'حفظ ومشاركة',
+                      buttonText,
                       fontSize: SizeConfig.text(0.032),
                       fontWeight: FontWeight.w800,
                       color: canPress ? enabledTextColor : disabledTextColor,

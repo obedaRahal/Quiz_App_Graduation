@@ -17,21 +17,25 @@ class CreateTestTitleDescriptionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return BlocBuilder<CreateTestCubit, CreateTestState>(
       buildWhen: (previous, current) {
         return previous.title != current.title ||
             previous.description != current.description;
       },
       builder: (context, state) {
+        final helperText = state.isContentMode
+            ? 'أضف عنواناً واضحاً ووصفاً مختصراً يشرح محتوى الصور أو الملف.'
+            : 'أضف معلومات اختبارك بوضوح، عنوان مناسب ووصف مختصر يشرح به وصف المحتوى لتسهيل فهمه.';
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const _SectionTitle(),
 
             SizedBox(height: SizeConfig.h(0.006)),
 
             CustomTextWidget(
-              'أضف معلومات اختبارك بوضوح، عنوان مناسب ووصف مختصر يشرح به وصف المحتوى لتسهيل فهمه.',
+              helperText,
               fontSize: SizeConfig.text(0.033),
               fontWeight: FontWeight.w500,
               color: AppPalette.greyMedium,
@@ -61,7 +65,7 @@ class CreateTestTitleDescriptionSection extends StatelessWidget {
               currentLength: state.description.length,
               minLines: 1,
               maxLines: 3,
-              height: SizeConfig.h(0.075),
+              // height: SizeConfig.h(0.075),
               onChanged: context.read<CreateTestCubit>().changeDescription,
             ),
           ],
@@ -147,8 +151,7 @@ class _CreateTestCounterTextFieldState
   void didUpdateWidget(covariant CreateTestCounterTextField oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.value != oldWidget.value &&
-        widget.value != _controller.text) {
+    if (widget.value != oldWidget.value && widget.value != _controller.text) {
       _controller.text = widget.value;
       _controller.selection = TextSelection.collapsed(
         offset: _controller.text.length,
@@ -204,8 +207,7 @@ class _CreateTestCounterTextFieldState
                 fontFamily: AppFont.elMessiriRegular,
               ),
               filled: true,
-              fillColor:
-                  isDark ? AppPalette.fieldColorNDark : AppPalette.white,
+              fillColor: isDark ? AppPalette.fieldColorNDark : AppPalette.white,
               contentPadding: EdgeInsets.only(
                 right: SizeConfig.w(0.030),
                 left: SizeConfig.w(0.020),
@@ -214,9 +216,7 @@ class _CreateTestCounterTextFieldState
               ),
               suffixIcon: SizedBox(
                 width: SizeConfig.w(0.105),
-                child: Center(
-                  child: CustomAppImage(path: widget.image),
-                ),
+                child: Center(child: CustomAppImage(path: widget.image)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),

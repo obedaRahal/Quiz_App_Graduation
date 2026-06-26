@@ -37,60 +37,13 @@ class LibraryMediaItem {
 
     return '${scientificSpecialties.first} ...';
   }
-
-  static const List<LibraryMediaItem> demoItems = [
-    LibraryMediaItem(
-      id: 1,
-      title: 'وثيقة صيفي حيوي',
-      scientificSpecialties: ['الأحياء', 'الكيمياء'],
-      likesCount: 125,
-      savesCount: 65,
-      downloadsCount: 12,
-      editsCount: 3,
-      publishedAgo: '15 س',
-    ),
-    LibraryMediaItem(
-      id: 2,
-      title: 'خريطة الذاكرة',
-      scientificSpecialties: ['الأحياء', 'الكيمياء', 'الفيزياء'],
-      likesCount: 90,
-      savesCount: 42,
-      downloadsCount: 18,
-      editsCount: 5,
-      publishedAgo: '1 يوم',
-    ),
-    LibraryMediaItem(
-      id: 3,
-      title: 'قواعد معطيات متقدمة',
-      scientificSpecialties: ['هندسة البرمجيات'],
-      likesCount: 254,
-      savesCount: 103,
-      downloadsCount: 31,
-      editsCount: 7,
-      publishedAgo: '3 د',
-    ),
-    LibraryMediaItem(
-      id: 4,
-      title: 'ملخص شبكات',
-      scientificSpecialties: ['الشبكات'],
-      likesCount: 77,
-      savesCount: 24,
-      downloadsCount: 9,
-      editsCount: 2,
-      publishedAgo: '5 د',
-    ),
-  ];
 }
 
 class LibraryMediaCarousel extends StatelessWidget {
   final List<LibraryMediaItem> items;
   final ValueChanged<LibraryMediaItem>? onItemTap;
 
-  const LibraryMediaCarousel({
-    super.key,
-    required this.items,
-    this.onItemTap,
-  });
+  const LibraryMediaCarousel({super.key, required this.items, this.onItemTap});
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +92,7 @@ class _LibraryMediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    //final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // final cardWidth = SizeConfig.w(0.285).clamp(104.0, 124.0).toDouble();
     final cardWidth = SizeConfig.w(0.36).clamp(132.0, 155.0).toDouble();
@@ -198,51 +151,34 @@ class _LibraryMediaImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (item.imageUrl != null && item.imageUrl!.trim().isNotEmpty) {
-      return Image.network(
-        item.imageUrl!,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _LibraryMediaPlaceholder(item: item),
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return _LibraryMediaPlaceholder(item: item);
-        },
-      );
-    }
+    final path = item.imageUrl != null && item.imageUrl!.trim().isNotEmpty
+        ? item.imageUrl!
+        : (item.imageAsset ?? AppImage.carmen);
 
-    if (item.imageAsset != null && item.imageAsset!.trim().isNotEmpty) {
-      return Image.asset(
-        item.imageAsset!,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _LibraryMediaPlaceholder(item: item),
-      );
-    }
-
-    return _LibraryMediaPlaceholder(item: item);
-  }
-}
-
-class _LibraryMediaPlaceholder extends StatelessWidget {
-  final LibraryMediaItem item;
-
-  const _LibraryMediaPlaceholder({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
     return SizedBox.expand(
-      child: CustomAppImage(path: AppImage.carmen, fit: BoxFit.cover),
+      child: CustomAppImage(path: path, fit: BoxFit.cover),
     );
   }
 }
+
+// class _LibraryMediaPlaceholder extends StatelessWidget {
+//   final LibraryMediaItem item;
+
+//   const _LibraryMediaPlaceholder({required this.item});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox.expand(
+//       child: CustomAppImage(path: AppImage.carmen, fit: BoxFit.cover),
+//     );
+//   }
+// }
 
 class _LibraryMediaBottomInfo extends StatelessWidget {
   final LibraryMediaItem item;
   final double maxWidth;
 
-  const _LibraryMediaBottomInfo({
-    required this.item,
-    required this.maxWidth,
-  });
+  const _LibraryMediaBottomInfo({required this.item, required this.maxWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +193,39 @@ class _LibraryMediaBottomInfo extends StatelessWidget {
 
         SizedBox(height: SizeConfig.h(0.006)),
 
+        // Row(
+        //   textDirection: TextDirection.rtl,
+        //   children: [
+        //     Expanded(
+        //       child: Row(
+        //         mainAxisSize: MainAxisSize.min,
+        //         children: [
+        //           _LibraryMediaMetric(
+        //             icon: Icons.favorite_rounded,
+        //             value: _formatCount(item.likesCount),
+        //           ),
+        //           SizedBox(width: SizeConfig.w(0.010)),
+        //           _LibraryMediaMetric(
+        //             icon: Icons.bookmark_rounded,
+        //             value: _formatCount(item.savesCount),
+        //           ),
+        //           SizedBox(width: SizeConfig.w(0.010)),
+        //           _LibraryMediaMetric(
+        //             icon: Icons.download_rounded,
+        //             value: _formatCount(item.downloadsCount),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+
+        //     SizedBox(width: SizeConfig.w(0.010)),
+
+        //     _LibraryMediaMetric(
+        //       icon: Icons.access_time_rounded,
+        //       value: item.publishedAgo,
+        //     ),
+        //   ],
+        // ),
         Row(
           textDirection: TextDirection.rtl,
           children: [
@@ -264,29 +233,41 @@ class _LibraryMediaBottomInfo extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _LibraryMediaMetric(
-                    icon: Icons.favorite_rounded,
-                    value: _formatCount(item.likesCount),
+                  Flexible(
+                    child: _LibraryMediaMetric(
+                      icon: Icons.favorite_rounded,
+                      value: _formatCount(item.likesCount),
+                    ),
                   ),
-                  SizedBox(width: SizeConfig.w(0.010)),
-                  _LibraryMediaMetric(
-                    icon: Icons.bookmark_rounded,
-                    value: _formatCount(item.savesCount),
+
+                  SizedBox(width: SizeConfig.w(0.008)),
+
+                  Flexible(
+                    child: _LibraryMediaMetric(
+                      icon: Icons.bookmark_rounded,
+                      value: _formatCount(item.savesCount),
+                    ),
                   ),
-                  SizedBox(width: SizeConfig.w(0.010)),
-                  _LibraryMediaMetric(
-                    icon: Icons.download_rounded,
-                    value: _formatCount(item.downloadsCount),
+
+                  SizedBox(width: SizeConfig.w(0.008)),
+
+                  Flexible(
+                    child: _LibraryMediaMetric(
+                      icon: Icons.download_rounded,
+                      value: _formatCount(item.downloadsCount),
+                    ),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(width: SizeConfig.w(0.010)),
+            SizedBox(width: SizeConfig.w(0.006)),
 
-            _LibraryMediaMetric(
-              icon: Icons.access_time_rounded,
-              value: item.publishedAgo,
+            Flexible(
+              child: _LibraryMediaMetric(
+                icon: Icons.access_time_rounded,
+                value: item.publishedAgo,
+              ),
             ),
           ],
         ),
@@ -309,19 +290,14 @@ class _SpecialtyChip extends StatelessWidget {
   final String title;
   final double? maxWidth;
 
-  const _SpecialtyChip({
-    required this.title,
-    this.maxWidth,
-  });
+  const _SpecialtyChip({required this.title, this.maxWidth});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      constraints: BoxConstraints(
-        maxWidth: maxWidth ?? SizeConfig.w(0.24),
-      ),
+      constraints: BoxConstraints(maxWidth: maxWidth ?? SizeConfig.w(0.24)),
       padding: EdgeInsets.symmetric(
         horizontal: SizeConfig.w(0.018),
         vertical: SizeConfig.h(0.0025),
@@ -346,19 +322,18 @@ class _SpecialtyChip extends StatelessWidget {
     );
   }
 }
+
 class _LibraryMediaMetric extends StatelessWidget {
   final IconData icon;
   final String value;
 
-  const _LibraryMediaMetric({
-    required this.icon,
-    required this.value,
-  });
+  const _LibraryMediaMetric({required this.icon, required this.value});
 
   @override
   Widget build(BuildContext context) {
     return FittedBox(
       fit: BoxFit.scaleDown,
+      alignment: AlignmentDirectional.centerStart,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         textDirection: TextDirection.rtl,
@@ -366,19 +341,24 @@ class _LibraryMediaMetric extends StatelessWidget {
           Icon(
             icon,
             color: Colors.white.withOpacity(0.95),
-            size: SizeConfig.text(0.028).clamp(8.0, 11.0).toDouble(),
+            size: SizeConfig.text(0.026).clamp(8.0, 10.5).toDouble(),
           ),
-          SizedBox(width: SizeConfig.w(0.003)),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.95),
-              fontSize: SizeConfig.text(0.021).clamp(7.5, 9.5).toDouble(),
-              fontFamily: AppFont.elMessiriRegular,
-              fontWeight: FontWeight.w600,
-              height: 1,
+          SizedBox(width: SizeConfig.w(0.002)),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: SizeConfig.w(0.085).clamp(26.0, 38.0).toDouble(),
+            ),
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.95),
+                fontSize: SizeConfig.text(0.020).clamp(7.0, 9.0).toDouble(),
+                fontFamily: AppFont.elMessiriRegular,
+                fontWeight: FontWeight.w600,
+                height: 1,
+              ),
             ),
           ),
         ],
@@ -386,6 +366,7 @@ class _LibraryMediaMetric extends StatelessWidget {
     );
   }
 }
+
 class _FeaturedSpecialtiesRow extends StatelessWidget {
   final List<String> specialties;
   final double maxWidth;

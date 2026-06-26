@@ -139,7 +139,7 @@ class _AcademicHeader extends StatelessWidget {
           'حدد المستوى التعليمي الذي يناسب محتوى هذا الاختبار',
           fontSize: SizeConfig.text(0.033),
           fontWeight: FontWeight.w500,
-          color: const Color(0xFFB2B2B2),
+          color: AppPalette.greyMedium,
           textAlign: TextAlign.right,
           maxLines: 2,
         ),

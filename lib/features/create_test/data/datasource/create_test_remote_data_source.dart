@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/ai_question_generation_status_model.dart';
+import 'package:quiz_app_grad/features/create_test/data/models/create_content_response_model.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/create_manual_test_request_model.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/create_manual_test_response_model.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/editable_test_questions_model.dart';
@@ -11,6 +12,7 @@ import 'package:quiz_app_grad/features/create_test/data/models/start_ai_question
 import 'package:quiz_app_grad/features/create_test/data/models/update_test_request_model.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/update_test_response_model.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_params.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/create_content_params.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class CreateTestRemoteDataSource {
@@ -32,6 +34,9 @@ abstract class CreateTestRemoteDataSource {
     required int testId,
     required UpdateTestRequestModel request,
   });
+  Future<CreateContentResponseModel> createContent({
+  required CreateContentParams params,
+});
 }
 
 class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
@@ -185,4 +190,74 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
 
     return AiQuestionGenerationStatusResponseModel.fromJson(response);
   }
+@override
+Future<CreateContentResponseModel> createContent({
+  required CreateContentParams params,
+}) async {
+  debugPrint('============ CreateTestRemoteDataSourceImpl.createContent ============');
+
+  final formData = FormData();
+
+  formData.fields.addAll([
+    MapEntry('title', params.title),
+    MapEntry('description', params.description),
+    MapEntry('content_kind', params.contentKind),
+    MapEntry('target_level', params.targetLevel),
+    MapEntry('visibility_type', params.visibilityType),
+  ]);
+
+  for (var i = 0; i < params.interestIds.length; i++) {
+    formData.fields.add(
+      MapEntry('interest_ids[$i]', params.interestIds[i].toString()),
+    );
+  }
+
+  for (var i = 0; i < params.assets.length; i++) {
+    final file = params.assets[i];
+
+    if (file.path == null || file.path!.trim().isEmpty) {
+      continue;
+    }
+
+    formData.files.add(
+      MapEntry(
+        'assets[$i]',
+        await MultipartFile.fromFile(
+          file.path!,
+          filename: file.name,
+        ),
+      ),
+    );
+  }
+
+  debugPrint('→ endpoint: ${EndPoints.createContent}');
+  debugPrint('→ method: POST');
+  debugPrint('→ title: ${params.title}');
+  debugPrint('→ description: ${params.description}');
+  debugPrint('→ content_kind: ${params.contentKind}');
+  debugPrint('→ target_level: ${params.targetLevel}');
+  debugPrint('→ visibility_type: ${params.visibilityType}');
+  debugPrint('→ interest_ids: ${params.interestIds}');
+  debugPrint('→ assets_count: ${params.assets.length}');
+
+  final response = await api.post(
+    EndPoints.createContent,
+    data: formData,
+    isFormData: true,
+    headers: _idempotencyHeaders(),
+    options: Options(
+      contentType: 'multipart/form-data',
+      headers: {
+        'Accept': 'application/json',
+      },
+    ),
+  );
+
+  debugPrint('← response (createContent): $response');
+  debugPrint('=================================================');
+
+  return CreateContentResponseModel.fromJson(
+    response as Map<String, dynamic>,
+  );
+}
 }

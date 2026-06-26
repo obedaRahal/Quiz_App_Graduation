@@ -36,11 +36,7 @@ class LibraryContentList extends StatelessWidget {
   final List<LibraryContentItem> items;
   final ValueChanged<int>? onItemBuild;
 
-  const LibraryContentList({
-    super.key,
-    required this.items,
-    this.onItemBuild,
-  });
+  const LibraryContentList({super.key, required this.items, this.onItemBuild});
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +53,8 @@ class LibraryContentList extends StatelessWidget {
           height: 1,
           thickness: 1,
           color: Theme.of(context).dividerColor.withOpacity(
-                Theme.of(context).brightness == Brightness.dark ? 0.45 : 0.9,
-              ),
+            Theme.of(context).brightness == Brightness.dark ? 0.45 : 0.9,
+          ),
         ),
       ),
       itemBuilder: (context, index) {
@@ -72,9 +68,7 @@ class LibraryContentList extends StatelessWidget {
 class _LibraryContentCard extends StatelessWidget {
   final LibraryContentItem item;
 
-  const _LibraryContentCard({
-    required this.item,
-  });
+  const _LibraryContentCard({required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +76,8 @@ class _LibraryContentCard extends StatelessWidget {
 
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: SizedBox(
-        height: SizeConfig.h(0.112).clamp(94.0, 112.0).toDouble(),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.008)),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.0028)),
           child: Row(
@@ -110,9 +104,9 @@ class _LibraryContentCard extends StatelessWidget {
                             color: isDark
                                 ? AppPalette.titleWhiteINDark
                                 : AppPalette.textColorInHome,
-                            fontSize: SizeConfig.text(0.043)
-                                .clamp(16.0, 21.0)
-                                .toDouble(),
+                            fontSize: SizeConfig.text(
+                              0.043,
+                            ).clamp(16.0, 21.0).toDouble(),
                             fontWeight: FontWeight.w700,
                             fontFamily: AppFont.elMessiriRegular,
                           ),
@@ -132,10 +126,12 @@ class _LibraryContentCard extends StatelessWidget {
                       textAlign: TextAlign.right,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
-                      fontSize: SizeConfig.text(0.029)
-                          .clamp(10.5, 13.0)
-                          .toDouble(),
+                      color: isDark
+                          ? AppPalette.grey2Dark
+                          : AppPalette.greyMedium,
+                      fontSize: SizeConfig.text(
+                        0.029,
+                      ).clamp(10.5, 13.0).toDouble(),
                       fontWeight: FontWeight.w500,
                       fontFamily: AppFont.elMessiriRegular,
                     ),
@@ -160,10 +156,7 @@ class _ContentImage extends StatelessWidget {
   final String? imageUrl;
   final String? imageAsset;
 
-  const _ContentImage({
-    required this.imageUrl,
-    required this.imageAsset,
-  });
+  const _ContentImage({required this.imageUrl, required this.imageAsset});
 
   @override
   Widget build(BuildContext context) {
@@ -176,10 +169,7 @@ class _ContentImage extends StatelessWidget {
       child: SizedBox(
         width: SizeConfig.w(0.205).clamp(72.0, 88.0).toDouble(),
         height: SizeConfig.h(0.095).clamp(72.0, 88.0).toDouble(),
-        child: CustomAppImage(
-          path: path,
-          fit: BoxFit.cover,
-        ),
+        child: CustomAppImage(path: path, fit: BoxFit.cover),
       ),
     );
   }
@@ -208,10 +198,7 @@ class _BottomOneLineRow extends StatelessWidget {
           value: likesCount.toString(),
         ),
         SizedBox(width: SizeConfig.w(0.024)),
-        _InfoIcon(
-          icon: Icons.access_time_rounded,
-          value: publishedAgo,
-        ),
+        _InfoIcon(icon: Icons.access_time_rounded, value: publishedAgo),
       ],
     );
   }
@@ -220,9 +207,7 @@ class _BottomOneLineRow extends StatelessWidget {
 class _ResponsiveSpecialties extends StatelessWidget {
   final List<String> specialties;
 
-  const _ResponsiveSpecialties({
-    required this.specialties,
-  });
+  const _ResponsiveSpecialties({required this.specialties});
 
   @override
   Widget build(BuildContext context) {
@@ -256,10 +241,7 @@ class _BookmarkButton extends StatelessWidget {
   final bool isDark;
   final bool isBookmarked;
 
-  const _BookmarkButton({
-    required this.isDark,
-    required this.isBookmarked,
-  });
+  const _BookmarkButton({required this.isDark, required this.isBookmarked});
 
   @override
   Widget build(BuildContext context) {
@@ -271,9 +253,7 @@ class _BookmarkButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(7),
       ),
       child: Icon(
-        isBookmarked
-            ? Icons.bookmark_rounded
-            : Icons.bookmark_border_rounded,
+        isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
         color: isBookmarked
             ? Theme.of(context).colorScheme.primary
             : (isDark ? AppPalette.grey2Dark : AppPalette.greyMedium),
@@ -286,9 +266,7 @@ class _BookmarkButton extends StatelessWidget {
 class _TypeBadge extends StatelessWidget {
   final String title;
 
-  const _TypeBadge({
-    required this.title,
-  });
+  const _TypeBadge({required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -318,10 +296,7 @@ class _SpecialtyChip extends StatelessWidget {
   final String title;
   final bool isDots;
 
-  const _SpecialtyChip({
-    required this.title,
-    this.isDots = false,
-  });
+  const _SpecialtyChip({required this.title, this.isDots = false});
 
   @override
   Widget build(BuildContext context) {
@@ -358,10 +333,7 @@ class _InfoIcon extends StatelessWidget {
   final IconData icon;
   final String value;
 
-  const _InfoIcon({
-    required this.icon,
-    required this.value,
-  });
+  const _InfoIcon({required this.icon, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -374,11 +346,7 @@ class _InfoIcon extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         textDirection: TextDirection.rtl,
         children: [
-          Icon(
-            icon,
-            color: AppPalette.greyMedium,
-            size: iconSize,
-          ),
+          Icon(icon, color: AppPalette.greyMedium, size: iconSize),
           SizedBox(width: SizeConfig.w(0.006)),
           CustomTextWidget(
             value,

@@ -19,6 +19,7 @@ import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register
 import 'package:quiz_app_grad/features/create_test/data/datasource/create_test_remote_data_source.dart';
 import 'package:quiz_app_grad/features/create_test/data/repositories/create_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/create_test/domain/repositories/create_test_repository.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/create_content_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/create_manual_test_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/get_ai_question_generation_status_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/get_editable_test_questions_use_case.dart';
@@ -819,7 +820,11 @@ void _registerCreateTestFeature() {
       () => UpdateTestUseCase(sl<CreateTestRepository>()),
     );
   }
-
+if (!sl.isRegistered<CreateContentUseCase>()) {
+  sl.registerLazySingleton<CreateContentUseCase>(
+    () => CreateContentUseCase(sl()),
+  );
+}
   if (!sl.isRegistered<CreateTestCubit>()) {
     sl.registerFactory<CreateTestCubit>(
       () => CreateTestCubit(
@@ -832,6 +837,7 @@ void _registerCreateTestFeature() {
             sl<GetAiQuestionGenerationStatusUseCase>(),
         getEditableTestQuestionsUseCase: sl<GetEditableTestQuestionsUseCase>(),
         updateTestUseCase: sl<UpdateTestUseCase>(),
+        createContentUseCase: sl<CreateContentUseCase>(),
       ),
     );
   }

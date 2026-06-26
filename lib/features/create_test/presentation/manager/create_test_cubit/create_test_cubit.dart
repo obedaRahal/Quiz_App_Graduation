@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_status_entity.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/create_content_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_manual_test_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/editable_test_questions_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/scientific_classification_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/update_test_params.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/create_content_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/create_manual_test_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/get_ai_question_generation_status_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/get_editable_test_questions_use_case.dart';
@@ -24,6 +26,7 @@ class CreateTestCubit extends Cubit<CreateTestState> {
   getAiQuestionGenerationStatusUseCase;
   final GetEditableTestQuestionsUseCase getEditableTestQuestionsUseCase;
   final UpdateTestUseCase updateTestUseCase;
+  final CreateContentUseCase createContentUseCase;
   CreateTestCubit({
     required this.getScientificClassificationsUseCase,
     required this.createManualTestUseCase,
@@ -31,6 +34,7 @@ class CreateTestCubit extends Cubit<CreateTestState> {
     required this.getAiQuestionGenerationStatusUseCase,
     required this.getEditableTestQuestionsUseCase,
     required this.updateTestUseCase,
+    required this.createContentUseCase,
   }) : super(const CreateTestState());
 
   static const int titleMaxLength = 150;
@@ -1239,14 +1243,125 @@ if (question.questionText.trim().length < questionMinLength) {
 
   // Update Test
   Future<void> submitCreateOrUpdateTest() async {
-    if (state.isEditMode) {
-      await submitUpdateTest();
-      return;
-    }
-
-    await submitCreateManualTest();
+  if (state.isContentMode) {
+    await submitCreateContent();
+    return;
   }
 
+  if (state.isEditMode) {
+    await submitUpdateTest();
+    return;
+  }
+
+  await submitCreateManualTest();
+}
+Future<void> submitCreateContent() async {
+  if (state.isCreateContentLoading) return;
+
+  final validationError = _validateCreateContentBeforeSubmit();
+
+  if (validationError != null) {
+    emit(
+      state.copyWith(
+        createContentError: validationError,
+        createContentResponse: null,
+      ),
+    );
+    return;
+  }
+
+  emit(
+    state.copyWith(
+      isCreateContentLoading: true,
+      createContentError: null,
+      createContentResponse: null,
+    ),
+  );
+
+  try {
+    final params = _buildCreateContentParams();
+
+    final response = await createContentUseCase(params: params);
+
+    emit(
+      state.copyWith(
+        isCreateContentLoading: false,
+        createContentError: null,
+        createContentResponse: response,
+      ),
+    );
+  } catch (e) {
+    emit(
+      state.copyWith(
+        isCreateContentLoading: false,
+        createContentError: e.toString(),
+      ),
+    );
+  }
+}
+
+String? _validateCreateContentBeforeSubmit() {
+  if (!state.isContentMode) {
+    return 'نوع العملية غير صالح';
+  }
+
+  if (state.title.trim().isEmpty) {
+    return 'يرجى إدخال عنوان المحتوى';
+  }
+
+  if (state.description.trim().isEmpty) {
+    return 'يرجى إدخال وصف المحتوى';
+  }
+
+  if (state.isContentImages) {
+    if (state.aiMediaFiles.isEmpty) {
+      return 'يرجى إرفاق صورة واحدة على الأقل';
+    }
+
+    if (state.aiMediaFiles.length > 3) {
+      return 'يمكن إرفاق ثلاث صور فقط';
+    }
+  }
+
+  if (state.isContentFile && state.aiMediaFiles.length != 1) {
+    return 'يرجى إرفاق ملف واحد فقط';
+  }
+
+  if (state.selectedScientificInterestIds.isEmpty) {
+    return 'يرجى اختيار تصنيف علمي واحد على الأقل';
+  }
+
+  if (state.selectedScientificInterestIds.length > maxScientificCategoriesCount) {
+    return 'يمكن اختيار ثلاثة تصنيفات علمية فقط';
+  }
+
+  if (state.selectedAcademicLevel.trim().isEmpty) {
+    return 'يرجى اختيار المستوى الدراسي';
+  }
+
+  return null;
+}
+
+CreateContentParams _buildCreateContentParams() {
+  return CreateContentParams(
+    title: state.title.trim(),
+    description: state.description.trim(),
+    contentKind: state.isContentImages ? 'صور مجمعة' : 'ملف',
+    assets: state.aiMediaFiles,
+    interestIds: state.selectedScientificInterestIds,
+    targetLevel: state.selectedAcademicLevel.trim(),
+    visibilityType: state.isPublished ? 'عام' : 'خاص',
+  );
+}
+
+void clearCreateContentResult() {
+  emit(
+    state.copyWith(
+      createContentError: null,
+      createContentResponse: null,
+    ),
+  );
+}
   Future<void> submitUpdateTest() async {
     if (state.isUpdateTestLoading) return;
 

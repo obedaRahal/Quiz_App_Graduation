@@ -11,7 +11,11 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
 
-enum _CreateTestSheetMode { methods, aiImages, aiFile }
+enum _CreateTestSheetMode {
+  methods,
+  aiImages,
+  aiFile,
+}
 
 class CreateAiGenerationSheetRequest {
   final String sourceType;

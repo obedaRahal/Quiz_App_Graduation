@@ -20,7 +20,8 @@ class CreateTestPublishSection extends StatelessWidget {
     final appColors = context.appColors;
     return BlocBuilder<CreateTestCubit, CreateTestState>(
       buildWhen: (previous, current) {
-        return previous.isPublished != current.isPublished ||
+        return previous.creationMode != current.creationMode ||
+            previous.isPublished != current.isPublished ||
             previous.price != current.price ||
             previous.isEditMode != current.isEditMode ||
             previous.wasInitiallyPublished != current.wasInitiallyPublished;
@@ -58,7 +59,7 @@ class CreateTestPublishSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomTextWidget(
-                        'نشر المحتوى',
+                       state.isContentMode ? 'نشر المحتوى' : 'نشر الاختبار',
                         fontSize: SizeConfig.text(0.032),
                         fontWeight: FontWeight.w900,
                         color: isDark
@@ -136,9 +137,9 @@ class CreateTestPublishSection extends StatelessWidget {
               ),
             ),
 
-            if (state.isPublished) ...[
+            if (state.isPublished && !state.isContentMode) ...[
               SizedBox(height: SizeConfig.h(0.012)),
-             _PriceField(value: state.price),
+              _PriceField(value: state.price),
             ],
           ],
         );
@@ -150,9 +151,7 @@ class CreateTestPublishSection extends StatelessWidget {
 class _PriceField extends StatefulWidget {
   final String value;
 
-  const _PriceField({
-    required this.value,
-  });
+  const _PriceField({required this.value});
 
   @override
   State<_PriceField> createState() => _PriceFieldState();

@@ -17,6 +17,175 @@ import 'package:quiz_app_grad/features/create_test/presentation/widgets/create_t
 import 'package:quiz_app_grad/features/create_test/presentation/widgets/create_test_submit_button.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/widgets/create_test_title_description_section.dart';
 
+// class CreateTestBody extends StatelessWidget {
+//   const CreateTestBody({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Directionality(
+//       textDirection: TextDirection.rtl,
+//       child: Column(
+//         children: [
+//           const CreateTestHeader(),
+
+//           Expanded(
+//             child: SingleChildScrollView(
+//               physics: const BouncingScrollPhysics(),
+//               padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.04)),
+//               child: Column(
+//                 children: [
+//                   SizedBox(height: SizeConfig.h(0.012)),
+//                   BlocBuilder<CreateTestCubit, CreateTestState>(
+//   buildWhen: (p, c) => p.creationMode != c.creationMode,
+//   builder: (context, state) {
+//     if (state.isContentMode) {
+//       return Column(
+//         children: [
+//           SizedBox(height: SizeConfig.h(0.022)),
+//           const _SectionDivider(),
+//           SizedBox(height: SizeConfig.h(0.018)),
+
+//           scientific.CreateTestScientificClassificationSection(),
+
+//           SizedBox(height: SizeConfig.h(0.026)),
+//           const _SectionDivider(),
+//           SizedBox(height: SizeConfig.h(0.018)),
+
+//           academic.CreateTestAcademicLevelSection(),
+
+//           SizedBox(height: SizeConfig.h(0.030)),
+//         ],
+//       );
+//     }
+
+//     return Column(
+//       children: [
+//         SizedBox(height: SizeConfig.h(0.022)),
+//         const _SectionDivider(),
+//         SizedBox(height: SizeConfig.h(0.018)),
+
+//         const CreateTestInfoSection(),
+
+//         SizedBox(height: SizeConfig.h(0.020)),
+
+//         const CreateTestPublishSection(),
+
+//         SizedBox(height: SizeConfig.h(0.026)),
+//         const _SectionDivider(),
+//         SizedBox(height: SizeConfig.h(0.018)),
+
+//         scientific.CreateTestScientificClassificationSection(),
+
+//         SizedBox(height: SizeConfig.h(0.026)),
+//         const _SectionDivider(),
+//         SizedBox(height: SizeConfig.h(0.018)),
+
+//         academic.CreateTestAcademicLevelSection(),
+
+//         SizedBox(height: SizeConfig.h(0.026)),
+//         const _SectionDivider(),
+//         SizedBox(height: SizeConfig.h(0.018)),
+
+//         const CreateTestQuestionsSection(),
+
+//         SizedBox(height: SizeConfig.h(0.026)),
+//         const _SectionDivider(),
+//         SizedBox(height: SizeConfig.h(0.018)),
+
+//         const CreateTestSampleQuestionsSection(),
+
+//         SizedBox(height: SizeConfig.h(0.030)),
+//       ],
+//     );
+//   },
+// ),
+//           //         BlocBuilder<CreateTestCubit, CreateTestState>(
+//           //           buildWhen: (previous, current) {
+//           //             return previous.creationMode != current.creationMode ||
+//           //                 previous.aiMediaFiles != current.aiMediaFiles ||
+//           //                 previous.existingAiMedia != current.existingAiMedia ||
+//           //                 previous.isEditMode != current.isEditMode;
+//           //           },
+//           //           builder: (context, state) {
+//           //             final hasLocalMedia = state.aiMediaFiles.isNotEmpty;
+//           //             final hasExistingMedia = state.existingAiMedia.isNotEmpty;
+//           //             // final shouldShowMedia =
+//           //             //     state.isAiMode && (hasLocalMedia || hasExistingMedia);
+//           //             final shouldShowMedia =
+//           //                 state.hasMediaSection &&
+//           //                 (hasLocalMedia || hasExistingMedia);
+//           //             if (!shouldShowMedia) {
+//           //               return const SizedBox.shrink();
+//           //             }
+
+//           //             return Column(
+//           //               children: [
+//           //                 const CreateTestAiMediaSection(),
+//           //                 SizedBox(height: SizeConfig.h(0.022)),
+//           //                 const _SectionDivider(),
+//           //                 SizedBox(height: SizeConfig.h(0.018)),
+//           //               ],
+//           //             );
+//           //           },
+//           //         ),
+//           //         const CreateTestTitleDescriptionSection(),
+
+//           //         SizedBox(height: SizeConfig.h(0.022)),
+
+//           //         const _SectionDivider(),
+
+//           //         SizedBox(height: SizeConfig.h(0.018)),
+
+//           //         const CreateTestInfoSection(),
+
+//           //         SizedBox(height: SizeConfig.h(0.020)),
+
+//           //         const CreateTestPublishSection(),
+
+//           //         SizedBox(height: SizeConfig.h(0.026)),
+
+//           //         const _SectionDivider(),
+
+//           //         SizedBox(height: SizeConfig.h(0.018)),
+
+//           //         scientific.CreateTestScientificClassificationSection(),
+
+//           //         SizedBox(height: SizeConfig.h(0.026)),
+
+//           //         const _SectionDivider(),
+
+//           //         SizedBox(height: SizeConfig.h(0.018)),
+
+//           //         academic.CreateTestAcademicLevelSection(),
+
+//           //         SizedBox(height: SizeConfig.h(0.026)),
+
+//           //         const _SectionDivider(),
+
+//           //         SizedBox(height: SizeConfig.h(0.018)),
+
+//           //         const CreateTestQuestionsSection(),
+
+//           //         SizedBox(height: SizeConfig.h(0.026)),
+
+//           //         const _SectionDivider(),
+
+//           //         SizedBox(height: SizeConfig.h(0.018)),
+
+//           //         const CreateTestSampleQuestionsSection(),
+
+//           //         SizedBox(height: SizeConfig.h(0.030)),
+//                 ],
+//               ),
+//             ),
+//           ),
+
+//           const CreateTestSubmitButton(),
+//         ],
+//       ),
+//     );
+//   }
+// }
 class CreateTestBody extends StatelessWidget {
   const CreateTestBody({super.key});
 
@@ -35,6 +204,7 @@ class CreateTestBody extends StatelessWidget {
               child: Column(
                 children: [
                   SizedBox(height: SizeConfig.h(0.012)),
+
                   BlocBuilder<CreateTestCubit, CreateTestState>(
                     buildWhen: (previous, current) {
                       return previous.creationMode != current.creationMode ||
@@ -45,8 +215,10 @@ class CreateTestBody extends StatelessWidget {
                     builder: (context, state) {
                       final hasLocalMedia = state.aiMediaFiles.isNotEmpty;
                       final hasExistingMedia = state.existingAiMedia.isNotEmpty;
+
                       final shouldShowMedia =
-                          state.isAiMode && (hasLocalMedia || hasExistingMedia);
+                          state.hasMediaSection &&
+                          (hasLocalMedia || hasExistingMedia);
 
                       if (!shouldShowMedia) {
                         return const SizedBox.shrink();
@@ -62,53 +234,78 @@ class CreateTestBody extends StatelessWidget {
                       );
                     },
                   ),
+
                   const CreateTestTitleDescriptionSection(),
 
-                  SizedBox(height: SizeConfig.h(0.022)),
+                  BlocBuilder<CreateTestCubit, CreateTestState>(
+                    buildWhen: (p, c) =>
+                        p.creationMode != c.creationMode ||
+                        p.isEditMode != c.isEditMode,
+                    builder: (context, state) {
+                      if (state.isContentMode) {
+                        return Column(
+                          children: [
+                            SizedBox(height: SizeConfig.h(0.022)),
+                            const CreateTestPublishSection(),
 
-                  const _SectionDivider(),
+                            SizedBox(height: SizeConfig.h(0.026)),
+                            const _SectionDivider(),
+                            SizedBox(height: SizeConfig.h(0.018)),
 
-                  SizedBox(height: SizeConfig.h(0.018)),
+                            scientific.CreateTestScientificClassificationSection(),
 
-                  const CreateTestInfoSection(),
+                            SizedBox(height: SizeConfig.h(0.026)),
+                            const _SectionDivider(),
+                            SizedBox(height: SizeConfig.h(0.018)),
 
-                  SizedBox(height: SizeConfig.h(0.020)),
+                            academic.CreateTestAcademicLevelSection(),
 
-                  const CreateTestPublishSection(),
+                            SizedBox(height: SizeConfig.h(0.030)),
+                          ],
+                        );
+                      }
 
-                  SizedBox(height: SizeConfig.h(0.026)),
+                      return Column(
+                        children: [
+                          SizedBox(height: SizeConfig.h(0.022)),
+                          const _SectionDivider(),
+                          SizedBox(height: SizeConfig.h(0.018)),
 
-                  const _SectionDivider(),
+                          const CreateTestInfoSection(),
 
-                  SizedBox(height: SizeConfig.h(0.018)),
+                          SizedBox(height: SizeConfig.h(0.020)),
 
-                  scientific.CreateTestScientificClassificationSection(),
+                          const CreateTestPublishSection(),
 
-                  SizedBox(height: SizeConfig.h(0.026)),
+                          SizedBox(height: SizeConfig.h(0.026)),
+                          const _SectionDivider(),
+                          SizedBox(height: SizeConfig.h(0.018)),
 
-                  const _SectionDivider(),
+                          scientific.CreateTestScientificClassificationSection(),
 
-                  SizedBox(height: SizeConfig.h(0.018)),
+                          SizedBox(height: SizeConfig.h(0.026)),
+                          const _SectionDivider(),
+                          SizedBox(height: SizeConfig.h(0.018)),
 
-                  academic.CreateTestAcademicLevelSection(),
+                          academic.CreateTestAcademicLevelSection(),
 
-                  SizedBox(height: SizeConfig.h(0.026)),
+                          SizedBox(height: SizeConfig.h(0.026)),
+                          const _SectionDivider(),
+                          SizedBox(height: SizeConfig.h(0.018)),
 
-                  const _SectionDivider(),
+                          const CreateTestQuestionsSection(),
 
-                  SizedBox(height: SizeConfig.h(0.018)),
+                          SizedBox(height: SizeConfig.h(0.026)),
+                          const _SectionDivider(),
+                          SizedBox(height: SizeConfig.h(0.018)),
 
-                  const CreateTestQuestionsSection(),
+                          const CreateTestSampleQuestionsSection(),
 
-                  SizedBox(height: SizeConfig.h(0.026)),
-
-                  const _SectionDivider(),
-
-                  SizedBox(height: SizeConfig.h(0.018)),
-
-                  const CreateTestSampleQuestionsSection(),
-
-                  SizedBox(height: SizeConfig.h(0.030)),
+                          SizedBox(height: SizeConfig.h(0.030)),
+                        ],
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

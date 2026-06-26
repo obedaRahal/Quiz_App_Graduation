@@ -22,8 +22,9 @@ class CreateTestView extends StatelessWidget {
       create: (_) => sl<CreateTestCubit>()..initializeFromArgs(initialArgs),
       child: BlocListener<CreateTestCubit, CreateTestState>(
         listenWhen: (previous, current) {
-          return previous.createManualTestError !=
-                  current.createManualTestError ||
+          return previous.createContentError != current.createContentError ||
+              previous.createContentResponse != current.createContentResponse ||
+              previous.createManualTestError != current.createManualTestError ||
               previous.createManualTestResponse !=
                   current.createManualTestResponse ||
               previous.updateTestError != current.updateTestError ||
@@ -34,6 +35,8 @@ class CreateTestView extends StatelessWidget {
           final response = state.createManualTestResponse;
           final updateError = state.updateTestError;
           final updateResponse = state.updateTestResponse;
+          final createContentError = state.createContentError;
+          final createContentResponse = state.createContentResponse;
 
           if (updateError != null && updateError.trim().isNotEmpty) {
             _showCreateTestSnackBar(
@@ -45,7 +48,36 @@ class CreateTestView extends StatelessWidget {
             context.read<CreateTestCubit>().clearUpdateTestResult();
             return;
           }
+          if (createContentError != null &&
+              createContentError.trim().isNotEmpty) {
+            _showCreateTestSnackBar(
+              context: context,
+              message: createContentError,
+              backgroundColor: AppPalette.red,
+            );
 
+            context.read<CreateTestCubit>().clearCreateContentResult();
+            return;
+          }
+
+          if (createContentResponse != null && createContentResponse.success) {
+            _showCreateTestSnackBar(
+              context: context,
+              message: createContentResponse.message.trim().isNotEmpty
+                  ? createContentResponse.message
+                  : 'تم إنشاء المحتوى بنجاح',
+              backgroundColor: AppPalette.green,
+            );
+
+            context.read<CreateTestCubit>().clearCreateContentResult();
+
+            Future.delayed(const Duration(milliseconds: 700), () {
+              if (!context.mounted) return;
+              context.goNamed(AppRouterName.mainLayout);
+            });
+
+            return;
+          }
           if (updateResponse != null && updateResponse.success) {
             _showCreateTestSnackBar(
               context: context,

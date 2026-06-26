@@ -3,7 +3,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profi
 
 class EndPoints {
   //static const String baseUrl = 'http://10.195.254.44/api/v1/user-mobile';
-  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  static const String baseUrl = 'http://192.168.1.100/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -67,6 +67,9 @@ class EndPoints {
     return '$baseUrl/test/update/test/$testId';
   }
 
+  // Create Content
+  static const String createContent = '/library/create-content';
+  
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';

@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_status_entity.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/create_content_response_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_manual_test_response_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/scientific_classification_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/update_test_response_entity.dart';
@@ -123,6 +124,9 @@ class CreateTestState {
   final bool isUpdateTestLoading;
   final String? updateTestError;
   final UpdateTestResponseEntity? updateTestResponse;
+  final bool isCreateContentLoading;
+final String? createContentError;
+final CreateContentResponseEntity? createContentResponse;
   const CreateTestState({
     this.title = '',
     this.description = '',
@@ -173,6 +177,9 @@ class CreateTestState {
     this.isUpdateTestLoading = false,
     this.updateTestError,
     this.updateTestResponse,
+    this.isCreateContentLoading = false,
+this.createContentError,
+this.createContentResponse,
   });
 
   CreateTestState copyWith({
@@ -223,6 +230,9 @@ class CreateTestState {
     bool? isUpdateTestLoading,
     Object? updateTestError = _sentinel,
     Object? updateTestResponse = _sentinel,
+    bool? isCreateContentLoading,
+Object? createContentError = _sentinel,
+Object? createContentResponse = _sentinel,
   }) {
     return CreateTestState(
       title: title ?? this.title,
@@ -332,6 +342,16 @@ class CreateTestState {
       updateTestResponse: updateTestResponse == _sentinel
           ? this.updateTestResponse
           : updateTestResponse as UpdateTestResponseEntity?,
+          isCreateContentLoading:
+    isCreateContentLoading ?? this.isCreateContentLoading,
+
+createContentError: createContentError == _sentinel
+    ? this.createContentError
+    : createContentError as String?,
+
+createContentResponse: createContentResponse == _sentinel
+    ? this.createContentResponse
+    : createContentResponse as CreateContentResponseEntity?,
     );
   }
 
@@ -370,43 +390,81 @@ class CreateTestState {
 
     return selectedSampleQuestions.length == requiredSampleQuestionsCount;
   }
+bool get canSubmit {
+  final hasCommonFields =
+      title.trim().isNotEmpty &&
+      description.trim().isNotEmpty &&
+      selectedAcademicLevel.trim().isNotEmpty &&
+      selectedScientificInterestIds.isNotEmpty;
 
-  bool get canSubmit {
-    final hasBasicRequiredFields =
-        title.trim().isNotEmpty &&
-        description.trim().isNotEmpty &&
-        level.trim().isNotEmpty &&
-        language.trim().isNotEmpty &&
-        selectedAcademicLevel.trim().isNotEmpty &&
-        selectedScientificInterestIds.isNotEmpty &&
-        questions.length >= 5 &&
-        questions.length <= 100;
+  if (!hasCommonFields) return false;
+  if  (isCreateManualTestLoading || isUpdateTestLoading || isCreateContentLoading) return false;
 
-    if (!hasBasicRequiredFields) return false;
-    if (isCreateManualTestLoading || isUpdateTestLoading) return false;
-
-    if (!isPublished) {
-      return true;
-    }
-
-    return hasValidSampleQuestions;
+  if (isContentMode) {
+    return hasContentMedia;
   }
 
-  String get headerTitle {
-    if (isEditMode) return 'تعديل اختبار';
+  final hasTestFields =
+      level.trim().isNotEmpty &&
+      language.trim().isNotEmpty &&
+      questions.length >= 5 &&
+      questions.length <= 100;
 
-    return switch (creationMode) {
-      CreateTestCreationMode.manual => 'الطريقة اليدوية',
-      CreateTestCreationMode.aiImages => 'الطريقة الآلية (صور)',
-      CreateTestCreationMode.aiFile => 'الطريقة الآلية (ملف)',
-    };
-  }
+  if (!hasTestFields) return false;
 
+  if (!isPublished) return true;
+
+  return hasValidSampleQuestions;
+}
+  // bool get canSubmit {
+  //   final hasBasicRequiredFields =
+  //       title.trim().isNotEmpty &&
+  //       description.trim().isNotEmpty &&
+  //       level.trim().isNotEmpty &&
+  //       language.trim().isNotEmpty &&
+  //       selectedAcademicLevel.trim().isNotEmpty &&
+  //       selectedScientificInterestIds.isNotEmpty &&
+  //       questions.length >= 5 &&
+  //       questions.length <= 100;
+
+  //   if (!hasBasicRequiredFields) return false;
+  //   if (isCreateManualTestLoading || isUpdateTestLoading) return false;
+
+  //   if (!isPublished) {
+  //     return true;
+  //   }
+
+  //   return hasValidSampleQuestions;
+  // }
+
+  // String get headerTitle {
+  //   if (isEditMode) return 'تعديل اختبار';
+
+  //   return switch (creationMode) {
+  //     CreateTestCreationMode.manual => 'الطريقة اليدوية',
+  //     CreateTestCreationMode.aiImages => 'الطريقة الآلية (صور)',
+  //     CreateTestCreationMode.aiFile => 'الطريقة الآلية (ملف)',
+  //   };
+  // }
+String get headerTitle {
+  if (isEditMode) return 'تعديل اختبار';
+
+  return switch (creationMode) {
+    CreateTestCreationMode.manual => 'الطريقة اليدوية',
+    CreateTestCreationMode.aiImages => 'الطريقة الآلية (صور)',
+    CreateTestCreationMode.aiFile => 'الطريقة الآلية (ملف)',
+    CreateTestCreationMode.contentImages => 'إنشاء محتوى',
+    CreateTestCreationMode.contentFile => 'إنشاء محتوى',
+  };
+}
   bool get isAiMode {
-    return creationMode == CreateTestCreationMode.aiImages ||
-        creationMode == CreateTestCreationMode.aiFile;
-  }
+  return creationMode == CreateTestCreationMode.aiImages ||
+      creationMode == CreateTestCreationMode.aiFile;
+}
 
+bool get hasMediaSection {
+  return isAiMode || isContentMode;
+}
   bool get isAiImages {
     return creationMode == CreateTestCreationMode.aiImages;
   }
@@ -414,6 +472,26 @@ class CreateTestState {
   bool get isAiFile {
     return creationMode == CreateTestCreationMode.aiFile;
   }
+  bool get isContentMode {
+  return creationMode == CreateTestCreationMode.contentImages ||
+      creationMode == CreateTestCreationMode.contentFile;
+}
+
+bool get isContentImages => creationMode == CreateTestCreationMode.contentImages;
+
+bool get isContentFile => creationMode == CreateTestCreationMode.contentFile;
+
+bool get hasContentMedia {
+  if (isContentImages) {
+    return aiMediaFiles.isNotEmpty && aiMediaFiles.length <= 3;
+  }
+
+  if (isContentFile) {
+    return aiMediaFiles.length == 1;
+  }
+
+  return false;
+}
 }
 
 const Object _sentinel = Object();

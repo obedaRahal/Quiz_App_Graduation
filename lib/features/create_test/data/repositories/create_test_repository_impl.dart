@@ -3,6 +3,8 @@ import 'package:quiz_app_grad/features/create_test/data/models/create_manual_tes
 import 'package:quiz_app_grad/features/create_test/data/models/update_test_request_model.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_status_entity.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/create_content_params.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/create_content_response_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_manual_test_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_manual_test_response_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/editable_test_questions_entity.dart';
@@ -78,6 +80,15 @@ class CreateTestRepositoryImpl implements CreateTestRepository {
       testId: params.testId,
       request: request,
     );
+
+    return response.toEntity();
+  }
+
+  @override
+  Future<CreateContentResponseEntity> createContent({
+    required CreateContentParams params,
+  }) async {
+    final response = await remoteDataSource.createContent(params: params);
 
     return response.toEntity();
   }

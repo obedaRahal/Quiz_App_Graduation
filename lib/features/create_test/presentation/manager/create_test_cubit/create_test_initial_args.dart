@@ -3,7 +3,13 @@ import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_g
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_state.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_existing_media_state.dart';
 
-enum CreateTestCreationMode { manual, aiImages, aiFile }
+enum CreateTestCreationMode {
+  manual,
+  aiImages,
+  aiFile,
+  contentImages,
+  contentFile,
+}
 
 class CreateTestInitialArgs {
   final CreateTestCreationMode mode;
@@ -62,14 +68,23 @@ class CreateTestInitialArgs {
     this.initialPreviewQuestionIds = const [],
   });
 
-  bool get isAiMode {
-    return mode == CreateTestCreationMode.aiImages ||
-        mode == CreateTestCreationMode.aiFile;
-  }
+bool get isAiMode {
+  return mode == CreateTestCreationMode.aiImages ||
+      mode == CreateTestCreationMode.aiFile;
+}
 
-  bool get isAiImages => mode == CreateTestCreationMode.aiImages;
+bool get isAiImages => mode == CreateTestCreationMode.aiImages;
 
-  bool get isAiFile => mode == CreateTestCreationMode.aiFile;
+bool get isAiFile => mode == CreateTestCreationMode.aiFile;
+
+bool get isContentMode {
+  return mode == CreateTestCreationMode.contentImages ||
+      mode == CreateTestCreationMode.contentFile;
+}
+
+bool get isContentImages => mode == CreateTestCreationMode.contentImages;
+
+bool get isContentFile => mode == CreateTestCreationMode.contentFile;
 
   CreateTestInitialArgs copyWith({
     CreateTestCreationMode? mode,
