@@ -180,19 +180,19 @@ class LibraryPage extends StatelessWidget {
   }
 
   LibraryMediaItem _mapFeatured(LibraryFeaturedEntity item) {
-  return LibraryMediaItem(
-    id: item.id,
-    title: '',
-    scientificSpecialties: item.interests,
-    imageUrl: item.urlContent, // هون خليها من الباك
-    imageAsset: AppImage.carmen, // fallback بس
-    likesCount: item.likeCount,
-    savesCount: item.bookmarksCount,
-    downloadsCount: item.downloadCount,
-    editsCount: 0,
-    publishedAgo: item.publishedAt,
-  );
-}
+    return LibraryMediaItem(
+      id: item.id,
+      title: '',
+      scientificSpecialties: item.interests,
+      imageUrl: item.urlContent, // هون خليها من الباك
+      imageAsset: AppImage.carmen, // fallback بس
+      likesCount: item.likeCount,
+      savesCount: item.bookmarksCount,
+      downloadsCount: item.downloadCount,
+      editsCount: 0,
+      publishedAgo: item.publishedAt,
+    );
+  }
 
   LibraryContentItem _mapMaterial(LibraryMaterialEntity item) {
     return LibraryContentItem(

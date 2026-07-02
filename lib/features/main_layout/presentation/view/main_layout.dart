@@ -134,6 +134,18 @@ class MainLayoutBody extends StatelessWidget {
                           child: Text(" other profile "),
                         ),
                       ),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.otherContentDetails,
+                              //extra: DetailsOfTestRouteArgs(testId: 805),
+                            );
+                          },
+                          child: Text("Other Content detailssssssssss"),
+                        ),
+                      ),
 
                       CustomButtonWidget(
                         onTap: () {

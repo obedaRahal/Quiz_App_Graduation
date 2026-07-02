@@ -3,7 +3,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profi
 
 class EndPoints {
   //static const String baseUrl = 'http://10.195.254.44/api/v1/user-mobile';
-  static const String baseUrl = 'http://192.168.1.100/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -69,7 +69,23 @@ class EndPoints {
 
   // Create Content
   static const String createContent = '/library/create-content';
-  
+  // Other Content Details
+  static String otherContentDetails(int id) =>
+      '/library/library-materials-details/other/$id';
+  static const String likeContent = '/library/like';
+
+  static const String unlikeContent = '/library/unlike';
+
+  static String bookmarkContent(int id) => '/library/bookmark/$id';
+
+  static String unbookmarkContent(int id) => '/library/unbookmark/$id';
+  static String reportContent(int id) => '/library/reports/$id';
+  static String downloadContent(int id) => '/library/download/$id';
+  static String similarContent(int contentId) => '/library/similar/$contentId';
+  static String followPublisher(int publisherId) =>
+      '/users-profile/follow/$publisherId';
+      static String unfollowPublisher(int publisherId) =>
+    '/users-profile/unfollow/$publisherId';
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';
