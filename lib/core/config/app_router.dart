@@ -31,6 +31,8 @@ import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/view/laboratory_page.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/views/my_profile_view.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_private_test_details_view.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_test_details_view.dart';
@@ -506,6 +508,29 @@ class AppRouter {
               child: BlocProvider<OtherProfileCubit>(
                 create: (_) => sl<OtherProfileCubit>(),
                 child: OtherProfileView(userId: userId),
+              ),
+            );
+          },
+        ),
+
+        /////////////////// my profile ///////////////
+        GoRoute(
+          path: AppRouterPath.myProfile,
+          name: AppRouterName.myProfile,
+          pageBuilder: (context, state) {
+            debugPrint("============ myProfile Route ============");
+
+            final args = state.extra as OtherProfileRouteArgs;
+            final userId = args.userId;
+
+            debugPrint("→ received userId: $userId");
+            debugPrint("=================================================");
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider<MyProfileCubit>(
+                create: (_) => sl<MyProfileCubit>(),
+                child: MyProfileView(userId: userId),
               ),
             );
           },

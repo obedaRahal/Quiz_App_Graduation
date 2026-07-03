@@ -99,13 +99,6 @@ class GraduatedUniversityStep extends StatelessWidget {
                     },
                   );
                 },
-                // () async {
-                //   final path = await _pickImagePath();
-                //   if (path == null || !context.mounted) return;
-                //   context
-                //       .read<OnboardingCubit>()
-                //       .graduationCertificateImageChanged(path);
-                // },
               ),
 
               SizedBox(height: SizeConfig.h(0.03)),

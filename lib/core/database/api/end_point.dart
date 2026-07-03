@@ -3,7 +3,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profi
 
 class EndPoints {
   //static const String baseUrl = 'http://10.195.254.44/api/v1/user-mobile';
-  static const String baseUrl = 'http://192.168.1.100/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -69,7 +69,7 @@ class EndPoints {
 
   // Create Content
   static const String createContent = '/library/create-content';
-  
+
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';
@@ -316,5 +316,22 @@ class EndPoints {
 
   static String otherProfileAcademicCertificate({required int userId}) {
     return '$baseUrl/users-profile/academic-certificate/$userId';
+  }
+
+  /////////////////// my profile ///////////////
+  static String myProfilePersonalInfo({required int userId}) {
+    return '$baseUrl/my-profile/basic-info/$userId';
+  }
+
+  static String editMyProfilePersonalInfo({required int userId}) {
+    return '$baseUrl/my-profile/update/basic-info/$userId';
+  }
+
+  static String editMyProfileAcademicInfo({required int userId}) {
+    return '$baseUrl/my-profile/update/academic-info/$userId';
+  }
+
+  static String editMyProfileScientificInterests({required int userId}) {
+    return '$baseUrl/my-profile/update/scientific-interests/$userId';
   }
 }

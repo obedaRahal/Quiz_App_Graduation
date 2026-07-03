@@ -56,6 +56,7 @@ import 'package:quiz_app_grad/features/get_all_interests/data/data_source/all_in
 import 'package:quiz_app_grad/features/get_all_interests/data/repositories/all_interests_repository_impl.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/repositories/all_interests_repository.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
+import 'package:quiz_app_grad/features/get_all_interests/presentation/manager/all_categories_cubit/all_interests_cubit.dart';
 import 'package:quiz_app_grad/features/home/data/datasource/home_remote_data_source.dart';
 import 'package:quiz_app_grad/features/home/data/repositories/home_repo_impl.dart';
 import 'package:quiz_app_grad/features/home/domain/repositories/home_repostory.dart';
@@ -76,6 +77,14 @@ import 'package:quiz_app_grad/features/library/domain/repositories/library_repos
 import 'package:quiz_app_grad/features/library/domain/usecases/get_library_content_usecase.dart';
 import 'package:quiz_app_grad/features/library/domain/usecases/search_library_content_usecase.dart';
 import 'package:quiz_app_grad/features/library/presentation/manager/library_cubit/library_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/data/data_source/my_profile_remote_data_source.dart';
+import 'package:quiz_app_grad/features/my_profile/data/repo_impl/my_profile_repository_impl.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/repository/my_profile_repository.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_academic_info_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_personal_info_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_scientific_interests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/get_my_profile_personal_info_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/data_sources/my_public_test_details_remote_data_source.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/repo_impl/my_public_test_details_repository_impl.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/repository/my_public_test_details_repository.dart';
@@ -164,6 +173,7 @@ Future<void> initSl() async {
   _registerMyTestDetailsFeature();
   _registerOtherProfileFeature();
   _registerLibraryFeature();
+  _registerMyProfileFeature();
 }
 
 Future<void> _registerCore() async {
@@ -820,11 +830,11 @@ void _registerCreateTestFeature() {
       () => UpdateTestUseCase(sl<CreateTestRepository>()),
     );
   }
-if (!sl.isRegistered<CreateContentUseCase>()) {
-  sl.registerLazySingleton<CreateContentUseCase>(
-    () => CreateContentUseCase(sl()),
-  );
-}
+  if (!sl.isRegistered<CreateContentUseCase>()) {
+    sl.registerLazySingleton<CreateContentUseCase>(
+      () => CreateContentUseCase(sl()),
+    );
+  }
   if (!sl.isRegistered<CreateTestCubit>()) {
     sl.registerFactory<CreateTestCubit>(
       () => CreateTestCubit(
@@ -1167,6 +1177,68 @@ void _registerOtherProfileFeature() {
 
         getOtherProfileAcademicCertificateUseCase:
             sl<GetOtherProfileAcademicCertificateUseCase>(),
+      ),
+    );
+  }
+}
+
+//////////////////// my profile //////////////////
+void _registerMyProfileFeature() {
+  if (!sl.isRegistered<AllInterestsCubit>()) {
+    sl.registerFactory<AllInterestsCubit>(
+      () => AllInterestsCubit(
+        getAllInterestsUseCase: sl<GetAllInterestsUseCase>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<MyProfileRemoteDataSource>()) {
+    sl.registerLazySingleton<MyProfileRemoteDataSource>(
+      () => MyProfileRemoteDataSourceImpl(apiConsumer: sl<ApiConsumer>()),
+    );
+  }
+
+  if (!sl.isRegistered<MyProfileRepository>()) {
+    sl.registerLazySingleton<MyProfileRepository>(
+      () => MyProfileRepositoryImpl(
+        remoteDataSource: sl<MyProfileRemoteDataSource>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<GetMyProfilePersonalInfoUseCase>()) {
+    sl.registerLazySingleton<GetMyProfilePersonalInfoUseCase>(
+      () => GetMyProfilePersonalInfoUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<EditMyProfilePersonalInfoUseCase>()) {
+    sl.registerLazySingleton<EditMyProfilePersonalInfoUseCase>(
+      () => EditMyProfilePersonalInfoUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<EditMyProfileAcademicInfoUseCase>()) {
+    sl.registerLazySingleton<EditMyProfileAcademicInfoUseCase>(
+      () => EditMyProfileAcademicInfoUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<EditMyProfileScientificInterestsUseCase>()) {
+    sl.registerLazySingleton<EditMyProfileScientificInterestsUseCase>(
+      () => EditMyProfileScientificInterestsUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<MyProfileCubit>()) {
+    sl.registerFactory<MyProfileCubit>(
+      () => MyProfileCubit(
+        getMyProfilePersonalInfoUseCase: sl<GetMyProfilePersonalInfoUseCase>(),
+        editMyProfilePersonalInfoUseCase:
+            sl<EditMyProfilePersonalInfoUseCase>(),
+        editMyProfileAcademicInfoUseCase:
+            sl<EditMyProfileAcademicInfoUseCase>(),
+        editMyProfileScientificInterestsUseCase:
+            sl<EditMyProfileScientificInterestsUseCase>(),
       ),
     );
   }

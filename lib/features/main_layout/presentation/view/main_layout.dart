@@ -145,6 +145,21 @@ class MainLayoutBody extends StatelessWidget {
                           lightPath: AppImage.logoLight,
                         ),
                       ),
+
+                      SizedBox(height: 40),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.myProfile,
+                              //extra: OtherProfileRouteArgs(userId: 815),
+                              extra: OtherProfileRouteArgs(userId: 816),
+                            );
+                          },
+                          child: Text(" my profile "),
+                        ),
+                      ),
                     ],
                   ),
                 ),
