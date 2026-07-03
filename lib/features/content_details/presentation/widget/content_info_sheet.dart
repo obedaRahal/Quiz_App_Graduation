@@ -82,51 +82,54 @@ class ContentInfoSheet extends StatelessWidget {
 
                         SizedBox(height: SizeConfig.h(0.016)),
 
-                        BlocBuilder<
-                          OtherContentDetailsCubit,
-                          OtherContentDetailsState
-                        >(
-                          buildWhen: (previous, current) =>
-                              previous.viewerHasLiked !=
-                                  current.viewerHasLiked ||
-                              previous.likeCount != current.likeCount ||
-                              previous.isLikeLoading != current.isLikeLoading ||
-                              previous.viewerHasBookmarked !=
-                                  current.viewerHasBookmarked ||
-                              previous.bookmarksCount !=
-                                  current.bookmarksCount ||
-                              previous.isBookmarkLoading !=
-                                  current.isBookmarkLoading,
-                          builder: (context, state) {
-                            return ContentStatisticsRow(
-                              publishedAt: data.publishedAt,
-                              downloadCount: data.downloadCount,
-                              bookmarksCount:
-                                  state.bookmarksCount ?? data.bookmarksCount,
-                              likeCount: state.likeCount ?? data.likeCount,
-                              viewerHasLiked:
-                                  state.viewerHasLiked ?? data.viewerHasLiked,
-                              viewerHasBookmarked:
-                                  state.viewerHasBookmarked ??
-                                  data.viewerHasBookmarked,
-                              isLikeLoading: state.isLikeLoading,
-                              isBookmarkLoading: state.isBookmarkLoading,
-                              onLikeTap: () {
-                                context
-                                    .read<OtherContentDetailsCubit>()
-                                    .toggleLike();
-                              },
-                              onBookmarkTap: () {
-                                context
-                                    .read<OtherContentDetailsCubit>()
-                                    .toggleBookmark();
-                              },
-                            );
-                          },
-                        ),
-                        SizedBox(height: SizeConfig.h(0.018)),
+                        if (!data.isOwner) ...[
+                          BlocBuilder<
+                            OtherContentDetailsCubit,
+                            OtherContentDetailsState
+                          >(
+                            buildWhen: (previous, current) =>
+                                previous.viewerHasLiked !=
+                                    current.viewerHasLiked ||
+                                previous.likeCount != current.likeCount ||
+                                previous.isLikeLoading !=
+                                    current.isLikeLoading ||
+                                previous.viewerHasBookmarked !=
+                                    current.viewerHasBookmarked ||
+                                previous.bookmarksCount !=
+                                    current.bookmarksCount ||
+                                previous.isBookmarkLoading !=
+                                    current.isBookmarkLoading,
+                            builder: (context, state) {
+                              return ContentStatisticsRow(
+                                publishedAt: data.publishedAt,
+                                downloadCount: data.downloadCount,
+                                bookmarksCount:
+                                    state.bookmarksCount ?? data.bookmarksCount,
+                                likeCount: state.likeCount ?? data.likeCount,
+                                viewerHasLiked:
+                                    state.viewerHasLiked ?? data.viewerHasLiked,
+                                viewerHasBookmarked:
+                                    state.viewerHasBookmarked ??
+                                    data.viewerHasBookmarked,
+                                isLikeLoading: state.isLikeLoading,
+                                isBookmarkLoading: state.isBookmarkLoading,
+                                onLikeTap: () {
+                                  context
+                                      .read<OtherContentDetailsCubit>()
+                                      .toggleLike();
+                                },
+                                onBookmarkTap: () {
+                                  context
+                                      .read<OtherContentDetailsCubit>()
+                                      .toggleBookmark();
+                                },
+                              );
+                            },
+                          ),
+                          SizedBox(height: SizeConfig.h(0.018)),
+                        ],
 
-                        if (data.publisher != null)
+                        if (!data.isOwner && data.publisher != null)
                           BlocBuilder<
                             OtherContentDetailsCubit,
                             OtherContentDetailsState
@@ -154,76 +157,92 @@ class ContentInfoSheet extends StatelessWidget {
 
                                   if (isFollowing) {
                                     showDialog(
-  context: context,
-  builder: (_) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+                                      context: context,
+                                      builder: (_) {
+                                        final isDark =
+                                            Theme.of(context).brightness ==
+                                            Brightness.dark;
 
-    return AlertDialog(
-      backgroundColor:
-          isDark ? AppPalette.fieldColorNDark : AppPalette.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+                                        return AlertDialog(
+                                          backgroundColor: isDark
+                                              ? AppPalette.fieldColorNDark
+                                              : AppPalette.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              18,
+                                            ),
+                                          ),
 
-      title: Text(
-        'إلغاء المتابعة',
-        textAlign: TextAlign.right,
-        textDirection: TextDirection.rtl,
-        style: TextStyle(
-          fontFamily: 'elMessiriRegular',
-          fontWeight: FontWeight.w700,
-          fontSize: 18,
-          color: isDark
-              ? AppPalette.textWhiteINDark
-              : AppPalette.textColorInHome,
-        ),
-      ),
+                                          title: Text(
+                                            'إلغاء المتابعة',
+                                            textAlign: TextAlign.right,
+                                            textDirection: TextDirection.rtl,
+                                            style: TextStyle(
+                                              fontFamily: 'elMessiriRegular',
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 18,
+                                              color: isDark
+                                                  ? AppPalette.textWhiteINDark
+                                                  : AppPalette.textColorInHome,
+                                            ),
+                                          ),
 
-      content: Text(
-        'هل تريد إلغاء متابعة الناشر "${data.publisher!.name}"؟',
-        textAlign: TextAlign.right,
-        textDirection: TextDirection.rtl,
-        style: TextStyle(
-          fontFamily: 'elMessiriRegular',
-          fontSize: 15,
-          color:
-              isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
-        ),
-      ),
+                                          content: Text(
+                                            'هل تريد إلغاء متابعة الناشر "${data.publisher!.name}"؟',
+                                            textAlign: TextAlign.right,
+                                            textDirection: TextDirection.rtl,
+                                            style: TextStyle(
+                                              fontFamily: 'elMessiriRegular',
+                                              fontSize: 15,
+                                              color: isDark
+                                                  ? AppPalette.grey2Dark
+                                                  : AppPalette.greyMedium,
+                                            ),
+                                          ),
 
-      actionsAlignment: MainAxisAlignment.start,
+                                          actionsAlignment:
+                                              MainAxisAlignment.start,
 
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(
-            'إلغاء',
-            style: TextStyle(
-              fontFamily: 'elMessiriRegular',
-              color: AppPalette.red,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text(
+                                                'إلغاء',
+                                                style: TextStyle(
+                                                  fontFamily:
+                                                      'elMessiriRegular',
+                                                  color: AppPalette.red,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
 
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-            context.read<OtherContentDetailsCubit>().unfollowPublisher();
-          },
-          child: Text(
-            'نعم',
-            style: TextStyle(
-              fontFamily: 'elMessiriRegular',
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
-    );
-  },
-);
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                context
+                                                    .read<
+                                                      OtherContentDetailsCubit
+                                                    >()
+                                                    .unfollowPublisher();
+                                              },
+                                              child: Text(
+                                                'نعم',
+                                                style: TextStyle(
+                                                  fontFamily:
+                                                      'elMessiriRegular',
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
                                   } else {
                                     context
                                         .read<OtherContentDetailsCubit>()
@@ -234,7 +253,7 @@ class ContentInfoSheet extends StatelessWidget {
                             },
                           ),
 
-                        if (data.publisher != null)
+                        if (!data.isOwner && data.publisher != null)
                           Divider(
                             height: SizeConfig.h(0.028),
                             color: Theme.of(context).dividerColor,
@@ -257,35 +276,38 @@ class ContentInfoSheet extends StatelessWidget {
                         ),
 
                         SizedBox(height: SizeConfig.h(0.014)),
-                        Divider(
-                          height: SizeConfig.h(0.026),
-                          thickness: 1,
-                          color: Theme.of(
-                            context,
-                          ).dividerColor.withOpacity(isDark ? 0.45 : 0.9),
-                        ),
 
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: CustomTextWidget(
-                            'محتويات مشابهة',
-                            textAlign: TextAlign.right,
-                            color: isDark
-                                ? AppPalette.textWhiteINDark
-                                : AppPalette.textColorInHome,
-                            fontSize: SizeConfig.text(
-                              0.036,
-                            ).clamp(13.0, 16.0).toDouble(),
-                            fontWeight: FontWeight.w700,
-                            fontFamily: AppFont.elMessiriRegular,
+                        if (!data.isOwner) ...[
+                          Divider(
+                            height: SizeConfig.h(0.026),
+                            thickness: 1,
+                            color: Theme.of(
+                              context,
+                            ).dividerColor.withOpacity(isDark ? 0.45 : 0.9),
                           ),
-                        ),
 
-                        SizedBox(height: SizeConfig.h(0.008)),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: CustomTextWidget(
+                              'محتويات مشابهة',
+                              textAlign: TextAlign.right,
+                              color: isDark
+                                  ? AppPalette.textWhiteINDark
+                                  : AppPalette.textColorInHome,
+                              fontSize: SizeConfig.text(
+                                0.036,
+                              ).clamp(13.0, 16.0).toDouble(),
+                              fontWeight: FontWeight.w700,
+                              fontFamily: AppFont.elMessiriRegular,
+                            ),
+                          ),
 
-                        const _RelatedContentList(),
+                          SizedBox(height: SizeConfig.h(0.008)),
 
-                        SizedBox(height: SizeConfig.h(0.014)),
+                          const _RelatedContentList(),
+
+                          SizedBox(height: SizeConfig.h(0.014)),
+                        ],
                       ],
                     ),
                   ),
@@ -298,7 +320,7 @@ class ContentInfoSheet extends StatelessWidget {
                     bottom: SizeConfig.h(0.018),
                     top: SizeConfig.h(0.006),
                   ),
-                  child: _BottomActions(),
+                  child: _BottomActions(isOwner: data.isOwner),
                 ),
               ],
             ),
@@ -318,40 +340,51 @@ class _ContentTexts extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          data.title,
-          textAlign: TextAlign.right,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          textDirection: TextDirection.rtl,
-          style: TextStyle(
-            fontFamily: 'elMessiriRegular',
-            color: isDark
-                ? AppPalette.textWhiteINDark
-                : AppPalette.textColorInHome,
-            fontSize: SizeConfig.text(0.043).clamp(17.0, 21.0).toDouble(),
-            fontWeight: FontWeight.w700,
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            data.title,
+            textAlign: TextAlign.right,
+            textDirection: TextDirection.rtl,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontFamily: 'elMessiriRegular',
+              color: isDark
+                  ? AppPalette.textWhiteINDark
+                  : AppPalette.textColorInHome,
+              fontSize: SizeConfig.text(0.043)
+                  .clamp(17.0, 21.0)
+                  .toDouble(),
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        ),
-        SizedBox(height: SizeConfig.h(0.008)),
-        Text(
-          data.description,
-          textAlign: TextAlign.right,
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-          textDirection: TextDirection.rtl,
-          style: TextStyle(
-            fontFamily: 'elMessiriRegular',
-            color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
-            fontSize: SizeConfig.text(0.030).clamp(11.0, 13.0).toDouble(),
-            fontWeight: FontWeight.w500,
-            height: 1.45,
+
+          SizedBox(height: SizeConfig.h(0.008)),
+
+          Text(
+            data.description,
+            textAlign: TextAlign.right,
+            textDirection: TextDirection.rtl,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontFamily: 'elMessiriRegular',
+              color: isDark
+                  ? AppPalette.grey2Dark
+                  : AppPalette.greyMedium,
+              fontSize: SizeConfig.text(0.030)
+                  .clamp(11.0, 13.0)
+                  .toDouble(),
+              fontWeight: FontWeight.w500,
+              height: 1.45,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -799,6 +832,8 @@ class _RelatedInfoIcon extends StatelessWidget {
 }
 
 class _BottomActions extends StatelessWidget {
+  final bool isOwner;
+  const _BottomActions({required this.isOwner});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OtherContentDetailsCubit, OtherContentDetailsState>(
@@ -810,30 +845,32 @@ class _BottomActions extends StatelessWidget {
         return Row(
           textDirection: TextDirection.rtl,
           children: [
-            Expanded(
-              child: _ActionButton(
-                title: state.hasReported ? 'تم الإبلاغ' : 'تقديم بلاغ',
-                icon: state.hasReported ? Icons.flag : Icons.flag_outlined,
-                isPrimary: false,
-                onTap: state.isReportLoading || state.hasReported
-                    ? () {}
-                    : () {
-                        ContentReportSheet.show(
-                          context,
-                          onSubmit: ({required reason, description}) {
-                            context
-                                .read<OtherContentDetailsCubit>()
-                                .reportContent(
-                                  reason: reason,
-                                  description: description,
-                                );
-                          },
-                        );
-                      },
+            if (!isOwner) ...[
+              Expanded(
+                child: _ActionButton(
+                  title: state.hasReported ? 'تم الإبلاغ' : 'تقديم بلاغ',
+                  icon: state.hasReported ? Icons.flag : Icons.flag_outlined,
+                  isPrimary: false,
+                  onTap: state.isReportLoading || state.hasReported
+                      ? () {}
+                      : () {
+                          ContentReportSheet.show(
+                            context,
+                            onSubmit: ({required reason, description}) {
+                              context
+                                  .read<OtherContentDetailsCubit>()
+                                  .reportContent(
+                                    reason: reason,
+                                    description: description,
+                                  );
+                            },
+                          );
+                        },
+                ),
               ),
-            ),
 
-            SizedBox(width: SizeConfig.w(0.025)),
+              SizedBox(width: SizeConfig.w(0.025)),
+            ],
 
             Expanded(
               child: _ActionButton(

@@ -16,14 +16,17 @@ import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_ca
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
+import 'package:quiz_app_grad/features/content_details/data/datasources/my_content_details_remote_data_source.dart';
 import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_bookmark_remote_data_source.dart';
 import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_details_remote_data_source.dart';
 import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_like_remote_data_source.dart';
 import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_report_remote_data_source.dart';
+import 'package:quiz_app_grad/features/content_details/data/repositories/my_content_details_repository_impl.dart';
 import 'package:quiz_app_grad/features/content_details/data/repositories/other_content_bookmark_repository_impl.dart';
 import 'package:quiz_app_grad/features/content_details/data/repositories/other_content_details_repository_impl.dart';
 import 'package:quiz_app_grad/features/content_details/data/repositories/other_content_like_repository_impl.dart';
 import 'package:quiz_app_grad/features/content_details/data/repositories/other_content_report_repository_impl.dart';
+import 'package:quiz_app_grad/features/content_details/domain/repositories/my_content_details_repository.dart';
 import 'package:quiz_app_grad/features/content_details/domain/repositories/other_content_bookmark_repository.dart';
 import 'package:quiz_app_grad/features/content_details/domain/repositories/other_content_details_repository.dart';
 import 'package:quiz_app_grad/features/content_details/domain/repositories/other_content_like_repository.dart';
@@ -34,6 +37,7 @@ import 'package:quiz_app_grad/features/content_details/domain/usecases/follow_pu
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_other_content_details_usecase.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_similar_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/like_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/get_my_public_content_details_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/report_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unbookmark_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unfollow_publisher_use_case.dart';
@@ -1074,6 +1078,30 @@ if (!sl.isRegistered<UnfollowPublisherUseCase>()) {
     ),
   );
 }
+
+if (!sl.isRegistered<MyContentDetailsRemoteDataSource>()) {
+  sl.registerLazySingleton<MyContentDetailsRemoteDataSource>(
+    () => MyContentDetailsRemoteDataSourceImpl(
+      apiConsumer: sl(),
+    ),
+  );
+}
+
+if (!sl.isRegistered<MyContentDetailsRepository>()) {
+  sl.registerLazySingleton<MyContentDetailsRepository>(
+    () => MyContentDetailsRepositoryImpl(
+      remoteDataSource: sl(),
+    ),
+  );
+}
+
+if (!sl.isRegistered<GetMyPublicContentDetailsUseCase>()) {
+  sl.registerLazySingleton<GetMyPublicContentDetailsUseCase>(
+    () => GetMyPublicContentDetailsUseCase(
+      sl(),
+    ),
+  );
+}
   if (!sl.isRegistered<OtherContentDetailsCubit>()) {
     sl.registerFactory(
       () => OtherContentDetailsCubit(
@@ -1087,6 +1115,7 @@ if (!sl.isRegistered<UnfollowPublisherUseCase>()) {
         getSimilarContentUseCase: sl(),
         followPublisherUseCase: sl<FollowPublisherUseCase>(),
         unfollowPublisherUseCase: sl<UnfollowPublisherUseCase>(),
+        getMyPublicContentDetailsUseCase: sl(),
       ),
     );
   }

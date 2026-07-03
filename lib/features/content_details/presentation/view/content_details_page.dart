@@ -24,130 +24,113 @@ import 'package:quiz_app_grad/features/content_details/presentation/widget/conte
 //   }
 // }
 class ContentDetailsPage extends StatelessWidget {
-
   final int contentId;
+  final bool isMyContent;
 
   const ContentDetailsPage({
     super.key,
     required this.contentId,
+    this.isMyContent = false,
   });
 
   @override
   Widget build(BuildContext context) {
-
     return BlocProvider(
+      create: (_) {
+        final cubit = sl<OtherContentDetailsCubit>();
 
-      create: (_)=>sl<OtherContentDetailsCubit>()
-      ..getContentDetails(contentId),
+        if (isMyContent) {
+          cubit.getMyContentDetails(contentId);
+        } else {
+          cubit.getContentDetails(contentId);
+        }
 
-      child: BlocConsumer<
-          OtherContentDetailsCubit,
-          OtherContentDetailsState>(
-listenWhen: (previous, current) =>
-    previous.successMessage != current.successMessage ||
-    previous.showOpenDownloadedFileDialog !=
-        current.showOpenDownloadedFileDialog,
+        return cubit;
+      },
 
-  listener: (context, state) {
-if (state.showOpenDownloadedFileDialog) {
-  showDialog(
-    context: context,
-    builder: (_) {
-      return AlertDialog(
-        title: const Text('تم التحميل بنجاح'),
-        content: const Text('هل تريد فتح الملف؟'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<OtherContentDetailsCubit>().clearDownloadDialog();
-            },
-            child: const Text('إلغاء'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<OtherContentDetailsCubit>().clearDownloadDialog();
+      child: BlocConsumer<OtherContentDetailsCubit, OtherContentDetailsState>(
+        listenWhen: (previous, current) =>
+            previous.successMessage != current.successMessage ||
+            previous.showOpenDownloadedFileDialog !=
+                current.showOpenDownloadedFileDialog,
 
-              // هون لاحقاً منضيف فتح الملف
-              // OpenFilex.open(filePath);
-            },
-            child: const Text('نعم'),
-          ),
-        ],
-      );
-    },
-  );
+        listener: (context, state) {
+          if (state.showOpenDownloadedFileDialog) {
+            showDialog(
+              context: context,
+              builder: (_) {
+                return AlertDialog(
+                  title: const Text('تم التحميل بنجاح'),
+                  content: const Text('هل تريد فتح الملف؟'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        context
+                            .read<OtherContentDetailsCubit>()
+                            .clearDownloadDialog();
+                      },
+                      child: const Text('إلغاء'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        context
+                            .read<OtherContentDetailsCubit>()
+                            .clearDownloadDialog();
 
-  return;
-}
-    ScaffoldMessenger.of(context).showSnackBar(
-
-      SnackBar(
-
-        content: Text(
-          state.successMessage!,
-        ),
-
-        backgroundColor: Colors.green,
-
-      ),
-
-    );
-
-    context
-        .read<OtherContentDetailsCubit>()
-        .clearSuccessMessage();
-
-  },
-        builder: (context,state){
-
-          if(state.status==
-              OtherContentDetailsStatus.loading){
-
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
+                        // هون لاحقاً منضيف فتح الملف
+                        // OpenFilex.open(filePath);
+                      },
+                      child: const Text('نعم'),
+                    ),
+                  ],
+                );
+              },
             );
 
+            return;
           }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.successMessage!),
 
-          if(state.status==
-              OtherContentDetailsStatus.failure){
-
-            return Scaffold(
-
-              body: Center(
-
-                child: CustomTextWidget(
-                  state.errorMessage ??
-                  'حدث خطأ',
-                ),
-
-              ),
-
-            );
-
-          }
-
-          if(state.details==null){
-
-            return const SizedBox();
-
-          }
-
-          return ContentDetailsScaffold(
-
-            data: state.details!.toUi(),
-
+              backgroundColor: Colors.green,
+            ),
           );
 
+          context.read<OtherContentDetailsCubit>().clearSuccessMessage();
         },
+        builder: (context, state) {
+          if (state.status == OtherContentDetailsStatus.loading) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
 
+          if (state.status == OtherContentDetailsStatus.failure) {
+            return Scaffold(
+              body: Center(
+                child: CustomTextWidget(state.errorMessage ?? 'حدث خطأ'),
+              ),
+            );
+          }
+
+          if (!isMyContent && state.details == null) {
+            return const SizedBox();
+          }
+
+          if (isMyContent && state.myDetails == null) {
+            return const SizedBox();
+          }
+
+         return ContentDetailsScaffold(
+  data: isMyContent
+      ? state.myDetails!.toUi()
+      : state.details!.toUi(),
+);
+        },
       ),
-
     );
-
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/content_details/domain/entities/my_content_details/my_content_details_params.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/other_content_details_params.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/report_other_content_params.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/similar_content_material_entity.dart';
@@ -10,6 +11,7 @@ import 'package:quiz_app_grad/features/content_details/domain/usecases/follow_pu
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_other_content_details_usecase.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_similar_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/like_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/get_my_public_content_details_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/report_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unbookmark_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unfollow_publisher_use_case.dart';
@@ -28,6 +30,7 @@ class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
   final GetSimilarContentUseCase getSimilarContentUseCase;
   final FollowPublisherUseCase followPublisherUseCase;
   final UnfollowPublisherUseCase unfollowPublisherUseCase;
+  final GetMyPublicContentDetailsUseCase getMyPublicContentDetailsUseCase;
   OtherContentDetailsCubit({
     required this.getOtherContentDetailsUseCase,
     required this.likeOtherContentUseCase,
@@ -39,6 +42,7 @@ class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
     required this.getSimilarContentUseCase,
     required this.followPublisherUseCase,
     required this.unfollowPublisherUseCase,
+    required this.getMyPublicContentDetailsUseCase,
   }) : super(const OtherContentDetailsState());
 
   Future<void> getContentDetails(int id) async {
@@ -307,7 +311,10 @@ class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
 
   Future<void> downloadContent() async {
     final details = state.details;
+final contentId =
+    state.details?.basicInfo.id ?? state.myDetails?.basicInfo.id;
 
+if (contentId == null) return;
     if (details == null) return;
     if (state.isDownloadLoading) return;
 
@@ -320,7 +327,7 @@ class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
     );
 
     try {
-      await downloadOtherContentUseCase(details.basicInfo.id);
+      await downloadOtherContentUseCase(contentId);
 
       emit(
         state.copyWith(
@@ -477,4 +484,39 @@ class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
       );
     }
   }
+  //            My Content Details
+  Future<void> getMyContentDetails(int id) async {
+  debugPrint('=========== MyContentDetailsCubit Method ===========');
+
+  emit(
+    state.copyWith(
+      status: OtherContentDetailsStatus.loading,
+      clearError: true,
+      clearMyDetails: true,
+    ),
+  );
+
+  try {
+    final response = await getMyPublicContentDetailsUseCase(
+      MyContentDetailsParams(contentId: id),
+    );
+
+    emit(
+      state.copyWith(
+        status: OtherContentDetailsStatus.success,
+        myDetails: response,
+        clearError: true,
+      ),
+    );
+  } catch (e) {
+    debugPrint('getMyContentDetails error: $e');
+
+    emit(
+      state.copyWith(
+        status: OtherContentDetailsStatus.failure,
+        errorMessage: e.toString(),
+      ),
+    );
+  }
+}
 }

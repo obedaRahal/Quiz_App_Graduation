@@ -79,9 +79,7 @@ class _ImageAssetPage extends StatelessWidget {
         right: SizeConfig.w(0.020),
         bottom: SizeConfig.h(0.11),
       ),
-      child: Center(
-        child: _RoundedContainedImage(url: url),
-      ),
+      child: Center(child: _RoundedContainedImage(url: url)),
     );
   }
 }
@@ -104,10 +102,7 @@ class _RoundedContainedImage extends StatelessWidget {
           return ClipRRect(
             borderRadius: BorderRadius.circular(12),
             clipBehavior: Clip.antiAlias,
-            child: CustomAppImage(
-              path: url,
-              fit: BoxFit.contain,
-            ),
+            child: CustomAppImage(path: url, fit: BoxFit.contain),
           );
         }
 
@@ -221,9 +216,9 @@ class _PdfAssetViewerState extends State<_PdfAssetViewer> {
 
     _controller = PdfController(
       document: PdfDocument.openData(
-        NetworkAssetBundle(Uri.parse(pdfUrl)).load(pdfUrl).then(
-              (data) => data.buffer.asUint8List(),
-            ),
+        NetworkAssetBundle(
+          Uri.parse(pdfUrl),
+        ).load(pdfUrl).then((data) => data.buffer.asUint8List()),
       ),
     );
   }
@@ -268,6 +263,8 @@ class _PdfAssetViewerState extends State<_PdfAssetViewer> {
           clipBehavior: Clip.antiAlias,
           child: PdfView(
             controller: _controller!,
+            scrollDirection: Axis.vertical,
+            physics: const PageScrollPhysics(),
             onDocumentLoaded: (document) {
               widget.onPdfPagesCountChanged(document.pagesCount);
             },
@@ -286,21 +283,18 @@ class _ContentDetailsScrollBehavior extends MaterialScrollBehavior {
 
   @override
   Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-        PointerDeviceKind.stylus,
-        PointerDeviceKind.trackpad,
-      };
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.stylus,
+    PointerDeviceKind.trackpad,
+  };
 }
 
 class _ImageTapWrapper extends StatelessWidget {
   final Widget child;
   final VoidCallback onTap;
 
-  const _ImageTapWrapper({
-    required this.child,
-    required this.onTap,
-  });
+  const _ImageTapWrapper({required this.child, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -308,11 +302,11 @@ class _ImageTapWrapper extends StatelessWidget {
       gestures: {
         TapGestureRecognizer:
             GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
-          () => TapGestureRecognizer(),
-          (recognizer) {
-            recognizer.onTap = onTap;
-          },
-        ),
+              () => TapGestureRecognizer(),
+              (recognizer) {
+                recognizer.onTap = onTap;
+              },
+            ),
       },
       child: child,
     );

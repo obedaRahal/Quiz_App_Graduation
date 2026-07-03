@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
 import 'package:quiz_app_grad/features/library/domain/entities/library_featured_entity.dart';
 import 'package:quiz_app_grad/features/library/domain/entities/library_material_entity.dart';
 import 'package:quiz_app_grad/features/library/presentation/manager/library_cubit/library_cubit.dart';
@@ -131,6 +134,15 @@ class LibraryPage extends StatelessWidget {
                                 items: state.featured
                                     .map(_mapFeatured)
                                     .toList(),
+                                onItemTap: (item) {
+                                  context.pushNamed(
+                                    AppRouterName.otherContentDetails,
+                                    extra: ContentDetailsRouteArgs(
+                                      contentId: item.id,
+                                      isMyContent: false,
+                                    ),
+                                  );
+                                },
                               ),
 
                             Expanded(
@@ -142,6 +154,15 @@ class LibraryPage extends StatelessWidget {
                                   context
                                       .read<LibraryCubit>()
                                       .loadMoreWhenNeeded(index);
+                                },
+                                onItemTap: (item) {
+                                  context.pushNamed(
+                                    AppRouterName.otherContentDetails,
+                                    extra: ContentDetailsRouteArgs(
+                                      contentId: item.id,
+                                      isMyContent: false,
+                                    ),
+                                  );
                                 },
                               ),
                             ),
@@ -196,6 +217,7 @@ class LibraryPage extends StatelessWidget {
 
   LibraryContentItem _mapMaterial(LibraryMaterialEntity item) {
     return LibraryContentItem(
+      id: item.id,
       title: item.title,
       description: item.description,
       type: item.type,

@@ -14,6 +14,7 @@ import 'package:quiz_app_grad/features/auth/presentation/view/forgot_password_ot
 import 'package:quiz_app_grad/features/auth/presentation/view/login_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/view/content_details_page.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/view/create_test_ai_loading_view.dart';
@@ -391,13 +392,18 @@ class AppRouter {
             );
           },
         ),
-        GoRoute(
-          path: AppRouterPath.otherContentDetails,
-          name: AppRouterName.otherContentDetails,
-          builder: (context, state) {
-            return ContentDetailsPage(contentId: 6,);
-          },
-        ),
+       GoRoute(
+  path: AppRouterPath.otherContentDetails,
+  name: AppRouterName.otherContentDetails,
+  builder: (context, state) {
+    final args = state.extra as ContentDetailsRouteArgs;
+
+    return ContentDetailsPage(
+      contentId: args.contentId,
+      isMyContent: args.isMyContent,
+    );
+  },
+),
         GoRoute(
           path: AppRouterPath.mcqTestSessionView,
           name: AppRouterName.mcqTestSessionView,

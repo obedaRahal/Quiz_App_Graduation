@@ -9,6 +9,8 @@ class ContentDetailsAppBar extends StatelessWidget {
   final int currentIndex;
   final int totalCount;
   final String targetLevel;
+  final bool isOwner;
+  final bool isPublic;
 
   const ContentDetailsAppBar({
     super.key,
@@ -16,6 +18,8 @@ class ContentDetailsAppBar extends StatelessWidget {
     required this.currentIndex,
     required this.totalCount,
     required this.targetLevel,
+    required this.isOwner,
+    required this.isPublic,
   });
 
   @override
@@ -52,7 +56,9 @@ class ContentDetailsAppBar extends StatelessWidget {
                 const Spacer(),
 
                 _CircleIconButton(
-                  icon: Icons.share_outlined,
+                  icon: isOwner
+                      ? Icons.more_vert_rounded
+                      : Icons.share_outlined,
                   onTap: () {},
                 ),
               ],
@@ -63,7 +69,20 @@ class ContentDetailsAppBar extends StatelessWidget {
             Row(
               textDirection: TextDirection.rtl,
               children: [
-                _SmallOutlineBadge(title: targetLevel),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isOwner) ...[
+                      _SmallOutlineBadge(
+                        title: isPublic ? 'محتوى عام' : 'محتوى خاص',
+                        color: Colors.redAccent,
+                      ),
+                      SizedBox(width: SizeConfig.w(0.012)),
+                    ],
+
+                    _SmallOutlineBadge(title: targetLevel),
+                  ],
+                ),
                 const Spacer(),
                 _SmallOutlineBadge(title: '$currentIndex/$totalCount'),
               ],
@@ -79,10 +98,7 @@ class _CircleIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _CircleIconButton({
-    required this.icon,
-    required this.onTap,
-  });
+  const _CircleIconButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +119,9 @@ class _CircleIconButton extends StatelessWidget {
         child: Icon(
           icon,
           size: SizeConfig.text(0.042),
-          color: isDark ? AppPalette.textWhiteINDark : AppPalette.textColorInHome,
+          color: isDark
+              ? AppPalette.textWhiteINDark
+              : AppPalette.textColorInHome,
         ),
       ),
     );
@@ -112,10 +130,9 @@ class _CircleIconButton extends StatelessWidget {
 
 class _SmallOutlineBadge extends StatelessWidget {
   final String title;
+  final Color? color;
 
-  const _SmallOutlineBadge({
-    required this.title,
-  });
+  const _SmallOutlineBadge({required this.title, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -130,13 +147,12 @@ class _SmallOutlineBadge extends StatelessWidget {
             : AppPalette.white.withOpacity(0.88),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary,
-          width: 1.2,
+          color: color ?? Theme.of(context).colorScheme.primary,
         ),
       ),
       child: CustomTextWidget(
         title,
-        color: Theme.of(context).colorScheme.primary,
+        color: color ?? Theme.of(context).colorScheme.primary,
         fontSize: SizeConfig.text(0.027).clamp(10.0, 12.0).toDouble(),
         fontWeight: FontWeight.w700,
       ),

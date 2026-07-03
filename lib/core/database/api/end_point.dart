@@ -84,8 +84,11 @@ class EndPoints {
   static String similarContent(int contentId) => '/library/similar/$contentId';
   static String followPublisher(int publisherId) =>
       '/users-profile/follow/$publisherId';
-      static String unfollowPublisher(int publisherId) =>
-    '/users-profile/unfollow/$publisherId';
+  static String unfollowPublisher(int publisherId) =>
+      '/users-profile/unfollow/$publisherId';
+  // My Content Details
+  static String myPublicContentDetails(int id) =>
+      '/library/library-materials-details/my-public/$id';
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';

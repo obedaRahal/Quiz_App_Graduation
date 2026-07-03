@@ -1,3 +1,4 @@
+import 'package:quiz_app_grad/features/content_details/domain/entities/my_content_details/my_content_details_entity.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/other_content_details_entity.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/similar_content_material_entity.dart';
 
@@ -29,7 +30,7 @@ class OtherContentDetailsState {
   final bool isFollowLoading;
 final bool? viewerIsFollowingPublisher;
 final bool isUnfollowLoading;
-
+final MyContentDetailsEntity? myDetails;
   const OtherContentDetailsState({
     this.status = OtherContentDetailsStatus.initial,
     this.details,
@@ -54,6 +55,7 @@ final bool isUnfollowLoading;
     this.isFollowLoading = false,
 this.viewerIsFollowingPublisher,
 this.isUnfollowLoading = false,
+this.myDetails,
   });
 
   OtherContentDetailsState copyWith({
@@ -83,6 +85,8 @@ this.isUnfollowLoading = false,
     bool? isFollowLoading,
 bool? viewerIsFollowingPublisher,
 bool? isUnfollowLoading,
+MyContentDetailsEntity? myDetails,
+bool clearMyDetails = false,
   }) {
     return OtherContentDetailsState(
       status: status ?? this.status,
@@ -115,6 +119,7 @@ bool? isUnfollowLoading,
 viewerIsFollowingPublisher:
     viewerIsFollowingPublisher ?? this.viewerIsFollowingPublisher,
     isUnfollowLoading: isUnfollowLoading ?? this.isUnfollowLoading,
+    myDetails: clearMyDetails ? null : myDetails ?? this.myDetails,
     );
   }
 }

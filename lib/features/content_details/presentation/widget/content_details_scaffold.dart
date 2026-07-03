@@ -23,8 +23,9 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
 
   bool _sheetIsCollapsed = false;
   static const double _collapsedSheetSize = 0.105;
-  static const double _initialSheetSize = 0.44;
-static const double _expandedSheetSize = 0.72;
+  double get _initialSheetSize => widget.data.isOwner ? 0.25 : 0.44;
+
+  double get _expandedSheetSize => widget.data.isOwner ? 0.38 : 0.72;
 
   int get _totalCount {
     if (widget.data.isFile) return _pdfPagesCount;
@@ -119,6 +120,8 @@ static const double _expandedSheetSize = 0.72;
             currentIndex: _currentIndex + 1,
             totalCount: _totalCount,
             targetLevel: widget.data.targetLevel,
+            isOwner: widget.data.isOwner,
+            isPublic: widget.data.isPublic,
           ),
           Align(
             alignment: Alignment.bottomCenter,
