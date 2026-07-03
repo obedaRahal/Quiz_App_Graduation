@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
@@ -50,7 +51,8 @@ class ContentDetailsPage extends StatelessWidget {
 
       child: BlocConsumer<OtherContentDetailsCubit, OtherContentDetailsState>(
         listenWhen: (previous, current) =>
-            previous.successMessage != current.successMessage ||
+            (previous.successMessage != current.successMessage &&
+                current.successMessage != null) ||
             previous.showOpenDownloadedFileDialog !=
                 current.showOpenDownloadedFileDialog,
 
@@ -73,14 +75,18 @@ class ContentDetailsPage extends StatelessWidget {
                       child: const Text('إلغاء'),
                     ),
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        final filePath = state.downloadedFilePath;
+
                         Navigator.pop(context);
+
                         context
                             .read<OtherContentDetailsCubit>()
                             .clearDownloadDialog();
 
-                        // هون لاحقاً منضيف فتح الملف
-                        // OpenFilex.open(filePath);
+                        if (filePath == null || filePath.isEmpty) return;
+
+                        await OpenFilex.open(filePath);
                       },
                       child: const Text('نعم'),
                     ),
@@ -91,12 +97,14 @@ class ContentDetailsPage extends StatelessWidget {
 
             return;
           }
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.successMessage!),
+          final message = state.successMessage;
 
-              backgroundColor: Colors.green,
-            ),
+          if (message == null || message.trim().isEmpty) {
+            return;
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message), backgroundColor: Colors.green),
           );
 
           context.read<OtherContentDetailsCubit>().clearSuccessMessage();
@@ -124,11 +132,9 @@ class ContentDetailsPage extends StatelessWidget {
             return const SizedBox();
           }
 
-         return ContentDetailsScaffold(
-  data: isMyContent
-      ? state.myDetails!.toUi()
-      : state.details!.toUi(),
-);
+          return ContentDetailsScaffold(
+            data: isMyContent ? state.myDetails!.toUi() : state.details!.toUi(),
+          );
         },
       ),
     );

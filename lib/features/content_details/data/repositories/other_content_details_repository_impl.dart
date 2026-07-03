@@ -28,8 +28,8 @@ class OtherContentDetailsRepositoryImpl
 
     return remoteDataSource.getOtherContentDetails(params);
   }
-  @override
-Future<void> downloadContent(int contentId) {
+ @override
+Future<String> downloadContent(int contentId) {
   return remoteDataSource.downloadContent(contentId);
 }
 @override

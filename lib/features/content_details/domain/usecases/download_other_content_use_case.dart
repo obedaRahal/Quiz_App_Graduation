@@ -5,9 +5,9 @@ import 'package:quiz_app_grad/features/content_details/domain/repositories/other
 class DownloadOtherContentUseCase {
   final OtherContentDetailsRepository repository;
 
-  const DownloadOtherContentUseCase(this.repository);
+  DownloadOtherContentUseCase(this.repository);
 
-  Future<void> call(int contentId) {
+  Future<String> call(int contentId) {
     return repository.downloadContent(contentId);
   }
 }

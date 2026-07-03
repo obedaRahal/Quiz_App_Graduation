@@ -309,47 +309,55 @@ class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
     emit(state.copyWith(clearSuccess: true));
   }
 
-  Future<void> downloadContent() async {
-    final details = state.details;
-final contentId =
-    state.details?.basicInfo.id ?? state.myDetails?.basicInfo.id;
+ Future<void> downloadContent() async {
+  final contentId =
+      state.details?.basicInfo.id ?? state.myDetails?.basicInfo.id;
 
-if (contentId == null) return;
-    if (details == null) return;
-    if (state.isDownloadLoading) return;
+  debugPrint('=========== downloadContent ===========');
+  debugPrint('contentId: $contentId');
+
+  if (contentId == null) return;
+  if (state.isDownloadLoading) return;
+
+  emit(
+    state.copyWith(
+      isDownloadLoading: true,
+      clearError: true,
+      clearSuccess: true,
+    ),
+  );
+
+  try {
+   
+final filePath = await downloadOtherContentUseCase(contentId);
+   emit(
+  state.copyWith(
+    isDownloadLoading: false,
+    successMessage: 'تم تحميل المحتوى بنجاح',
+    showOpenDownloadedFileDialog: true,
+    downloadedFilePath: filePath,
+  ),
+);
+  } catch (e) {
+    debugPrint('downloadContent error: $e');
 
     emit(
       state.copyWith(
-        isDownloadLoading: true,
-        clearError: true,
-        clearSuccess: true,
+        isDownloadLoading: false,
+        errorMessage: e.toString(),
       ),
     );
-
-    try {
-      await downloadOtherContentUseCase(contentId);
-
-      emit(
-        state.copyWith(
-          isDownloadLoading: false,
-          successMessage: 'تم تحميل المحتوى بنجاح',
-          showOpenDownloadedFileDialog: true,
-        ),
-      );
-    } catch (e) {
-      debugPrint('downloadContent error: $e');
-
-      emit(
-        state.copyWith(isDownloadLoading: false, errorMessage: e.toString()),
-      );
-    }
   }
-
+}
   void clearDownloadDialog() {
-    emit(
-      state.copyWith(showOpenDownloadedFileDialog: false, clearSuccess: true),
-    );
-  }
+  emit(
+    state.copyWith(
+      showOpenDownloadedFileDialog: false,
+      clearSuccess: true,
+      clearDownloadedFilePath: true,
+    ),
+  );
+}
 
   Future<void> toggleSimilarBookmark(int contentId) async {
     if (state.similarBookmarkLoadingIds.contains(contentId)) return;

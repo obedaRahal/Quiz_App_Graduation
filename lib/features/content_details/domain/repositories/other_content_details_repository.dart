@@ -10,7 +10,7 @@ abstract class OtherContentDetailsRepository {
   Future<OtherContentDetailsEntity> getOtherContentDetails(
     OtherContentDetailsParams params,
   );
-  Future<void> downloadContent(int contentId);
+  Future<String> downloadContent(int contentId);
   Future<SimilarContentResponseEntity> getSimilarContent(
   SimilarContentParams params,
 );

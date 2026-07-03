@@ -51,4 +51,11 @@ abstract class ApiConsumer {
     Options? options,
     Map<String, String>? headers,
   });
+Future<Response<List<int>>> downloadBytes(
+  String path, {
+  Map<String, dynamic>? queryParameters,
+  CancelToken? cancelToken,
+  ProgressCallback? onReceiveProgress,
+  Options? options,
+});
 }

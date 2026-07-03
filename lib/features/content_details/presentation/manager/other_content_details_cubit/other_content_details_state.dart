@@ -31,6 +31,7 @@ class OtherContentDetailsState {
 final bool? viewerIsFollowingPublisher;
 final bool isUnfollowLoading;
 final MyContentDetailsEntity? myDetails;
+final String? downloadedFilePath;
   const OtherContentDetailsState({
     this.status = OtherContentDetailsStatus.initial,
     this.details,
@@ -56,6 +57,7 @@ final MyContentDetailsEntity? myDetails;
 this.viewerIsFollowingPublisher,
 this.isUnfollowLoading = false,
 this.myDetails,
+this.downloadedFilePath,
   });
 
   OtherContentDetailsState copyWith({
@@ -87,6 +89,8 @@ bool? viewerIsFollowingPublisher,
 bool? isUnfollowLoading,
 MyContentDetailsEntity? myDetails,
 bool clearMyDetails = false,
+String? downloadedFilePath,
+bool clearDownloadedFilePath = false,
   }) {
     return OtherContentDetailsState(
       status: status ?? this.status,
@@ -120,6 +124,9 @@ viewerIsFollowingPublisher:
     viewerIsFollowingPublisher ?? this.viewerIsFollowingPublisher,
     isUnfollowLoading: isUnfollowLoading ?? this.isUnfollowLoading,
     myDetails: clearMyDetails ? null : myDetails ?? this.myDetails,
+    downloadedFilePath: clearDownloadedFilePath
+    ? null
+    : downloadedFilePath ?? this.downloadedFilePath,
     );
   }
 }
