@@ -116,7 +116,31 @@ class DioConsumer extends ApiConsumer {
       ),
     );
   }
+@override
+Future<Response<List<int>>> downloadBytes(
+  String path, {
+  Map<String, dynamic>? queryParameters,
+  CancelToken? cancelToken,
+  ProgressCallback? onReceiveProgress,
+  Options? options,
+}) async {
+  try {
+    final mergedOptions = (options ?? Options()).copyWith(
+      responseType: ResponseType.bytes,
+    );
 
+    return await dio.get<List<int>>(
+      path,
+      queryParameters: queryParameters,
+      cancelToken: cancelToken,
+      onReceiveProgress: onReceiveProgress,
+      options: mergedOptions,
+    );
+  } on DioException catch (e) {
+    handleDioException(e);
+    rethrow;
+  }
+}
   Future<bool> _runRefreshOnce({
     bool clearSessionOnUnauthorizedOnly = false,
   }) async {

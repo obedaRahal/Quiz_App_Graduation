@@ -16,6 +16,33 @@ import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_ca
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
+import 'package:quiz_app_grad/features/content_details/data/datasources/my_content_details_remote_data_source.dart';
+import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_bookmark_remote_data_source.dart';
+import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_details_remote_data_source.dart';
+import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_like_remote_data_source.dart';
+import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_report_remote_data_source.dart';
+import 'package:quiz_app_grad/features/content_details/data/repositories/my_content_details_repository_impl.dart';
+import 'package:quiz_app_grad/features/content_details/data/repositories/other_content_bookmark_repository_impl.dart';
+import 'package:quiz_app_grad/features/content_details/data/repositories/other_content_details_repository_impl.dart';
+import 'package:quiz_app_grad/features/content_details/data/repositories/other_content_like_repository_impl.dart';
+import 'package:quiz_app_grad/features/content_details/data/repositories/other_content_report_repository_impl.dart';
+import 'package:quiz_app_grad/features/content_details/domain/repositories/my_content_details_repository.dart';
+import 'package:quiz_app_grad/features/content_details/domain/repositories/other_content_bookmark_repository.dart';
+import 'package:quiz_app_grad/features/content_details/domain/repositories/other_content_details_repository.dart';
+import 'package:quiz_app_grad/features/content_details/domain/repositories/other_content_like_repository.dart';
+import 'package:quiz_app_grad/features/content_details/domain/repositories/other_content_report_repository.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/bookmark_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/download_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/follow_publisher_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/get_other_content_details_usecase.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/get_similar_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/like_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/get_my_public_content_details_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/report_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/unbookmark_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/unfollow_publisher_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/unlike_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
 import 'package:quiz_app_grad/features/create_test/data/datasource/create_test_remote_data_source.dart';
 import 'package:quiz_app_grad/features/create_test/data/repositories/create_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/create_test/domain/repositories/create_test_repository.dart';
@@ -930,11 +957,175 @@ void _registerLibraryFeature() {
       () => SearchLibraryContentUseCase(sl<LibraryRepository>()),
     );
   }
+  if (!sl.isRegistered<OtherContentLikeRemoteDataSource>()) {
+    sl.registerLazySingleton<OtherContentLikeRemoteDataSource>(
+      () =>
+          OtherContentLikeRemoteDataSourceImpl(apiConsumer: sl<ApiConsumer>()),
+    );
+  }
+
+  if (!sl.isRegistered<OtherContentLikeRepository>()) {
+    sl.registerLazySingleton<OtherContentLikeRepository>(
+      () => OtherContentLikeRepositoryImpl(
+        remoteDataSource: sl<OtherContentLikeRemoteDataSource>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<LikeOtherContentUseCase>()) {
+    sl.registerLazySingleton<LikeOtherContentUseCase>(
+      () => LikeOtherContentUseCase(sl<OtherContentLikeRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<UnlikeOtherContentUseCase>()) {
+    sl.registerLazySingleton<UnlikeOtherContentUseCase>(
+      () => UnlikeOtherContentUseCase(sl<OtherContentLikeRepository>()),
+    );
+  }
   if (!sl.isRegistered<LibraryCubit>()) {
     sl.registerFactory<LibraryCubit>(
       () => LibraryCubit(
         getLibraryContentUseCase: sl<GetLibraryContentUseCase>(),
         searchLibraryContentUseCase: sl<SearchLibraryContentUseCase>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<OtherContentDetailsRemoteDataSource>()) {
+    sl.registerLazySingleton<OtherContentDetailsRemoteDataSource>(
+      () => OtherContentDetailsRemoteDataSourceImpl(
+        apiConsumer: sl<ApiConsumer>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<OtherContentDetailsRepository>()) {
+    sl.registerLazySingleton<OtherContentDetailsRepository>(
+      () => OtherContentDetailsRepositoryImpl(
+        remoteDataSource: sl<OtherContentDetailsRemoteDataSource>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<GetOtherContentDetailsUseCase>()) {
+    sl.registerLazySingleton<GetOtherContentDetailsUseCase>(
+      () => GetOtherContentDetailsUseCase(sl<OtherContentDetailsRepository>()),
+    );
+  }
+  //===================== Other Content Bookmark =====================//
+
+  if (!sl.isRegistered<OtherContentBookmarkRemoteDataSource>()) {
+    sl.registerLazySingleton<OtherContentBookmarkRemoteDataSource>(
+      () => OtherContentBookmarkRemoteDataSourceImpl(
+        apiConsumer: sl<ApiConsumer>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<OtherContentBookmarkRepository>()) {
+    sl.registerLazySingleton<OtherContentBookmarkRepository>(
+      () => OtherContentBookmarkRepositoryImpl(
+        remoteDataSource: sl<OtherContentBookmarkRemoteDataSource>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<BookmarkOtherContentUseCase>()) {
+    sl.registerLazySingleton<BookmarkOtherContentUseCase>(
+      () => BookmarkOtherContentUseCase(sl<OtherContentBookmarkRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<UnbookmarkOtherContentUseCase>()) {
+    sl.registerLazySingleton<UnbookmarkOtherContentUseCase>(
+      () => UnbookmarkOtherContentUseCase(sl<OtherContentBookmarkRepository>()),
+    );
+  }
+  //===================== Other Content Report =====================//
+
+  if (!sl.isRegistered<OtherContentReportRemoteDataSource>()) {
+    sl.registerLazySingleton<OtherContentReportRemoteDataSource>(
+      () => OtherContentReportRemoteDataSourceImpl(
+        apiConsumer: sl<ApiConsumer>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<OtherContentReportRepository>()) {
+    sl.registerLazySingleton<OtherContentReportRepository>(
+      () => OtherContentReportRepositoryImpl(
+        remoteDataSource: sl<OtherContentReportRemoteDataSource>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<ReportOtherContentUseCase>()) {
+    sl.registerLazySingleton<ReportOtherContentUseCase>(
+      () => ReportOtherContentUseCase(sl<OtherContentReportRepository>()),
+    );
+  }
+  if (!sl.isRegistered<DownloadOtherContentUseCase>()) {
+    sl.registerLazySingleton<DownloadOtherContentUseCase>(
+      () => DownloadOtherContentUseCase(sl<OtherContentDetailsRepository>()),
+    );
+  }
+  if (!sl.isRegistered<GetSimilarContentUseCase>()) {
+    sl.registerLazySingleton<GetSimilarContentUseCase>(
+      () => GetSimilarContentUseCase(sl<OtherContentDetailsRepository>()),
+    );
+  }
+  if (!sl.isRegistered<FollowPublisherUseCase>()) {
+  sl.registerLazySingleton<FollowPublisherUseCase>(
+    () => FollowPublisherUseCase(
+      sl<OtherContentDetailsRepository>(),
+    ),
+  );
+}
+if (!sl.isRegistered<UnfollowPublisherUseCase>()) {
+  sl.registerLazySingleton<UnfollowPublisherUseCase>(
+    () => UnfollowPublisherUseCase(
+      sl<OtherContentDetailsRepository>(),
+    ),
+  );
+}
+
+if (!sl.isRegistered<MyContentDetailsRemoteDataSource>()) {
+  sl.registerLazySingleton<MyContentDetailsRemoteDataSource>(
+    () => MyContentDetailsRemoteDataSourceImpl(
+      apiConsumer: sl(),
+    ),
+  );
+}
+
+if (!sl.isRegistered<MyContentDetailsRepository>()) {
+  sl.registerLazySingleton<MyContentDetailsRepository>(
+    () => MyContentDetailsRepositoryImpl(
+      remoteDataSource: sl(),
+    ),
+  );
+}
+
+if (!sl.isRegistered<GetMyPublicContentDetailsUseCase>()) {
+  sl.registerLazySingleton<GetMyPublicContentDetailsUseCase>(
+    () => GetMyPublicContentDetailsUseCase(
+      sl(),
+    ),
+  );
+}
+  if (!sl.isRegistered<OtherContentDetailsCubit>()) {
+    sl.registerFactory(
+      () => OtherContentDetailsCubit(
+        getOtherContentDetailsUseCase: sl(),
+        likeOtherContentUseCase: sl(),
+        unlikeOtherContentUseCase: sl(),
+        bookmarkOtherContentUseCase: sl(),
+        unbookmarkOtherContentUseCase: sl(),
+        reportOtherContentUseCase: sl(),
+        downloadOtherContentUseCase: sl(),
+        getSimilarContentUseCase: sl(),
+        followPublisherUseCase: sl<FollowPublisherUseCase>(),
+        unfollowPublisherUseCase: sl<UnfollowPublisherUseCase>(),
+        getMyPublicContentDetailsUseCase: sl(),
       ),
     );
   }

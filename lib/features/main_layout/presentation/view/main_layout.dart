@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
@@ -134,7 +135,20 @@ class MainLayoutBody extends StatelessWidget {
                           child: Text(" other profile "),
                         ),
                       ),
-
+Center(
+  child: InkWell(
+    onTap: () {
+      context.pushNamed(
+        AppRouterName.otherContentDetails,
+        extra: const ContentDetailsRouteArgs(
+          contentId: 402,
+          isMyContent: true,
+        ),
+      );
+    },
+    child: const Text('عرض محتواي'),
+  ),
+),
                       CustomButtonWidget(
                         onTap: () {
                           debugPrint("change mode ");

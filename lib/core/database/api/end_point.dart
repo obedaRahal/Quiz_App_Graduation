@@ -69,7 +69,26 @@ class EndPoints {
 
   // Create Content
   static const String createContent = '/library/create-content';
+  // Other Content Details
+  static String otherContentDetails(int id) =>
+      '/library/library-materials-details/other/$id';
+  static const String likeContent = '/library/like';
 
+  static const String unlikeContent = '/library/unlike';
+
+  static String bookmarkContent(int id) => '/library/bookmark/$id';
+
+  static String unbookmarkContent(int id) => '/library/unbookmark/$id';
+  static String reportContent(int id) => '/library/reports/$id';
+  static String downloadContent(int id) => '/library/download/$id';
+  static String similarContent(int contentId) => '/library/similar/$contentId';
+  static String followPublisher(int publisherId) =>
+      '/users-profile/follow/$publisherId';
+  static String unfollowPublisher(int publisherId) =>
+      '/users-profile/unfollow/$publisherId';
+  // My Content Details
+  static String myPublicContentDetails(int id) =>
+      '/library/library-materials-details/my-public/$id';
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';

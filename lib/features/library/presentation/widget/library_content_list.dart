@@ -7,6 +7,7 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class LibraryContentItem {
+  final int id;
   final String title;
   final String description;
   final String type;
@@ -19,6 +20,7 @@ class LibraryContentItem {
   final bool isBookmarked;
 
   const LibraryContentItem({
+    required this.id,
     required this.title,
     required this.description,
     required this.type,
@@ -35,8 +37,9 @@ class LibraryContentItem {
 class LibraryContentList extends StatelessWidget {
   final List<LibraryContentItem> items;
   final ValueChanged<int>? onItemBuild;
+  final ValueChanged<LibraryContentItem>? onItemTap;
 
-  const LibraryContentList({super.key, required this.items, this.onItemBuild});
+  const LibraryContentList({super.key, required this.items, this.onItemBuild,this.onItemTap,});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +62,10 @@ class LibraryContentList extends StatelessWidget {
       ),
       itemBuilder: (context, index) {
         onItemBuild?.call(index);
-        return _LibraryContentCard(item: items[index]);
+        return _LibraryContentCard(
+  item: items[index],
+  onTap: () => onItemTap?.call(items[index]),
+);
       },
     );
   }
@@ -67,8 +73,12 @@ class LibraryContentList extends StatelessWidget {
 
 class _LibraryContentCard extends StatelessWidget {
   final LibraryContentItem item;
+  final VoidCallback? onTap;
 
-  const _LibraryContentCard({required this.item});
+  const _LibraryContentCard({
+    required this.item,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -76,75 +86,78 @@ class _LibraryContentCard extends StatelessWidget {
 
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.008)),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.0028)),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ContentImage(
-                imageUrl: item.imageUrl,
-                imageAsset: item.imageAsset,
-              ),
-              SizedBox(width: SizeConfig.w(0.025)),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      textDirection: TextDirection.rtl,
-                      children: [
-                        Expanded(
-                          child: CustomTextWidget(
-                            item.title,
-                            textAlign: TextAlign.right,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            color: isDark
-                                ? AppPalette.titleWhiteINDark
-                                : AppPalette.textColorInHome,
-                            fontSize: SizeConfig.text(
-                              0.043,
-                            ).clamp(16.0, 21.0).toDouble(),
-                            fontWeight: FontWeight.w700,
-                            fontFamily: AppFont.elMessiriRegular,
-                          ),
-                        ),
-                        SizedBox(width: SizeConfig.w(0.018)),
-                        _TypeBadge(title: item.type),
-                        SizedBox(width: SizeConfig.w(0.014)),
-                        _BookmarkButton(
-                          isDark: isDark,
-                          isBookmarked: item.isBookmarked,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: SizeConfig.h(0.004)),
-                    CustomTextWidget(
-                      item.description,
-                      textAlign: TextAlign.right,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      color: isDark
-                          ? AppPalette.grey2Dark
-                          : AppPalette.greyMedium,
-                      fontSize: SizeConfig.text(
-                        0.029,
-                      ).clamp(10.5, 13.0).toDouble(),
-                      fontWeight: FontWeight.w500,
-                      fontFamily: AppFont.elMessiriRegular,
-                    ),
-                    SizedBox(height: SizeConfig.h(0.01)),
-                    _BottomOneLineRow(
-                      specialties: item.specialties,
-                      likesCount: item.likesCount,
-                      publishedAgo: item.publishedAgo,
-                    ),
-                  ],
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.008)),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.0028)),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _ContentImage(
+                  imageUrl: item.imageUrl,
+                  imageAsset: item.imageAsset,
                 ),
-              ),
-            ],
+                SizedBox(width: SizeConfig.w(0.025)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          Expanded(
+                            child: CustomTextWidget(
+                              item.title,
+                              textAlign: TextAlign.right,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              color: isDark
+                                  ? AppPalette.titleWhiteINDark
+                                  : AppPalette.textColorInHome,
+                              fontSize: SizeConfig.text(
+                                0.043,
+                              ).clamp(16.0, 21.0).toDouble(),
+                              fontWeight: FontWeight.w700,
+                              fontFamily: AppFont.elMessiriRegular,
+                            ),
+                          ),
+                          SizedBox(width: SizeConfig.w(0.018)),
+                          _TypeBadge(title: item.type),
+                          SizedBox(width: SizeConfig.w(0.014)),
+                          _BookmarkButton(
+                            isDark: isDark,
+                            isBookmarked: item.isBookmarked,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: SizeConfig.h(0.004)),
+                      CustomTextWidget(
+                        item.description,
+                        textAlign: TextAlign.right,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        color: isDark
+                            ? AppPalette.grey2Dark
+                            : AppPalette.greyMedium,
+                        fontSize: SizeConfig.text(
+                          0.029,
+                        ).clamp(10.5, 13.0).toDouble(),
+                        fontWeight: FontWeight.w500,
+                        fontFamily: AppFont.elMessiriRegular,
+                      ),
+                      SizedBox(height: SizeConfig.h(0.01)),
+                      _BottomOneLineRow(
+                        specialties: item.specialties,
+                        likesCount: item.likesCount,
+                        publishedAgo: item.publishedAgo,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
