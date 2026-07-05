@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
 import 'package:quiz_app_grad/features/content_details/data/models/similar_content_response_model.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/follow_publisher_response_entity.dart';
+import 'package:quiz_app_grad/features/content_details/domain/entities/my_content_details/delete_content_response_entity.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/similar_content_params.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/similar_content_response_entity.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/unfollow_publisher_response_entity.dart';
@@ -46,4 +47,5 @@ Future<FollowPublisherResponseEntity> followPublisher(int publisherId) {
 Future<UnfollowPublisherResponseEntity> unfollowPublisher(int publisherId) {
   return remoteDataSource.unfollowPublisher(publisherId);
 }
+
 }

@@ -37,6 +37,7 @@ import 'package:quiz_app_grad/features/content_details/domain/usecases/follow_pu
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_other_content_details_usecase.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_similar_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/like_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/delete_my_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/get_my_public_content_details_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/report_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unbookmark_other_content_use_case.dart';
@@ -1112,6 +1113,11 @@ if (!sl.isRegistered<GetMyPublicContentDetailsUseCase>()) {
     ),
   );
 }
+if (!sl.isRegistered<DeleteMyContentUseCase>()) {
+  sl.registerLazySingleton<DeleteMyContentUseCase>(
+    () => DeleteMyContentUseCase(sl()),
+  );
+}
   if (!sl.isRegistered<OtherContentDetailsCubit>()) {
     sl.registerFactory(
       () => OtherContentDetailsCubit(
@@ -1126,6 +1132,7 @@ if (!sl.isRegistered<GetMyPublicContentDetailsUseCase>()) {
         followPublisherUseCase: sl<FollowPublisherUseCase>(),
         unfollowPublisherUseCase: sl<UnfollowPublisherUseCase>(),
         getMyPublicContentDetailsUseCase: sl(),
+        deleteMyContentUseCase: sl(),
       ),
     );
   }

@@ -11,6 +11,7 @@ import 'package:quiz_app_grad/features/content_details/domain/usecases/follow_pu
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_other_content_details_usecase.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_similar_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/like_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/delete_my_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/get_my_public_content_details_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/report_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unbookmark_other_content_use_case.dart';
@@ -31,6 +32,7 @@ class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
   final FollowPublisherUseCase followPublisherUseCase;
   final UnfollowPublisherUseCase unfollowPublisherUseCase;
   final GetMyPublicContentDetailsUseCase getMyPublicContentDetailsUseCase;
+  final DeleteMyContentUseCase deleteMyContentUseCase;
   OtherContentDetailsCubit({
     required this.getOtherContentDetailsUseCase,
     required this.likeOtherContentUseCase,
@@ -43,6 +45,7 @@ class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
     required this.followPublisherUseCase,
     required this.unfollowPublisherUseCase,
     required this.getMyPublicContentDetailsUseCase,
+    required this.deleteMyContentUseCase,
   }) : super(const OtherContentDetailsState());
 
   Future<void> getContentDetails(int id) async {
@@ -522,6 +525,46 @@ final filePath = await downloadOtherContentUseCase(contentId);
     emit(
       state.copyWith(
         status: OtherContentDetailsStatus.failure,
+        errorMessage: e.toString(),
+      ),
+    );
+  }
+}
+// Delete Content
+Future<void> deleteMyContent() async {
+  final contentId =
+      state.myDetails?.basicInfo.id ?? state.details?.basicInfo.id;
+
+  if (contentId == null) return;
+  if (state.isDeleteLoading) return;
+
+  debugPrint('=========== deleteMyContent ===========');
+  debugPrint('contentId: $contentId');
+
+  emit(
+    state.copyWith(
+      isDeleteLoading: true,
+      clearError: true,
+      clearSuccess: true,
+    ),
+  );
+
+  try {
+    final response = await deleteMyContentUseCase(contentId);
+
+    emit(
+      state.copyWith(
+        isDeleteLoading: false,
+        isDeleted: true,
+        successMessage: response.message,
+      ),
+    );
+  } catch (e) {
+    debugPrint('deleteMyContent error: $e');
+
+    emit(
+      state.copyWith(
+        isDeleteLoading: false,
         errorMessage: e.toString(),
       ),
     );

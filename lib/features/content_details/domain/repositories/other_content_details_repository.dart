@@ -16,4 +16,5 @@ abstract class OtherContentDetailsRepository {
 );
 Future<FollowPublisherResponseEntity> followPublisher(int publisherId);
 Future<UnfollowPublisherResponseEntity> unfollowPublisher(int publisherId);
+
 }

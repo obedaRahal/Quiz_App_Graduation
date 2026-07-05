@@ -28,10 +28,12 @@ class OtherContentDetailsState {
   final bool similarHasMorePages;
   final Set<int> similarBookmarkLoadingIds;
   final bool isFollowLoading;
-final bool? viewerIsFollowingPublisher;
-final bool isUnfollowLoading;
-final MyContentDetailsEntity? myDetails;
-final String? downloadedFilePath;
+  final bool? viewerIsFollowingPublisher;
+  final bool isUnfollowLoading;
+  final MyContentDetailsEntity? myDetails;
+  final String? downloadedFilePath;
+  final bool isDeleteLoading;
+  final bool isDeleted;
   const OtherContentDetailsState({
     this.status = OtherContentDetailsStatus.initial,
     this.details,
@@ -54,10 +56,12 @@ final String? downloadedFilePath;
     this.similarHasMorePages = false,
     this.similarBookmarkLoadingIds = const {},
     this.isFollowLoading = false,
-this.viewerIsFollowingPublisher,
-this.isUnfollowLoading = false,
-this.myDetails,
-this.downloadedFilePath,
+    this.viewerIsFollowingPublisher,
+    this.isUnfollowLoading = false,
+    this.myDetails,
+    this.downloadedFilePath,
+    this.isDeleteLoading = false,
+    this.isDeleted = false,
   });
 
   OtherContentDetailsState copyWith({
@@ -85,12 +89,14 @@ this.downloadedFilePath,
     bool? similarHasMorePages,
     Set<int>? similarBookmarkLoadingIds,
     bool? isFollowLoading,
-bool? viewerIsFollowingPublisher,
-bool? isUnfollowLoading,
-MyContentDetailsEntity? myDetails,
-bool clearMyDetails = false,
-String? downloadedFilePath,
-bool clearDownloadedFilePath = false,
+    bool? viewerIsFollowingPublisher,
+    bool? isUnfollowLoading,
+    MyContentDetailsEntity? myDetails,
+    bool clearMyDetails = false,
+    String? downloadedFilePath,
+    bool clearDownloadedFilePath = false,
+    bool? isDeleteLoading,
+    bool? isDeleted,
   }) {
     return OtherContentDetailsState(
       status: status ?? this.status,
@@ -119,14 +125,16 @@ bool clearDownloadedFilePath = false,
       similarHasMorePages: similarHasMorePages ?? this.similarHasMorePages,
       similarBookmarkLoadingIds:
           similarBookmarkLoadingIds ?? this.similarBookmarkLoadingIds,
-          isFollowLoading: isFollowLoading ?? this.isFollowLoading,
-viewerIsFollowingPublisher:
-    viewerIsFollowingPublisher ?? this.viewerIsFollowingPublisher,
-    isUnfollowLoading: isUnfollowLoading ?? this.isUnfollowLoading,
-    myDetails: clearMyDetails ? null : myDetails ?? this.myDetails,
-    downloadedFilePath: clearDownloadedFilePath
-    ? null
-    : downloadedFilePath ?? this.downloadedFilePath,
+      isFollowLoading: isFollowLoading ?? this.isFollowLoading,
+      viewerIsFollowingPublisher:
+          viewerIsFollowingPublisher ?? this.viewerIsFollowingPublisher,
+      isUnfollowLoading: isUnfollowLoading ?? this.isUnfollowLoading,
+      myDetails: clearMyDetails ? null : myDetails ?? this.myDetails,
+      downloadedFilePath: clearDownloadedFilePath
+          ? null
+          : downloadedFilePath ?? this.downloadedFilePath,
+      isDeleteLoading: isDeleteLoading ?? this.isDeleteLoading,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 }

@@ -57,6 +57,17 @@ class ContentDetailsPage extends StatelessWidget {
                 current.showOpenDownloadedFileDialog,
 
         listener: (context, state) {
+          if (state.isDeleted) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(state.successMessage ?? 'تم حذف المحتوى بنجاح'),
+      backgroundColor: Colors.green,
+    ),
+  );
+
+  Navigator.maybePop(context);
+  return;
+}
           if (state.showOpenDownloadedFileDialog) {
             showDialog(
               context: context,
