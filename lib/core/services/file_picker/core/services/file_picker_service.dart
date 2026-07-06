@@ -5,6 +5,8 @@ abstract class FilePickerService {
 
   Future<List<String>> pickMultipleImagePaths();
 
+  Future<String?> captureImagePath();
+
   Future<String?> pickSingleFilePath({
     FileType type = FileType.any,
     List<String>? allowedExtensions,

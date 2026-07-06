@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -8,11 +7,17 @@ import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profi
 class OtherProfileTestCard extends StatelessWidget {
   final OtherProfileTestItemEntity item;
   final double? horizonMargin;
+  final bool showSaveButton;
+  final bool isSaved;
+  final VoidCallback? onSaveTap;
 
   const OtherProfileTestCard({
     super.key,
     required this.item,
     this.horizonMargin = 0,
+    this.showSaveButton = false,
+    this.isSaved = false,
+    this.onSaveTap,
   });
 
   Color _difficultyColor() {
@@ -52,55 +57,66 @@ class OtherProfileTestCard extends StatelessWidget {
 
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Container(
-        height: SizeConfig.h(0.17),
-        margin: EdgeInsets.symmetric(
-          horizontal: SizeConfig.w(horizonMargin ?? 0),
-        ),
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 6,
-              spreadRadius: 0,
-              offset: const Offset(0, 1),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            height: SizeConfig.h(0.17),
+            margin: EdgeInsets.symmetric(
+              horizontal: SizeConfig.w(horizonMargin ?? 0),
             ),
-          ],
-        ),
-        child: ClipPath(
-          clipper: _ExamTicketClipper(),
-          child: Container(
-            color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
-            padding: EdgeInsets.symmetric(
-              horizontal: SizeConfig.w(0.026),
-              vertical: SizeConfig.h(0.014),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: _OtherProfilePricePanel(
-                    item: item,
-                    priceText: priceText,
-                    isDark: isDark,
-                  ),
-                ),
-                SizedBox(width: SizeConfig.w(0.010)),
-                _DashedVerticalDivider(isDark: isDark),
-                SizedBox(width: SizeConfig.w(0.010)),
-                Expanded(
-                  flex: 7,
-                  child: _OtherProfileInfoPanel(
-                    item: item,
-                    isDark: isDark,
-                    difficultyColor: _difficultyColor(),
-                    levelOrDifficultyText: levelOrDifficultyText,
-                  ),
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 6,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 1),
                 ),
               ],
             ),
+            child: ClipPath(
+              clipper: _ExamTicketClipper(),
+              child: Container(
+                color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.w(0.026),
+                  vertical: SizeConfig.h(0.014),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: _OtherProfilePricePanel(
+                        item: item,
+                        priceText: priceText,
+                        isDark: isDark,
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.w(0.010)),
+                    _DashedVerticalDivider(isDark: isDark),
+                    SizedBox(width: SizeConfig.w(0.010)),
+                    Expanded(
+                      flex: 7,
+                      child: _OtherProfileInfoPanel(
+                        item: item,
+                        isDark: isDark,
+                        difficultyColor: _difficultyColor(),
+                        levelOrDifficultyText: levelOrDifficultyText,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
+          if (showSaveButton)
+            Positioned(
+              top: SizeConfig.h(0.01),
+              right: SizeConfig.w(0.02),
+              child: _SaveButton(isSaved: isSaved, onTap: onSaveTap ?? () {}),
+            ),
+        ],
       ),
     );
   }
@@ -602,4 +618,38 @@ class _InnerRightPanelClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
+class _SaveButton extends StatelessWidget {
+  final bool isSaved;
+  final VoidCallback onTap;
+
+  const _SaveButton({required this.isSaved, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: EdgeInsets.all(SizeConfig.w(0.007)),
+        decoration: BoxDecoration(
+          color: isSaved
+              ? AppPalette.red.withOpacity(0.7)
+              : isDark
+              ? AppPalette.greyLightDark
+              : AppPalette.greyLight,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Icon(
+          Icons.bookmark_border_rounded,
+          color: isSaved ? AppPalette.white : AppPalette.greyMedium,
+          size: SizeConfig.h(0.027),
+        ),
+      ),
+    );
+  }
 }

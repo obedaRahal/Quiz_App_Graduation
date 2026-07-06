@@ -107,11 +107,15 @@ import 'package:quiz_app_grad/features/library/presentation/manager/library_cubi
 import 'package:quiz_app_grad/features/my_profile/data/data_source/my_profile_remote_data_source.dart';
 import 'package:quiz_app_grad/features/my_profile/data/repo_impl/my_profile_repository_impl.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/repository/my_profile_repository.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/delete_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_academic_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_personal_info_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_scientific_interests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_bookmarks_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/get_my_profile_personal_info_use_case.dart';
-import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile_bookmarks/my_profile_bookmarks_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/data_sources/my_public_test_details_remote_data_source.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/repo_impl/my_public_test_details_repository_impl.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/repository/my_public_test_details_repository.dart';
@@ -1075,43 +1079,33 @@ void _registerLibraryFeature() {
     );
   }
   if (!sl.isRegistered<FollowPublisherUseCase>()) {
-  sl.registerLazySingleton<FollowPublisherUseCase>(
-    () => FollowPublisherUseCase(
-      sl<OtherContentDetailsRepository>(),
-    ),
-  );
-}
-if (!sl.isRegistered<UnfollowPublisherUseCase>()) {
-  sl.registerLazySingleton<UnfollowPublisherUseCase>(
-    () => UnfollowPublisherUseCase(
-      sl<OtherContentDetailsRepository>(),
-    ),
-  );
-}
+    sl.registerLazySingleton<FollowPublisherUseCase>(
+      () => FollowPublisherUseCase(sl<OtherContentDetailsRepository>()),
+    );
+  }
+  if (!sl.isRegistered<UnfollowPublisherUseCase>()) {
+    sl.registerLazySingleton<UnfollowPublisherUseCase>(
+      () => UnfollowPublisherUseCase(sl<OtherContentDetailsRepository>()),
+    );
+  }
 
-if (!sl.isRegistered<MyContentDetailsRemoteDataSource>()) {
-  sl.registerLazySingleton<MyContentDetailsRemoteDataSource>(
-    () => MyContentDetailsRemoteDataSourceImpl(
-      apiConsumer: sl(),
-    ),
-  );
-}
+  if (!sl.isRegistered<MyContentDetailsRemoteDataSource>()) {
+    sl.registerLazySingleton<MyContentDetailsRemoteDataSource>(
+      () => MyContentDetailsRemoteDataSourceImpl(apiConsumer: sl()),
+    );
+  }
 
-if (!sl.isRegistered<MyContentDetailsRepository>()) {
-  sl.registerLazySingleton<MyContentDetailsRepository>(
-    () => MyContentDetailsRepositoryImpl(
-      remoteDataSource: sl(),
-    ),
-  );
-}
+  if (!sl.isRegistered<MyContentDetailsRepository>()) {
+    sl.registerLazySingleton<MyContentDetailsRepository>(
+      () => MyContentDetailsRepositoryImpl(remoteDataSource: sl()),
+    );
+  }
 
-if (!sl.isRegistered<GetMyPublicContentDetailsUseCase>()) {
-  sl.registerLazySingleton<GetMyPublicContentDetailsUseCase>(
-    () => GetMyPublicContentDetailsUseCase(
-      sl(),
-    ),
-  );
-}
+  if (!sl.isRegistered<GetMyPublicContentDetailsUseCase>()) {
+    sl.registerLazySingleton<GetMyPublicContentDetailsUseCase>(
+      () => GetMyPublicContentDetailsUseCase(sl()),
+    );
+  }
   if (!sl.isRegistered<OtherContentDetailsCubit>()) {
     sl.registerFactory(
       () => OtherContentDetailsCubit(
@@ -1420,6 +1414,52 @@ void _registerMyProfileFeature() {
     );
   }
 
+  if (!sl.isRegistered<EditMyProfilePictureUseCase>()) {
+    sl.registerLazySingleton<EditMyProfilePictureUseCase>(
+      () => EditMyProfilePictureUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<DeleteMyProfilePictureUseCase>()) {
+    sl.registerLazySingleton<DeleteMyProfilePictureUseCase>(
+      () => DeleteMyProfilePictureUseCase(sl<MyProfileRepository>()),
+    );
+  }
+  if (!sl.isRegistered<FetchMyProfileBookmarksUseCase>()) {
+    sl.registerLazySingleton<FetchMyProfileBookmarksUseCase>(
+      () => FetchMyProfileBookmarksUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<RemoveContentBookmarkUseCase>()) {
+    sl.registerLazySingleton<RemoveContentBookmarkUseCase>(
+      () => RemoveContentBookmarkUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<RemoveFolderBookmarkUseCase>()) {
+    sl.registerLazySingleton<RemoveFolderBookmarkUseCase>(
+      () => RemoveFolderBookmarkUseCase(sl<OtherProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<UnbookmarkTestUseCase>()) {
+    sl.registerLazySingleton<UnbookmarkTestUseCase>(
+      () => UnbookmarkTestUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<MyProfileBookmarksCubit>()) {
+    sl.registerFactory<MyProfileBookmarksCubit>(
+      () => MyProfileBookmarksCubit(
+        fetchMyProfileBookmarksUseCase: sl<FetchMyProfileBookmarksUseCase>(),
+        removeContentBookmarkUseCase: sl<RemoveContentBookmarkUseCase>(),
+        removeFolderBookmarkUseCase: sl<RemoveFolderBookmarkUseCase>(),
+        unbookmarkTestUseCase: sl<UnbookmarkTestUseCase>(),
+      ),
+    );
+  }
+
   if (!sl.isRegistered<MyProfileCubit>()) {
     sl.registerFactory<MyProfileCubit>(
       () => MyProfileCubit(
@@ -1430,6 +1470,8 @@ void _registerMyProfileFeature() {
             sl<EditMyProfileAcademicInfoUseCase>(),
         editMyProfileScientificInterestsUseCase:
             sl<EditMyProfileScientificInterestsUseCase>(),
+        editMyProfilePictureUseCase: sl<EditMyProfilePictureUseCase>(),
+        deleteMyProfilePictureUseCase: sl<DeleteMyProfilePictureUseCase>(),
       ),
     );
   }

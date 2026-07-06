@@ -17,8 +17,6 @@ subprojects {
 }
 
 subprojects {
-    project.evaluationDependsOn(":app")
-
     configurations.all {
         resolutionStrategy {
             force(
@@ -30,6 +28,7 @@ subprojects {
         }
     }
 }
+
 
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)

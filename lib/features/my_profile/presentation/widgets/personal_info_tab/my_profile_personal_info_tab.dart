@@ -9,8 +9,8 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/get_all_interests/presentation/manager/all_categories_cubit/all_interests_cubit.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_entity.dart';
-import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_cubit.dart';
-import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_state.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_state.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/personal_info_tab/bottom_sheet/acadimic_info/my_profile_academic_info_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/personal_info_tab/bottom_sheet/scientific_interests/my_profile_scientific_interests_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/personal_info_tab/chips_secion.dart';
@@ -107,6 +107,7 @@ class MyProfilePersonalInfoTab extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.02)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   CustomTextWidget(
                     "يجب ان يبدأ رقم الهاتف ب 09 وان لا يزيد عن عشرة ارقام",

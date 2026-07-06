@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_entity.dart';
-import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_state.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_state.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/personal_info_tab/my_profile_personal_info_tab.dart';
 
 class MyProfileSelectedTabContent extends StatelessWidget {

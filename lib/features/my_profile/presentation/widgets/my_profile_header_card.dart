@@ -14,6 +14,8 @@ class MyProfileHeaderCard extends StatelessWidget {
   final VoidCallback? onChangeCoverTap;
   final VoidCallback? onShareTap;
   final VoidCallback? onShowSavedTap;
+  final VoidCallback? onFollowersTap;
+  final VoidCallback? onFollowingTap;
 
   const MyProfileHeaderCard({
     super.key,
@@ -22,6 +24,8 @@ class MyProfileHeaderCard extends StatelessWidget {
     this.onChangeCoverTap,
     this.onShareTap,
     this.onShowSavedTap,
+    this.onFollowersTap,
+    this.onFollowingTap,
   });
 
   @override
@@ -179,9 +183,17 @@ class MyProfileHeaderCard extends StatelessWidget {
                   children: [
                     _ProfileStat(label: 'اختبار', value: profile.testsCount),
                     const _DotSeparator(),
-                    _ProfileStat(label: 'يتابع', value: profile.followingCount),
+                    _ProfileStat(
+                      label: 'يتابع',
+                      value: profile.followingCount,
+                      onTap: onFollowingTap,
+                    ),
                     const _DotSeparator(),
-                    _ProfileStat(label: 'متابع', value: profile.followersCount),
+                    _ProfileStat(
+                      label: 'متابع',
+                      value: profile.followersCount,
+                      onTap: onFollowersTap,
+                    ),
                   ],
                 ),
 
@@ -218,30 +230,34 @@ class MyProfileHeaderCard extends StatelessWidget {
 class _ProfileStat extends StatelessWidget {
   final String label;
   final String value;
+  final VoidCallback? onTap;
 
-  const _ProfileStat({required this.label, required this.value});
+  const _ProfileStat({required this.label, required this.value, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      textDirection: TextDirection.rtl,
-      children: [
-        CustomTextWidget(
-          value,
-          color: appColors.blackToGrey2Dark,
-          fontSize: SizeConfig.text(0.035),
-          fontFamily: AppFont.elMessiriBold,
-        ),
-        const SizedBox(width: 3),
-        CustomTextWidget(
-          label,
-          color: AppPalette.greyMedium,
-          fontSize: SizeConfig.text(0.032),
-        ),
-      ],
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        textDirection: TextDirection.rtl,
+        children: [
+          CustomTextWidget(
+            value,
+            color: appColors.blackToGrey2Dark,
+            fontSize: SizeConfig.text(0.035),
+            fontFamily: AppFont.elMessiriBold,
+          ),
+          SizedBox(width: 3),
+          CustomTextWidget(
+            label,
+            color: AppPalette.greyMedium,
+            fontSize: SizeConfig.text(0.032),
+          ),
+        ],
+      ),
     );
   }
 }

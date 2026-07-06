@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/profile_shared/profile_tabs_section.dart';
-import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_state.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_state.dart';
 
 class MyProfileTabsSection extends StatelessWidget {
   final MyProfileTab selectedTab;

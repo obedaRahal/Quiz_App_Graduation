@@ -129,26 +129,26 @@ class MainLayoutBody extends StatelessWidget {
                             context.pushNamed(
                               AppRouterName.otherProfile,
                               //extra: OtherProfileRouteArgs(userId: 815),
-                              extra: OtherProfileRouteArgs(userId: 1),
+                              extra: OtherProfileRouteArgs(userId: 811),
                             );
                           },
                           child: Text(" other profile "),
                         ),
                       ),
-Center(
-  child: InkWell(
-    onTap: () {
-      context.pushNamed(
-        AppRouterName.otherContentDetails,
-        extra: const ContentDetailsRouteArgs(
-          contentId: 402,
-          isMyContent: true,
-        ),
-      );
-    },
-    child: const Text('عرض محتواي'),
-  ),
-),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            context.pushNamed(
+                              AppRouterName.otherContentDetails,
+                              extra: const ContentDetailsRouteArgs(
+                                contentId: 402,
+                                isMyContent: true,
+                              ),
+                            );
+                          },
+                          child: const Text('عرض محتواي'),
+                        ),
+                      ),
                       CustomButtonWidget(
                         onTap: () {
                           debugPrint("change mode ");
@@ -168,7 +168,7 @@ Center(
                             context.pushNamed(
                               AppRouterName.myProfile,
                               //extra: OtherProfileRouteArgs(userId: 815),
-                              extra: OtherProfileRouteArgs(userId: 816),
+                              extra: OtherProfileRouteArgs(userId: 828),
                             );
                           },
                           child: Text(" my profile "),

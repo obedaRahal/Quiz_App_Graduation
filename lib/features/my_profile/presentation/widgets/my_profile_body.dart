@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_confirmation_dialog.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picker_service.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_cubit.dart';
-import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_state.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_state.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/my_profile_header_card.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/my_profile_image_action_menu.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/widgets/my_profile_image_view_dialog.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/my_profile_selected_tab_content.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/my_profile_tabs_section.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/widgets/show_profile_image_preview_dialog.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_connections/other_profile_connections_cubit.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_connections_bottom_sheet.dart';
 
 class MyProfileBody extends StatelessWidget {
   const MyProfileBody({super.key});
@@ -101,16 +111,40 @@ class MyProfileBody extends StatelessWidget {
                       title: 'اختر خيارًا لتغيير صورة الغلاف الخاصة بك',
                       hasCurrentImage: profile.coverUrl.trim().isNotEmpty,
                       onCamera: () {
-                        debugPrint('cover camera');
+                        _pickAndPreviewProfileImage(
+                          context: context,
+                          type: 'cover',
+                          fromCamera: true,
+                        );
                       },
                       onGallery: () {
-                        debugPrint('cover gallery');
+                        _pickAndPreviewProfileImage(
+                          context: context,
+                          type: 'cover',
+                          fromCamera: false,
+                        );
+                      },
+                      onDelete: () {
+                        showCustomConfirmationDialog(
+                          context: context,
+                          title: 'حذف صورة الغلاف؟',
+                          message: 'هل أنت متأكد من حذف صورة الغلاف الحالية؟',
+                          icon: Icons.delete_outline_rounded,
+                          confirmText: 'حذف',
+                          cancelText: 'إلغاء',
+                          onConfirm: () async {
+                            await context
+                                .read<MyProfileCubit>()
+                                .deleteMyProfilePicture(type: 'cover');
+                          },
+                        );
                       },
                       onView: () {
                         debugPrint('cover view');
-                      },
-                      onDelete: () {
-                        context.read<MyProfileCubit>().updateCoverUrl('');
+                        showMyProfileImageViewer(
+                          context: context,
+                          imageUrl: profile.coverUrl,
+                        );
                       },
                     );
                   },
@@ -121,16 +155,43 @@ class MyProfileBody extends StatelessWidget {
                       title: 'اختر خيارًا لتغيير الصورة الخاصة بك',
                       hasCurrentImage: profile.avatarUrl.trim().isNotEmpty,
                       onCamera: () {
-                        debugPrint('avatar camera');
+                        _pickAndPreviewProfileImage(
+                          context: context,
+                          type: 'avatar',
+                          fromCamera: true,
+                        );
                       },
                       onGallery: () {
-                        debugPrint('avatar gallery');
+                        _pickAndPreviewProfileImage(
+                          context: context,
+                          type: 'avatar',
+                          fromCamera: false,
+                        );
+                      },
+                      onDelete: () {
+                        showCustomConfirmationDialog(
+                          context: context,
+                          title: 'حذف الصورة الشخصية؟',
+                          message:
+                              'هل أنت متأكد من حذف الصورة الشخصية الحالية؟',
+                          icon: Icons.delete_outline_rounded,
+                          confirmText: 'حذف',
+                          cancelText: 'إلغاء',
+                          onConfirm: () async {
+                            //Navigator.pop(context);
+
+                            await context
+                                .read<MyProfileCubit>()
+                                .deleteMyProfilePicture(type: 'avatar');
+                          },
+                        );
                       },
                       onView: () {
                         debugPrint('avatar view');
-                      },
-                      onDelete: () {
-                        context.read<MyProfileCubit>().updateAvatarUrl('');
+                        showMyProfileImageViewer(
+                          context: context,
+                          imageUrl: profile.avatarUrl,
+                        );
                       },
                     );
                   },
@@ -139,6 +200,28 @@ class MyProfileBody extends StatelessWidget {
                   },
                   onShowSavedTap: () {
                     debugPrint("show saved list");
+                    context.pushNamed(AppRouterName.myProfileBookmarks);
+                  },
+                  onFollowersTap: () {
+                    debugPrint("show followers ${profile.followersCount}");
+
+                    showOtherProfileConnectionsBottomSheet(
+                      context: context,
+                      userId: profile.userId,
+                      cubit: sl<OtherProfileConnectionsCubit>(),
+                      type: OtherProfileConnectionsType.followers,
+                      title: 'المتابعون',
+                    );
+                  },
+                  onFollowingTap: () {
+                    debugPrint("show following ${profile.followingCount}");
+                    showOtherProfileConnectionsBottomSheet(
+                      context: context,
+                      userId: profile.userId,
+                      cubit: sl<OtherProfileConnectionsCubit>(),
+                      type: OtherProfileConnectionsType.following,
+                      title: 'يتابعهم',
+                    );
                   },
                 ),
               ),
@@ -165,6 +248,39 @@ class MyProfileBody extends StatelessWidget {
               SizedBox(height: SizeConfig.h(0.03)),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickAndPreviewProfileImage({
+    required BuildContext context,
+    required String type, // avatar / cover
+    required bool fromCamera,
+  }) async {
+    final picker = sl<FilePickerService>();
+
+    final path = fromCamera
+        ? await picker.captureImagePath()
+        : await picker.pickSingleImagePath();
+
+    if (path == null || !context.mounted) return;
+
+    await showMyProfileImagePreviewDialog(
+      context: context,
+      imagePath: path,
+      onSubmit: () async {
+        return context.read<MyProfileCubit>().editMyProfilePicture(
+          type: type,
+          imagePath: path,
+        );
+      },
+      onChangeImage: () {
+        Navigator.pop(context);
+        _pickAndPreviewProfileImage(
+          context: context,
+          type: type,
+          fromCamera: fromCamera,
         );
       },
     );

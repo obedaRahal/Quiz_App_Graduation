@@ -33,7 +33,8 @@ import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/view/laboratory_page.dart';
-import 'package:quiz_app_grad/features/my_profile/presentation/manager/cubit/my_profile_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/views/my_profile_bookmarks_view.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/views/my_profile_view.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_private_test_details_view.dart';
@@ -394,18 +395,18 @@ class AppRouter {
             );
           },
         ),
-       GoRoute(
-  path: AppRouterPath.otherContentDetails,
-  name: AppRouterName.otherContentDetails,
-  builder: (context, state) {
-    final args = state.extra as ContentDetailsRouteArgs;
+        GoRoute(
+          path: AppRouterPath.otherContentDetails,
+          name: AppRouterName.otherContentDetails,
+          builder: (context, state) {
+            final args = state.extra as ContentDetailsRouteArgs;
 
-    return ContentDetailsPage(
-      contentId: args.contentId,
-      isMyContent: args.isMyContent,
-    );
-  },
-),
+            return ContentDetailsPage(
+              contentId: args.contentId,
+              isMyContent: args.isMyContent,
+            );
+          },
+        ),
         GoRoute(
           path: AppRouterPath.mcqTestSessionView,
           name: AppRouterName.mcqTestSessionView,
@@ -544,6 +545,22 @@ class AppRouter {
               child: BlocProvider<MyProfileCubit>(
                 create: (_) => sl<MyProfileCubit>(),
                 child: MyProfileView(userId: userId),
+              ),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.myProfileBookmarks,
+          name: AppRouterName.myProfileBookmarks,
+          pageBuilder: (context, state) {
+            debugPrint("============ myProfileBookmarks Route ============");
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider<MyProfileCubit>(
+                create: (_) => sl<MyProfileCubit>(),
+                child: MyProfileBookmarksView(),
               ),
             );
           },

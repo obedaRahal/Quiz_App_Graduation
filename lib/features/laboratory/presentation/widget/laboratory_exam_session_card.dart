@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/test_by_interest_response_entity.dart';
 
 class LaboratoryExamSessionCard extends StatelessWidget {
@@ -37,55 +40,63 @@ class LaboratoryExamSessionCard extends StatelessWidget {
 
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Container(
-        height: SizeConfig.h(0.17),
-        margin: EdgeInsets.symmetric(
-          horizontal: SizeConfig.w(horizonMargin ?? 0.035),
-        ),
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 8,
-              spreadRadius: 0,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: ClipPath(
-          clipper: _ExamTicketClipper(),
-          child: Container(
-            color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
-            padding: EdgeInsets.symmetric(
-              horizontal: SizeConfig.w(0.026),
-              vertical: SizeConfig.h(0.014),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: _SessionPricePanel(
-                    item: item,
-                    priceText: priceText,
-                    isDark: isDark,
+      child: InkWell(
+        onTap: () {
+          context.pushNamed(
+            AppRouterName.detailsOfTest,
+            extra: DetailsOfTestRouteArgs(testId: item.id),
+          );
+        },
+        child: Container(
+          height: SizeConfig.h(0.17),
+          margin: EdgeInsets.symmetric(
+            horizontal: SizeConfig.w(horizonMargin ?? 0.035),
+          ),
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 8,
+                spreadRadius: 0,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: ClipPath(
+            clipper: _ExamTicketClipper(),
+            child: Container(
+              color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
+              padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.w(0.026),
+                vertical: SizeConfig.h(0.014),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: _SessionPricePanel(
+                      item: item,
+                      priceText: priceText,
+                      isDark: isDark,
+                    ),
                   ),
-                ),
 
-                SizedBox(width: SizeConfig.w(0.010)),
+                  SizedBox(width: SizeConfig.w(0.010)),
 
-                _DashedVerticalDivider(isDark: isDark),
+                  _DashedVerticalDivider(isDark: isDark),
 
-                SizedBox(width: SizeConfig.w(0.010)),
+                  SizedBox(width: SizeConfig.w(0.010)),
 
-                Expanded(
-                  flex: 7,
-                  child: _SessionInfoPanel(
-                    item: item,
-                    isDark: isDark,
-                    difficultyColor: _difficultyColor(),
+                  Expanded(
+                    flex: 7,
+                    child: _SessionInfoPanel(
+                      item: item,
+                      isDark: isDark,
+                      difficultyColor: _difficultyColor(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

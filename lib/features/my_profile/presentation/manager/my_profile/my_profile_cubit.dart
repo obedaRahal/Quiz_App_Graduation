@@ -2,11 +2,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/entities/all_interests_response_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/delete_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_academic_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_personal_info_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_scientific_interests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/delete_my_profile_picture_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_academic_info_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_personal_info_params.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_picture_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_scientific_interests_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/get_my_profile_personal_info_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/get_my_profile_personal_info_use_case.dart';
@@ -19,12 +23,16 @@ class MyProfileCubit extends Cubit<MyProfileState> {
   final EditMyProfileAcademicInfoUseCase editMyProfileAcademicInfoUseCase;
   final EditMyProfileScientificInterestsUseCase
   editMyProfileScientificInterestsUseCase;
+  final EditMyProfilePictureUseCase editMyProfilePictureUseCase;
+  final DeleteMyProfilePictureUseCase deleteMyProfilePictureUseCase;
 
   MyProfileCubit({
     required this.getMyProfilePersonalInfoUseCase,
     required this.editMyProfilePersonalInfoUseCase,
     required this.editMyProfileAcademicInfoUseCase,
     required this.editMyProfileScientificInterestsUseCase,
+    required this.editMyProfilePictureUseCase,
+    required this.deleteMyProfilePictureUseCase,
   }) : super(const MyProfileState()) {
     debugPrint("============ MyProfileCubit INIT ============");
   }
@@ -610,6 +618,138 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         final updatedProfile = original.copyWith(
           scientificInterests: updatedInterests,
         );
+
+        emit(
+          state.copyWith(
+            updateStatus: UpdateMyProfileStatus.success,
+            profile: updatedProfile,
+            editableProfile: updatedProfile,
+            clearError: true,
+          ),
+        );
+
+        return true;
+      },
+    );
+
+    debugPrint("→ success: $success");
+    debugPrint("=================================================");
+
+    return success;
+  }
+
+  Future<bool> editMyProfilePicture({
+    required String type,
+    required String imagePath,
+  }) async {
+    debugPrint("============ MyProfileCubit.editMyProfilePicture ============");
+    debugPrint("→ type: $type");
+    debugPrint("→ imagePath: $imagePath");
+
+    final profile = state.profile;
+
+    if (profile == null) {
+      debugPrint("✗ profile is null");
+      debugPrint("=================================================");
+      return false;
+    }
+
+    emit(
+      state.copyWith(
+        updateStatus: UpdateMyProfileStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await editMyProfilePictureUseCase(
+      EditMyProfilePictureParams(
+        userId: profile.userId,
+        type: type,
+        imagePath: imagePath,
+      ),
+    );
+
+    final success = result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            updateStatus: UpdateMyProfileStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+
+        return false;
+      },
+      (response) {
+        final updatedProfile = type == 'avatar'
+            ? profile.copyWith(avatarUrl: imagePath)
+            : profile.copyWith(coverUrl: imagePath);
+
+        emit(
+          state.copyWith(
+            updateStatus: UpdateMyProfileStatus.success,
+            profile: updatedProfile,
+            editableProfile: updatedProfile,
+            clearError: true,
+          ),
+        );
+
+        getMyProfilePersonalInfo(userId: profile.userId);
+
+        return true;
+      },
+    );
+
+    debugPrint("→ success: $success");
+    debugPrint("=================================================");
+
+    return success;
+  }
+
+  Future<bool> deleteMyProfilePicture({required String type}) async {
+    debugPrint(
+      "============ MyProfileCubit.deleteMyProfilePicture ============",
+    );
+    debugPrint("→ type: $type");
+
+    final profile = state.profile;
+
+    if (profile == null) {
+      debugPrint("✗ profile is null");
+      debugPrint("=================================================");
+      return false;
+    }
+
+    emit(
+      state.copyWith(
+        updateStatus: UpdateMyProfileStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await deleteMyProfilePictureUseCase(
+      DeleteMyProfilePictureParams(userId: profile.userId, type: type),
+    );
+
+    final success = result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            updateStatus: UpdateMyProfileStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+
+        return false;
+      },
+      (response) {
+        final defaultUrl = response.defaultPhotoUrl;
+
+        final updatedProfile = type == 'avatar'
+            ? profile.copyWith(avatarUrl: defaultUrl)
+            : profile.copyWith(coverUrl: defaultUrl);
 
         emit(
           state.copyWith(

@@ -1,9 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
+import 'package:quiz_app_grad/features/my_profile/data/models/delete_my_profile_picture_model.dart';
 import 'package:quiz_app_grad/features/my_profile/data/models/edit_my_profile_academic_info_model.dart';
 import 'package:quiz_app_grad/features/my_profile/data/models/edit_my_profile_personal_info_model.dart';
+import 'package:quiz_app_grad/features/my_profile/data/models/edit_my_profile_picture_model.dart';
 import 'package:quiz_app_grad/features/my_profile/data/models/edit_my_profile_scientific_interests_model.dart';
+import 'package:quiz_app_grad/features/my_profile/data/models/my_profile_bookmarks_model.dart';
 import 'package:quiz_app_grad/features/my_profile/data/models/my_profile_personal_info_model.dart';
 
 abstract class MyProfileRemoteDataSource {
@@ -25,6 +29,22 @@ abstract class MyProfileRemoteDataSource {
   editMyProfileScientificInterests({
     required int userId,
     required List<int> interestIds,
+  });
+
+  Future<EditMyProfilePictureModel> editMyProfilePicture({
+    required int userId,
+    required String type,
+    required String imagePath,
+  });
+
+  Future<DeleteMyProfilePictureModel> deleteMyProfilePicture({
+    required int userId,
+    required String type,
+  });
+
+  Future<MyProfileBookmarksModel> fetchMyProfileBookmarks({
+    required String tab,
+    String? cursor,
   });
 }
 
@@ -138,6 +158,88 @@ class MyProfileRemoteDataSourceImpl implements MyProfileRemoteDataSource {
     debugPrint("=================================================");
 
     return EditMyProfileScientificInterestsModel.fromJson(
+      (response as Map).cast<String, dynamic>(),
+    );
+  }
+
+  @override
+  Future<EditMyProfilePictureModel> editMyProfilePicture({
+    required int userId,
+    required String type,
+    required String imagePath,
+  }) async {
+    debugPrint(
+      "============ MyProfileRemoteDataSourceImpl.editMyProfilePicture ============",
+    );
+    debugPrint(
+      "→ endpoint: ${EndPoints.editMyProfilePicture(userId: userId, type: type)}",
+    );
+    debugPrint("→ method: POST");
+    debugPrint("→ imagePath: $imagePath");
+
+    final formData = FormData.fromMap({
+      'photo': await MultipartFile.fromFile(imagePath),
+    });
+
+    final response = await apiConsumer.post(
+      EndPoints.editMyProfilePicture(userId: userId, type: type),
+      data: formData,
+      isFormData: true,
+    );
+
+    debugPrint("← response (editMyProfilePicture): $response");
+    debugPrint("=================================================");
+
+    return EditMyProfilePictureModel.fromJson(
+      (response as Map).cast<String, dynamic>(),
+    );
+  }
+
+  @override
+  Future<DeleteMyProfilePictureModel> deleteMyProfilePicture({
+    required int userId,
+    required String type,
+  }) async {
+    debugPrint(
+      "============ MyProfileRemoteDataSourceImpl.deleteMyProfilePicture ============",
+    );
+    debugPrint(
+      "→ endpoint: ${EndPoints.deleteMyProfilePicture(userId: userId, type: type)}",
+    );
+    debugPrint("→ method: DELETE");
+
+    final response = await apiConsumer.delete(
+      EndPoints.deleteMyProfilePicture(userId: userId, type: type),
+    );
+
+    debugPrint("← response (deleteMyProfilePicture): $response");
+    debugPrint("=================================================");
+
+    return DeleteMyProfilePictureModel.fromJson(
+      (response as Map).cast<String, dynamic>(),
+    );
+  }
+
+  @override
+  Future<MyProfileBookmarksModel> fetchMyProfileBookmarks({
+    required String tab,
+    String? cursor,
+  }) async {
+    debugPrint(
+      "============ MyProfileRemoteDataSourceImpl.fetchMyProfileBookmarks ============",
+    );
+
+    final endpoint = EndPoints.myProfileBookmarks(tab: tab, cursor: cursor);
+
+    debugPrint("→ endpoint: $endpoint");
+    debugPrint("→ method: GET");
+
+    final response = await apiConsumer.get(endpoint);
+
+    debugPrint("← response (fetchMyProfileBookmarks): $response");
+    debugPrint("=================================================");
+
+    return MyProfileBookmarksModel.fromJson(
       (response as Map).cast<String, dynamic>(),
     );
   }

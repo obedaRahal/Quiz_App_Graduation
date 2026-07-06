@@ -74,8 +74,7 @@ class CustomConfirmationDialog extends StatelessWidget {
                 height: SizeConfig.w(0.13),
                 alignment: Alignment.center,
                 backgroundColor:
-                    iconBackgroundColor ??
-                    appColors.primarySoftTogreyLightDark,
+                    iconBackgroundColor ?? appColors.primarySoftTogreyLightDark,
                 borderRadius: BorderRadius.circular(40),
                 child: Icon(
                   icon,
@@ -171,6 +170,7 @@ Future<void> showCustomConfirmationDialog({
   Color? cancelBackgroundColor,
   Color? cancelTextColor,
   bool barrierDismissible = false,
+  bool autoPopOnConfirm = true,
 }) async {
   await showDialog(
     context: context,
@@ -191,7 +191,9 @@ Future<void> showCustomConfirmationDialog({
         barrierDismissible: barrierDismissible,
         onCancel: () => Navigator.of(dialogContext).pop(),
         onConfirm: () {
-          Navigator.of(dialogContext).pop();
+          if (autoPopOnConfirm) {
+            Navigator.of(dialogContext).pop();
+          }
           onConfirm();
         },
       );

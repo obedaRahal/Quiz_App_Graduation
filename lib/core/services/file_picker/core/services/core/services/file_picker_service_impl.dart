@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picker_service.dart';
 
 class FilePickerServiceImpl implements FilePickerService {
@@ -23,10 +24,7 @@ class FilePickerServiceImpl implements FilePickerService {
 
     if (result == null || result.files.isEmpty) return const [];
 
-    return result.files
-        .map((file) => file.path)
-        .whereType<String>()
-        .toList();
+    return result.files.map((file) => file.path).whereType<String>().toList();
   }
 
   @override
@@ -43,5 +41,17 @@ class FilePickerServiceImpl implements FilePickerService {
     if (result == null || result.files.isEmpty) return null;
 
     return result.files.single.path;
+  }
+
+  final picker = ImagePicker();
+
+  @override
+  Future<String?> captureImagePath() async {
+    final file = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 90,
+    );
+
+    return file?.path;
   }
 }

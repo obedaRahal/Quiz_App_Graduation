@@ -2,8 +2,8 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 class EndPoints {
-  //static const String baseUrl = 'http://10.195.254.44/api/v1/user-mobile';
-  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
+  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -352,5 +352,29 @@ class EndPoints {
 
   static String editMyProfileScientificInterests({required int userId}) {
     return '$baseUrl/my-profile/update/scientific-interests/$userId';
+  }
+
+  static String editMyProfilePicture({
+    required int userId,
+    required String type,
+  }) {
+    return '$baseUrl/my-profile/update/photo/$userId?type=$type';
+  }
+
+  static String deleteMyProfilePicture({
+    required int userId,
+    required String type,
+  }) {
+    return '$baseUrl/my-profile/delete/photo/$userId?type=$type';
+  }
+
+  static String myProfileBookmarks({required String tab, String? cursor}) {
+    final endpoint = '$baseUrl/my-profile/bookmarks?tab=$tab';
+
+    if (cursor == null || cursor.trim().isEmpty) {
+      return endpoint;
+    }
+
+    return '$endpoint&cursor=$cursor';
   }
 }
