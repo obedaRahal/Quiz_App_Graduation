@@ -89,6 +89,8 @@ class EndPoints {
   // My Content Details
   static String myPublicContentDetails(int id) =>
       '/library/library-materials-details/my-public/$id';
+      static String deleteMyContent(int contentId) =>
+    '/library/delete/material/$contentId';
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';

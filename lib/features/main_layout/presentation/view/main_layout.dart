@@ -141,7 +141,7 @@ class MainLayoutBody extends StatelessWidget {
                             context.pushNamed(
                               AppRouterName.otherContentDetails,
                               extra: const ContentDetailsRouteArgs(
-                                contentId: 402,
+                                contentId: 403,
                                 isMyContent: true,
                               ),
                             );

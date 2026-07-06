@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
 
 class ContentDetailsAppBar extends StatelessWidget {
   final String title;
@@ -21,6 +23,129 @@ class ContentDetailsAppBar extends StatelessWidget {
     required this.isOwner,
     required this.isPublic,
   });
+  void _showOwnerMenu(BuildContext context) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final dividerColor = Theme.of(
+      context,
+    ).dividerColor.withOpacity(isDark ? 0.45 : 0.9);
+
+    final result = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        MediaQuery.of(context).size.width,
+        kToolbarHeight + 20,
+        12,
+        0,
+      ),
+      color: isDark ? AppPalette.fieldColorNDark : AppPalette.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: dividerColor, width: 1),
+      ),
+      constraints: BoxConstraints(
+        minWidth: SizeConfig.w(0.46),
+        maxWidth: SizeConfig.w(0.52),
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'edit',
+          height: SizeConfig.h(0.040),
+          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.035)),
+          child: _OwnerMenuText(title: 'تعديل المحتوى', isDark: isDark),
+        ),
+
+        PopupMenuItem<String>(
+          enabled: false,
+          height: 1,
+          padding: EdgeInsets.zero,
+          child: Divider(height: 1, thickness: 1, color: dividerColor),
+        ),
+
+        PopupMenuItem<String>(
+          value: 'delete',
+          height: SizeConfig.h(0.040),
+          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.035)),
+          child: _OwnerMenuText(title: 'حذف المحتوى', isDark: isDark),
+        ),
+      ],
+    );
+
+    switch (result) {
+      case 'edit':
+        break;
+      case 'delete':
+        _showDeleteConfirmDialog(context);
+        break;
+    }
+  }
+
+  void _showDeleteConfirmDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            backgroundColor: isDark
+                ? AppPalette.fieldColorNDark
+                : AppPalette.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+            title: CustomTextWidget(
+              'حذف المحتوى',
+              textAlign: TextAlign.right,
+              color: isDark
+                  ? AppPalette.textWhiteINDark
+                  : AppPalette.textColorInHome,
+              fontSize: SizeConfig.text(0.042),
+
+              fontWeight: FontWeight.w700,
+              fontFamily: AppFont.elMessiriRegular,
+            ),
+            content: CustomTextWidget(
+              'هل أنت متأكد أنك تريد حذف هذا المحتوى؟',
+              textAlign: TextAlign.right,
+              color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
+              fontSize: SizeConfig.text(0.038),
+
+              fontFamily: AppFont.elMessiriRegular,
+            ),
+            actionsAlignment: MainAxisAlignment.start,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: CustomTextWidget(
+                  'إلغاء',
+                  color: isDark
+                      ? AppPalette.textWhiteINDark
+                      : const Color.fromARGB(255, 64, 74, 78),
+                  fontSize: SizeConfig.text(0.042),
+
+                  fontFamily: AppFont.elMessiriRegular,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                  context.read<OtherContentDetailsCubit>().deleteMyContent();
+                },
+                child: CustomTextWidget(
+                  'حذف',
+                  color: AppPalette.red,
+                  fontSize: SizeConfig.text(0.042),
+
+                  fontFamily: AppFont.elMessiriRegular,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +184,14 @@ class ContentDetailsAppBar extends StatelessWidget {
                   icon: isOwner
                       ? Icons.more_vert_rounded
                       : Icons.share_outlined,
-                  onTap: () {},
+                  onTap: () {
+                    if (isOwner) {
+                      _showOwnerMenu(context);
+                      return;
+                    }
+
+                    // لاحقاً منضيف مشاركة المحتوى
+                  },
                 ),
               ],
             ),
@@ -89,6 +221,28 @@ class ContentDetailsAppBar extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _OwnerMenuText extends StatelessWidget {
+  final String title;
+  final bool isDark;
+
+  const _OwnerMenuText({required this.title, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: CustomTextWidget(
+        title,
+        textAlign: TextAlign.right,
+        fontSize: SizeConfig.text(0.034).clamp(13.0, 16.0).toDouble(),
+        color: isDark ? AppPalette.textWhiteINDark : AppPalette.textColorInHome,
+
+        fontFamily: AppFont.elMessiriRegular,
       ),
     );
   }
