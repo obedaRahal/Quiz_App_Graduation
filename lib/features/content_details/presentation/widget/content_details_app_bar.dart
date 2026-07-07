@@ -13,15 +13,16 @@ class ContentDetailsAppBar extends StatelessWidget {
   final String targetLevel;
   final bool isOwner;
   final bool isPublic;
-
+final VoidCallback? onEditContentTap;
   const ContentDetailsAppBar({
     super.key,
-    required this.title,
-    required this.currentIndex,
-    required this.totalCount,
-    required this.targetLevel,
-    required this.isOwner,
-    required this.isPublic,
+  required this.title,
+  required this.currentIndex,
+  required this.totalCount,
+  required this.targetLevel,
+  required this.isOwner,
+  required this.isPublic,
+  this.onEditContentTap,
   });
   void _showOwnerMenu(BuildContext context) async {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -70,13 +71,15 @@ class ContentDetailsAppBar extends StatelessWidget {
       ],
     );
 
-    switch (result) {
-      case 'edit':
-        break;
-      case 'delete':
-        _showDeleteConfirmDialog(context);
-        break;
-    }
+   switch (result) {
+  case 'edit':
+    onEditContentTap?.call();
+    break;
+
+  case 'delete':
+    _showDeleteConfirmDialog(context);
+    break;
+}
   }
 
   void _showDeleteConfirmDialog(BuildContext context) {

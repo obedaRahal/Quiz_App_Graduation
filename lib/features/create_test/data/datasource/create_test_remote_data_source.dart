@@ -9,10 +9,13 @@ import 'package:quiz_app_grad/features/create_test/data/models/create_manual_tes
 import 'package:quiz_app_grad/features/create_test/data/models/editable_test_questions_model.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/scientific_classification_model.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/start_ai_question_generation_response_model.dart';
+import 'package:quiz_app_grad/features/create_test/data/models/update_content_response_model.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/update_test_request_model.dart';
 import 'package:quiz_app_grad/features/create_test/data/models/update_test_response_model.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_content_params.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/update_content_params.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/update_content_response_entity.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class CreateTestRemoteDataSource {
@@ -35,8 +38,9 @@ abstract class CreateTestRemoteDataSource {
     required UpdateTestRequestModel request,
   });
   Future<CreateContentResponseModel> createContent({
-  required CreateContentParams params,
-});
+    required CreateContentParams params,
+  });
+  Future<UpdateContentResponseModel> updateContent(UpdateContentParams params);
 }
 
 class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
@@ -191,33 +195,31 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
     return AiQuestionGenerationStatusResponseModel.fromJson(response);
   }
 @override
-Future<CreateContentResponseModel> createContent({
-  required CreateContentParams params,
-}) async {
-  debugPrint('============ CreateTestRemoteDataSourceImpl.createContent ============');
+Future<UpdateContentResponseModel> updateContent(
+  UpdateContentParams params,
+) async {
+  debugPrint('================ UpdateContentRemoteDataSource ================');
+  debugPrint('POST: ${EndPoints.updateContent(params.contentId)}');
 
   final formData = FormData();
 
   formData.fields.addAll([
-    MapEntry('title', params.title),
-    MapEntry('description', params.description),
-    MapEntry('content_kind', params.contentKind),
-    MapEntry('target_level', params.targetLevel),
-    MapEntry('visibility_type', params.visibilityType),
+    MapEntry('title', params.title.trim()),
+    MapEntry('description', params.description.trim()),
+    MapEntry('target_level', params.targetLevel.trim()),
+    MapEntry('visibility_type', params.visibilityType.trim()),
   ]);
 
-  for (var i = 0; i < params.interestIds.length; i++) {
+  for (int i = 0; i < params.interestIds.length; i++) {
     formData.fields.add(
       MapEntry('interest_ids[$i]', params.interestIds[i].toString()),
     );
   }
 
-  for (var i = 0; i < params.assets.length; i++) {
-    final file = params.assets[i];
+  for (int i = 0; i < params.mediaFiles.length; i++) {
+    final file = params.mediaFiles[i];
 
-    if (file.path == null || file.path!.trim().isEmpty) {
-      continue;
-    }
+    if (file.path == null || file.path!.trim().isEmpty) continue;
 
     formData.files.add(
       MapEntry(
@@ -230,34 +232,99 @@ Future<CreateContentResponseModel> createContent({
     );
   }
 
-  debugPrint('→ endpoint: ${EndPoints.createContent}');
+  debugPrint('→ endpoint: ${EndPoints.updateContent(params.contentId)}');
   debugPrint('→ method: POST');
   debugPrint('→ title: ${params.title}');
   debugPrint('→ description: ${params.description}');
-  debugPrint('→ content_kind: ${params.contentKind}');
   debugPrint('→ target_level: ${params.targetLevel}');
   debugPrint('→ visibility_type: ${params.visibilityType}');
   debugPrint('→ interest_ids: ${params.interestIds}');
-  debugPrint('→ assets_count: ${params.assets.length}');
+  debugPrint('→ assets_count: ${params.mediaFiles.length}');
 
   final response = await api.post(
-    EndPoints.createContent,
+    EndPoints.updateContent(params.contentId),
     data: formData,
     isFormData: true,
     headers: _idempotencyHeaders(),
     options: Options(
       contentType: 'multipart/form-data',
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers: {'Accept': 'application/json'},
     ),
   );
 
-  debugPrint('← response (createContent): $response');
+  debugPrint('← response (updateContent): $response');
   debugPrint('=================================================');
 
-  return CreateContentResponseModel.fromJson(
+  return UpdateContentResponseModel.fromJson(
     response as Map<String, dynamic>,
   );
 }
+
+  @override
+  Future<CreateContentResponseModel> createContent({
+    required CreateContentParams params,
+  }) async {
+    debugPrint(
+      '============ CreateTestRemoteDataSourceImpl.createContent ============',
+    );
+
+    final formData = FormData();
+
+    formData.fields.addAll([
+      MapEntry('title', params.title),
+      MapEntry('description', params.description),
+      MapEntry('content_kind', params.contentKind),
+      MapEntry('target_level', params.targetLevel),
+      MapEntry('visibility_type', params.visibilityType),
+    ]);
+
+    for (var i = 0; i < params.interestIds.length; i++) {
+      formData.fields.add(
+        MapEntry('interest_ids[$i]', params.interestIds[i].toString()),
+      );
+    }
+
+    for (var i = 0; i < params.assets.length; i++) {
+      final file = params.assets[i];
+
+      if (file.path == null || file.path!.trim().isEmpty) {
+        continue;
+      }
+
+      formData.files.add(
+        MapEntry(
+          'assets[$i]',
+          await MultipartFile.fromFile(file.path!, filename: file.name),
+        ),
+      );
+    }
+
+    debugPrint('→ endpoint: ${EndPoints.createContent}');
+    debugPrint('→ method: POST');
+    debugPrint('→ title: ${params.title}');
+    debugPrint('→ description: ${params.description}');
+    debugPrint('→ content_kind: ${params.contentKind}');
+    debugPrint('→ target_level: ${params.targetLevel}');
+    debugPrint('→ visibility_type: ${params.visibilityType}');
+    debugPrint('→ interest_ids: ${params.interestIds}');
+    debugPrint('→ assets_count: ${params.assets.length}');
+
+    final response = await api.post(
+      EndPoints.createContent,
+      data: formData,
+      isFormData: true,
+      headers: _idempotencyHeaders(),
+      options: Options(
+        contentType: 'multipart/form-data',
+        headers: {'Accept': 'application/json'},
+      ),
+    );
+
+    debugPrint('← response (createContent): $response');
+    debugPrint('=================================================');
+
+    return CreateContentResponseModel.fromJson(
+      response as Map<String, dynamic>,
+    );
+  }
 }

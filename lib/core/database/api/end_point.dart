@@ -2,7 +2,7 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 class EndPoints {
-  static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
@@ -69,6 +69,9 @@ class EndPoints {
 
   // Create Content
   static const String createContent = '/library/create-content';
+// Edit Content
+  static String updateContent(int contentId) =>
+    '/library/update/material/$contentId';
   // Other Content Details
   static String otherContentDetails(int id) =>
       '/library/library-materials-details/other/$id';

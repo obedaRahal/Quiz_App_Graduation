@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_state.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/mapper/content_details_mapper.dart';
-import 'package:quiz_app_grad/features/content_details/presentation/widget/content_details_demo_data.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_details_scaffold.dart';
 
 // class ContentDetailsPage extends StatelessWidget {
@@ -58,16 +59,17 @@ class ContentDetailsPage extends StatelessWidget {
 
         listener: (context, state) {
           if (state.isDeleted) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(state.successMessage ?? 'تم حذف المحتوى بنجاح'),
-      backgroundColor: Colors.green,
-    ),
-  );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.successMessage ?? 'تم حذف المحتوى بنجاح'),
+                backgroundColor: Colors.green,
+              ),
+            );
 
-  Navigator.maybePop(context);
-  return;
-}
+            Navigator.maybePop(context);
+            return;
+          }
+         
           if (state.showOpenDownloadedFileDialog) {
             showDialog(
               context: context,
