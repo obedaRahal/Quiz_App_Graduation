@@ -95,158 +95,198 @@ class MyProfileBody extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: SizeConfig.h(0.012)),
+        return NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            final metrics = notification.metrics;
 
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
-                child: MyProfileHeaderCard(
-                  profile: profile,
-                  onChangeCoverTap: () {
-                    debugPrint("change cover");
-                    showMyProfileImageActionMenu(
-                      context: context,
-                      title: 'اختر خيارًا لتغيير صورة الغلاف الخاصة بك',
-                      hasCurrentImage: profile.coverUrl.trim().isNotEmpty,
-                      onCamera: () {
-                        _pickAndPreviewProfileImage(
-                          context: context,
-                          type: 'cover',
-                          fromCamera: true,
-                        );
-                      },
-                      onGallery: () {
-                        _pickAndPreviewProfileImage(
-                          context: context,
-                          type: 'cover',
-                          fromCamera: false,
-                        );
-                      },
-                      onDelete: () {
-                        showCustomConfirmationDialog(
-                          context: context,
-                          title: 'حذف صورة الغلاف؟',
-                          message: 'هل أنت متأكد من حذف صورة الغلاف الحالية؟',
-                          icon: Icons.delete_outline_rounded,
-                          confirmText: 'حذف',
-                          cancelText: 'إلغاء',
-                          onConfirm: () async {
-                            await context
-                                .read<MyProfileCubit>()
-                                .deleteMyProfilePicture(type: 'cover');
-                          },
-                        );
-                      },
-                      onView: () {
-                        debugPrint('cover view');
-                        showMyProfileImageViewer(
-                          context: context,
-                          imageUrl: profile.coverUrl,
-                        );
-                      },
-                    );
-                  },
-                  onChangeAvatarTap: () {
-                    debugPrint("change avatar");
-                    showMyProfileImageActionMenu(
-                      context: context,
-                      title: 'اختر خيارًا لتغيير الصورة الخاصة بك',
-                      hasCurrentImage: profile.avatarUrl.trim().isNotEmpty,
-                      onCamera: () {
-                        _pickAndPreviewProfileImage(
-                          context: context,
-                          type: 'avatar',
-                          fromCamera: true,
-                        );
-                      },
-                      onGallery: () {
-                        _pickAndPreviewProfileImage(
-                          context: context,
-                          type: 'avatar',
-                          fromCamera: false,
-                        );
-                      },
-                      onDelete: () {
-                        showCustomConfirmationDialog(
-                          context: context,
-                          title: 'حذف الصورة الشخصية؟',
-                          message:
-                              'هل أنت متأكد من حذف الصورة الشخصية الحالية؟',
-                          icon: Icons.delete_outline_rounded,
-                          confirmText: 'حذف',
-                          cancelText: 'إلغاء',
-                          onConfirm: () async {
-                            //Navigator.pop(context);
+            if (metrics.maxScrollExtent <= 0) return false;
 
-                            await context
-                                .read<MyProfileCubit>()
-                                .deleteMyProfilePicture(type: 'avatar');
-                          },
-                        );
-                      },
-                      onView: () {
-                        debugPrint('avatar view');
-                        showMyProfileImageViewer(
-                          context: context,
-                          imageUrl: profile.avatarUrl,
-                        );
-                      },
-                    );
-                  },
-                  onShareTap: () {
-                    debugPrint("share profile");
-                  },
-                  onShowSavedTap: () {
-                    debugPrint("show saved list");
-                    context.pushNamed(AppRouterName.myProfileBookmarks);
-                  },
-                  onFollowersTap: () {
-                    debugPrint("show followers ${profile.followersCount}");
+            final scrollRatio = metrics.pixels / metrics.maxScrollExtent;
 
-                    showOtherProfileConnectionsBottomSheet(
-                      context: context,
-                      userId: profile.userId,
-                      cubit: sl<OtherProfileConnectionsCubit>(),
-                      type: OtherProfileConnectionsType.followers,
-                      title: 'المتابعون',
-                    );
-                  },
-                  onFollowingTap: () {
-                    debugPrint("show following ${profile.followingCount}");
-                    showOtherProfileConnectionsBottomSheet(
-                      context: context,
-                      userId: profile.userId,
-                      cubit: sl<OtherProfileConnectionsCubit>(),
-                      type: OtherProfileConnectionsType.following,
-                      title: 'يتابعهم',
-                    );
-                  },
+            if (scrollRatio < 0.8) return false;
+
+            final cubit = context.read<MyProfileCubit>();
+
+            if (state.selectedTab == MyProfileTab.content &&
+                state.libraryResponse?.meta.hasMorePages == true &&
+                !state.isLibraryLoadingMore &&
+                !state.isLibraryLoading) {
+              cubit.fetchMoreMyProfileLibraryIfNeeded();
+            }
+
+            if (state.selectedTab == MyProfileTab.content &&
+                state.libraryResponse?.meta.hasMorePages == true &&
+                !state.isLibraryLoadingMore &&
+                !state.isLibraryLoading) {
+              if (state.librarySearchText.trim().isEmpty) {
+                cubit.fetchMoreMyProfileLibraryIfNeeded();
+              } else {
+                cubit.fetchMoreMyProfileLibrarySearchIfNeeded();
+              }
+            }
+
+            if (state.selectedTab == MyProfileTab.folders &&
+                state.hasMoreFoldersPages &&
+                !state.isFoldersLoadingMore &&
+                !state.isFoldersLoading) {
+              cubit.fetchMoreMyProfileFoldersIfNeeded();
+            }
+
+            return false;
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: SizeConfig.h(0.012)),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+                  child: MyProfileHeaderCard(
+                    profile: profile,
+                    onChangeCoverTap: () {
+                      debugPrint("change cover");
+                      showMyProfileImageActionMenu(
+                        context: context,
+                        title: 'اختر خيارًا لتغيير صورة الغلاف الخاصة بك',
+                        hasCurrentImage: profile.coverUrl.trim().isNotEmpty,
+                        onCamera: () {
+                          _pickAndPreviewProfileImage(
+                            context: context,
+                            type: 'cover',
+                            fromCamera: true,
+                          );
+                        },
+                        onGallery: () {
+                          _pickAndPreviewProfileImage(
+                            context: context,
+                            type: 'cover',
+                            fromCamera: false,
+                          );
+                        },
+                        onDelete: () {
+                          showCustomConfirmationDialog(
+                            context: context,
+                            title: 'حذف صورة الغلاف؟',
+                            message: 'هل أنت متأكد من حذف صورة الغلاف الحالية؟',
+                            icon: Icons.delete_outline_rounded,
+                            confirmText: 'حذف',
+                            cancelText: 'إلغاء',
+                            onConfirm: () async {
+                              await context
+                                  .read<MyProfileCubit>()
+                                  .deleteMyProfilePicture(type: 'cover');
+                            },
+                          );
+                        },
+                        onView: () {
+                          debugPrint('cover view');
+                          showMyProfileImageViewer(
+                            context: context,
+                            imageUrl: profile.coverUrl,
+                          );
+                        },
+                      );
+                    },
+                    onChangeAvatarTap: () {
+                      debugPrint("change avatar");
+                      showMyProfileImageActionMenu(
+                        context: context,
+                        title: 'اختر خيارًا لتغيير الصورة الخاصة بك',
+                        hasCurrentImage: profile.avatarUrl.trim().isNotEmpty,
+                        onCamera: () {
+                          _pickAndPreviewProfileImage(
+                            context: context,
+                            type: 'avatar',
+                            fromCamera: true,
+                          );
+                        },
+                        onGallery: () {
+                          _pickAndPreviewProfileImage(
+                            context: context,
+                            type: 'avatar',
+                            fromCamera: false,
+                          );
+                        },
+                        onDelete: () {
+                          showCustomConfirmationDialog(
+                            context: context,
+                            title: 'حذف الصورة الشخصية؟',
+                            message:
+                                'هل أنت متأكد من حذف الصورة الشخصية الحالية؟',
+                            icon: Icons.delete_outline_rounded,
+                            confirmText: 'حذف',
+                            cancelText: 'إلغاء',
+                            onConfirm: () async {
+                              //Navigator.pop(context);
+
+                              await context
+                                  .read<MyProfileCubit>()
+                                  .deleteMyProfilePicture(type: 'avatar');
+                            },
+                          );
+                        },
+                        onView: () {
+                          debugPrint('avatar view');
+                          showMyProfileImageViewer(
+                            context: context,
+                            imageUrl: profile.avatarUrl,
+                          );
+                        },
+                      );
+                    },
+                    onShareTap: () {
+                      debugPrint("share profile");
+                    },
+                    onShowSavedTap: () {
+                      debugPrint("show saved list");
+                      context.pushNamed(AppRouterName.myProfileBookmarks);
+                    },
+                    onFollowersTap: () {
+                      debugPrint("show followers ${profile.followersCount}");
+
+                      showOtherProfileConnectionsBottomSheet(
+                        context: context,
+                        userId: profile.userId,
+                        cubit: sl<OtherProfileConnectionsCubit>(),
+                        type: OtherProfileConnectionsType.followers,
+                        title: 'المتابعون',
+                      );
+                    },
+                    onFollowingTap: () {
+                      debugPrint("show following ${profile.followingCount}");
+                      showOtherProfileConnectionsBottomSheet(
+                        context: context,
+                        userId: profile.userId,
+                        cubit: sl<OtherProfileConnectionsCubit>(),
+                        type: OtherProfileConnectionsType.following,
+                        title: 'يتابعهم',
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              SizedBox(height: SizeConfig.h(0.018)),
+                SizedBox(height: SizeConfig.h(0.018)),
 
-              MyProfileTabsSection(
-                selectedTab: state.selectedTab,
-                onTabSelected: (tab) {
-                  context.read<MyProfileCubit>().changeSelectedTab(tab);
-                },
-              ),
-
-              SizedBox(height: SizeConfig.h(0.018)),
-
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
-                child: MyProfileSelectedTabContent(
+                MyProfileTabsSection(
                   selectedTab: state.selectedTab,
-                  profile: profile,
+                  onTabSelected: (tab) {
+                    context.read<MyProfileCubit>().changeSelectedTab(tab);
+                  },
                 ),
-              ),
 
-              SizedBox(height: SizeConfig.h(0.03)),
-            ],
+                SizedBox(height: SizeConfig.h(0.018)),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+                  child: MyProfileSelectedTabContent(
+                    selectedTab: state.selectedTab,
+                    profile: profile,
+                  ),
+                ),
+
+                SizedBox(height: SizeConfig.h(0.03)),
+              ],
+            ),
           ),
         );
       },

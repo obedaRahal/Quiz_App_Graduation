@@ -89,8 +89,8 @@ class EndPoints {
   // My Content Details
   static String myPublicContentDetails(int id) =>
       '/library/library-materials-details/my-public/$id';
-      static String deleteMyContent(int contentId) =>
-    '/library/delete/material/$contentId';
+  static String deleteMyContent(int contentId) =>
+      '/library/delete/material/$contentId';
   // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';
@@ -372,6 +372,50 @@ class EndPoints {
 
   static String myProfileBookmarks({required String tab, String? cursor}) {
     final endpoint = '$baseUrl/my-profile/bookmarks?tab=$tab';
+
+    if (cursor == null || cursor.trim().isEmpty) {
+      return endpoint;
+    }
+
+    return '$endpoint&cursor=$cursor';
+  }
+
+  static String myProfileLibrary({
+    required int userId,
+    required String tab,
+    String? cursor,
+  }) {
+    final endpoint = '$baseUrl/my-profile/library/$userId?tab=$tab';
+
+    if (cursor == null || cursor.trim().isEmpty) {
+      return endpoint;
+    }
+
+    return '$endpoint&cursor=$cursor';
+  }
+
+  static String searchMyProfileLibrary({
+    required String query,
+    String mode = 'user_owned',
+    String? cursor,
+  }) {
+    final encodedQuery = Uri.encodeQueryComponent(query);
+    final endpoint =
+        '$baseUrl/my-profile/library-material/search?query=$encodedQuery&mode=$mode';
+
+    if (cursor == null || cursor.trim().isEmpty) {
+      return endpoint;
+    }
+
+    return '$endpoint&cursor=$cursor';
+  }
+
+  static String myProfileFolders({
+    required int userId,
+    required String tab,
+    String? cursor,
+  }) {
+    final endpoint = '$baseUrl/my-profile/folder/$userId?tab=$tab';
 
     if (cursor == null || cursor.trim().isEmpty) {
       return endpoint;

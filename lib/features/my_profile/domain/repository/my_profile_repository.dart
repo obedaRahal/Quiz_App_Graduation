@@ -7,6 +7,8 @@ import 'package:quiz_app_grad/features/my_profile/domain/entities/edit_my_profil
 import 'package:quiz_app_grad/features/my_profile/domain/entities/edit_my_profile_scientific_interests_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_bookmarks_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_folders_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_library_entity.dart';
 
 abstract class MyProfileRepository {
   Future<Either<Failure, MyProfileEntity>> getMyProfilePersonalInfo({
@@ -43,6 +45,24 @@ abstract class MyProfileRepository {
   });
 
   Future<Either<Failure, MyProfileBookmarksEntity>> fetchMyProfileBookmarks({
+    required String tab,
+    String? cursor,
+  });
+
+  Future<Either<Failure, MyProfileLibraryEntity>> fetchMyProfileLibrary({
+    required int userId,
+    required String tab,
+    String? cursor,
+  });
+
+  Future<Either<Failure, MyProfileLibraryEntity>> searchMyProfileLibrary({
+    required String query,
+    required String mode,
+    String? cursor,
+  });
+
+  Future<Either<Failure, MyProfileFoldersEntity>> fetchMyProfileFolders({
+    required int userId,
     required String tab,
     String? cursor,
   });

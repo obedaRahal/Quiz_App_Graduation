@@ -8,7 +8,10 @@ import 'package:quiz_app_grad/features/my_profile/data/models/edit_my_profile_pe
 import 'package:quiz_app_grad/features/my_profile/data/models/edit_my_profile_picture_model.dart';
 import 'package:quiz_app_grad/features/my_profile/data/models/edit_my_profile_scientific_interests_model.dart';
 import 'package:quiz_app_grad/features/my_profile/data/models/my_profile_bookmarks_model.dart';
+import 'package:quiz_app_grad/features/my_profile/data/models/my_profile_folders_model.dart';
+import 'package:quiz_app_grad/features/my_profile/data/models/my_profile_library_model.dart';
 import 'package:quiz_app_grad/features/my_profile/data/models/my_profile_personal_info_model.dart';
+import 'package:quiz_app_grad/features/my_profile/data/models/search_my_profile_library_model.dart';
 
 abstract class MyProfileRemoteDataSource {
   Future<MyProfilePersonalInfoModel> getMyProfilePersonalInfo({
@@ -43,6 +46,24 @@ abstract class MyProfileRemoteDataSource {
   });
 
   Future<MyProfileBookmarksModel> fetchMyProfileBookmarks({
+    required String tab,
+    String? cursor,
+  });
+
+  Future<MyProfileLibraryModel> fetchMyProfileLibrary({
+    required int userId,
+    required String tab,
+    String? cursor,
+  });
+
+  Future<SearchMyProfileLibraryModel> searchMyProfileLibrary({
+    required String query,
+    required String mode,
+    String? cursor,
+  });
+
+  Future<MyProfileFoldersModel> fetchMyProfileFolders({
+    required int userId,
     required String tab,
     String? cursor,
   });
@@ -242,5 +263,89 @@ class MyProfileRemoteDataSourceImpl implements MyProfileRemoteDataSource {
     return MyProfileBookmarksModel.fromJson(
       (response as Map).cast<String, dynamic>(),
     );
+  }
+
+  @override
+  Future<MyProfileLibraryModel> fetchMyProfileLibrary({
+    required int userId,
+    required String tab,
+    String? cursor,
+  }) async {
+    debugPrint(
+      "============ MyProfileRemoteDataSourceImpl.fetchMyProfileLibrary ============",
+    );
+
+    final endpoint = EndPoints.myProfileLibrary(
+      userId: userId,
+      tab: tab,
+      cursor: cursor,
+    );
+
+    debugPrint("→ endpoint: $endpoint");
+    debugPrint("→ method: GET");
+
+    final response = await apiConsumer.get(endpoint);
+
+    debugPrint("← response (fetchMyProfileLibrary): $response");
+    debugPrint("=================================================");
+
+    return MyProfileLibraryModel.fromJson(
+      (response as Map).cast<String, dynamic>(),
+    );
+  }
+
+  @override
+  Future<SearchMyProfileLibraryModel> searchMyProfileLibrary({
+    required String query,
+    required String mode,
+    String? cursor,
+  }) async {
+    debugPrint(
+      "============ MyProfileRemoteDataSourceImpl.searchMyProfileLibrary ============",
+    );
+
+    final endpoint = EndPoints.searchMyProfileLibrary(
+      query: query,
+      mode: mode,
+      cursor: cursor,
+    );
+
+    debugPrint("→ endpoint: $endpoint");
+    debugPrint("→ method: GET");
+
+    final response = await apiConsumer.get(endpoint);
+
+    debugPrint("← response (searchMyProfileLibrary): $response");
+    debugPrint("=================================================");
+
+    return SearchMyProfileLibraryModel.fromJson(
+      (response as Map).cast<String, dynamic>(),
+    );
+  }
+
+  @override
+  Future<MyProfileFoldersModel> fetchMyProfileFolders({
+    required int userId,
+    required String tab,
+    String? cursor,
+  }) async {
+    debugPrint(
+      "============ MyProfileRemoteDataSourceImpl.fetchMyProfileFolders ============",
+    );
+
+    debugPrint(
+      "→ endpoint: ${EndPoints.myProfileFolders(userId: userId, tab: tab, cursor: cursor)}",
+    );
+    debugPrint("→ method: GET");
+    debugPrint("→ params: {userId: $userId, tab: $tab, cursor: $cursor}");
+
+    final response = await apiConsumer.get(
+      EndPoints.myProfileFolders(userId: userId, tab: tab, cursor: cursor),
+    );
+
+    debugPrint("← response (fetchMyProfileFolders): $response");
+    debugPrint("=================================================");
+
+    return MyProfileFoldersModel.fromJson(response as Map<String, dynamic>);
   }
 }

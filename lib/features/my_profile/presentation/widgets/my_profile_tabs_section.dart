@@ -15,8 +15,8 @@ class MyProfileTabsSection extends StatelessWidget {
   static const tabs = [
     ProfileTabItem(title: 'معلومات شخصية', tab: MyProfileTab.personalInfo),
     ProfileTabItem(title: 'الاختبارات', tab: MyProfileTab.tests),
-    ProfileTabItem(title: 'المجلدات', tab: MyProfileTab.folders),
     ProfileTabItem(title: 'المحتوى', tab: MyProfileTab.content),
+    ProfileTabItem(title: 'المجلدات', tab: MyProfileTab.folders),
   ];
 
   @override

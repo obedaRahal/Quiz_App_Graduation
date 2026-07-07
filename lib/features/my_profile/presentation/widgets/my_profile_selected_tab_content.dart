@@ -3,6 +3,8 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_state.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/widgets/content_tab/my_profile_content_tab.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/widgets/folder_tab/my_profile_folders_tab.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/personal_info_tab/my_profile_personal_info_tab.dart';
 
 class MyProfileSelectedTabContent extends StatelessWidget {
@@ -24,14 +26,11 @@ class MyProfileSelectedTabContent extends StatelessWidget {
       case MyProfileTab.tests:
         return const _ComingSoonTab(title: 'اختباراتك ستظهر هنا');
 
-      case MyProfileTab.folders:
-        return const _ComingSoonTab(title: 'قوائمك ستظهر هنا');
-
       case MyProfileTab.content:
-        return const _ComingSoonTab(title: 'محتواك سيظهر هنا');
+        return const MyProfileContentTab();
 
-      case MyProfileTab.achievements:
-        return const _ComingSoonTab(title: 'إنجازاتك ستظهر هنا');
+      case MyProfileTab.folders:
+        return const MyProfileFoldersTab();
     }
   }
 }

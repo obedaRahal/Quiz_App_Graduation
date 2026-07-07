@@ -114,7 +114,10 @@ import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profi
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_scientific_interests_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_bookmarks_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_folders_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_library_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/get_my_profile_personal_info_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/search_my_profile_library_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile_bookmarks/my_profile_bookmarks_cubit.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/data_sources/my_public_test_details_remote_data_source.dart';
@@ -1107,11 +1110,11 @@ void _registerLibraryFeature() {
       () => GetMyPublicContentDetailsUseCase(sl()),
     );
   }
-if (!sl.isRegistered<DeleteMyContentUseCase>()) {
-  sl.registerLazySingleton<DeleteMyContentUseCase>(
-    () => DeleteMyContentUseCase(sl()),
-  );
-}
+  if (!sl.isRegistered<DeleteMyContentUseCase>()) {
+    sl.registerLazySingleton<DeleteMyContentUseCase>(
+      () => DeleteMyContentUseCase(sl()),
+    );
+  }
   if (!sl.isRegistered<OtherContentDetailsCubit>()) {
     sl.registerFactory(
       () => OtherContentDetailsCubit(
@@ -1467,6 +1470,24 @@ void _registerMyProfileFeature() {
     );
   }
 
+  if (!sl.isRegistered<FetchMyProfileLibraryUseCase>()) {
+    sl.registerLazySingleton<FetchMyProfileLibraryUseCase>(
+      () => FetchMyProfileLibraryUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<SearchMyProfileLibraryUseCase>()) {
+    sl.registerLazySingleton<SearchMyProfileLibraryUseCase>(
+      () => SearchMyProfileLibraryUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<FetchMyProfileFoldersUseCase>()) {
+    sl.registerLazySingleton<FetchMyProfileFoldersUseCase>(
+      () => FetchMyProfileFoldersUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
   if (!sl.isRegistered<MyProfileCubit>()) {
     sl.registerFactory<MyProfileCubit>(
       () => MyProfileCubit(
@@ -1479,6 +1500,9 @@ void _registerMyProfileFeature() {
             sl<EditMyProfileScientificInterestsUseCase>(),
         editMyProfilePictureUseCase: sl<EditMyProfilePictureUseCase>(),
         deleteMyProfilePictureUseCase: sl<DeleteMyProfilePictureUseCase>(),
+        fetchMyProfileLibraryUseCase: sl<FetchMyProfileLibraryUseCase>(),
+        searchMyProfileLibraryUseCase: sl<SearchMyProfileLibraryUseCase>(),
+        fetchMyProfileFoldersUseCase: sl<FetchMyProfileFoldersUseCase>(),
       ),
     );
   }

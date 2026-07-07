@@ -1,19 +1,29 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/entities/all_interests_response_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_folders_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_library_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/delete_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_academic_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_personal_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_scientific_interests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_folders_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_library_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/delete_my_profile_picture_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_academic_info_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_personal_info_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_picture_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_scientific_interests_params.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/fetch_my_profile_folders_params.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/fetch_my_profile_library_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/get_my_profile_personal_info_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/get_my_profile_personal_info_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/search_my_profile_library_params.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/search_my_profile_library_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/personal_info_tab/bottom_sheet/acadimic_info/my_profile_academic_info_bottom_sheet.dart';
 import 'my_profile_state.dart';
 
@@ -26,6 +36,13 @@ class MyProfileCubit extends Cubit<MyProfileState> {
   final EditMyProfilePictureUseCase editMyProfilePictureUseCase;
   final DeleteMyProfilePictureUseCase deleteMyProfilePictureUseCase;
 
+  final FetchMyProfileLibraryUseCase fetchMyProfileLibraryUseCase;
+
+  final SearchMyProfileLibraryUseCase searchMyProfileLibraryUseCase;
+  Timer? _librarySearchDebounce;
+
+  final FetchMyProfileFoldersUseCase fetchMyProfileFoldersUseCase;
+
   MyProfileCubit({
     required this.getMyProfilePersonalInfoUseCase,
     required this.editMyProfilePersonalInfoUseCase,
@@ -33,6 +50,11 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     required this.editMyProfileScientificInterestsUseCase,
     required this.editMyProfilePictureUseCase,
     required this.deleteMyProfilePictureUseCase,
+
+    required this.fetchMyProfileLibraryUseCase,
+    required this.searchMyProfileLibraryUseCase,
+
+    required this.fetchMyProfileFoldersUseCase,
   }) : super(const MyProfileState()) {
     debugPrint("============ MyProfileCubit INIT ============");
   }
@@ -768,5 +790,496 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     debugPrint("=================================================");
 
     return success;
+  }
+  ////////////////// content tab //////////////////
+
+  Future<void> changeMyProfileLibraryTab(MyProfileLibraryTab tab) async {
+    if (state.selectedLibraryTab == tab) return;
+
+    clearMyProfileLibrarySearch();
+
+    debugPrint(
+      "============ MyProfileCubit.changeMyProfileLibraryTab ============",
+    );
+    debugPrint("→ from: ${state.selectedLibraryTab.apiValue}");
+    debugPrint("→ to: ${tab.apiValue}");
+
+    emit(
+      state.copyWith(
+        selectedLibraryTab: tab,
+        libraryStatus: FetchMyProfileStatus.loading,
+        isLibraryLoadingMore: false,
+        libraryResponse: null,
+        librarySearchText: '',
+        clearError: true,
+      ),
+    );
+
+    final profile = state.profile;
+
+    if (profile == null) {
+      debugPrint("✗ profile is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final result = await fetchMyProfileLibraryUseCase(
+      FetchMyProfileLibraryParams(userId: profile.userId, tab: tab.apiValue),
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            libraryStatus: FetchMyProfileStatus.failure,
+            isLibraryLoadingMore: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        emit(
+          state.copyWith(
+            libraryStatus: FetchMyProfileStatus.success,
+            libraryResponse: response,
+            isLibraryLoadingMore: false,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> fetchMyProfileLibraryInitial() async {
+    debugPrint(
+      "============ MyProfileCubit.fetchMyProfileLibraryInitial ============",
+    );
+
+    final profile = state.profile;
+
+    if (profile == null) {
+      debugPrint("✗ profile is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        libraryStatus: FetchMyProfileStatus.loading,
+        isLibraryLoadingMore: false,
+        libraryResponse: null,
+        librarySearchText: '',
+        clearError: true,
+      ),
+    );
+
+    final result = await fetchMyProfileLibraryUseCase(
+      FetchMyProfileLibraryParams(
+        userId: profile.userId,
+        tab: state.selectedLibraryTab.apiValue,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            libraryStatus: FetchMyProfileStatus.failure,
+            isLibraryLoadingMore: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        emit(
+          state.copyWith(
+            libraryStatus: FetchMyProfileStatus.success,
+            isLibraryLoadingMore: false,
+            libraryResponse: response,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> fetchMoreMyProfileLibraryIfNeeded() async {
+    final response = state.libraryResponse;
+    final meta = response?.meta;
+
+    if (state.isLibraryLoading ||
+        state.isLibraryLoadingMore ||
+        response == null ||
+        meta == null ||
+        !meta.hasMorePages) {
+      return;
+    }
+
+    final profile = state.profile;
+    if (profile == null) return;
+
+    final cursor = meta.nextCursor;
+    if (cursor == null || cursor.trim().isEmpty) return;
+
+    debugPrint(
+      "============ MyProfileCubit.fetchMoreMyProfileLibraryIfNeeded ============",
+    );
+    debugPrint("→ tab: ${state.selectedLibraryTab.apiValue}");
+    debugPrint("→ cursor: $cursor");
+
+    emit(state.copyWith(isLibraryLoadingMore: true, clearError: true));
+
+    final result = await fetchMyProfileLibraryUseCase(
+      FetchMyProfileLibraryParams(
+        userId: profile.userId,
+        tab: state.selectedLibraryTab.apiValue,
+        cursor: cursor,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            isLibraryLoadingMore: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (newResponse) {
+        final updatedResponse = MyProfileLibraryEntity(
+          success: newResponse.success,
+          message: newResponse.message,
+          data: [...response.data, ...newResponse.data],
+          meta: newResponse.meta,
+          statusCode: newResponse.statusCode,
+        );
+
+        emit(
+          state.copyWith(
+            isLibraryLoadingMore: false,
+            libraryResponse: updatedResponse,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void changeMyProfileLibrarySearchText(String value) {
+    final query = value.trim();
+
+    emit(state.copyWith(librarySearchText: value, clearError: true));
+
+    _librarySearchDebounce?.cancel();
+
+    _librarySearchDebounce = Timer(const Duration(milliseconds: 450), () {
+      if (query.isEmpty) {
+        fetchMyProfileLibraryInitial();
+        return;
+      }
+
+      _searchMyProfileLibraryInitial(query: query);
+    });
+  }
+
+  Future<void> _searchMyProfileLibraryInitial({required String query}) async {
+    debugPrint(
+      "============ MyProfileCubit._searchMyProfileLibraryInitial ============",
+    );
+    debugPrint("→ query: $query");
+
+    emit(
+      state.copyWith(
+        libraryStatus: FetchMyProfileStatus.loading,
+        isLibraryLoadingMore: false,
+        libraryResponse: null,
+        clearError: true,
+      ),
+    );
+
+    final result = await searchMyProfileLibraryUseCase(
+      SearchMyProfileLibraryParams(query: query, mode: 'user_owned'),
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            libraryStatus: FetchMyProfileStatus.failure,
+            isLibraryLoadingMore: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        emit(
+          state.copyWith(
+            libraryStatus: FetchMyProfileStatus.success,
+            isLibraryLoadingMore: false,
+            libraryResponse: response,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> fetchMoreMyProfileLibrarySearchIfNeeded() async {
+    final query = state.librarySearchText.trim();
+    if (query.isEmpty) return;
+
+    final response = state.libraryResponse;
+
+    if (state.isLibraryLoading ||
+        state.isLibraryLoadingMore ||
+        response == null ||
+        !response.meta.hasMorePages) {
+      return;
+    }
+
+    final cursor = response.meta.nextCursor;
+    if (cursor == null || cursor.trim().isEmpty) return;
+
+    debugPrint(
+      "============ MyProfileCubit.fetchMoreMyProfileLibrarySearchIfNeeded ============",
+    );
+    debugPrint("→ query: $query");
+    debugPrint("→ cursor: $cursor");
+
+    emit(state.copyWith(isLibraryLoadingMore: true, clearError: true));
+
+    final result = await searchMyProfileLibraryUseCase(
+      SearchMyProfileLibraryParams(
+        query: query,
+        mode: 'user_owned',
+        cursor: cursor,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            isLibraryLoadingMore: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (newResponse) {
+        final updatedResponse = MyProfileLibraryEntity(
+          success: newResponse.success,
+          message: newResponse.message,
+          data: [...response.data, ...newResponse.data],
+          meta: newResponse.meta,
+          statusCode: newResponse.statusCode,
+        );
+
+        emit(
+          state.copyWith(
+            isLibraryLoadingMore: false,
+            libraryResponse: updatedResponse,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void clearMyProfileLibrarySearch() {
+    _librarySearchDebounce?.cancel();
+
+    emit(state.copyWith(librarySearchText: '', clearError: true));
+
+    fetchMyProfileLibraryInitial();
+  }
+
+  Future<void> refreshMyProfileLibrary() async {
+    await fetchMyProfileLibraryInitial();
+  }
+
+  @override
+  Future<void> close() {
+    _librarySearchDebounce?.cancel();
+    return super.close();
+  }
+
+  ///////////////////////// folder Api /////////////////
+  Future<void> changeMyProfileFoldersTab(MyProfileFoldersTabEnum tab) async {
+    if (state.selectedFoldersTab == tab) return;
+
+    debugPrint(
+      "============ MyProfileCubit.changeMyProfileFoldersTab ============",
+    );
+    debugPrint("→ from: ${state.selectedFoldersTab.apiValue}");
+    debugPrint("→ to: ${tab.apiValue}");
+
+    emit(
+      state.copyWith(
+        selectedFoldersTab: tab,
+        foldersStatus: FetchMyProfileStatus.loading,
+        isFoldersLoadingMore: false,
+        clearFoldersResponse: true,
+        clearError: true,
+      ),
+    );
+
+    await fetchMyProfileFoldersInitial();
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> fetchMyProfileFoldersInitial() async {
+    debugPrint(
+      "============ MyProfileCubit.fetchMyProfileFoldersInitial ============",
+    );
+
+    final profile = state.profile;
+
+    if (profile == null) {
+      debugPrint("✗ profile is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        foldersStatus: FetchMyProfileStatus.loading,
+        isFoldersLoadingMore: false,
+        clearFoldersResponse: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await fetchMyProfileFoldersUseCase(
+      FetchMyProfileFoldersParams(
+        userId: profile.userId,
+        tab: state.selectedFoldersTab.apiValue,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ fetchMyProfileFoldersInitial failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            foldersStatus: FetchMyProfileStatus.failure,
+            isFoldersLoadingMore: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ fetchMyProfileFoldersInitial success");
+        debugPrint("→ items count: ${response.data.length}");
+        debugPrint("→ hasMorePages: ${response.meta.hasMorePages}");
+        debugPrint("→ nextCursor: ${response.meta.nextCursor}");
+
+        emit(
+          state.copyWith(
+            foldersStatus: FetchMyProfileStatus.success,
+            foldersResponse: response,
+            isFoldersLoadingMore: false,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> fetchMoreMyProfileFoldersIfNeeded() async {
+    final response = state.foldersResponse;
+
+    if (state.isFoldersLoading ||
+        state.isFoldersLoadingMore ||
+        response == null ||
+        !response.meta.hasMorePages) {
+      return;
+    }
+
+    final profile = state.profile;
+    if (profile == null) return;
+
+    final cursor = response.meta.nextCursor;
+    if (cursor == null || cursor.trim().isEmpty) return;
+
+    debugPrint(
+      "============ MyProfileCubit.fetchMoreMyProfileFoldersIfNeeded ============",
+    );
+    debugPrint("→ tab: ${state.selectedFoldersTab.apiValue}");
+    debugPrint("→ cursor: $cursor");
+
+    emit(state.copyWith(isFoldersLoadingMore: true, clearError: true));
+
+    final result = await fetchMyProfileFoldersUseCase(
+      FetchMyProfileFoldersParams(
+        userId: profile.userId,
+        tab: state.selectedFoldersTab.apiValue,
+        cursor: cursor,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ fetchMoreMyProfileFoldersIfNeeded failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            isFoldersLoadingMore: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (newResponse) {
+        final updatedResponse = MyProfileFoldersEntity(
+          success: newResponse.success,
+          message: newResponse.message,
+          data: [...response.data, ...newResponse.data],
+          meta: newResponse.meta,
+          statusCode: newResponse.statusCode,
+        );
+
+        debugPrint("✓ fetchMoreMyProfileFoldersIfNeeded success");
+        debugPrint("→ old count: ${response.data.length}");
+        debugPrint("→ new count: ${newResponse.data.length}");
+        debugPrint("→ total count: ${updatedResponse.data.length}");
+        debugPrint("→ hasMorePages: ${newResponse.meta.hasMorePages}");
+        debugPrint("→ nextCursor: ${newResponse.meta.nextCursor}");
+
+        emit(
+          state.copyWith(
+            isFoldersLoadingMore: false,
+            foldersResponse: updatedResponse,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
   }
 }
