@@ -28,6 +28,8 @@ class CreateTestView extends StatelessWidget {
               previous.createManualTestResponse !=
                   current.createManualTestResponse ||
               previous.updateTestError != current.updateTestError ||
+              previous.updateContentError != current.updateContentError ||
+              previous.updateContentResponse != current.updateContentResponse ||
               previous.updateTestResponse != current.updateTestResponse;
         },
         listener: (context, state) {
@@ -37,7 +39,8 @@ class CreateTestView extends StatelessWidget {
           final updateResponse = state.updateTestResponse;
           final createContentError = state.createContentError;
           final createContentResponse = state.createContentResponse;
-
+          final updateContentError = state.updateContentError;
+          final updateContentResponse = state.updateContentResponse;
           if (updateError != null && updateError.trim().isNotEmpty) {
             _showCreateTestSnackBar(
               context: context,
@@ -59,6 +62,17 @@ class CreateTestView extends StatelessWidget {
             context.read<CreateTestCubit>().clearCreateContentResult();
             return;
           }
+          if (updateContentError != null &&
+              updateContentError.trim().isNotEmpty) {
+            _showCreateTestSnackBar(
+              context: context,
+              message: updateContentError,
+              backgroundColor: AppPalette.red,
+            );
+
+            context.read<CreateTestCubit>().clearUpdateContentResult();
+            return;
+          }
 
           if (createContentResponse != null && createContentResponse.success) {
             _showCreateTestSnackBar(
@@ -74,6 +88,29 @@ class CreateTestView extends StatelessWidget {
             Future.delayed(const Duration(milliseconds: 700), () {
               if (!context.mounted) return;
               context.goNamed(AppRouterName.mainLayout);
+            });
+
+            return;
+          }
+          if (updateContentResponse != null && updateContentResponse.success) {
+            _showCreateTestSnackBar(
+              context: context,
+              message: updateContentResponse.message.trim().isNotEmpty
+                  ? updateContentResponse.message
+                  : 'تم تعديل المحتوى بنجاح',
+              backgroundColor: AppPalette.green,
+            );
+
+            context.read<CreateTestCubit>().clearUpdateContentResult();
+
+            Future.delayed(const Duration(milliseconds: 700), () {
+              if (!context.mounted) return;
+
+              if (context.canPop()) {
+                context.pop(true);
+              } else {
+                context.goNamed(AppRouterName.mainLayout);
+              }
             });
 
             return;

@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_asset_viewer.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_details_app_bar.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_details_demo_data.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_info_sheet.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_existing_media_state.dart';
 
 class ContentDetailsScaffold extends StatefulWidget {
   final ContentDetailsUiData data;
@@ -88,7 +94,40 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
     _sheetController.dispose();
     super.dispose();
   }
+Future<void> _goToEditContent() async {
+  final data = widget.data;
 
+  final result = await context.pushNamed(
+    AppRouterName.createTestPage,
+    extra: CreateTestInitialArgs(
+      mode: data.isFile
+          ? CreateTestCreationMode.contentFile
+          : CreateTestCreationMode.contentImages,
+      isContentEditMode: true,
+      editingContentId: data.id,
+      initialTitle: data.title,
+      initialDescription: data.description,
+      initialIsPublished: data.isPublic,
+      initialAcademicLevel: data.targetLevel,
+      initialScientificCategories: data.interests,
+      initialScientificInterestIds: const [],
+      existingAiMedia: data.assets.map((asset) {
+        return CreateTestExistingMediaState(
+          id: asset.id,
+          name: asset.url.split('/').last,
+          url: asset.url,
+          type: data.isFile ? 'pdf' : 'image',
+        );
+      }).toList(),
+    ),
+  );
+
+  if (!mounted) return;
+
+  if (result == true) {
+    context.read<OtherContentDetailsCubit>().getMyContentDetails(data.id);
+  }
+}
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -122,6 +161,7 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
             targetLevel: widget.data.targetLevel,
             isOwner: widget.data.isOwner,
             isPublic: widget.data.isPublic,
+            onEditContentTap: _goToEditContent,
           ),
           Align(
             alignment: Alignment.bottomCenter,

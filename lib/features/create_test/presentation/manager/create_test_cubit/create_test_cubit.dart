@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_params.dart';
@@ -6,6 +7,7 @@ import 'package:quiz_app_grad/features/create_test/domain/entities/create_conten
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_manual_test_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/editable_test_questions_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/scientific_classification_entity.dart';
+import 'package:quiz_app_grad/features/create_test/domain/entities/update_content_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/update_test_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/create_content_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/create_manual_test_use_case.dart';
@@ -14,6 +16,7 @@ import 'package:quiz_app_grad/features/create_test/domain/use_case/get_editable_
 import 'package:quiz_app_grad/features/create_test/domain/use_case/get_scientific_classifications_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/params/get_editable_test_questions_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/start_ai_question_generation_use_case.dart';
+import 'package:quiz_app_grad/features/create_test/domain/use_case/update_content_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/update_test_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_state.dart';
@@ -27,6 +30,7 @@ class CreateTestCubit extends Cubit<CreateTestState> {
   final GetEditableTestQuestionsUseCase getEditableTestQuestionsUseCase;
   final UpdateTestUseCase updateTestUseCase;
   final CreateContentUseCase createContentUseCase;
+  final UpdateContentUseCase updateContentUseCase;
   CreateTestCubit({
     required this.getScientificClassificationsUseCase,
     required this.createManualTestUseCase,
@@ -35,6 +39,7 @@ class CreateTestCubit extends Cubit<CreateTestState> {
     required this.getEditableTestQuestionsUseCase,
     required this.updateTestUseCase,
     required this.createContentUseCase,
+    required this.updateContentUseCase,
   }) : super(const CreateTestState());
 
   static const int titleMaxLength = 150;
@@ -300,21 +305,20 @@ class CreateTestCubit extends Cubit<CreateTestState> {
   }
 
   void createDraftQuestion() {
-  final questionText = state.draftQuestionText.trim();
+    final questionText = state.draftQuestionText.trim();
 
-  if (questionText.length < questionMinLength) {
-    emit(
-      state.copyWith(
-        createManualTestError:
-            'نص السؤال يجب أن يكون 10 محارف على الأقل',
-      ),
-    );
-    return;
-  }
+    if (questionText.length < questionMinLength) {
+      emit(
+        state.copyWith(
+          createManualTestError: 'نص السؤال يجب أن يكون 10 محارف على الأقل',
+        ),
+      );
+      return;
+    }
 
-  if (!state.canCreateDraftQuestion) return;
+    if (!state.canCreateDraftQuestion) return;
 
-  final editingIndex = state.editingQuestionIndex;
+    final editingIndex = state.editingQuestionIndex;
 
     final validDraftOptions = state.draftOptions
         .where((option) => option.text.trim().isNotEmpty)
@@ -387,7 +391,26 @@ class CreateTestCubit extends Cubit<CreateTestState> {
       ),
     );
   }
+void replaceContentMedia(List<PlatformFile> files) {
+  if (!state.isContentMode) return;
 
+  if (state.isContentImages) {
+    emit(
+      state.copyWith(
+        aiMediaFiles: files.take(3).toList(),
+      ),
+    );
+    return;
+  }
+
+  if (state.isContentFile && files.isNotEmpty) {
+    emit(
+      state.copyWith(
+        aiMediaFiles: [files.first],
+      ),
+    );
+  }
+}
   Future<void> fetchScientificClassifications({
     bool forceRefresh = false,
   }) async {
@@ -424,59 +447,57 @@ class CreateTestCubit extends Cubit<CreateTestState> {
     }
   }
 
-void prepareScientificCategoriesPicker() {
-  debugPrint('prepare selected ids => ${state.selectedScientificInterestIds}');
+  void prepareScientificCategoriesPicker() {
+    debugPrint(
+      'prepare selected ids => ${state.selectedScientificInterestIds}',
+    );
 
-  emit(
-    state.copyWith(
-      pendingScientificInterestIds: List<int>.from(
-        state.selectedScientificInterestIds,
+    emit(
+      state.copyWith(
+        pendingScientificInterestIds: List<int>.from(
+          state.selectedScientificInterestIds,
+        ),
       ),
-    ),
-  );
-}
-
-void togglePendingScientificInterest(int interestId) {
-  final selected = List<int>.from(state.pendingScientificInterestIds);
-
-  if (selected.contains(interestId)) {
-    selected.remove(interestId);
-  } else {
-    if (selected.length >= maxScientificCategoriesCount) return;
-    selected.add(interestId);
+    );
   }
 
-  debugPrint('toggle pending ids => $selected');
+  void togglePendingScientificInterest(int interestId) {
+    final selected = List<int>.from(state.pendingScientificInterestIds);
 
-  emit(
-    state.copyWith(
-      pendingScientificInterestIds: selected,
-    ),
-  );
-}
+    if (selected.contains(interestId)) {
+      selected.remove(interestId);
+    } else {
+      if (selected.length >= maxScientificCategoriesCount) return;
+      selected.add(interestId);
+    }
 
-void confirmScientificCategories() {
-  final selectedIds = List<int>.from(state.pendingScientificInterestIds)
-    ..sort();
+    debugPrint('toggle pending ids => $selected');
 
-  final selectedNames = _getScientificInterestNamesByIds(selectedIds);
+    emit(state.copyWith(pendingScientificInterestIds: selected));
+  }
 
-  debugPrint('confirm selected ids => $selectedIds');
-  debugPrint('confirm selected names => $selectedNames');
+  void confirmScientificCategories() {
+    final selectedIds = List<int>.from(state.pendingScientificInterestIds)
+      ..sort();
 
-  emit(
-    state.copyWith(
-      selectedScientificInterestIds: selectedIds,
-      pendingScientificInterestIds: selectedIds,
-      selectedScientificCategories: selectedNames,
-      pendingScientificCategories: selectedNames,
-    ),
-  );
+    final selectedNames = _getScientificInterestNamesByIds(selectedIds);
 
-  debugPrint(
-    'after confirm state ids => ${state.selectedScientificInterestIds}',
-  );
-}
+    debugPrint('confirm selected ids => $selectedIds');
+    debugPrint('confirm selected names => $selectedNames');
+
+    emit(
+      state.copyWith(
+        selectedScientificInterestIds: selectedIds,
+        pendingScientificInterestIds: selectedIds,
+        selectedScientificCategories: selectedNames,
+        pendingScientificCategories: selectedNames,
+      ),
+    );
+
+    debugPrint(
+      'after confirm state ids => ${state.selectedScientificInterestIds}',
+    );
+  }
   // void prepareScientificCategoriesPicker() {
   //   emit(
   //     state.copyWith(
@@ -666,9 +687,10 @@ void confirmScientificCategories() {
     debugPrint(
       'VALIDATION selectedScientificCategories => ${state.selectedScientificCategories}',
     );
-    if (state.selectedScientificInterestIds.isEmpty) {
-      return 'يرجى اختيار تصنيف علمي واحد على الأقل';
-    }
+   if (state.selectedScientificInterestIds.isEmpty &&
+    state.selectedScientificCategories.isEmpty) {
+  return 'يرجى اختيار تصنيف علمي واحد على الأقل';
+}
 
     if (state.selectedScientificInterestIds.length >
         maxScientificCategoriesCount) {
@@ -704,9 +726,9 @@ void confirmScientificCategories() {
       if (question.questionText.trim().isEmpty) {
         return 'السؤال رقم ${questionIndex + 1} لا يحتوي على نص';
       }
-if (question.questionText.trim().length < questionMinLength) {
-  return 'السؤال رقم ${questionIndex + 1} يجب أن يكون 10 محارف على الأقل';
-}
+      if (question.questionText.trim().length < questionMinLength) {
+        return 'السؤال رقم ${questionIndex + 1} يجب أن يكون 10 محارف على الأقل';
+      }
       final validOptions = question.options
           .where((option) => option.trim().isNotEmpty)
           .toList();
@@ -876,6 +898,8 @@ if (question.questionText.trim().length < questionMinLength) {
 
         aiProvider: args.aiProvider ?? '',
         initialPreviewQuestionIds: args.initialPreviewQuestionIds,
+        isContentEditMode: args.isContentEditMode,
+        editingContentId: args.editingContentId,
       ),
     );
     if (args.shouldFetchEditQuestions && args.editingTestId != null) {
@@ -1243,28 +1267,46 @@ if (question.questionText.trim().length < questionMinLength) {
 
   // Update Test
   Future<void> submitCreateOrUpdateTest() async {
-  if (state.isContentMode) {
-    await submitCreateContent();
-    return;
+    if (state.isUpdateContentMode) {
+      await submitUpdateContent();
+      return;
+    }
+
+    if (state.isContentMode) {
+      await submitCreateContent();
+      return;
+    }
+
+    if (state.isEditMode) {
+      await submitUpdateTest();
+      return;
+    }
+
+    await submitCreateManualTest();
   }
 
-  if (state.isEditMode) {
-    await submitUpdateTest();
-    return;
-  }
+  Future<void> submitUpdateContent() async {
+  if (state.isUpdateContentLoading) return;
 
-  await submitCreateManualTest();
-}
-Future<void> submitCreateContent() async {
-  if (state.isCreateContentLoading) return;
-
-  final validationError = _validateCreateContentBeforeSubmit();
+  final validationError = _validateUpdateContentBeforeSubmit();
 
   if (validationError != null) {
     emit(
       state.copyWith(
-        createContentError: validationError,
-        createContentResponse: null,
+        updateContentError: validationError,
+        updateContentResponse: null,
+      ),
+    );
+    return;
+  }
+
+  final contentId = state.editingContentId;
+
+  if (contentId == null || contentId <= 0) {
+    emit(
+      state.copyWith(
+        updateContentError: 'تعذر تحديد المحتوى المطلوب تعديله',
+        updateContentResponse: null,
       ),
     );
     return;
@@ -1272,96 +1314,198 @@ Future<void> submitCreateContent() async {
 
   emit(
     state.copyWith(
-      isCreateContentLoading: true,
-      createContentError: null,
-      createContentResponse: null,
+      isUpdateContentLoading: true,
+      updateContentError: null,
+      updateContentResponse: null,
     ),
   );
 
   try {
-    final params = _buildCreateContentParams();
+    final params = _buildUpdateContentParams(contentId: contentId);
 
-    final response = await createContentUseCase(params: params);
+    final response = await updateContentUseCase(params);
 
     emit(
       state.copyWith(
-        isCreateContentLoading: false,
-        createContentError: null,
-        createContentResponse: response,
+        isUpdateContentLoading: false,
+        updateContentError: null,
+        updateContentResponse: response,
       ),
     );
   } catch (e) {
     emit(
       state.copyWith(
-        isCreateContentLoading: false,
-        createContentError: e.toString(),
+        isUpdateContentLoading: false,
+        updateContentError: e.toString(),
       ),
     );
   }
 }
-
-String? _validateCreateContentBeforeSubmit() {
-  if (!state.isContentMode) {
-    return 'نوع العملية غير صالح';
-  }
-
-  if (state.title.trim().isEmpty) {
-    return 'يرجى إدخال عنوان المحتوى';
-  }
-
-  if (state.description.trim().isEmpty) {
-    return 'يرجى إدخال وصف المحتوى';
-  }
-
-  if (state.isContentImages) {
-    if (state.aiMediaFiles.isEmpty) {
-      return 'يرجى إرفاق صورة واحدة على الأقل';
-    }
-
-    if (state.aiMediaFiles.length > 3) {
-      return 'يمكن إرفاق ثلاث صور فقط';
-    }
-  }
-
-  if (state.isContentFile && state.aiMediaFiles.length != 1) {
-    return 'يرجى إرفاق ملف واحد فقط';
-  }
-
-  if (state.selectedScientificInterestIds.isEmpty) {
-    return 'يرجى اختيار تصنيف علمي واحد على الأقل';
-  }
-
-  if (state.selectedScientificInterestIds.length > maxScientificCategoriesCount) {
-    return 'يمكن اختيار ثلاثة تصنيفات علمية فقط';
-  }
-
-  if (state.selectedAcademicLevel.trim().isEmpty) {
-    return 'يرجى اختيار المستوى الدراسي';
-  }
-
-  return null;
-}
-
-CreateContentParams _buildCreateContentParams() {
-  return CreateContentParams(
+UpdateContentParams _buildUpdateContentParams({
+  required int contentId,
+}) {
+  return UpdateContentParams(
+    contentId: contentId,
     title: state.title.trim(),
     description: state.description.trim(),
-    contentKind: state.isContentImages ? 'صور مجمعة' : 'ملف',
-    assets: state.aiMediaFiles,
     interestIds: state.selectedScientificInterestIds,
     targetLevel: state.selectedAcademicLevel.trim(),
     visibilityType: state.isPublished ? 'عام' : 'خاص',
+    mediaFiles: state.aiMediaFiles,
+    
   );
 }
+  String? _validateUpdateContentBeforeSubmit() {
+    if (!state.isUpdateContentMode) {
+      return 'نوع العملية غير صالح';
+    }
 
-void clearCreateContentResult() {
+    if (state.title.trim().isEmpty) {
+      return 'يرجى إدخال عنوان المحتوى';
+    }
+
+    if (state.description.trim().isEmpty) {
+      return 'يرجى إدخال وصف المحتوى';
+    }
+
+    if (state.selectedScientificInterestIds.isEmpty) {
+      return 'يرجى اختيار تصنيف علمي واحد على الأقل';
+    }
+
+   final selectedClassificationCount =
+    state.selectedScientificInterestIds.isNotEmpty
+        ? state.selectedScientificInterestIds.length
+        : state.selectedScientificCategories.length;
+
+if (selectedClassificationCount > maxScientificCategoriesCount) {
+  return 'يمكن اختيار ثلاثة تصنيفات علمية فقط';
+}
+
+    if (state.selectedAcademicLevel.trim().isEmpty) {
+      return 'يرجى اختيار المستوى الدراسي';
+    }
+
+    if (!state.hasContentMedia) {
+      return state.isContentImages
+          ? 'يرجى إرفاق صورة واحدة على الأقل'
+          : 'يرجى إرفاق ملف واحد';
+    }
+
+    return null;
+  }
+  void clearUpdateContentResult() {
   emit(
     state.copyWith(
-      createContentError: null,
-      createContentResponse: null,
+      updateContentError: null,
+      updateContentResponse: null,
     ),
   );
 }
+
+  Future<void> submitCreateContent() async {
+    if (state.isCreateContentLoading) return;
+
+    final validationError = _validateCreateContentBeforeSubmit();
+
+    if (validationError != null) {
+      emit(
+        state.copyWith(
+          createContentError: validationError,
+          createContentResponse: null,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        isCreateContentLoading: true,
+        createContentError: null,
+        createContentResponse: null,
+      ),
+    );
+
+    try {
+      final params = _buildCreateContentParams();
+
+      final response = await createContentUseCase(params: params);
+
+      emit(
+        state.copyWith(
+          isCreateContentLoading: false,
+          createContentError: null,
+          createContentResponse: response,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isCreateContentLoading: false,
+          createContentError: e.toString(),
+        ),
+      );
+    }
+  }
+
+  String? _validateCreateContentBeforeSubmit() {
+    if (!state.isContentMode) {
+      return 'نوع العملية غير صالح';
+    }
+
+    if (state.title.trim().isEmpty) {
+      return 'يرجى إدخال عنوان المحتوى';
+    }
+
+    if (state.description.trim().isEmpty) {
+      return 'يرجى إدخال وصف المحتوى';
+    }
+
+    if (state.isContentImages) {
+      if (state.aiMediaFiles.isEmpty) {
+        return 'يرجى إرفاق صورة واحدة على الأقل';
+      }
+
+      if (state.aiMediaFiles.length > 3) {
+        return 'يمكن إرفاق ثلاث صور فقط';
+      }
+    }
+
+    if (state.isContentFile && state.aiMediaFiles.length != 1) {
+      return 'يرجى إرفاق ملف واحد فقط';
+    }
+
+    if (state.selectedScientificInterestIds.isEmpty) {
+      return 'يرجى اختيار تصنيف علمي واحد على الأقل';
+    }
+
+    if (state.selectedScientificInterestIds.length >
+        maxScientificCategoriesCount) {
+      return 'يمكن اختيار ثلاثة تصنيفات علمية فقط';
+    }
+
+    if (state.selectedAcademicLevel.trim().isEmpty) {
+      return 'يرجى اختيار المستوى الدراسي';
+    }
+
+    return null;
+  }
+
+  CreateContentParams _buildCreateContentParams() {
+    return CreateContentParams(
+      title: state.title.trim(),
+      description: state.description.trim(),
+      contentKind: state.isContentImages ? 'صور مجمعة' : 'ملف',
+      assets: state.aiMediaFiles,
+      interestIds: state.selectedScientificInterestIds,
+      targetLevel: state.selectedAcademicLevel.trim(),
+      visibilityType: state.isPublished ? 'عام' : 'خاص',
+    );
+  }
+
+  void clearCreateContentResult() {
+    emit(state.copyWith(createContentError: null, createContentResponse: null));
+  }
+
   Future<void> submitUpdateTest() async {
     if (state.isUpdateTestLoading) return;
 

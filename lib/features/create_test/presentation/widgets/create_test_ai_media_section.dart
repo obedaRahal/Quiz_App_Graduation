@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -26,7 +27,7 @@ class CreateTestAiMediaSection extends StatelessWidget {
       builder: (context, state) {
         final isImages = state.isAiImages || state.isContentImages;
         final hasLocalMedia = state.aiMediaFiles.isNotEmpty;
-        final hasExistingMedia = state.existingAiMedia.isNotEmpty;
+final hasExistingMedia = state.existingAiMedia.isNotEmpty;
 
         if (!state.hasMediaSection || (!hasLocalMedia && !hasExistingMedia)) {
           return const SizedBox.shrink();
@@ -37,20 +38,24 @@ class CreateTestAiMediaSection extends StatelessWidget {
           children: [
             _MediaHeader(
               isImages: isImages,
-              isEditMode: state.isEditMode,
+              isEditMode: state.isUpdateContentMode,
               isContentMode: state.isContentMode,
+              onEditMediaTap: state.isContentMode
+                  ? () => _pickReplacementMedia(context, isImages: isImages)
+                  : null,
             ),
-
             SizedBox(height: SizeConfig.h(0.012)),
 
-            if (hasExistingMedia)
-              isImages
-                  ? _ExistingImagesPreview(media: state.existingAiMedia)
-                  : _ExistingFilePreview(media: state.existingAiMedia.first)
-            else
-              isImages
-                  ? _ImagesPreview(files: state.aiMediaFiles)
-                  : _FilePreview(file: state.aiMediaFiles.first),
+          if (hasLocalMedia)
+  isImages
+      ? _ImagesPreview(files: state.aiMediaFiles)
+      : _FilePreview(file: state.aiMediaFiles.first)
+else if (hasExistingMedia)
+  isImages
+      ? _ExistingImagesPreview(media: state.existingAiMedia)
+      : _ExistingFilePreview(media: state.existingAiMedia.first)
+else
+  const SizedBox.shrink(),
           ],
         );
       },
@@ -62,11 +67,12 @@ class _MediaHeader extends StatelessWidget {
   final bool isImages;
   final bool isEditMode;
   final bool isContentMode;
-
+  final VoidCallback? onEditMediaTap;
   const _MediaHeader({
     required this.isImages,
     required this.isEditMode,
     required this.isContentMode,
+    this.onEditMediaTap,
   });
 
   @override
@@ -77,6 +83,7 @@ class _MediaHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          textDirection: TextDirection.rtl,
           children: [
             Icon(
               isImages ? Icons.image_outlined : Icons.article_outlined,
@@ -95,6 +102,33 @@ class _MediaHeader extends StatelessWidget {
                   : AppPalette.textColorInHome,
               textAlign: TextAlign.right,
             ),
+            if (isContentMode && onEditMediaTap != null) ...[
+              const Spacer(),
+              InkWell(
+                onTap: onEditMediaTap,
+                borderRadius: BorderRadius.circular(999),
+                child: Container(
+                  width: SizeConfig.w(0.085),
+                  height: SizeConfig.w(0.085),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? AppPalette.greyMediumDark
+                        : AppPalette.primarySoft,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isDark
+                          ? AppPalette.borderFieldColorNDark
+                          : AppPalette.borderFieldColorNLight,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.edit_outlined,
+                    size: SizeConfig.text(0.043),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
 
@@ -373,4 +407,38 @@ class _MediaFileTile extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> _pickReplacementMedia(
+  BuildContext context, {
+  required bool isImages,
+}) async {
+  final cubit = context.read<CreateTestCubit>();
+
+  if (isImages) {
+    final images = await ImagePicker().pickMultiImage();
+
+    if (images.isEmpty) return;
+
+    final limitedImages = images.take(3).map((image) {
+      return PlatformFile(
+        name: image.name,
+        path: image.path,
+        size: File(image.path).lengthSync(),
+      );
+    }).toList();
+
+    cubit.replaceContentMedia(limitedImages);
+    return;
+  }
+
+  final result = await FilePicker.platform.pickFiles(
+    type: FileType.custom,
+    allowedExtensions: ['pdf'],
+    allowMultiple: false,
+  );
+
+  if (result == null || result.files.isEmpty) return;
+
+  cubit.replaceContentMedia([result.files.first]);
 }

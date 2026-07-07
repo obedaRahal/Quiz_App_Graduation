@@ -16,21 +16,24 @@ class CreateTestSubmitButton extends StatelessWidget {
       buildWhen: (previous, current) {
         return previous.isCreateContentLoading !=
                 current.isCreateContentLoading ||
+                previous.isUpdateContentLoading != current.isUpdateContentLoading ||
+previous.isContentEditMode != current.isContentEditMode ||
             previous.creationMode != current.creationMode ||
             previous.canSubmit != current.canSubmit ||
             previous.isCreateManualTestLoading !=
                 current.isCreateManualTestLoading ||
             previous.isUpdateTestLoading != current.isUpdateTestLoading ||
             previous.isEditMode != current.isEditMode;
+            
       },
       builder: (context, state) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final appColors = context.appColors;
-        final buttonText = state.isEditMode
-            ? 'حفظ التعديلات'
-            : state.isContentMode
-            ? 'حفظ ومشاركة'
-            : 'حفظ ومشاركة';
+      final buttonText = state.isUpdateContentMode
+    ? 'حفظ التعديلات'
+    : state.isEditMode
+        ? 'حفظ التعديلات'
+        : 'حفظ ومشاركة';
 
         //final canPress = state.canSubmit && !state.isCreateManualTestLoading;
 
@@ -47,9 +50,11 @@ class CreateTestSubmitButton extends StatelessWidget {
         final disabledTextColor = isDark
             ? AppPalette.grey2Dark
             : AppPalette.white;
-        final isLoading = state.isContentMode
-            ? state.isCreateContentLoading
-            : state.isEditMode
+       final isLoading = state.isUpdateContentMode
+    ? state.isUpdateContentLoading
+    : state.isContentMode
+        ? state.isCreateContentLoading
+        : state.isEditMode
             ? state.isUpdateTestLoading
             : state.isCreateManualTestLoading;
 

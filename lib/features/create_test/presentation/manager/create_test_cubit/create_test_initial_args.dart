@@ -40,6 +40,8 @@ class CreateTestInitialArgs {
   final List<CreateTestExistingMediaState> existingAiMedia;
   final bool shouldFetchEditQuestions;
   final List<int> initialPreviewQuestionIds;
+  final bool isContentEditMode;
+  final int? editingContentId;
   const CreateTestInitialArgs({
     this.mode = CreateTestCreationMode.manual,
     this.mediaFiles = const [],
@@ -66,26 +68,32 @@ class CreateTestInitialArgs {
     this.existingAiMedia = const [],
     this.shouldFetchEditQuestions = false,
     this.initialPreviewQuestionIds = const [],
+    this.isContentEditMode = false,
+    this.editingContentId,
   });
 
-bool get isAiMode {
-  return mode == CreateTestCreationMode.aiImages ||
-      mode == CreateTestCreationMode.aiFile;
+  bool get isAiMode {
+    return mode == CreateTestCreationMode.aiImages ||
+        mode == CreateTestCreationMode.aiFile;
+  }
+
+  bool get isAiImages => mode == CreateTestCreationMode.aiImages;
+
+  bool get isAiFile => mode == CreateTestCreationMode.aiFile;
+
+  bool get isContentMode {
+    return mode == CreateTestCreationMode.contentImages ||
+        mode == CreateTestCreationMode.contentFile;
+  }
+
+  bool get isContentImages => mode == CreateTestCreationMode.contentImages;
+
+  bool get isContentFile => mode == CreateTestCreationMode.contentFile;
+bool get isContentEdit {
+  return isContentEditMode &&
+      (mode == CreateTestCreationMode.contentImages ||
+       mode == CreateTestCreationMode.contentFile);
 }
-
-bool get isAiImages => mode == CreateTestCreationMode.aiImages;
-
-bool get isAiFile => mode == CreateTestCreationMode.aiFile;
-
-bool get isContentMode {
-  return mode == CreateTestCreationMode.contentImages ||
-      mode == CreateTestCreationMode.contentFile;
-}
-
-bool get isContentImages => mode == CreateTestCreationMode.contentImages;
-
-bool get isContentFile => mode == CreateTestCreationMode.contentFile;
-
   CreateTestInitialArgs copyWith({
     CreateTestCreationMode? mode,
     List<PlatformFile>? mediaFiles,
@@ -112,6 +120,8 @@ bool get isContentFile => mode == CreateTestCreationMode.contentFile;
     List<CreateTestExistingMediaState>? existingAiMedia,
     bool? shouldFetchEditQuestions,
     List<int>? initialPreviewQuestionIds,
+    bool? isContentEditMode,
+    int? editingContentId,
   }) {
     return CreateTestInitialArgs(
       mode: mode ?? this.mode,
@@ -143,8 +153,10 @@ bool get isContentFile => mode == CreateTestCreationMode.contentFile;
       existingAiMedia: existingAiMedia ?? this.existingAiMedia,
       shouldFetchEditQuestions:
           shouldFetchEditQuestions ?? this.shouldFetchEditQuestions,
-          initialPreviewQuestionIds:
-    initialPreviewQuestionIds ?? this.initialPreviewQuestionIds,
+      initialPreviewQuestionIds:
+          initialPreviewQuestionIds ?? this.initialPreviewQuestionIds,
+      isContentEditMode: isContentEditMode ?? this.isContentEditMode,
+      editingContentId: editingContentId ?? this.editingContentId,
     );
   }
 }
