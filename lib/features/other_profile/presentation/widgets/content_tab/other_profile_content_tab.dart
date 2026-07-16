@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_content_card_shimmer.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/content_tab/other_profile_content_card.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/content_tab/other_profile_content_filter_section.dart';
 class OtherProfileContentTab extends StatelessWidget {
@@ -41,7 +42,7 @@ class OtherProfileContentTab extends StatelessWidget {
         SizedBox(height: SizeConfig.h(0.018)),
 
         if (isLoading)
-          shimmerLoader ?? const Center(child: CircularProgressIndicator())
+          shimmerLoader ?? ContentCardsShimmerList()
         else if (contents.isEmpty)
           Center(
             child: Padding(
@@ -74,7 +75,7 @@ class OtherProfileContentTab extends StatelessWidget {
               if (isLoadingMore)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
-                  child: const Center(child: CircularProgressIndicator()),
+                  child: const Center(child: OtherProfileContentCardShimmer()),
                 ),
             ],
           ),

@@ -79,6 +79,7 @@ class AppImage {
   static String get jenderIcon => '$_baseIcon/jenderIcon.svg';
   static String get locationIcon => '$_baseIcon/locationIcon.svg';
   static String get folderIcon => '$_baseIcon/folder.svg';
+  static String get emptyFolder => '$_baseIcon/emptyFolder.svg';
 
   /////////////////////////////////////////////////////////////////
   ////////////////////// darkkkk image ////////////////////////////

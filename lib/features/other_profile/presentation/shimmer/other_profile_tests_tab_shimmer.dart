@@ -4,22 +4,33 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class OtherProfileTestsTabShimmer extends StatelessWidget {
-  const OtherProfileTestsTabShimmer({super.key});
+  final int count;
+  final double horizonalPadding;
+  const OtherProfileTestsTabShimmer({
+    super.key,
+    this.count = 3,
+    this.horizonalPadding = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-
-        ...List.generate(
-          3,
-          (_) => Padding(
-            padding: EdgeInsets.only(bottom: SizeConfig.h(0.014)),
-            child: const OtherProfileTestCardShimmer(),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ...List.generate(
+            count,
+            (_) => Padding(
+              padding: EdgeInsets.only(
+                bottom: SizeConfig.h(0.014),
+                left: horizonalPadding,
+                right: horizonalPadding,
+              ),
+              child: const OtherProfileTestCardShimmer(),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -166,7 +177,6 @@ class _InfoPanelShimmer extends StatelessWidget {
                   height: SizeConfig.h(0.022),
                   borderRadius: 4,
                 ),
-
               ],
             ),
           ],

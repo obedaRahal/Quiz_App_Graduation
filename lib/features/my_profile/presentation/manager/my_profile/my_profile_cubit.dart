@@ -3,28 +3,44 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/entities/all_interests_response_entity.dart';
+import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/create_edit_folder/my_profile_picker_tests_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_filtered_tests_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_folders_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_library_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/delete_my_profile_folder_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/delete_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_academic_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_personal_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_scientific_interests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_%5Bicker_search_tests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_folder_content_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_folders_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_library_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_picker_tests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/filter_my_profile_tests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/delete_my_profile_folder_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/delete_my_profile_picture_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_academic_info_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_personal_info_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_picture_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/edit_my_profile_scientific_interests_params.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/fetch_my_profile_folder_content_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/fetch_my_profile_folders_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/fetch_my_profile_library_params.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/fetch_my_profile_picker_search_tests_params.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/fetch_my_profile_picker_tests_params.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/filter_my_profile_tests_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/get_my_profile_personal_info_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/get_my_profile_personal_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/search_my_profile_library_params.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/search_my_profile_library_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile_folder_editor/my_profile_folder_editor_state.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/personal_info_tab/bottom_sheet/acadimic_info/my_profile_academic_info_bottom_sheet.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_share_link_use_case.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/get_other_profile_share_link_params.dart';
 import 'my_profile_state.dart';
 
 class MyProfileCubit extends Cubit<MyProfileState> {
@@ -43,6 +59,20 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
   final FetchMyProfileFoldersUseCase fetchMyProfileFoldersUseCase;
 
+  final FetchMyProfileFolderContentUseCase fetchMyProfileFolderContentUseCase;
+
+  final DeleteMyProfileFolderUseCase deleteMyProfileFolderUseCase;
+
+  final FetchMyProfilePickerTestsUseCase fetchMyProfileTestsUseCase;
+  final FetchMyProfilePickerSearchTestsUseCase searchMyProfileTestsUseCase;
+  Timer? _testsSearchDebounce;
+
+  final FilterMyProfileTestsUseCase filterMyProfileTestsUseCase;
+  final GetAllInterestsUseCase getAllInterestsUseCase;
+  bool _isFetchingFilteredTestsMore = false;
+
+  final GetOtherProfileShareLinkUseCase getMyProfileShareLinkUseCase;
+
   MyProfileCubit({
     required this.getMyProfilePersonalInfoUseCase,
     required this.editMyProfilePersonalInfoUseCase,
@@ -55,6 +85,15 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     required this.searchMyProfileLibraryUseCase,
 
     required this.fetchMyProfileFoldersUseCase,
+    required this.fetchMyProfileFolderContentUseCase,
+    required this.deleteMyProfileFolderUseCase,
+    required this.searchMyProfileTestsUseCase,
+    required this.fetchMyProfileTestsUseCase,
+
+    required this.filterMyProfileTestsUseCase,
+    required this.getAllInterestsUseCase,
+
+    required this.getMyProfileShareLinkUseCase,
   }) : super(const MyProfileState()) {
     debugPrint("============ MyProfileCubit INIT ============");
   }
@@ -115,11 +154,49 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     debugPrint("=================================================");
   }
 
-  void changeSelectedTab(MyProfileTab tab) {
+  Future<void> changeSelectedTab(MyProfileTab tab) async {
+    if (state.selectedTab == tab) return;
+
     debugPrint("============ MyProfileCubit.changeSelectedTab ============");
     debugPrint("→ selected tab: $tab");
 
-    emit(state.copyWith(selectedTab: tab));
+    emit(state.copyWith(selectedTab: tab, clearError: true));
+
+    switch (tab) {
+      case MyProfileTab.content:
+        final shouldFetchContent =
+            state.libraryStatus == FetchMyProfileStatus.initial &&
+            state.libraryResponse == null;
+
+        if (shouldFetchContent) {
+          await fetchMyProfileLibraryInitial();
+        }
+        break;
+
+      case MyProfileTab.folders:
+        final shouldFetchFolders =
+            state.foldersStatus == FetchMyProfileStatus.initial &&
+            state.foldersResponse == null;
+
+        if (shouldFetchFolders) {
+          await fetchMyProfileFoldersInitial();
+        }
+        break;
+
+      case MyProfileTab.tests:
+        final shouldFetchTests =
+            state.testsStatus == MyProfileTestsStatus.initial &&
+            state.testsResponse == null;
+
+        if (shouldFetchTests) {
+          await fetchMyProfileTestsInitial();
+        }
+        break;
+
+      case MyProfileTab.personalInfo:
+        //case MyProfileTab.achievements:
+        break;
+    }
 
     debugPrint("=================================================");
   }
@@ -1113,12 +1190,6 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     await fetchMyProfileLibraryInitial();
   }
 
-  @override
-  Future<void> close() {
-    _librarySearchDebounce?.cancel();
-    return super.close();
-  }
-
   ///////////////////////// folder Api /////////////////
   Future<void> changeMyProfileFoldersTab(MyProfileFoldersTabEnum tab) async {
     if (state.selectedFoldersTab == tab) return;
@@ -1281,5 +1352,924 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     );
 
     debugPrint("=================================================");
+  }
+
+  Future<void> fetchMyProfileFolderContent({required int folderId}) async {
+    debugPrint(
+      "============ MyProfileCubit.fetchMyProfileFolderContent ============",
+    );
+    debugPrint("→ params: {folderId: $folderId}");
+
+    if (state.isFolderContentLoading &&
+        state.activeFolderContentId == folderId) {
+      debugPrint("✗ folder content already loading for same folder");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        folderContentStatus: FetchMyProfileFolderContentStatus.loading,
+        activeFolderContentId: folderId,
+        clearFolderContentResponse: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await fetchMyProfileFolderContentUseCase(
+      FetchMyProfileFolderContentParams(folderId: folderId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ fetchMyProfileFolderContent failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            folderContentStatus: FetchMyProfileFolderContentStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ fetchMyProfileFolderContent success");
+        debugPrint("→ tests count: ${response.data.length}");
+
+        emit(
+          state.copyWith(
+            folderContentStatus: FetchMyProfileFolderContentStatus.success,
+            folderContentResponse: response,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetMyProfileFolderContentState() {
+    emit(
+      state.copyWith(
+        folderContentStatus: FetchMyProfileFolderContentStatus.initial,
+        clearFolderContentResponse: true,
+        clearActiveFolderContentId: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  Future<void> deleteMyProfileFolder({required int folderId}) async {
+    debugPrint(
+      "============ MyProfileCubit.deleteMyProfileFolder ============",
+    );
+    debugPrint("→ params: {folderId: $folderId}");
+
+    if (state.isDeleteFolderLoading) {
+      debugPrint("✗ another folder delete action is already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final currentResponse = state.foldersResponse;
+
+    if (currentResponse == null) {
+      debugPrint("✗ foldersResponse is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    final folderExists = currentResponse.data.any(
+      (folder) => folder.id == folderId,
+    );
+
+    if (!folderExists) {
+      debugPrint("✗ folder does not exist locally");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        deleteFolderStatus: DeleteMyProfileFolderStatus.loading,
+        activeDeletingFolderId: folderId,
+        clearFolderActionMessage: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await deleteMyProfileFolderUseCase(
+      DeleteMyProfileFolderParams(folderId: folderId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ deleteMyProfileFolder failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            deleteFolderStatus: DeleteMyProfileFolderStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearActiveDeletingFolderId: true,
+            clearFolderActionMessage: true,
+          ),
+        );
+      },
+      (response) {
+        final updatedFolders = currentResponse.data
+            .where((folder) => folder.id != folderId)
+            .toList();
+
+        final updatedResponse = MyProfileFoldersEntity(
+          success: currentResponse.success,
+          message: currentResponse.message,
+          data: updatedFolders,
+          meta: currentResponse.meta,
+          statusCode: currentResponse.statusCode,
+        );
+
+        debugPrint("✓ deleteMyProfileFolder success");
+        debugPrint("→ deleted folder id: $folderId");
+        debugPrint(
+          "→ folders count: ${currentResponse.data.length} "
+          "→ ${updatedFolders.length}",
+        );
+
+        emit(
+          state.copyWith(
+            deleteFolderStatus: DeleteMyProfileFolderStatus.success,
+            foldersResponse: updatedResponse,
+            folderActionMessage: response.message.isNotEmpty
+                ? response.message
+                : 'تم حذف المجلد بنجاح',
+            clearActiveDeletingFolderId: true,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetDeleteMyProfileFolderState() {
+    emit(
+      state.copyWith(
+        deleteFolderStatus: DeleteMyProfileFolderStatus.initial,
+        clearActiveDeletingFolderId: true,
+        clearFolderActionMessage: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  /////////////////////////// TEST tab //////////////////////////
+  /////////////////////////// TEST tab //////////////////////////
+  /////////////////////////// TEST tab //////////////////////////
+  /////////////////////////// TEST tab //////////////////////////
+  /////////////////////////// TEST tab /////////////////////////
+
+  Future<void> fetchMyProfileTestsInitial() async {
+    debugPrint(
+      "============ MyProfileCubit.fetchMyProfileTestsInitial ============",
+    );
+
+    final profile = state.profile;
+
+    if (profile == null) {
+      debugPrint("✗ profile is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    debugPrint(
+      "→ params: "
+      "{userId: ${profile.userId}, "
+      "tab: ${state.selectedTestsTab.name}}",
+    );
+
+    emit(
+      state.copyWith(
+        testsStatus: MyProfileTestsStatus.loading,
+        testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.initial,
+        clearTestsResponse: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await fetchMyProfileTestsUseCase(
+      FetchMyProfilePickerTestsParams(
+        userId: profile.userId,
+        tab: state.selectedTestsTab.name,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ fetchMyProfileTestsInitial failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            testsStatus: MyProfileTestsStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ fetchMyProfileTestsInitial success");
+        debugPrint("→ tests count: ${response.data.length}");
+        debugPrint("→ hasMorePages: ${response.meta.hasMorePages}");
+        debugPrint("→ nextCursor: ${response.meta.nextCursor}");
+
+        emit(
+          state.copyWith(
+            testsStatus: MyProfileTestsStatus.success,
+            testsResponse: response,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> changeMyProfileTestsTab(MyProfilePickerTestsTab tab) async {
+    if (state.selectedTestsTab == tab) return;
+
+    debugPrint(
+      "============ MyProfileCubit.changeMyProfileTestsTab ============",
+    );
+    debugPrint("→ from: ${state.selectedTestsTab.apiValue}");
+    debugPrint("→ to: ${tab.apiValue}");
+
+    _testsSearchDebounce?.cancel();
+
+    emit(
+      state.copyWith(
+        selectedTestsTab: tab,
+
+        testsSearchQuery: '',
+        testsSearchStatus: MyProfileTestsSearchStatus.initial,
+        testsSearchLoadMoreStatus: MyProfileTestsSearchLoadMoreStatus.initial,
+        clearTestsSearchResponse: true,
+        testsSearchPage: 1,
+        testsSearchHasMorePages: true,
+
+        testsStatus: MyProfileTestsStatus.loading,
+        testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.initial,
+        clearTestsResponse: true,
+
+        clearError: true,
+        isTestsFilterMode: false,
+        testsFilterStatus: MyProfileTestsFilterStatus.initial,
+        testsFilterLoadMoreStatus: MyProfileTestsFilterLoadMoreStatus.initial,
+        clearFilteredTestsResponse: true,
+        clearActiveTestsFilterParams: true,
+      ),
+    );
+
+    await fetchMyProfileTestsInitial();
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> fetchMoreMyProfileTestsIfNeeded() async {
+    final response = state.testsResponse;
+
+    if (state.isTestsLoading ||
+        state.isTestsLoadingMore ||
+        response == null ||
+        !response.meta.hasMorePages) {
+      return;
+    }
+
+    final profile = state.profile;
+    if (profile == null) return;
+
+    final cursor = response.meta.nextCursor;
+
+    if (cursor == null || cursor.trim().isEmpty) {
+      return;
+    }
+
+    debugPrint(
+      "============ MyProfileCubit.fetchMoreMyProfileTestsIfNeeded ============",
+    );
+    debugPrint("→ tab: ${state.selectedTestsTab.apiValue}");
+    debugPrint("→ cursor: $cursor");
+
+    emit(
+      state.copyWith(
+        testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await fetchMyProfileTestsUseCase(
+      FetchMyProfilePickerTestsParams(
+        userId: profile.userId,
+        tab: state.selectedTestsTab.apiValue,
+        cursor: cursor,
+      ),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ fetchMoreMyProfileTestsIfNeeded failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (newResponse) {
+        final updatedResponse = MyProfilePickerTestsEntity(
+          success: newResponse.success,
+          message: newResponse.message,
+          data: [...response.data, ...newResponse.data],
+          meta: newResponse.meta,
+          statusCode: newResponse.statusCode,
+        );
+
+        debugPrint("✓ fetchMoreMyProfileTestsIfNeeded success");
+        debugPrint("→ old count: ${response.data.length}");
+        debugPrint("→ new count: ${newResponse.data.length}");
+        debugPrint("→ total count: ${updatedResponse.data.length}");
+
+        emit(
+          state.copyWith(
+            testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.success,
+            testsResponse: updatedResponse,
+            clearError: true,
+
+            isTestsFilterMode: false,
+
+            testsFilterStatus: MyProfileTestsFilterStatus.initial,
+
+            testsFilterLoadMoreStatus:
+                MyProfileTestsFilterLoadMoreStatus.initial,
+
+            clearFilteredTestsResponse: true,
+            clearActiveTestsFilterParams: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void changeMyProfileTestsSearchQuery(String value) {
+    if (state.isTestsFilterMode) {
+      clearMyProfileTestsFilter();
+    }
+    final query = value.trim();
+
+    emit(state.copyWith(testsSearchQuery: value, clearError: true));
+
+    _testsSearchDebounce?.cancel();
+
+    _testsSearchDebounce = Timer(const Duration(milliseconds: 450), () {
+      if (query.isEmpty) {
+        clearMyProfileTestsSearch();
+        return;
+      }
+
+      searchMyProfileTestsInitial(query: query);
+    });
+  }
+
+  Future<void> searchMyProfileTestsInitial({required String query}) async {
+    final cleanQuery = query.trim();
+
+    if (cleanQuery.isEmpty) return;
+
+    debugPrint(
+      "============ MyProfileCubit.searchMyProfileTestsInitial ============",
+    );
+    debugPrint("→ query: $cleanQuery");
+    debugPrint("→ page: 1");
+
+    emit(
+      state.copyWith(
+        testsSearchStatus: MyProfileTestsSearchStatus.loading,
+        testsSearchLoadMoreStatus: MyProfileTestsSearchLoadMoreStatus.initial,
+        clearTestsSearchResponse: true,
+        testsSearchPage: 1,
+        testsSearchHasMorePages: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await searchMyProfileTestsUseCase(
+      FetchMyProfilePickerSearchTestsParams(query: cleanQuery, page: 1),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ searchMyProfileTestsInitial failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            testsSearchStatus: MyProfileTestsSearchStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint("✓ searchMyProfileTestsInitial success");
+        debugPrint("→ count: ${response.data.length}");
+
+        emit(
+          state.copyWith(
+            testsSearchStatus: MyProfileTestsSearchStatus.success,
+            testsSearchResponse: response,
+            testsSearchPage: 1,
+
+            testsSearchHasMorePages: response.data.isNotEmpty,
+
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> fetchMoreMyProfileTestsSearchIfNeeded() async {
+    final query = state.testsSearchQuery.trim();
+    final currentResponse = state.testsSearchResponse;
+
+    if (query.isEmpty ||
+        state.isTestsSearchLoading ||
+        state.isTestsSearchLoadingMore ||
+        currentResponse == null ||
+        !state.testsSearchHasMorePages) {
+      return;
+    }
+
+    final nextPage = state.testsSearchPage + 1;
+
+    debugPrint(
+      "============ MyProfileCubit.fetchMoreMyProfileTestsSearchIfNeeded ============",
+    );
+    debugPrint("→ query: $query");
+    debugPrint("→ page: $nextPage");
+
+    emit(
+      state.copyWith(
+        testsSearchLoadMoreStatus: MyProfileTestsSearchLoadMoreStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final result = await searchMyProfileTestsUseCase(
+      FetchMyProfilePickerSearchTestsParams(query: query, page: nextPage),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ fetchMoreMyProfileTestsSearchIfNeeded failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            testsSearchLoadMoreStatus:
+                MyProfileTestsSearchLoadMoreStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (newResponse) {
+        final existingIds = currentResponse.data.map((test) => test.id).toSet();
+
+        final uniqueNewTests = newResponse.data
+            .where((test) => !existingIds.contains(test.id))
+            .toList();
+
+        final updatedResponse = MyProfilePickerSearchTestsEntity(
+          success: newResponse.success,
+          message: newResponse.message,
+          data: [...currentResponse.data, ...uniqueNewTests],
+          meta: newResponse.meta,
+          statusCode: newResponse.statusCode,
+        );
+
+        final hasMorePages = newResponse.data.isNotEmpty;
+
+        debugPrint("✓ fetchMoreMyProfileTestsSearchIfNeeded success");
+        debugPrint("→ received count: ${newResponse.data.length}");
+        debugPrint("→ unique count: ${uniqueNewTests.length}");
+        debugPrint("→ page: $nextPage");
+        debugPrint("→ hasMorePages: $hasMorePages");
+
+        emit(
+          state.copyWith(
+            testsSearchLoadMoreStatus:
+                MyProfileTestsSearchLoadMoreStatus.success,
+            testsSearchResponse: updatedResponse,
+            testsSearchPage: nextPage,
+            testsSearchHasMorePages: hasMorePages,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void clearMyProfileTestsSearch() {
+    _testsSearchDebounce?.cancel();
+
+    emit(
+      state.copyWith(
+        testsSearchQuery: '',
+        testsSearchStatus: MyProfileTestsSearchStatus.initial,
+        testsSearchLoadMoreStatus: MyProfileTestsSearchLoadMoreStatus.initial,
+        clearTestsSearchResponse: true,
+        testsSearchPage: 1,
+        testsSearchHasMorePages: true,
+        clearError: true,
+      ),
+    );
+  }
+
+  ////////////////// filter /////////////////////
+  ////////////////// filter /////////////////////
+  ////////////////// filter /////////////////////
+  Future<void> getMyProfileTestsFilterInterests() async {
+    if (state.isTestsFilterInterestsLoading) {
+      return;
+    }
+
+    if (state.testsFilterInterestCategories.isNotEmpty) {
+      return;
+    }
+
+    debugPrint(
+      "============ MyProfileCubit.getMyProfileTestsFilterInterests ============",
+    );
+
+    emit(
+      state.copyWith(
+        isTestsFilterInterestsLoading: true,
+        clearTestsFilterInterestsError: true,
+      ),
+    );
+
+    try {
+      final response = await getAllInterestsUseCase();
+
+      debugPrint("✓ getMyProfileTestsFilterInterests success");
+      debugPrint("→ categories count: ${response.categories.length}");
+
+      emit(
+        state.copyWith(
+          isTestsFilterInterestsLoading: false,
+          testsFilterInterestCategories: response.categories,
+          clearTestsFilterInterestsError: true,
+        ),
+      );
+    } catch (e) {
+      debugPrint("✗ getMyProfileTestsFilterInterests error: $e");
+
+      emit(
+        state.copyWith(
+          isTestsFilterInterestsLoading: false,
+          testsFilterInterestsError: e.toString(),
+        ),
+      );
+    }
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> applyMyProfileTestsFilter(
+    FilterMyProfileTestsParams params,
+  ) async {
+    debugPrint(
+      "============ MyProfileCubit.applyMyProfileTestsFilter ============",
+    );
+    debugPrint("→ query: ${params.toQueryParameters()}");
+
+    if (state.isTestsFilterLoading) {
+      debugPrint("✗ tests filter already loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    if (!params.hasAnyFilter) {
+      debugPrint("✗ no filter value selected");
+      debugPrint("=================================================");
+      return;
+    }
+
+    _testsSearchDebounce?.cancel();
+
+    emit(
+      state.copyWith(
+        isTestsFilterMode: true,
+
+        testsFilterStatus: MyProfileTestsFilterStatus.loading,
+
+        testsFilterLoadMoreStatus: MyProfileTestsFilterLoadMoreStatus.initial,
+
+        clearFilteredTestsResponse: true,
+
+        activeTestsFilterParams: params,
+
+        testsSearchQuery: '',
+        testsSearchStatus: MyProfileTestsSearchStatus.initial,
+        testsSearchLoadMoreStatus: MyProfileTestsSearchLoadMoreStatus.initial,
+        clearTestsSearchResponse: true,
+        testsSearchPage: 1,
+        testsSearchHasMorePages: true,
+
+        clearError: true,
+      ),
+    );
+
+    final result = await filterMyProfileTestsUseCase(params);
+
+    result.fold(
+      (failure) {
+        debugPrint("✗ applyMyProfileTestsFilter failure");
+        debugPrint("→ title: ${failure.title}");
+        debugPrint("→ message: ${failure.message}");
+
+        emit(
+          state.copyWith(
+            testsFilterStatus: MyProfileTestsFilterStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        debugPrint('✓ applyMyProfileTestsFilter success');
+        debugPrint('→ response count: ${response.data.length}');
+
+        emit(
+          state.copyWith(
+            isTestsFilterMode: true,
+            testsFilterStatus: MyProfileTestsFilterStatus.success,
+            filteredTestsResponse: response,
+            clearFilteredTestsResponse: false,
+            clearError: true,
+          ),
+        );
+
+        debugPrint(
+          '→ state count after emit: '
+          '${state.filteredTestsResponse?.data.length}',
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  Future<void> fetchMoreMyProfileFilteredTestsIfNeeded() async {
+    if (_isFetchingFilteredTestsMore) return;
+
+    if (!state.isTestsFilterMode) return;
+
+    if (state.activeTestsFilterParams == null) {
+      return;
+    }
+
+    if (state.isTestsFilterLoading || state.isTestsFilterLoadingMore) {
+      return;
+    }
+
+    final currentResponse = state.filteredTestsResponse;
+
+    if (currentResponse == null || !currentResponse.meta.hasMorePages) {
+      return;
+    }
+
+    final cursor = currentResponse.meta.nextCursor;
+
+    if (cursor == null || cursor.trim().isEmpty) {
+      return;
+    }
+
+    _isFetchingFilteredTestsMore = true;
+
+    debugPrint(
+      "============ MyProfileCubit.fetchMoreMyProfileFilteredTestsIfNeeded ============",
+    );
+    debugPrint("→ cursor: $cursor");
+
+    emit(
+      state.copyWith(
+        testsFilterLoadMoreStatus: MyProfileTestsFilterLoadMoreStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    try {
+      final params = state.activeTestsFilterParams!.copyWith(cursor: cursor);
+
+      final result = await filterMyProfileTestsUseCase(params);
+
+      result.fold(
+        (failure) {
+          debugPrint("✗ fetchMoreMyProfileFilteredTestsIfNeeded failure");
+          debugPrint("→ title: ${failure.title}");
+          debugPrint("→ message: ${failure.message}");
+
+          emit(
+            state.copyWith(
+              testsFilterLoadMoreStatus:
+                  MyProfileTestsFilterLoadMoreStatus.failure,
+              errorTitle: failure.title,
+              errorMessage: failure.message,
+            ),
+          );
+        },
+        (newResponse) {
+          final existingIds = currentResponse.data
+              .map((item) => item.id)
+              .toSet();
+
+          final uniqueNewItems = newResponse.data
+              .where((item) => !existingIds.contains(item.id))
+              .toList();
+
+          final updatedResponse = MyProfileFilteredTestsEntity(
+            success: newResponse.success,
+            message: newResponse.message,
+            data: [...currentResponse.data, ...uniqueNewItems],
+            meta: newResponse.meta,
+            statusCode: newResponse.statusCode,
+          );
+
+          debugPrint("✓ fetchMoreMyProfileFilteredTestsIfNeeded success");
+          debugPrint("→ received count: ${newResponse.data.length}");
+          debugPrint("→ unique count: ${uniqueNewItems.length}");
+          debugPrint("→ total count: ${updatedResponse.data.length}");
+
+          emit(
+            state.copyWith(
+              testsFilterLoadMoreStatus:
+                  MyProfileTestsFilterLoadMoreStatus.success,
+              filteredTestsResponse: updatedResponse,
+              clearError: true,
+            ),
+          );
+        },
+      );
+    } finally {
+      _isFetchingFilteredTestsMore = false;
+    }
+
+    debugPrint("=================================================");
+  }
+
+  void clearMyProfileTestsFilter() {
+    debugPrint(
+      "============ MyProfileCubit.clearMyProfileTestsFilter ============",
+    );
+
+    _isFetchingFilteredTestsMore = false;
+
+    emit(
+      state.copyWith(
+        isTestsFilterMode: false,
+
+        testsFilterStatus: MyProfileTestsFilterStatus.initial,
+
+        testsFilterLoadMoreStatus: MyProfileTestsFilterLoadMoreStatus.initial,
+
+        clearFilteredTestsResponse: true,
+        clearActiveTestsFilterParams: true,
+        clearError: true,
+      ),
+    );
+
+    debugPrint("=================================================");
+  }
+
+  /////////////////// share profile /////////////
+  Future<void> getMyProfileShareLink() async {
+    debugPrint(
+      "============ MyProfileCubit.getMyProfileShareLink ============",
+    );
+
+    if (state.isShareLinkLoading) return;
+
+    final profile = state.profile;
+
+    if (profile == null || profile.userId <= 0) {
+      emit(
+        state.copyWith(
+          shareLinkStatus: MyProfileShareLinkStatus.failure,
+          errorTitle: 'خطأ',
+          errorMessage: 'تعذر تحديد الملف الشخصي المراد مشاركته',
+          clearShareUrl: true,
+        ),
+      );
+      return;
+    }
+
+    debugPrint('→ params: {userId: ${profile.userId}}');
+
+    emit(
+      state.copyWith(
+        shareLinkStatus: MyProfileShareLinkStatus.loading,
+        clearShareUrl: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await getMyProfileShareLinkUseCase(
+      GetOtherProfileShareLinkParams(userId: profile.userId),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint('✗ getMyProfileShareLink failure');
+        debugPrint('→ title: ${failure.title}');
+        debugPrint('→ message: ${failure.message}');
+
+        emit(
+          state.copyWith(
+            shareLinkStatus: MyProfileShareLinkStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearShareUrl: true,
+          ),
+        );
+      },
+      (response) {
+        final shareUrl = response.data.shareUrl.trim();
+
+        debugPrint('✓ getMyProfileShareLink success');
+        debugPrint('→ shareUrl: $shareUrl');
+
+        if (shareUrl.isEmpty) {
+          emit(
+            state.copyWith(
+              shareLinkStatus: MyProfileShareLinkStatus.failure,
+              errorTitle: 'خطأ',
+              errorMessage: 'تعذر تجهيز رابط مشاركة الملف الشخصي',
+              clearShareUrl: true,
+            ),
+          );
+          return;
+        }
+
+        emit(
+          state.copyWith(
+            shareLinkStatus: MyProfileShareLinkStatus.success,
+            shareUrl: shareUrl,
+            clearError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint("=================================================");
+  }
+
+  void resetMyProfileShareLinkState() {
+    emit(
+      state.copyWith(
+        shareLinkStatus: MyProfileShareLinkStatus.initial,
+        clearShareUrl: true,
+        clearError: true,
+      ),
+    );
+  }
+  
+
+  @override
+  Future<void> close() {
+    _librarySearchDebounce?.cancel();
+    _testsSearchDebounce?.cancel();
+    return super.close();
   }
 }

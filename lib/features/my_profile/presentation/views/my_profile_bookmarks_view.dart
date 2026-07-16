@@ -7,12 +7,17 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/test_overview_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_bookmarks_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile_bookmarks/my_profile_bookmarks_cubit.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile_bookmarks/my_profile_bookmarks_state.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/mappers/my_profile_bookmark_item_mapper.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/bookmarks/my_profile_bookmarks_filter_section.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/my_profile_folder_card_shimmer.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_body_shimmer.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_content_card_shimmer.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_tests_tab_shimmer.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/test_tab/other_profile_test_card.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/content_tab/other_profile_content_card.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/folder_tab/other_profile_folder_card.dart';
@@ -106,6 +111,26 @@ class _MyProfileBookmarksBodyState extends State<_MyProfileBookmarksBody> {
                   BlocBuilder<MyProfileBookmarksCubit, MyProfileBookmarksState>(
                     builder: (context, state) {
                       if (state.isLoading) {
+                        if (state.selectedTab ==
+                            MyProfileBookmarksTab.folders) {
+                          return MyProfileFoldersShimmerList(
+                            horizonalPadding: SizeConfig.w(0.03),
+                            itemCount: 8,
+                          );
+                        } else if (state.selectedTab ==
+                            MyProfileBookmarksTab.materials) {
+                          return ContentCardsShimmerList(
+                            itemCount: 8,
+                            horizonalPadding: SizeConfig.w(0.03),
+                          );
+                        } else if (state.selectedTab ==
+                            MyProfileBookmarksTab.tests) {
+                          return OtherProfileTestsTabShimmer(
+                            count: 5,
+                            horizonalPadding: SizeConfig.w(0.03),
+                          );
+                        }
+
                         return const Center(child: CircularProgressIndicator());
                       }
 

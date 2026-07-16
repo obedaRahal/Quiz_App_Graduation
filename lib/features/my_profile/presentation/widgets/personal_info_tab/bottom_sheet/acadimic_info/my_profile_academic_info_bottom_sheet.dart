@@ -214,164 +214,166 @@ class _MyProfileAcademicInfoBottomSheetState
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final canSave = hasAcademicChanges && !isSaving;
 
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.78,
-      minChildSize: 0.45,
-      maxChildSize: 0.94,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1F1F1F) : AppPalette.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: SizeConfig.h(0.012)),
-              Container(
-                width: SizeConfig.w(0.12),
-                height: 5,
-                decoration: BoxDecoration(
-                  color: AppPalette.greyMedium.withOpacity(0.45),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-
-              SizedBox(height: SizeConfig.h(0.018)),
-
-              CustomTextWidget(
-                'المعلومات الدراسية',
-                color: context.appColors.blackTogreyMedium,
-                fontFamily: AppFont.elMessiriBold,
-                fontSize: SizeConfig.text(0.04),
-              ),
-
-              CustomDivider(height: 20, thickness: 3, isDashed: true),
-
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.w(0.045),
-                    vertical: SizeConfig.h(0.012),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      _SectionTitle(title: 'المستوى الدراسي'),
-
-                      SizedBox(height: SizeConfig.h(0.012)),
-
-                      _EducationLevelGrid(
-                        selectedLevel: selectedLevel,
-                        onChanged: _onLevelChanged,
-                        currentLevel: widget.currentValue.educationLevel,
-                      ),
-
-                      SizedBox(height: SizeConfig.h(0.025)),
-
-                      if (selectedLevel == 'مدرسة')
-                        _SchoolStageSection(
-                          selectedStage: selectedSchoolStage,
-                          currentStage: widget.currentValue.schoolStage,
-                          isSameSchoolLevel:
-                              widget.currentValue.educationLevel ==
-                              AcademicLevelRules.school,
-                          onChanged: (value) {
-                            setState(() => selectedSchoolStage = value);
-                          },
-                        ),
-
-                      if (selectedLevel == 'جامعة')
-                        _UniversityFieldsSection(
-                          selectedUniversity: selectedUniversity,
-                          selectedDepartment: selectedDepartment,
-                          selectedYear: selectedUniversityYear,
-                          onUniversityChanged: (value) {
-                            setState(() {
-                              selectedUniversity = value;
-                              selectedDepartment = null;
-                              selectedUniversityYear = null;
-                            });
-                          },
-                          onDepartmentChanged: (value) {
-                            setState(() {
-                              selectedDepartment = value;
-                              selectedUniversityYear = null;
-                            });
-                          },
-                          onYearChanged: (value) {
-                            setState(() {
-                              selectedUniversityYear = value;
-                            });
-                          },
-                        ),
-
-                      if (AcademicLevelRules.isGraduateLevel(selectedLevel))
-                        _GraduateDocumentsSection(
-                          selectedUniversity: selectedGraduatedUniversity,
-                          selectedDepartment: selectedGraduatedDepartment,
-                          onUniversityChanged: (value) {
-                            setState(() {
-                              selectedGraduatedUniversity = value;
-                              selectedGraduatedDepartment = null;
-                            });
-                          },
-                          onDepartmentChanged: (value) {
-                            setState(() {
-                              selectedGraduatedDepartment = value;
-                            });
-                          },
-                        ),
-                    ],
+    return SafeArea(
+      child: DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.78,
+        minChildSize: 0.45,
+        maxChildSize: 0.94,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1F1F1F) : AppPalette.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: SizeConfig.h(0.012)),
+                Container(
+                  width: SizeConfig.w(0.12),
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: AppPalette.greyMedium.withOpacity(0.45),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-              ),
-
-              CustomBackgroundWithChild(
-                childVerticalPad: SizeConfig.h(0.01),
-                childHorizontalPad: SizeConfig.w(0.03),
-                backgroundColor: context.appColors.whiteToblack,
-                width: double.infinity,
-                boxShadow: [
-                  BoxShadow(
-                    color: isDark
-                        ? AppPalette.greyMediumDark
-                        : AppPalette.greyBorderCart,
-                    blurRadius: 4,
-                    offset: const Offset(0, -4),
+      
+                SizedBox(height: SizeConfig.h(0.018)),
+      
+                CustomTextWidget(
+                  'المعلومات الدراسية',
+                  color: context.appColors.blackTogreyMedium,
+                  fontFamily: AppFont.elMessiriBold,
+                  fontSize: SizeConfig.text(0.04),
+                ),
+      
+                CustomDivider(height: 20, thickness: 3, isDashed: true),
+      
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.w(0.045),
+                      vertical: SizeConfig.h(0.012),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        _SectionTitle(title: 'المستوى الدراسي'),
+      
+                        SizedBox(height: SizeConfig.h(0.012)),
+      
+                        _EducationLevelGrid(
+                          selectedLevel: selectedLevel,
+                          onChanged: _onLevelChanged,
+                          currentLevel: widget.currentValue.educationLevel,
+                        ),
+      
+                        SizedBox(height: SizeConfig.h(0.025)),
+      
+                        if (selectedLevel == 'مدرسة')
+                          _SchoolStageSection(
+                            selectedStage: selectedSchoolStage,
+                            currentStage: widget.currentValue.schoolStage,
+                            isSameSchoolLevel:
+                                widget.currentValue.educationLevel ==
+                                AcademicLevelRules.school,
+                            onChanged: (value) {
+                              setState(() => selectedSchoolStage = value);
+                            },
+                          ),
+      
+                        if (selectedLevel == 'جامعة')
+                          _UniversityFieldsSection(
+                            selectedUniversity: selectedUniversity,
+                            selectedDepartment: selectedDepartment,
+                            selectedYear: selectedUniversityYear,
+                            onUniversityChanged: (value) {
+                              setState(() {
+                                selectedUniversity = value;
+                                selectedDepartment = null;
+                                selectedUniversityYear = null;
+                              });
+                            },
+                            onDepartmentChanged: (value) {
+                              setState(() {
+                                selectedDepartment = value;
+                                selectedUniversityYear = null;
+                              });
+                            },
+                            onYearChanged: (value) {
+                              setState(() {
+                                selectedUniversityYear = value;
+                              });
+                            },
+                          ),
+      
+                        if (AcademicLevelRules.isGraduateLevel(selectedLevel))
+                          _GraduateDocumentsSection(
+                            selectedUniversity: selectedGraduatedUniversity,
+                            selectedDepartment: selectedGraduatedDepartment,
+                            onUniversityChanged: (value) {
+                              setState(() {
+                                selectedGraduatedUniversity = value;
+                                selectedGraduatedDepartment = null;
+                              });
+                            },
+                            onDepartmentChanged: (value) {
+                              setState(() {
+                                selectedGraduatedDepartment = value;
+                              });
+                            },
+                          ),
+                      ],
+                    ),
                   ),
-                ],
-
-                child: CustomButtonWidget(
+                ),
+      
+                CustomBackgroundWithChild(
+                  childVerticalPad: SizeConfig.h(0.01),
+                  childHorizontalPad: SizeConfig.w(0.03),
+                  backgroundColor: context.appColors.whiteToblack,
                   width: double.infinity,
-                  backgroundColor: canSave
-                      ? context.appColors.primaryToPrimaryDark
-                      : AppPalette.greyMedium.withOpacity(0.45),
-                  childHorizontalPad: SizeConfig.w(0.04),
-                  childVerticalPad: SizeConfig.w(0.013),
-                  borderRadius: 6,
-                  onTap: canSave ? _save : () {},
-                  child: isSaving
-                      ? SizedBox(
-                          width: SizeConfig.w(0.05),
-                          height: SizeConfig.w(0.05),
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2,
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark
+                          ? AppPalette.greyMediumDark
+                          : AppPalette.greyBorderCart,
+                      blurRadius: 4,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+      
+                  child: CustomButtonWidget(
+                    width: double.infinity,
+                    backgroundColor: canSave
+                        ? context.appColors.primaryToPrimaryDark
+                        : AppPalette.greyMedium.withOpacity(0.45),
+                    childHorizontalPad: SizeConfig.w(0.04),
+                    childVerticalPad: SizeConfig.w(0.013),
+                    borderRadius: 6,
+                    onTap: canSave ? _save : () {},
+                    child: isSaving
+                        ? SizedBox(
+                            width: SizeConfig.w(0.05),
+                            height: SizeConfig.w(0.05),
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppPalette.white,
+                            ),
+                          )
+                        : CustomTextWidget(
+                            'حفظ',
+                            fontSize: SizeConfig.text(0.03),
                             color: AppPalette.white,
                           ),
-                        )
-                      : CustomTextWidget(
-                          'حفظ',
-                          fontSize: SizeConfig.text(0.03),
-                          color: AppPalette.white,
-                        ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 

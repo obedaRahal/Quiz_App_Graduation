@@ -33,8 +33,11 @@ import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home
 import 'package:quiz_app_grad/features/home/presentation/view/home_page.dart';
 import 'package:quiz_app_grad/features/intro/presentation/view/intro_view.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/view/laboratory_page.dart';
+import 'package:quiz_app_grad/features/my_profile/data/models/my_profile_folder_editor_route_args.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile_folder_editor/my_profile_folder_editor_cubit.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/views/my_profile_bookmarks_view.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/views/my_profile_folder_editor_view.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/views/my_profile_view.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_private_test_details_view.dart';
@@ -539,6 +542,9 @@ class AppRouter {
 
             debugPrint("→ received userId: $userId");
             debugPrint("=================================================");
+            if (userId <= 0) {
+              return _slidePage(state: state, child: const MainLayoutBody());
+            }
 
             return _slidePage(
               state: state,
@@ -562,6 +568,33 @@ class AppRouter {
                 create: (_) => sl<MyProfileCubit>(),
                 child: MyProfileBookmarksView(),
               ),
+            );
+          },
+        ),
+
+        // GoRoute(
+        //   path: AppRouterPath.myProfileFolderEditor,
+        //   name: AppRouterName.myProfileFolderEditor,
+        //   builder: (context, state) {
+        //     final args = state.extra as MyProfileFolderEditorRouteArgs?;
+
+        //     return BlocProvider(
+        //       create: (_) => sl<MyProfileFolderEditorCubit>(),
+        //       child: MyProfileFolderEditorView(
+        //         args: args ?? const MyProfileFolderEditorRouteArgs.create(userId: ),
+        //       ),
+        //     );
+        //   },
+        // ),
+        GoRoute(
+          path: AppRouterPath.myProfileFolderEditor,
+          name: AppRouterName.myProfileFolderEditor,
+          builder: (context, state) {
+            final args = state.extra as MyProfileFolderEditorRouteArgs;
+
+            return BlocProvider(
+              create: (_) => sl<MyProfileFolderEditorCubit>(),
+              child: MyProfileFolderEditorView(args: args),
             );
           },
         ),
@@ -607,7 +640,8 @@ class AppRouter {
     debugPrint("→ authStatus: $status");
     debugPrint("=========================================");
 
-    if (currentLocation == AppRouterPath.sharedTestRedirect) {
+    if (currentLocation == AppRouterPath.sharedTestRedirect ||
+        currentLocation == AppRouterPath.sharedProfileRedirect) {
       return null;
     }
 
@@ -646,6 +680,7 @@ class AppRouter {
     AppRouterPath.detailsOfTest,
 
     AppRouterPath.sharedTestRedirect,
+    AppRouterPath.sharedProfileRedirect,
   };
 
   static const Set<String> _authBlockedRoutes = {

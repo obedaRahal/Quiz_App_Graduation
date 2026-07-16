@@ -2,7 +2,7 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 class EndPoints {
-  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
   //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
@@ -69,9 +69,9 @@ class EndPoints {
 
   // Create Content
   static const String createContent = '/library/create-content';
-// Edit Content
+  // Edit Content
   static String updateContent(int contentId) =>
-    '/library/update/material/$contentId';
+      '/library/update/material/$contentId';
   // Other Content Details
   static String otherContentDetails(int id) =>
       '/library/library-materials-details/other/$id';
@@ -426,4 +426,34 @@ class EndPoints {
 
     return '$endpoint&cursor=$cursor';
   }
+
+  static String myProfileFolderContent(int folderId) =>
+      '$baseUrl/folder/folder-content/$folderId';
+
+  static String myProfilePickerTests({
+    required int userId,
+    required String tab,
+    String? cursor,
+  }) {
+    final endpoint = '$baseUrl/my-profile/tests/$userId?tab=$tab';
+
+    if (cursor == null || cursor.trim().isEmpty) {
+      return endpoint;
+    }
+
+    return '$endpoint&cursor=$cursor';
+  }
+
+  static String myProfilePickerSearchTests() =>
+      '$baseUrl/my-profile/test/search';
+
+  static String createMyProfileFolder() => '$baseUrl/folder/create';
+
+  static String updateMyProfileFolder(int folderId) =>
+      '$baseUrl/folder/update/$folderId';
+
+  static String deleteMyProfileFolder(int folderId) =>
+      '$baseUrl/folder/delete/$folderId';
+
+  static const String filterMyProfileTests = '$baseUrl/test/tests/filter';
 }

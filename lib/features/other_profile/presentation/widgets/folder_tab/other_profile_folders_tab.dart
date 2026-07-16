@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folders_entity.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/my_profile_folder_card_shimmer.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/folder_tab/other_profile_folder_card.dart';
 
 class OtherProfileFoldersTab extends StatelessWidget {
@@ -32,7 +33,7 @@ class OtherProfileFoldersTab extends StatelessWidget {
         SizedBox(height: SizeConfig.h(0.018)),
 
         if (isLoading)
-          shimmerLoader ?? const Center(child: CircularProgressIndicator())
+          shimmerLoader ??   const MyProfileFoldersShimmerList()
         else if (folders.isEmpty)
           Center(
             child: Padding(
@@ -64,7 +65,7 @@ class OtherProfileFoldersTab extends StatelessWidget {
               if (isLoadingMore)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
-                  child: const Center(child: CircularProgressIndicator()),
+                  child: const Center(child: MyProfileFolderCardShimmer()),
                 ),
             ],
           ),

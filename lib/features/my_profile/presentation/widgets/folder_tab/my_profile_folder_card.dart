@@ -10,17 +10,20 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_folders_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/widgets/folder_tab/my_profile_folder_more_menu_button.dart';
 
 class MyProfileFolderCard extends StatelessWidget {
   final MyProfileFolderItemEntity folder;
-  final VoidCallback onMoreTap;
   final VoidCallback onFolderTap;
+  final VoidCallback onEditTap;
+  final VoidCallback onDeleteTap;
 
   const MyProfileFolderCard({
     super.key,
     required this.folder,
-    required this.onMoreTap,
     required this.onFolderTap,
+    required this.onEditTap,
+    required this.onDeleteTap,
   });
 
   @override
@@ -50,13 +53,17 @@ class MyProfileFolderCard extends StatelessWidget {
                 width: SizeConfig.w(0.16),
                 height: SizeConfig.w(0.16),
               ),
-      
+
               SizedBox(width: SizeConfig.w(0.03)),
-      
+
               Expanded(child: _FolderInfo(folder: folder)),
-      
+
               SizedBox(width: SizeConfig.w(0.02)),
-              _MoreButton(onTap: onMoreTap),
+
+              MyProfileFolderMoreMenuButton(
+                onEdit: onEditTap,
+                onDelete: onDeleteTap,
+              ),
             ],
           ),
         ),
@@ -239,7 +246,7 @@ class _SmallInfo extends StatelessWidget {
           path: svgIcon,
           width: SizeConfig.w(0.035),
           height: SizeConfig.w(0.035),
-          color: AppPalette.black,
+          color: context.appColors.blackTogreyMedium,
         ),
 
         SizedBox(width: SizeConfig.w(0.006)),
@@ -267,31 +274,3 @@ class _SmallInfo extends StatelessWidget {
   }
 }
 
-class _MoreButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _MoreButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(10),
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: EdgeInsets.all(SizeConfig.w(0.01)),
-        decoration: BoxDecoration(
-          color: isDark ? AppPalette.greyLightDark : AppPalette.greyLight,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Icon(
-          Icons.more_horiz_rounded,
-          color: AppPalette.greyMedium,
-          size: SizeConfig.h(0.027),
-        ),
-      ),
-    );
-  }
-}

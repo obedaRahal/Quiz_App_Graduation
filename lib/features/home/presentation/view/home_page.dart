@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/builed_filter_item.dart';
@@ -12,6 +19,8 @@ import 'package:quiz_app_grad/features/home/presentation/widget/home_header_widg
 import 'package:quiz_app_grad/features/home/presentation/widget/home_popular_instructors_section.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/home_top_banner/home_top_banner_section.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -171,6 +180,110 @@ class HomePage extends StatelessWidget {
                     child: InstructorsSection(state: state),
                   );
                 },
+              ),
+
+              Center(
+                child: Column(
+                  children: [
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          //context.pushNamed(AppRouterName.detailsOfTest);
+                          context.pushNamed(
+                            AppRouterName.detailsOfTest,
+                            extra: DetailsOfTestRouteArgs(testId: 100),
+                          );
+                        },
+                        child: Text("details of test"),
+                      ),
+                    ),
+
+                    SizedBox(height: 40),
+
+                    SizedBox(height: 40),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          //context.pushNamed(AppRouterName.detailsOfTest);
+                          context.pushNamed(
+                            AppRouterName.myTestDetails,
+                            extra: DetailsOfTestRouteArgs(testId: 11),
+                          );
+                        },
+                        child: Text("my test detailssssssssss"),
+                      ),
+                    ),
+
+                    SizedBox(height: 40),
+                    SizedBox(height: 40),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          //context.pushNamed(AppRouterName.detailsOfTest);
+                          context.pushNamed(
+                            AppRouterName.myPrivateTestDetails,
+                            extra: DetailsOfTestRouteArgs(testId: 805),
+                          );
+                        },
+                        child: Text("my test private detailssssssssss"),
+                      ),
+                    ),
+
+                    SizedBox(height: 40),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          //context.pushNamed(AppRouterName.detailsOfTest);
+                          context.pushNamed(
+                            AppRouterName.otherProfile,
+                            //extra: OtherProfileRouteArgs(userId: 815),
+                            extra: OtherProfileRouteArgs(userId: 811),
+                          );
+                        },
+                        child: Text(" other profile "),
+                      ),
+                    ),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          context.pushNamed(
+                            AppRouterName.otherContentDetails,
+                            extra: const ContentDetailsRouteArgs(
+                              contentId: 2,
+                              isMyContent: true,
+                            ),
+                          );
+                        },
+                        child: const Text('عرض محتواي'),
+                      ),
+                    ),
+                    CustomButtonWidget(
+                      onTap: () {
+                        debugPrint("change mode ");
+                        context.read<ThemeCubit>().toggleTheme();
+                      },
+                      child: ThemedAppImage(
+                        darkPath: AppImage.logoDark,
+                        lightPath: AppImage.logoLight,
+                      ),
+                    ),
+
+                    SizedBox(height: 40),
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          //context.pushNamed(AppRouterName.detailsOfTest);
+                          context.pushNamed(
+                            AppRouterName.myProfile,
+                            //extra: OtherProfileRouteArgs(userId: 815),
+                            extra: OtherProfileRouteArgs(userId: 828),
+                          );
+                        },
+                        child: Text(" my profile "),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

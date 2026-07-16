@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 Future<void> showMyProfileImageViewer({
   required BuildContext context,
@@ -17,18 +19,19 @@ Future<void> showMyProfileImageViewer({
         insetPadding: EdgeInsets.zero,
         child: Stack(
           children: [
-            PhotoView(
-              imageProvider: NetworkImage(imageUrl),
-              backgroundDecoration: const BoxDecoration(
-                color: Colors.transparent,
-              ),
-              minScale: PhotoViewComputedScale.contained,
-              maxScale: PhotoViewComputedScale.covered * 3,
-            ),
+            CustomAppImage(path: imageUrl),
+            // PhotoView(
+            //   imageProvider: CustomAppImage(path: imageUrl),
+            //   backgroundDecoration: const BoxDecoration(
+            //     color: Colors.transparent,
+            //   ),
+            //   minScale: PhotoViewComputedScale.contained,
+            //   maxScale: PhotoViewComputedScale.covered * 3,
+            // ),
 
             Positioned(
-              top: 35,
-              left: 20,
+              top: SizeConfig.h(0.01),
+              left: SizeConfig.h(0.01),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(

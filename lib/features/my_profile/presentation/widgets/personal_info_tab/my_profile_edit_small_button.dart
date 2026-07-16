@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class ProfileEditSmallButton extends StatelessWidget {
@@ -18,7 +19,7 @@ class ProfileEditSmallButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomButtonWidget(
       onTap: onTap,
-      backgroundColor: AppPalette.whiteToGrey,
+      backgroundColor: context.appColors.greyToGreyMediumDark,
       borderRadius: 10,
       child: Padding(
         padding: const EdgeInsets.symmetric(

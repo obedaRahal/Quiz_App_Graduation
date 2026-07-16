@@ -20,10 +20,12 @@ import 'package:quiz_app_grad/features/my_profile/presentation/widgets/my_profil
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/show_profile_image_preview_dialog.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_connections/other_profile_connections_cubit.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_body_shimmer.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_connections_bottom_sheet.dart';
 
 class MyProfileBody extends StatelessWidget {
-  const MyProfileBody({super.key});
+  final int userId;
+  const MyProfileBody({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,7 @@ class MyProfileBody extends StatelessWidget {
       },
       builder: (context, state) {
         if (state.isFetchLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const OtherProfileBodyShimmer();
         }
 
         if (state.isFetchFailure) {
@@ -132,6 +134,34 @@ class MyProfileBody extends StatelessWidget {
               cubit.fetchMoreMyProfileFoldersIfNeeded();
             }
 
+            if (state.selectedTab == MyProfileTab.tests &&
+                !state.isVisibleTestsLoading &&
+                !state.isVisibleTestsLoadingMore) {
+              if (state.hasTestsSearchQuery) {
+                cubit.fetchMoreMyProfileTestsSearchIfNeeded();
+              } else if (state.hasMoreTestsPages) {
+                cubit.fetchMoreMyProfileTestsIfNeeded();
+              }
+            }
+
+            if (state.selectedTab == MyProfileTab.tests) {
+              if (state.isTestsFilterMode &&
+                  !state.isTestsFilterLoading &&
+                  !state.isTestsFilterLoadingMore &&
+                  state.hasMoreFilteredTestsPages) {
+                cubit.fetchMoreMyProfileFilteredTestsIfNeeded();
+              } else if (state.hasTestsSearchQuery &&
+                  !state.isTestsSearchLoading &&
+                  !state.isTestsSearchLoadingMore) {
+                cubit.fetchMoreMyProfileTestsSearchIfNeeded();
+              } else if (!state.hasTestsSearchQuery &&
+                  !state.isTestsLoading &&
+                  !state.isTestsLoadingMore &&
+                  state.hasMoreTestsPages) {
+                cubit.fetchMoreMyProfileTestsIfNeeded();
+              }
+            }
+
             return false;
           },
           child: SingleChildScrollView(
@@ -178,6 +208,7 @@ class MyProfileBody extends StatelessWidget {
                             },
                           );
                         },
+                        
                         onView: () {
                           debugPrint('cover view');
                           showMyProfileImageViewer(
@@ -234,9 +265,13 @@ class MyProfileBody extends StatelessWidget {
                         },
                       );
                     },
-                    onShareTap: () {
-                      debugPrint("share profile");
-                    },
+                    onShareTap: state.isShareLinkLoading
+                        ? null
+                        : () {
+                            context
+                                .read<MyProfileCubit>()
+                                .getMyProfileShareLink();
+                          },
                     onShowSavedTap: () {
                       debugPrint("show saved list");
                       context.pushNamed(AppRouterName.myProfileBookmarks);
@@ -281,6 +316,7 @@ class MyProfileBody extends StatelessWidget {
                   child: MyProfileSelectedTabContent(
                     selectedTab: state.selectedTab,
                     profile: profile,
+                    userId: userId,
                   ),
                 ),
 

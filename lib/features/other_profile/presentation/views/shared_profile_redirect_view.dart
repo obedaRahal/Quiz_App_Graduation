@@ -11,10 +11,7 @@ import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_
 class SharedProfileRedirectView extends StatelessWidget {
   final String slug;
 
-  const SharedProfileRedirectView({
-    super.key,
-    required this.slug,
-  });
+  const SharedProfileRedirectView({super.key, required this.slug});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +34,10 @@ class SharedProfileRedirectView extends StatelessWidget {
               }
 
               if (isThisYourProfile) {
-                context.go(AppRouterPath.mainLayout);
+                context.go(
+                  AppRouterPath.myProfile,
+                  extra: OtherProfileRouteArgs(userId: userId),
+                );
                 return;
               }
 

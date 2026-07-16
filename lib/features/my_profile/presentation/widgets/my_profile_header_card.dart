@@ -36,189 +36,210 @@ class MyProfileHeaderCard extends StatelessWidget {
       width: double.infinity,
       backgroundColor: appColors.whiteToblack,
       borderRadius: BorderRadius.circular(14),
-      child: Column(
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          SizedBox(
-            height: SizeConfig.h(0.16),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Positioned.fill(
-                  child: InkWell(
-                    onTap: onChangeCoverTap,
-                    borderRadius: BorderRadius.circular(14),
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(14),
-                        bottom: Radius.circular(14),
+          Column(
+            children: [
+              SizedBox(
+                height: SizeConfig.h(0.16),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned.fill(
+                      child: InkWell(
+                        onTap: onChangeCoverTap,
+                        borderRadius: BorderRadius.circular(14),
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(14),
+                            bottom: Radius.circular(14),
+                          ),
+                          child: profile.coverUrl.trim().isEmpty
+                              ? Container(
+                                  color: AppPalette.greyLight,
+                                  child: Center(
+                                    child: CustomTextWidget(
+                                      'أضف صورة غلاف خاصة بك +',
+                                      color: AppPalette.greyMedium,
+                                      fontSize: SizeConfig.text(0.028),
+                                    ),
+                                  ),
+                                )
+                              : CustomAppImage(
+                                  path: profile.coverUrl,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                       ),
-                      child: profile.coverUrl.trim().isEmpty
-                          ? Container(
-                              color: AppPalette.greyLight,
-                              child: Center(
-                                child: CustomTextWidget(
-                                  'أضف صورة غلاف خاصة بك +',
-                                  color: AppPalette.greyMedium,
-                                  fontSize: SizeConfig.text(0.028),
+                    ),
+
+                    Positioned(
+                      right: SizeConfig.w(0.04),
+                      bottom: -SizeConfig.w(0.095),
+                      child: IgnorePointer(
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              width: SizeConfig.w(0.19),
+                              height: SizeConfig.w(0.19),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppPalette.grey,
+                                border: Border.all(
+                                  color: appColors.whiteToblack,
+                                  width: 3,
                                 ),
                               ),
-                            )
-                          : CustomAppImage(
-                              path: profile.coverUrl,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ),
-                ),
-
-                Positioned(
-                  right: SizeConfig.w(0.04),
-                  bottom: -SizeConfig.w(0.095),
-                  child: InkWell(
-                    onTap: onChangeAvatarTap,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          width: SizeConfig.w(0.19),
-                          height: SizeConfig.w(0.19),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppPalette.grey,
-                            border: Border.all(
-                              color: appColors.whiteToblack,
-                              width: 3,
-                            ),
-                          ),
-                          child: ClipOval(
-                            child: profile.avatarUrl.trim().isEmpty
-                                ? Icon(
-                                    Icons.person,
-                                    size: SizeConfig.w(0.09),
-                                    color: AppPalette.greyMedium,
-                                  )
-                                : CustomAppImage(
-                                    path: profile.avatarUrl,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                        ),
-
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: EdgeInsets.all(SizeConfig.w(0.008)),
-                            decoration: BoxDecoration(
-                              color: appColors.primaryToPrimaryDark,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: appColors.whiteToblack,
-                                width: 2,
+                              child: ClipOval(
+                                child: profile.avatarUrl.trim().isEmpty
+                                    ? Icon(
+                                        Icons.person,
+                                        size: SizeConfig.w(0.09),
+                                        color: AppPalette.greyMedium,
+                                      )
+                                    : CustomAppImage(
+                                        path: profile.avatarUrl,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                      ),
                               ),
                             ),
-                            child: Icon(
-                              Icons.camera_alt_rounded,
-                              color: AppPalette.white,
-                              size: SizeConfig.w(0.032),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: EdgeInsets.all(SizeConfig.w(0.008)),
+                                decoration: BoxDecoration(
+                                  color: appColors.primaryToPrimaryDark,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: appColors.whiteToblack,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.camera_alt_rounded,
+                                  color: appColors.whiteToblack,
+                                  size: SizeConfig.w(0.032),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Transform.translate(
+                offset: Offset(-SizeConfig.w(0.25), SizeConfig.h(0.005)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: SizeConfig.w(0.6),
+                          ),
+                          child: Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              child: CustomTextWidget(
+                                profile.name,
+                                color: appColors.blackToGrey2Dark,
+                                fontFamily: AppFont.elMessiriBold,
+                                fontSize: SizeConfig.text(0.037),
+                                textAlign: TextAlign.right,
+                                textDirection: TextDirection.rtl,
+                                maxLines: 1,
+                                overflow: TextOverflow.visible,
+                              ),
                             ),
                           ),
+                        ),
+                        if (profile.isAcademicallyVerified) ...[
+                          SizedBox(width: SizeConfig.w(0.012)),
+                          Icon(
+                            Icons.verified_rounded,
+                            color: appColors.primaryToPrimaryDark,
+                            size: SizeConfig.w(0.045),
+                          ),
+                        ],
+                      ],
+                    ),
+
+                    SizedBox(height: SizeConfig.h(0.004)),
+
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 6,
+                      runSpacing: 2,
+                      children: [
+                        _ProfileStat(
+                          label: 'اختبار',
+                          value: profile.testsCount,
+                        ),
+                        const _DotSeparator(),
+                        _ProfileStat(
+                          label: 'يتابع',
+                          value: profile.followingCount,
+                          onTap: onFollowingTap,
+                        ),
+                        const _DotSeparator(),
+                        _ProfileStat(
+                          label: 'متابع',
+                          value: profile.followersCount,
+                          onTap: onFollowersTap,
                         ),
                       ],
                     ),
-                  ),
+
+                    SizedBox(height: SizeConfig.h(0.01)),
+
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        _HeaderSmallButton(
+                          title: 'مشاركة الملف',
+                          backgroundColor: appColors.primaryToPrimaryDark,
+                          textColor: appColors.whiteToblack,
+                          onTap: onShareTap,
+                        ),
+                        SizedBox(width: SizeConfig.w(0.018)),
+                        _HeaderSmallButton(
+                          title: 'قائمة المحفوظات',
+                          backgroundColor: appColors.greyToGreyMediumDark,
+                          textColor: appColors.greyMediumTogrey,
+                          onTap: onShowSavedTap,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
 
-          Transform.translate(
-            offset: Offset(-SizeConfig.w(0.25), SizeConfig.h(0.005)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  textDirection: TextDirection.rtl,
-                  children: [
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: SizeConfig.w(0.6)),
-                      child: Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          child: CustomTextWidget(
-                            profile.name,
-                            color: appColors.blackTogreyMedium,
-                            fontFamily: AppFont.elMessiriBold,
-                            fontSize: SizeConfig.text(0.037),
-                            textAlign: TextAlign.right,
-                            textDirection: TextDirection.rtl,
-                            maxLines: 1,
-                            overflow: TextOverflow.visible,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (profile.isAcademicallyVerified) ...[
-                      SizedBox(width: SizeConfig.w(0.012)),
-                      Icon(
-                        Icons.verified_rounded,
-                        color: appColors.primaryToPrimaryDark,
-                        size: SizeConfig.w(0.045),
-                      ),
-                    ],
-                  ],
-                ),
-
-                SizedBox(height: SizeConfig.h(0.004)),
-
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 6,
-                  runSpacing: 2,
-                  children: [
-                    _ProfileStat(label: 'اختبار', value: profile.testsCount),
-                    const _DotSeparator(),
-                    _ProfileStat(
-                      label: 'يتابع',
-                      value: profile.followingCount,
-                      onTap: onFollowingTap,
-                    ),
-                    const _DotSeparator(),
-                    _ProfileStat(
-                      label: 'متابع',
-                      value: profile.followersCount,
-                      onTap: onFollowersTap,
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: SizeConfig.h(0.01)),
-
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  textDirection: TextDirection.rtl,
-                  children: [
-                    _HeaderSmallButton(
-                      title: 'مشاركة الملف',
-                      backgroundColor: appColors.primaryToPrimaryDark,
-                      textColor: AppPalette.white,
-                      onTap: onShareTap,
-                    ),
-                    SizedBox(width: SizeConfig.w(0.018)),
-                    _HeaderSmallButton(
-                      title: 'قائمة المحفوظات',
-                      backgroundColor: AppPalette.greyLight,
-                      textColor: AppPalette.greyMedium,
-                      onTap: onShowSavedTap,
-                    ),
-                  ],
-                ),
-              ],
+          Positioned(
+            right: SizeConfig.w(0.04),
+            top: SizeConfig.h(0.16) - SizeConfig.w(0.095),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onChangeAvatarTap,
+              child: SizedBox(
+                width: SizeConfig.w(0.18),
+                height: SizeConfig.w(0.18),
+              ),
             ),
           ),
         ],

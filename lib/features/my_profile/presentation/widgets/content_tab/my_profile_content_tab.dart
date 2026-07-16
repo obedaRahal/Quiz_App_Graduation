@@ -10,6 +10,7 @@ import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profil
 import 'package:quiz_app_grad/features/my_profile/presentation/mappers/my_profile_library_mapper.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/content_tab/my_profile_content_filter_section.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/content_tab/my_profile_content_search_field.dart';
+import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_content_card_shimmer.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/content_tab/other_profile_content_card.dart';
 
 class MyProfileContentTab extends StatefulWidget {
@@ -24,9 +25,10 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MyProfileCubit>().fetchMyProfileLibraryInitial();
-    });
+    // Future.microtask(() {
+    //   if (!mounted) return;
+    //   context.read<MyProfileCubit>().fetchMyProfileLibraryInitial();
+    // });
   }
 
   @override
@@ -71,10 +73,7 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
             SizedBox(height: SizeConfig.h(0.018)),
 
             if (state.isLibraryLoading)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
-                child: const Center(child: CircularProgressIndicator()),
-              )
+              ContentCardsShimmerList()
             else if (state.libraryStatus == FetchMyProfileStatus.failure)
               Padding(
                 padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
@@ -104,27 +103,26 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
                 itemCount: items.length + (state.isLibraryLoadingMore ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index >= items.length) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: SizeConfig.h(0.018),
-                      ),
-                      child: const Center(child: CircularProgressIndicator()),
-                    );
+                    return OtherProfileContentCardShimmer();
                   }
 
                   final item = items[index];
 
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: SizeConfig.h(0.014)),
-                    child: OtherProfileContentCard(
-                      content: item.toOtherProfileContentEntity(),
-                      onSaveTap: () {
-                        debugPrint(
-                          "im at MyProfileContentTab and id is ${item.id}",
-                        );
-                      },
-                      onLikeTap: () {},
-                    ),
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(bottom: SizeConfig.h(0.014)),
+                        child: OtherProfileContentCard(
+                          content: item.toOtherProfileContentEntity(),
+                          onSaveTap: () {
+                            debugPrint(
+                              "im at MyProfileContentTab and id is ${item.id}",
+                            );
+                          },
+                          onLikeTap: () {},
+                        ),
+                      ),
+                    ],
                   );
                 },
               ),

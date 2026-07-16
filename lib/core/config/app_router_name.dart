@@ -31,6 +31,7 @@ abstract class AppRouterName {
   static const String sharedProfileRedirect = 'sharedProfileRedirect';
   static const String myProfile = 'myProfile';
   static const myProfileBookmarks = 'myProfileBookmarks';
+  static const myProfileFolderEditor = 'myProfileFolderEditor';
   static const String otherContentDetails = 'otherContentDetails';
 }
 
@@ -73,5 +74,6 @@ abstract class AppRouterPath {
   static const otherProfile = '/otherProfile';
   static const myProfile = '/myProfile';
   static const myProfileBookmarks = '/my-profile-bookmarks';
+  static const myProfileFolderEditor = '/myProfileFolderEditor';
   static const otherContentDetails = '/otherContentDetails';
 }

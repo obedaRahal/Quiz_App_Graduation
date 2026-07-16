@@ -6,8 +6,10 @@ import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profil
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/content_tab/my_profile_content_tab.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/folder_tab/my_profile_folders_tab.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/personal_info_tab/my_profile_personal_info_tab.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/widgets/tests_tab/my_profile_tests_tab.dart';
 
 class MyProfileSelectedTabContent extends StatelessWidget {
+  final int userId;
   final MyProfileTab selectedTab;
   final MyProfileEntity profile;
 
@@ -15,6 +17,7 @@ class MyProfileSelectedTabContent extends StatelessWidget {
     super.key,
     required this.selectedTab,
     required this.profile,
+    required this.userId,
   });
 
   @override
@@ -24,30 +27,13 @@ class MyProfileSelectedTabContent extends StatelessWidget {
         return MyProfilePersonalInfoTab(profile: profile);
 
       case MyProfileTab.tests:
-        return const _ComingSoonTab(title: 'اختباراتك ستظهر هنا');
-
+        return const MyProfileTestsTab();
+        
       case MyProfileTab.content:
         return const MyProfileContentTab();
 
       case MyProfileTab.folders:
-        return const MyProfileFoldersTab();
+        return MyProfileFoldersTab(userId: userId);
     }
-  }
-}
-
-class _ComingSoonTab extends StatelessWidget {
-  final String title;
-
-  const _ComingSoonTab({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CustomTextWidget(
-        title,
-        color: AppPalette.greyMedium,
-        textAlign: TextAlign.center,
-      ),
-    );
   }
 }

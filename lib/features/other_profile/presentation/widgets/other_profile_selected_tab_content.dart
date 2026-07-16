@@ -205,7 +205,7 @@ class _FoldersTabBlocContentState extends State<_FoldersTabBlocContent> {
           folders: state.profileFolders,
           isLoading: state.isGetFoldersLoading,
           isLoadingMore: state.isGetMoreFoldersLoading,
-          shimmerLoader: const Center(child: CircularProgressIndicator()),
+          //shimmerLoader: const Center(child: CircularProgressIndicator()),
           onSaveTap: (id) {
             // context.read<OtherProfileCubit>().toggleFolderSaveLocally(
             //   folderId: id,

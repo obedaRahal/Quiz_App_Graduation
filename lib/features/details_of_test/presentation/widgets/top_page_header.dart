@@ -31,7 +31,7 @@ class TopPageHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _HeaderActionButton(
+          HeaderActionButton(
             icon: Icons.arrow_back_ios_rounded,
             onTap: onBack,
           ),
@@ -44,18 +44,18 @@ class TopPageHeader extends StatelessWidget {
               ),
             ),
           ),
-          _HeaderActionButton(icon: icon, onTap: onIconTap),
+          HeaderActionButton(icon: icon, onTap: onIconTap),
         ],
       ),
     );
   }
 }
 
-class _HeaderActionButton extends StatelessWidget {
+class HeaderActionButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _HeaderActionButton({required this.icon, required this.onTap});
+  const HeaderActionButton({super.key, required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

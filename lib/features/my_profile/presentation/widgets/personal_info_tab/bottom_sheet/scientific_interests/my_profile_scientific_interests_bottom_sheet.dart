@@ -148,156 +148,158 @@ class _MyProfileScientificInterestsBottomSheetState
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final canSave = selectedCount >= 2 && hasChanges && !isSaving;
 
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.82,
-      minChildSize: 0.45,
-      maxChildSize: 0.95,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1F1F1F) : AppPalette.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: SizeConfig.h(0.012)),
-
-              Container(
-                width: SizeConfig.w(0.12),
-                height: 5,
-                decoration: BoxDecoration(
-                  color: AppPalette.greyMedium.withOpacity(0.45),
-                  borderRadius: BorderRadius.circular(20),
+    return SafeArea(
+      child: DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.82,
+        minChildSize: 0.45,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1F1F1F) : AppPalette.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: SizeConfig.h(0.012)),
+      
+                Container(
+                  width: SizeConfig.w(0.12),
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: AppPalette.greyMedium.withOpacity(0.45),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
-              ),
-
-              SizedBox(height: SizeConfig.h(0.018)),
-
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.045)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CustomBackgroundWithChild(
-                      backgroundColor:
-                          context.appColors.primarySoftTogreyLightDark,
-                      borderRadius: BorderRadius.circular(20),
-                      childHorizontalPad: SizeConfig.w(0.035),
-                      childVerticalPad: SizeConfig.h(0.004),
-                      child: CustomTextWidget(
-                        '$selectedCount / 5',
-                        color: context.appColors.primaryToPrimaryDark,
-                        fontFamily: AppFont.elMessiriBold,
-                        fontSize: SizeConfig.text(0.03),
+      
+                SizedBox(height: SizeConfig.h(0.018)),
+      
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.045)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomBackgroundWithChild(
+                        backgroundColor:
+                            context.appColors.primarySoftTogreyLightDark,
+                        borderRadius: BorderRadius.circular(20),
+                        childHorizontalPad: SizeConfig.w(0.035),
+                        childVerticalPad: SizeConfig.h(0.004),
+                        child: CustomTextWidget(
+                          '$selectedCount / 5',
+                          color: context.appColors.primaryToPrimaryDark,
+                          fontFamily: AppFont.elMessiriBold,
+                          fontSize: SizeConfig.text(0.03),
+                        ),
                       ),
-                    ),
-
-                    CustomTextWidget(
-                      'الاهتمامات العلمية',
-                      color: context.appColors.blackTogreyMedium,
-                      fontFamily: AppFont.elMessiriBold,
-                      fontSize: SizeConfig.text(0.04),
+      
+                      CustomTextWidget(
+                        'الاهتمامات العلمية',
+                        color: context.appColors.blackTogreyMedium,
+                        fontFamily: AppFont.elMessiriBold,
+                        fontSize: SizeConfig.text(0.04),
+                      ),
+                    ],
+                  ),
+                ),
+      
+                CustomDivider(height: 20, thickness: 3, isDashed: true),
+      
+                Expanded(
+                  child: BlocBuilder<AllInterestsCubit, AllInterestsState>(
+                    builder: (context, state) {
+                      if (state.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+      
+                      if (state.errorMessage != null) {
+                        return Center(
+                          child: CustomTextWidget(
+                            'حدث خطأ أثناء جلب الاهتمامات',
+                            color: AppPalette.greyMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }
+      
+                      if (state.filteredCategories.isEmpty) {
+                        return Center(
+                          child: CustomTextWidget(
+                            'لا توجد اهتمامات متاحة',
+                            color: AppPalette.greyMedium,
+                            fontSize: SizeConfig.text(0.035),
+                          ),
+                        );
+                      }
+      
+                      return ListView.separated(
+                        controller: scrollController,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.w(0.045),
+                          vertical: SizeConfig.h(0.01),
+                        ),
+                        itemCount: state.filteredCategories.length,
+                        separatorBuilder: (_, __) =>
+                            SizedBox(height: SizeConfig.h(0.022)),
+                        itemBuilder: (context, index) {
+                          return MyProfileInterestCategoryGroup(
+                            category: state.filteredCategories[index],
+                            selectedIds: selectedIds,
+                            onInterestTap: _toggleInterest,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+      
+                CustomBackgroundWithChild(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.w(0.03),
+                    vertical: SizeConfig.h(0.017),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark
+                          ? AppPalette.greyMediumDark
+                          : AppPalette.greyBorderCart,
+                      blurRadius: 4,
+                      offset: const Offset(0, -4),
                     ),
                   ],
-                ),
-              ),
-
-              CustomDivider(height: 20, thickness: 3, isDashed: true),
-
-              Expanded(
-                child: BlocBuilder<AllInterestsCubit, AllInterestsState>(
-                  builder: (context, state) {
-                    if (state.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (state.errorMessage != null) {
-                      return Center(
-                        child: CustomTextWidget(
-                          'حدث خطأ أثناء جلب الاهتمامات',
-                          color: AppPalette.greyMedium,
-                          textAlign: TextAlign.center,
-                        ),
-                      );
-                    }
-
-                    if (state.filteredCategories.isEmpty) {
-                      return Center(
-                        child: CustomTextWidget(
-                          'لا توجد اهتمامات متاحة',
-                          color: AppPalette.greyMedium,
-                          fontSize: SizeConfig.text(0.035),
-                        ),
-                      );
-                    }
-
-                    return ListView.separated(
-                      controller: scrollController,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: SizeConfig.w(0.045),
-                        vertical: SizeConfig.h(0.01),
-                      ),
-                      itemCount: state.filteredCategories.length,
-                      separatorBuilder: (_, __) =>
-                          SizedBox(height: SizeConfig.h(0.022)),
-                      itemBuilder: (context, index) {
-                        return MyProfileInterestCategoryGroup(
-                          category: state.filteredCategories[index],
-                          selectedIds: selectedIds,
-                          onInterestTap: _toggleInterest,
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-
-              CustomBackgroundWithChild(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.w(0.03),
-                  vertical: SizeConfig.h(0.017),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDark
-                        ? AppPalette.greyMediumDark
-                        : AppPalette.greyBorderCart,
-                    blurRadius: 4,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
-                backgroundColor: context.appColors.whiteToblack,
-                child: CustomButtonWidget(
-                  width: double.infinity,
-                  backgroundColor: canSave
-                      ? context.appColors.primaryToPrimaryDark
-                      : AppPalette.greyMedium.withOpacity(0.45),
-                  childHorizontalPad: SizeConfig.w(0.04),
-                  childVerticalPad: SizeConfig.w(0.013),
-                  borderRadius: 6,
-                  onTap: canSave ? _save : () {},
-                  child: isSaving
-                      ? SizedBox(
-                          width: SizeConfig.w(0.05),
-                          height: SizeConfig.w(0.05),
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2,
+                  backgroundColor: context.appColors.whiteToblack,
+                  child: CustomButtonWidget(
+                    width: double.infinity,
+                    backgroundColor: canSave
+                        ? context.appColors.primaryToPrimaryDark
+                        : AppPalette.greyMedium.withOpacity(0.45),
+                    childHorizontalPad: SizeConfig.w(0.04),
+                    childVerticalPad: SizeConfig.w(0.013),
+                    borderRadius: 6,
+                    onTap: canSave ? _save : () {},
+                    child: isSaving
+                        ? SizedBox(
+                            width: SizeConfig.w(0.05),
+                            height: SizeConfig.w(0.05),
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppPalette.white,
+                            ),
+                          )
+                        : CustomTextWidget(
+                            'حفظ',
+                            fontSize: SizeConfig.text(0.03),
                             color: AppPalette.white,
                           ),
-                        )
-                      : CustomTextWidget(
-                          'حفظ',
-                          fontSize: SizeConfig.text(0.03),
-                          color: AppPalette.white,
-                        ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

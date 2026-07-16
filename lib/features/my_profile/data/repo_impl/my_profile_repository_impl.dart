@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/core/errors/exceptions.dart';
 import 'package:quiz_app_grad/core/errors/failure.dart';
 import 'package:quiz_app_grad/features/my_profile/data/data_source/my_profile_remote_data_source.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/create_edit_folder/my_profile_folder_action_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/create_edit_folder/my_profile_picker_tests_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/delete_my_profile_picture_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/edit_my_profile_academic_info_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/edit_my_profile_personal_info_entity.dart';
@@ -10,6 +12,8 @@ import 'package:quiz_app_grad/features/my_profile/domain/entities/edit_my_profil
 import 'package:quiz_app_grad/features/my_profile/domain/entities/edit_my_profile_scientific_interests_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_bookmarks_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_filtered_tests_entity.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_folder_content_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_folders_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_library_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/repository/my_profile_repository.dart';
@@ -511,6 +515,337 @@ class MyProfileRepositoryImpl implements MyProfileRepository {
         ServerFailure(
           title: 'حدث خطأ',
           message: 'حدث خطأ غير متوقع أثناء جلب مجلدات الملف الشخصي',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, MyProfileFolderContentEntity>>
+  fetchMyProfileFolderContent({required int folderId}) async {
+    debugPrint(
+      "============ MyProfileRepositoryImpl.fetchMyProfileFolderContent ============",
+    );
+    debugPrint("→ params: {folderId: $folderId}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.fetchMyProfileFolderContent");
+
+      final model = await remoteDataSource.fetchMyProfileFolderContent(
+        folderId: folderId,
+      );
+
+      debugPrint("← remoteDataSource.fetchMyProfileFolderContent success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ MyProfileRepositoryImpl.fetchMyProfileFolderContent ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ MyProfileRepositoryImpl.fetchMyProfileFolderContent CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ MyProfileRepositoryImpl.fetchMyProfileFolderContent Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء جلب محتوى المجلد',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, MyProfilePickerTestsEntity>>
+  fetchMyProfilePickerTests({
+    required int userId,
+    required String tab,
+    String? cursor,
+  }) async {
+    debugPrint(
+      "============ MyProfileRepositoryImpl.fetchMyProfilePickerTests ============",
+    );
+    debugPrint("→ params: {userId: $userId, tab: $tab, cursor: $cursor}");
+
+    try {
+      debugPrint("→ calling remoteDataSource.fetchMyProfilePickerTests");
+
+      final model = await remoteDataSource.fetchMyProfilePickerTests(
+        userId: userId,
+        tab: tab,
+        cursor: cursor,
+      );
+
+      debugPrint("← remoteDataSource.fetchMyProfilePickerTests success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ MyProfileRepositoryImpl.fetchMyProfilePickerTests ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ MyProfileRepositoryImpl.fetchMyProfilePickerTests CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ MyProfileRepositoryImpl.fetchMyProfilePickerTests Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء جلب اختباراتي',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, MyProfilePickerSearchTestsEntity>>
+  fetchMyProfilePickerSearchTests({required String query, int page = 1}) async {
+    debugPrint(
+      "============ MyProfileRepositoryImpl.fetchMyProfilePickerSearchTests ============",
+    );
+    debugPrint("→ params: {query: $query, page: $page}");
+
+    try {
+      final model = await remoteDataSource.fetchMyProfilePickerSearchTests(
+        query: query,
+        page: page,
+      );
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء البحث عن الاختبارات',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, MyProfileFolderActionEntity>> createMyProfileFolder({
+    required Map<String, dynamic> body,
+  }) async {
+    debugPrint(
+      "============ MyProfileRepositoryImpl.createMyProfileFolder ============",
+    );
+    debugPrint("→ body: $body");
+
+    try {
+      debugPrint("→ calling remoteDataSource.createMyProfileFolder");
+
+      final model = await remoteDataSource.createMyProfileFolder(body: body);
+
+      debugPrint("← remoteDataSource.createMyProfileFolder success");
+      debugPrint("→ converting model to entity");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint(
+        "✗ MyProfileRepositoryImpl.createMyProfileFolder ServerException: ${e.errorModel.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint(
+        "✗ MyProfileRepositoryImpl.createMyProfileFolder CacheException: ${e.errorMessage}",
+      );
+      debugPrint("=================================================");
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint(
+        "✗ MyProfileRepositoryImpl.createMyProfileFolder Unexpected error: $e",
+      );
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء إنشاء المجلد',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, MyProfileFolderActionEntity>> updateMyProfileFolder({
+    required int folderId,
+    required Map<String, dynamic> body,
+  }) async {
+    debugPrint(
+      "============ MyProfileRepositoryImpl.updateMyProfileFolder ============",
+    );
+    debugPrint("→ folderId: $folderId");
+    debugPrint("→ body: $body");
+
+    try {
+      final model = await remoteDataSource.updateMyProfileFolder(
+        folderId: folderId,
+        body: body,
+      );
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء تعديل المجلد',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, MyProfileFolderActionEntity>> deleteMyProfileFolder({
+    required int folderId,
+  }) async {
+    debugPrint(
+      "============ MyProfileRepositoryImpl.deleteMyProfileFolder ============",
+    );
+    debugPrint("→ folderId: $folderId");
+
+    try {
+      final model = await remoteDataSource.deleteMyProfileFolder(
+        folderId: folderId,
+      );
+
+      debugPrint("✓ deleteMyProfileFolder success");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint("✗ deleteMyProfileFolder ServerException");
+      debugPrint("→ title: ${e.errorModel.errorTitle}");
+      debugPrint("→ message: ${e.errorModel.errorMessage}");
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint("✗ deleteMyProfileFolder unexpected error: $e");
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء حذف المجلد',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, MyProfileFilteredTestsEntity>> filterMyProfileTests({
+    required Map<String, dynamic> queryParameters,
+  }) async {
+    debugPrint(
+      "============ MyProfileRepositoryImpl.filterMyProfileTests ============",
+    );
+    debugPrint("→ queryParameters: $queryParameters");
+
+    try {
+      final model = await remoteDataSource.filterMyProfileTests(
+        queryParameters: queryParameters,
+      );
+
+      debugPrint("✓ filterMyProfileTests success");
+      debugPrint("→ items count: ${model.data.length}");
+      debugPrint("→ hasMorePages: ${model.meta.hasMorePages}");
+      debugPrint("→ nextCursor: ${model.meta.nextCursor}");
+      debugPrint("=================================================");
+
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      debugPrint("✗ filterMyProfileTests ServerException");
+      debugPrint("→ title: ${e.errorModel.errorTitle}");
+      debugPrint("→ message: ${e.errorModel.errorMessage}");
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e) {
+      debugPrint("✗ filterMyProfileTests unexpected error: $e");
+      debugPrint("=================================================");
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'حدث خطأ غير متوقع أثناء فلترة الاختبارات',
         ),
       );
     }

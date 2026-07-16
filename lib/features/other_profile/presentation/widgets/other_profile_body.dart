@@ -100,7 +100,6 @@ class _OtherProfileBodyState extends State<OtherProfileBody> {
           return const OtherProfileBodyShimmer();
         }
 
-        // 2. حالة الفشل (Failure)
         if (state.isFetchOverviewFailure) {
           return Center(
             child: Padding(

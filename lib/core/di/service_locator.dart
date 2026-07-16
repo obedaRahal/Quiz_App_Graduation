@@ -109,18 +109,26 @@ import 'package:quiz_app_grad/features/library/presentation/manager/library_cubi
 import 'package:quiz_app_grad/features/my_profile/data/data_source/my_profile_remote_data_source.dart';
 import 'package:quiz_app_grad/features/my_profile/data/repo_impl/my_profile_repository_impl.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/repository/my_profile_repository.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/create_my_profile_folder_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/delete_my_profile_folder_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/delete_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_academic_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_personal_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_picture_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/edit_my_profile_scientific_interests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_%5Bicker_search_tests_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_bookmarks_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_folder_content_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_folders_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_library_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/fetch_my_profile_picker_tests_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/filter_my_profile_tests_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/get_my_profile_personal_info_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/search_my_profile_library_use_case.dart';
+import 'package:quiz_app_grad/features/my_profile/domain/use_cases/update_my_profile_folder_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile_bookmarks/my_profile_bookmarks_cubit.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile_folder_editor/my_profile_folder_editor_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/data_sources/my_public_test_details_remote_data_source.dart';
 import 'package:quiz_app_grad/features/my_test_details/data/repo_impl/my_public_test_details_repository_impl.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/repository/my_public_test_details_repository.dart';
@@ -872,10 +880,10 @@ void _registerCreateTestFeature() {
     );
   }
   if (!sl.isRegistered<UpdateContentUseCase>()) {
-  sl.registerLazySingleton<UpdateContentUseCase>(
-    () => UpdateContentUseCase(sl<CreateTestRepository>()),
-  );
-}
+    sl.registerLazySingleton<UpdateContentUseCase>(
+      () => UpdateContentUseCase(sl<CreateTestRepository>()),
+    );
+  }
   if (!sl.isRegistered<CreateTestCubit>()) {
     sl.registerFactory<CreateTestCubit>(
       () => CreateTestCubit(
@@ -1495,6 +1503,67 @@ void _registerMyProfileFeature() {
     );
   }
 
+  if (!sl.isRegistered<FetchMyProfileFolderContentUseCase>()) {
+    sl.registerLazySingleton<FetchMyProfileFolderContentUseCase>(
+      () => FetchMyProfileFolderContentUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<FetchMyProfilePickerTestsUseCase>()) {
+    sl.registerLazySingleton<FetchMyProfilePickerTestsUseCase>(
+      () => FetchMyProfilePickerTestsUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<FetchMyProfilePickerSearchTestsUseCase>()) {
+    sl.registerLazySingleton<FetchMyProfilePickerSearchTestsUseCase>(
+      () => FetchMyProfilePickerSearchTestsUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<CreateMyProfileFolderUseCase>()) {
+    sl.registerLazySingleton<CreateMyProfileFolderUseCase>(
+      () => CreateMyProfileFolderUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<UpdateMyProfileFolderUseCase>()) {
+    sl.registerLazySingleton<UpdateMyProfileFolderUseCase>(
+      () => UpdateMyProfileFolderUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<MyProfileFolderEditorCubit>()) {
+    sl.registerFactory<MyProfileFolderEditorCubit>(
+      () => MyProfileFolderEditorCubit(
+        fetchMyProfilePickerTestsUseCase:
+            sl<FetchMyProfilePickerTestsUseCase>(),
+        fetchMyProfilePickerSearchTestsUseCase:
+            sl<FetchMyProfilePickerSearchTestsUseCase>(),
+        createMyProfileFolderUseCase: sl<CreateMyProfileFolderUseCase>(),
+        updateMyProfileFolderUseCase: sl<UpdateMyProfileFolderUseCase>(),
+        fetchMyProfileFolderContentUseCase: sl(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<DeleteMyProfileFolderUseCase>()) {
+    sl.registerLazySingleton<DeleteMyProfileFolderUseCase>(
+      () => DeleteMyProfileFolderUseCase(sl<MyProfileRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<FilterMyProfileTestsUseCase>()) {
+    sl.registerLazySingleton<FilterMyProfileTestsUseCase>(
+      () => FilterMyProfileTestsUseCase(sl<MyProfileRepository>()),
+    );
+  }
+  if (!sl.isRegistered<GetAllInterestsUseCase>()) {
+    sl.registerLazySingleton<GetAllInterestsUseCase>(
+      () => GetAllInterestsUseCase(sl<AllInterestsRepository>()),
+    );
+  }
+
   if (!sl.isRegistered<MyProfileCubit>()) {
     sl.registerFactory<MyProfileCubit>(
       () => MyProfileCubit(
@@ -1510,6 +1579,17 @@ void _registerMyProfileFeature() {
         fetchMyProfileLibraryUseCase: sl<FetchMyProfileLibraryUseCase>(),
         searchMyProfileLibraryUseCase: sl<SearchMyProfileLibraryUseCase>(),
         fetchMyProfileFoldersUseCase: sl<FetchMyProfileFoldersUseCase>(),
+        fetchMyProfileFolderContentUseCase:
+            sl<FetchMyProfileFolderContentUseCase>(),
+        deleteMyProfileFolderUseCase: sl<DeleteMyProfileFolderUseCase>(),
+        fetchMyProfileTestsUseCase: sl<FetchMyProfilePickerTestsUseCase>(),
+        searchMyProfileTestsUseCase:
+            sl<FetchMyProfilePickerSearchTestsUseCase>(),
+
+        filterMyProfileTestsUseCase: sl<FilterMyProfileTestsUseCase>(),
+
+        getAllInterestsUseCase: sl<GetAllInterestsUseCase>(),
+        getMyProfileShareLinkUseCase: sl<GetOtherProfileShareLinkUseCase>(),
       ),
     );
   }
