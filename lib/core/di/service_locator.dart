@@ -178,6 +178,21 @@ import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit
 import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/data/data_sources/study_plan_remote_data_source.dart';
+import 'package:quiz_app_grad/features/study_plan/data/repo_impl/study_plan_repository_impl.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/repositories/study_plan_repository.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/create_study_plan_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/create_study_subject_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/delete_study_subject_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_daily_overview_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_details_overview_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plans_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_subjects_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/create_update_study_plan/create_update_study_plan_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/manage_study_plans/manage_study_plans_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_subjects/study_subjects_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/data_sources/test_play_modes_remote_data_source.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/repo_impl/test_play_modes_repository_impl.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/services/challenge_result_pdf_service.dart';
@@ -218,6 +233,8 @@ Future<void> initSl() async {
   _registerOtherProfileFeature();
   _registerLibraryFeature();
   _registerMyProfileFeature();
+
+  _registerStudyPlanFeature();
 }
 
 Future<void> _registerCore() async {
@@ -1590,6 +1607,106 @@ void _registerMyProfileFeature() {
 
         getAllInterestsUseCase: sl<GetAllInterestsUseCase>(),
         getMyProfileShareLinkUseCase: sl<GetOtherProfileShareLinkUseCase>(),
+      ),
+    );
+  }
+}
+
+void _registerStudyPlanFeature() {
+  if (!sl.isRegistered<StudyPlanRemoteDataSource>()) {
+    sl.registerLazySingleton<StudyPlanRemoteDataSource>(
+      () => StudyPlanRemoteDataSourceImpl(apiConsumer: sl()),
+    );
+  }
+
+  if (!sl.isRegistered<StudyPlanRepository>()) {
+    sl.registerLazySingleton<StudyPlanRepository>(
+      () => StudyPlanRepositoryImpl(
+        remoteDataSource: sl<StudyPlanRemoteDataSource>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<GetStudyPlanDailyOverviewUseCase>()) {
+    sl.registerLazySingleton<GetStudyPlanDailyOverviewUseCase>(
+      () => GetStudyPlanDailyOverviewUseCase(sl<StudyPlanRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<StudyPlanHomeCubit>()) {
+    sl.registerFactory<StudyPlanHomeCubit>(
+      () => StudyPlanHomeCubit(
+        getStudyPlanDailyOverviewUseCase:
+            sl<GetStudyPlanDailyOverviewUseCase>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<GetStudySubjectsUseCase>()) {
+    sl.registerLazySingleton<GetStudySubjectsUseCase>(
+      () => GetStudySubjectsUseCase(sl<StudyPlanRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<CreateStudySubjectUseCase>()) {
+    sl.registerLazySingleton<CreateStudySubjectUseCase>(
+      () => CreateStudySubjectUseCase(sl<StudyPlanRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<DeleteStudySubjectUseCase>()) {
+    sl.registerLazySingleton<DeleteStudySubjectUseCase>(
+      () => DeleteStudySubjectUseCase(sl<StudyPlanRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<StudySubjectsCubit>()) {
+    sl.registerFactory<StudySubjectsCubit>(
+      () => StudySubjectsCubit(
+        getStudySubjectsUseCase: sl<GetStudySubjectsUseCase>(),
+        createStudySubjectUseCase: sl<CreateStudySubjectUseCase>(),
+        deleteStudySubjectUseCase: sl<DeleteStudySubjectUseCase>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<CreateUpdateStudyPlanCubit>()) {
+    sl.registerFactory<CreateUpdateStudyPlanCubit>(
+      () => CreateUpdateStudyPlanCubit(
+        getStudySubjectsUseCase: sl<GetStudySubjectsUseCase>(),
+        createStudyPlanUseCase: sl<CreateStudyPlanUseCase>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<CreateStudyPlanUseCase>()) {
+    sl.registerLazySingleton<CreateStudyPlanUseCase>(
+      () => CreateStudyPlanUseCase(sl<StudyPlanRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetStudyPlansUseCase>()) {
+    sl.registerLazySingleton<GetStudyPlansUseCase>(
+      () => GetStudyPlansUseCase(sl<StudyPlanRepository>()),
+    );
+  }
+  if (!sl.isRegistered<ManageStudyPlansCubit>()) {
+    sl.registerFactory<ManageStudyPlansCubit>(
+      () => ManageStudyPlansCubit(
+        getStudyPlansUseCase: sl<GetStudyPlansUseCase>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<GetStudyPlanDetailsOverviewUseCase>()) {
+    sl.registerLazySingleton<GetStudyPlanDetailsOverviewUseCase>(
+      () => GetStudyPlanDetailsOverviewUseCase(sl<StudyPlanRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<StudyPlanDetailsCubit>()) {
+    sl.registerFactory<StudyPlanDetailsCubit>(
+      () => StudyPlanDetailsCubit(
+        getStudyPlanDetailsOverviewUseCase:
+            sl<GetStudyPlanDetailsOverviewUseCase>(),
       ),
     );
   }

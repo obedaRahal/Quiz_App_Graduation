@@ -27,6 +27,9 @@ import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bo
 import 'package:quiz_app_grad/features/main_layout/presentation/widget/custom_bottom_nav_bar.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/mock/study_plan_home_mock_scenario.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_home_view.dart';
 
 class MainLayoutBody extends StatelessWidget {
   const MainLayoutBody({super.key});
@@ -74,8 +77,15 @@ class MainLayoutBody extends StatelessWidget {
                   child: const LaboratoryPage(),
                 ),
 
-                
-                const Center(child: Text('الخطة')),
+                //const Center(child: Text('الخطة')),
+                BlocProvider<StudyPlanHomeCubit>(
+                  create: (_) => sl<StudyPlanHomeCubit>()
+                    ..initialize(
+                      mockScenario: StudyPlanHomeMockScenario.planWithTasks,
+                      weekStartsOn: 'السبت',
+                    ),
+                  child: const StudyPlanHomeView(),
+                ),
               ],
             ),
           ),

@@ -1,0 +1,235 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_state.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/active_study_plan_card.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_daily_task_card.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_daily_tasks_header.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_date_section.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_home_header.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_mock_scenario_switcher.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_motivation_banner.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_session_header_and_botton.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_week_selector.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/subjects/show_study_subjects_bottom_sheet.dart';
+
+class StudyPlanHomeBody extends StatelessWidget {
+  const StudyPlanHomeBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StudyPlanHomeCubit, StudyPlanHomeState>(
+      buildWhen: (previous, current) {
+        return previous.overview != current.overview ||
+            previous.status != current.status ||
+            previous.activeMockScenario != current.activeMockScenario;
+      },
+      builder: (context, state) {
+        final overview = state.overview;
+
+        if (overview == null) {
+          return const SizedBox.shrink();
+        }
+
+        return Stack(
+          children: [
+            SingleChildScrollView(
+              //physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.only(
+                left: SizeConfig.w(0.03),
+                top: SizeConfig.h(0.01),
+                right: SizeConfig.w(0.03),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  StudyPlanHomeHeader(
+                    onActionTap: () async {
+                      debugPrint('Create study plan');
+                      // context.pushNamed(AppRouterName.createStudyPlan);
+                      final created = await context.pushNamed<bool>(
+                        AppRouterName.createStudyPlan,
+                      );
+
+                      if (created == true && context.mounted) {
+                        context.read<StudyPlanHomeCubit>().refreshOverview();
+                      }
+                    },
+                  ),
+                  SizedBox(height: SizeConfig.h(0.01)),
+
+                  const StudyPlanMotivationBanner(),
+                  SizedBox(height: SizeConfig.h(0.02)),
+
+                  StudyPlanDateSection(
+                    selectedDate: overview.data.selectedDate,
+                    onManageSubjectsTap: () async {
+                      debugPrint(
+                        '============ Manage Study Subjects ============',
+                      );
+
+                      await showStudySubjectsBottomSheet(context);
+                    },
+                  ),
+                  SizedBox(height: SizeConfig.h(0.015)),
+
+                  StudyPlanWeekSelector(
+                    days: state.days,
+                    selectedDate: state.selectedDate,
+                    rangeStart: state.rangeStart,
+                    rangeEnd: state.rangeEnd,
+                    weekStartsOn: state.weekStartsOn,
+                    serverToday: state.serverToday,
+                    isLoading: state.isLoading,
+                    onDayTap: (day) {
+                      context.read<StudyPlanHomeCubit>().selectDay(day);
+                    },
+                    onPreviousWeek: () {
+                      context.read<StudyPlanHomeCubit>().goToPreviousWeek();
+                    },
+                    onNextWeek: () {
+                      context.read<StudyPlanHomeCubit>().goToNextWeek();
+                    },
+                  ),
+
+                  SizedBox(height: SizeConfig.h(0.02)),
+
+                  StudyPlanSectionHeader(
+                    title: "الخطة الفعالة",
+                    buttonTitle: 'إدارة الخطط',
+                    onTap: () async {
+                      debugPrint(
+                        '============ Open Manage Study Plans ============',
+                      );
+
+                      await context.pushNamed(AppRouterName.manageStudyPlans);
+
+                      if (!context.mounted) {
+                        return;
+                      }
+
+                      context.read<StudyPlanHomeCubit>().refreshOverview();
+                    },
+                  ),
+
+                  SizedBox(height: SizeConfig.h(0.015)),
+
+                  if (overview.data.plan != null)
+                    ActiveStudyPlanCard(
+                      plan: overview.data.plan!,
+                      onTap: () {
+                        debugPrint('Open active plan');
+                        debugPrint(
+                          '============ Open Study Plan Details From Home ============',
+                        );
+                        debugPrint('→ planId: ${overview.data.plan!.id}');
+
+                        context.pushNamed(
+                          AppRouterName.studyPlanDetails,
+                          extra: overview.data.plan!,
+                        );
+                      },
+                      bottomText: context.appColors.primaryToPrimaryDark,
+                      bottomBg: context.appColors.primarySoftTogreyLightDark,
+                    ),
+                  if (overview.data.plan == null)
+                    EmptyActionBox(
+                      onTap: () {
+                        debugPrint('Open active plan');
+                      },
+                      icon: Icons.event_note_rounded,
+                      title: 'لا توجد خطة دراسية',
+                      description: 'أنشئ خطة جديدة وابدأ بتنظيم وقتك ومهامك',
+                    ),
+                  CustomDivider(height: 40, thickness: 3),
+
+                  StudyPlanDailyTasksHeader(
+                    tasksCount: state.tasks.length,
+                    onShowAllTap: () {
+                      debugPrint('Show all tasks');
+                    },
+                  ),
+
+                  SizedBox(height: SizeConfig.h(0.015)),
+
+                  if (state.tasks.isEmpty)
+                    EmptyActionBox(
+                      onTap: () {
+                        debugPrint('Show all tasks');
+                      },
+                      icon: Icons.task_alt_rounded,
+                      title: 'لا توجد مهام لهذا اليوم',
+                      description: 'أضف مهمة جديدة لتبدأ يومك الدراسي',
+                    ),
+                  Column(
+                    children: state.tasks.map((task) {
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: SizeConfig.h(0.012)),
+                        child: StudyPlanDailyTaskCard(
+                          task: task,
+                          isUpdating: state.isUpdatingTask(task.id),
+                          onStatusToggle: () {
+                            context.read<StudyPlanHomeCubit>().toggleTaskStatus(
+                              taskId: task.id,
+                            );
+                          },
+                          onTap: () {
+                            debugPrint('Open task: ${task.id}');
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+
+                  Column(
+                    children: state.tasks.map((task) {
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: SizeConfig.h(0.012)),
+                        child: StudyPlanDailyTaskCard(
+                          task: task,
+                          isUpdating: state.isUpdatingTask(task.id),
+                          onStatusToggle: () {
+                            context.read<StudyPlanHomeCubit>().toggleTaskStatus(
+                              taskId: task.id,
+                            );
+                          },
+                          onTap: () {
+                            debugPrint('Open task: ${task.id}');
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+
+            if (state.isLoading && state.overview != null)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Container(
+                    color: Colors.white.withValues(alpha: 0.28),
+                    alignment: Alignment.topCenter,
+                    child: const LinearProgressIndicator(minHeight: 2),
+                  ),
+                ),
+              ),
+
+            if (StudyPlanHomeCubit.useMockData)
+              const Positioned(
+                left: 14,
+                bottom: 14,
+                child: StudyPlanMockScenarioSwitcher(),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}

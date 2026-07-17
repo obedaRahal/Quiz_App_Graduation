@@ -9,15 +9,17 @@ import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_state.dart';
 import 'package:quiz_app_grad/core/theme/theme/app_theme.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-//  await TokenStorage.clear();
+  //  await TokenStorage.clear();
 
   await CacheHelper.init();
   await initSl();
   AppRouter.init();
+  await initializeDateFormatting('ar');
 
   runApp(const QuizApp());
 }

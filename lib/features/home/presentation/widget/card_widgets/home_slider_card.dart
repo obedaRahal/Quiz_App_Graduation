@@ -30,7 +30,7 @@ class HomeSliderCard extends StatelessWidget {
         showTestCardLongPressMenu(context: context, isDark: isDark, item: item);
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+        margin:  EdgeInsets.symmetric(horizontal: SizeConfig.w(0.01), vertical: 0),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),

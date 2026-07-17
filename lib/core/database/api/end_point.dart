@@ -2,8 +2,8 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 class EndPoints {
-  static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
-  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  //static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
+  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -456,4 +456,25 @@ class EndPoints {
       '$baseUrl/folder/delete/$folderId';
 
   static const String filterMyProfileTests = '$baseUrl/test/tests/filter';
+
+  /////////////////// study plan /////////////////
+  static const String getStudyPlanDailyOverview =
+      '$baseUrl/study-plans/daily-tasks/overview';
+
+  static const String getStudySubjects = '$baseUrl/study-plans/study-subjects';
+
+  static const String createStudySubject =
+      '$baseUrl/study-plans/create/study-subjects';
+
+  static String deleteStudySubject(int subjectId) {
+    return '$baseUrl/study-plans/delete/study-subjects/$subjectId';
+  }
+
+  static const String createStudyPlan = '$baseUrl/study-plans/create';
+
+  static const String getStudyPlans = '$baseUrl/study-plans/study-plans';
+
+  static String getStudyPlanDetailsOverview(int planId) {
+    return '$baseUrl/study-plans/details/overview/$planId';
+  }
 }

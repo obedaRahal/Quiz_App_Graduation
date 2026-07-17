@@ -129,9 +129,13 @@ class AppImage {
   static String get shapes => '$_baseImageLight/shapes-2.svg';
   static String get journals => '$_baseImageLight/journals-svgrepo-com.svg';
 
-
-
   //// play mode
   static String get challengeMainCardDark =>
       '$_baseImageDark/challengeMainCardDark.svg';
+
+  //// study plan
+  static String get studyplan => '$_baseIcon/studyplan.svg';
+  static String get oldTask => '$_baseIcon/oldTask.svg';
+  static String get currentTask => '$_baseIcon/currentTask.svg';
+  static String get doneTask => '$_baseIcon/doneTask.svg';
 }

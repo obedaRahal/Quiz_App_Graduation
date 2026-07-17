@@ -61,6 +61,16 @@ import 'package:quiz_app_grad/features/other_profile/presentation/views/other_pr
 import 'package:quiz_app_grad/features/other_profile/presentation/views/shared_profile_redirect_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_summary_entity.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/mock/study_plan_home_mock_scenario.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/create_update_study_plan/create_update_study_plan_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/manage_study_plans/manage_study_plans_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/views/create_study_plan_view.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/views/manage_study_plans_view.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_details_view.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_home_view.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/views/CHALLENGE/challenge_setup_view.dart';
@@ -595,6 +605,57 @@ class AppRouter {
             return BlocProvider(
               create: (_) => sl<MyProfileFolderEditorCubit>(),
               child: MyProfileFolderEditorView(args: args),
+            );
+          },
+        ),
+
+        ////////////////////  study plan ////////////////////
+        // GoRoute(
+        //   path: AppRouterPath.studyPlan,
+        //   name: AppRouterName.studyPlan,
+        //   builder: (context, state) {
+        //     return BlocProvider(
+        //       create: (_) => StudyPlanHomeCubit()
+        //         ..loadInitialMock(
+        //           scenario: StudyPlanHomeMockScenario.planWithTasks,
+        //         ),
+        //       child: const StudyPlanHomeView(),
+        //     );
+        //   },
+        // ),
+        GoRoute(
+          path: AppRouterPath.createStudyPlan,
+          name: AppRouterName.createStudyPlan,
+          builder: (context, state) {
+            return BlocProvider<CreateUpdateStudyPlanCubit>(
+              create: (_) =>
+                  sl<CreateUpdateStudyPlanCubit>()..initializeCreate(),
+              child: const CreateStudyPlanView(),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.manageStudyPlans,
+          name: AppRouterName.manageStudyPlans,
+          builder: (context, state) {
+            return BlocProvider<ManageStudyPlansCubit>(
+              create: (_) => sl<ManageStudyPlansCubit>()..initialize(),
+              child: const ManageStudyPlansView(),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.studyPlanDetails,
+          name: AppRouterName.studyPlanDetails,
+          builder: (context, state) {
+            final plan = state.extra as StudyPlanSummaryEntity;
+
+            return BlocProvider<StudyPlanDetailsCubit>(
+              create: (_) =>
+                  sl<StudyPlanDetailsCubit>()..initialize(planId: plan.id),
+              child: StudyPlanDetailsView(plan: plan),
             );
           },
         ),

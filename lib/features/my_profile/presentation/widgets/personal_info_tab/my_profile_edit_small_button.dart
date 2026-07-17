@@ -8,11 +8,13 @@ import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 class ProfileEditSmallButton extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
+  final Color? textColor ;
 
   const ProfileEditSmallButton({
     super.key,
     required this.title,
     required this.onTap,
+    this.textColor = AppPalette.greyMedium
   });
 
   @override
@@ -31,16 +33,16 @@ class ProfileEditSmallButton extends StatelessWidget {
           children: [
             Icon(
               Icons.arrow_back_rounded,
-              color: AppPalette.greyMedium,
+              color: textColor,
               size: SizeConfig.h(0.018),
             ),
 
-            SizedBox(width: SizeConfig.w(0.05)),
+            SizedBox(width: SizeConfig.w(0.03)),
 
             CustomTextWidget(
               title,
               fontSize: SizeConfig.text(0.028),
-              color: AppPalette.greyMedium,
+              color: textColor
             ),
           ],
         ),

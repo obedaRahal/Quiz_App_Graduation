@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+  <g id="Group_6870" data-name="Group 6870" transform="translate(-86 -361)">
+    <rect id="Rectangle_6601" data-name="Rectangle 6601" width="26" height="26" rx="6" transform="translate(86 361)" fill="#5583ff"/>
+    <g id="grid-list" transform="translate(88.707 363.707)">
+      <rect id="Rectangle_6602" data-name="Rectangle 6602" width="7" height="2" transform="translate(11.293 3.293)" fill="#fff"/>
+      <rect id="Rectangle_6603" data-name="Rectangle 6603" width="7" height="2" transform="translate(11.293 6.293)" fill="#fff"/>
+      <rect id="Rectangle_6604" data-name="Rectangle 6604" width="6" height="6" rx="2" transform="translate(2.293 2.293)" fill="#fff"/>
+      <rect id="Rectangle_6605" data-name="Rectangle 6605" width="6" height="6" rx="2" transform="translate(2.293 12.293)" fill="#fff"/>
+      <rect id="Rectangle_6606" data-name="Rectangle 6606" width="7" height="2" transform="translate(11.293 12.293)" fill="#fff"/>
+      <rect id="Rectangle_6607" data-name="Rectangle 6607" width="7" height="2" transform="translate(11.293 15.293)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

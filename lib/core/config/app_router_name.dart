@@ -33,6 +33,11 @@ abstract class AppRouterName {
   static const myProfileBookmarks = 'myProfileBookmarks';
   static const myProfileFolderEditor = 'myProfileFolderEditor';
   static const String otherContentDetails = 'otherContentDetails';
+
+  static const String studyPlan = 'studyPlan';
+  static const String createStudyPlan = 'createStudyPlan';
+  static const String manageStudyPlans = 'manageStudyPlans';
+  static const String studyPlanDetails = 'studyPlanDetails';
 }
 
 abstract class AppRouterPath {
@@ -76,4 +81,9 @@ abstract class AppRouterPath {
   static const myProfileBookmarks = '/my-profile-bookmarks';
   static const myProfileFolderEditor = '/myProfileFolderEditor';
   static const otherContentDetails = '/otherContentDetails';
+
+  static const studyPlan = '/studyPlan';
+  static const String createStudyPlan = '/study-plan/create';
+  static const String manageStudyPlans = '/manageStudyPlans';
+  static const String studyPlanDetails = '/study-plan/details';
 }
