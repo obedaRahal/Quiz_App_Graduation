@@ -62,15 +62,12 @@ import 'package:quiz_app_grad/features/other_profile/presentation/views/shared_p
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_summary_entity.dart';
-import 'package:quiz_app_grad/features/study_plan/domain/mock/study_plan_home_mock_scenario.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/create_update_study_plan/create_update_study_plan_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/manage_study_plans/manage_study_plans_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
-import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/create_study_plan_view.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/manage_study_plans_view.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_details_view.dart';
-import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_home_view.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/views/CHALLENGE/challenge_setup_view.dart';
@@ -641,7 +638,7 @@ class AppRouter {
 
                 return cubit;
               },
-              child: const CreateStudyPlanView(),
+              child: CreateStudyPlanView(initialPlan: plan),
             );
           },
         ),

@@ -62,7 +62,6 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
       confirmText: 'مغادرة',
       cancelText: 'إلغاء',
       onConfirm: () {
-        // منطق المغادرة
         context.read<TestPlayModesCubit>().resetSession();
         Navigator.pop(context);
       },

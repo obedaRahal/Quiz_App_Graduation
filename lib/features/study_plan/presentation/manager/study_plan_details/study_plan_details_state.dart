@@ -8,6 +8,8 @@ enum StudyPlanDetailsOverviewStatus { initial, loading, success, failure }
 
 enum StudyPlanDetailsTasksStatus { initial, loading, success, failure }
 
+enum DeleteStudyPlanStatus { initial, loading, success, failure }
+
 class StudyPlanDetailsState {
   final StudyPlanDetailsTab selectedTab;
 
@@ -24,6 +26,12 @@ class StudyPlanDetailsState {
   final bool isUpcomingExpanded;
   final bool isCompletedExpanded;
 
+  final DeleteStudyPlanStatus deleteStatus;
+  final String? deleteSuccessTitle;
+  final String? deleteSuccessMessage;
+  final String? deleteErrorTitle;
+  final String? deleteErrorMessage;
+
   const StudyPlanDetailsState({
     this.selectedTab = StudyPlanDetailsTab.overview,
     this.overviewStatus = StudyPlanDetailsOverviewStatus.initial,
@@ -37,6 +45,12 @@ class StudyPlanDetailsState {
     this.isOldExpanded = true,
     this.isUpcomingExpanded = true,
     this.isCompletedExpanded = true,
+
+    this.deleteStatus = DeleteStudyPlanStatus.initial,
+    this.deleteSuccessTitle,
+    this.deleteSuccessMessage,
+    this.deleteErrorTitle,
+    this.deleteErrorMessage,
   });
 
   bool get isOverviewInitial =>
@@ -92,6 +106,22 @@ class StudyPlanDetailsState {
         filteredCompletedTasks.isNotEmpty;
   }
 
+  bool get isDeleteInitial {
+    return deleteStatus == DeleteStudyPlanStatus.initial;
+  }
+
+  bool get isDeleteLoading {
+    return deleteStatus == DeleteStudyPlanStatus.loading;
+  }
+
+  bool get isDeleteSuccess {
+    return deleteStatus == DeleteStudyPlanStatus.success;
+  }
+
+  bool get isDeleteFailure {
+    return deleteStatus == DeleteStudyPlanStatus.failure;
+  }
+
   StudyPlanDetailsState copyWith({
     StudyPlanDetailsTab? selectedTab,
     StudyPlanDetailsOverviewStatus? overviewStatus,
@@ -108,6 +138,15 @@ class StudyPlanDetailsState {
     bool? isUpcomingExpanded,
     bool? isCompletedExpanded,
     bool clearTasks = false,
+
+    DeleteStudyPlanStatus? deleteStatus,
+    String? deleteSuccessTitle,
+    String? deleteSuccessMessage,
+    String? deleteErrorTitle,
+    String? deleteErrorMessage,
+
+    bool clearDeleteSuccessData = false,
+    bool clearDeleteError = false,
   }) {
     return StudyPlanDetailsState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -122,6 +161,20 @@ class StudyPlanDetailsState {
       isOldExpanded: isOldExpanded ?? this.isOldExpanded,
       isUpcomingExpanded: isUpcomingExpanded ?? this.isUpcomingExpanded,
       isCompletedExpanded: isCompletedExpanded ?? this.isCompletedExpanded,
+
+      deleteStatus: deleteStatus ?? this.deleteStatus,
+      deleteSuccessTitle: clearDeleteSuccessData
+          ? null
+          : deleteSuccessTitle ?? this.deleteSuccessTitle,
+      deleteSuccessMessage: clearDeleteSuccessData
+          ? null
+          : deleteSuccessMessage ?? this.deleteSuccessMessage,
+      deleteErrorTitle: clearDeleteError
+          ? null
+          : deleteErrorTitle ?? this.deleteErrorTitle,
+      deleteErrorMessage: clearDeleteError
+          ? null
+          : deleteErrorMessage ?? this.deleteErrorMessage,
     );
   }
 }

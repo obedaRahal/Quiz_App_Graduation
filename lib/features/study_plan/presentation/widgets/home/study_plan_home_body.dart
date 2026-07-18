@@ -8,6 +8,7 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_state.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/models/study_plan_mutation_result.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/active_study_plan_card.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_daily_task_card.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_daily_tasks_header.dart';
@@ -53,11 +54,12 @@ class StudyPlanHomeBody extends StatelessWidget {
                     onActionTap: () async {
                       debugPrint('Create study plan');
                       // context.pushNamed(AppRouterName.createStudyPlan);
-                      final didChange = await context.pushNamed<bool>(
-                        AppRouterName.createStudyPlan,
-                      );
+                      final result = await context
+                          .pushNamed<StudyPlanMutationResult>(
+                            AppRouterName.createStudyPlan,
+                          );
 
-                      if (didChange == true && context.mounted) {
+                      if (result != null && context.mounted) {
                         await context
                             .read<StudyPlanHomeCubit>()
                             .refreshOverview();
@@ -137,17 +139,23 @@ class StudyPlanHomeBody extends StatelessWidget {
                   if (overview.data.plan != null)
                     ActiveStudyPlanCard(
                       plan: overview.data.plan!,
-                      onTap: () {
+                      onTap: () async {
                         debugPrint('Open active plan');
                         debugPrint(
                           '============ Open Study Plan Details From Home ============',
                         );
                         debugPrint('→ planId: ${overview.data.plan!.id}');
 
-                        context.pushNamed(
+                        final didChange = await context.pushNamed<bool>(
                           AppRouterName.studyPlanDetails,
                           extra: overview.data.plan!,
                         );
+
+                        if (didChange == true && context.mounted) {
+                          await context
+                              .read<StudyPlanHomeCubit>()
+                              .refreshOverview();
+                        }
                       },
                       onEditTap: () async {
                         debugPrint(
@@ -155,14 +163,15 @@ class StudyPlanHomeBody extends StatelessWidget {
                         );
                         debugPrint('→ planId: ${overview.data.plan!.id}');
 
-                        final didChange = await context.pushNamed<bool>(
-                          AppRouterName.createStudyPlan,
-                          extra: overview.data.plan!,
-                        );
+                        final result = await context
+                            .pushNamed<StudyPlanMutationResult>(
+                              AppRouterName.createStudyPlan,
+                              extra: overview.data.plan!,
+                            );
 
-                        debugPrint('→ update result: $didChange');
+                        debugPrint('→ update result: $result');
 
-                        if (didChange == true && context.mounted) {
+                        if (result != null && context.mounted) {
                           debugPrint(
                             '✓ plan changed, refreshing home overview',
                           );

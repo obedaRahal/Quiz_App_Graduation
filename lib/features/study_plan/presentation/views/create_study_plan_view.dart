@@ -6,12 +6,17 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_summary_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/create_update_study_plan/create_update_study_plan_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/create_update_study_plan/create_update_study_plan_state.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/models/study_plan_mutation_result.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/utils/study_plan_date_utils.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/create/create_study_plan_body.dart';
 
 class CreateStudyPlanView extends StatelessWidget {
-  const CreateStudyPlanView({super.key});
+  final StudyPlanSummaryEntity? initialPlan;
+
+  const CreateStudyPlanView({super.key, this.initialPlan});
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +86,13 @@ class CreateStudyPlanView extends StatelessWidget {
                     type: AppValidationSnackBarType.success,
                   );
 
-                  Navigator.of(context).pop(true);
+                  final result = isUpdateMode && initialPlan != null
+                      ? StudyPlanMutationResult.updated(
+                          _buildUpdatedPlan(initialPlan!, state),
+                        )
+                      : const StudyPlanMutationResult.created();
+
+                  Navigator.of(context).pop(result);
                   return;
                 }
 
@@ -228,6 +239,34 @@ class CreateStudyPlanView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  StudyPlanSummaryEntity _buildUpdatedPlan(
+    StudyPlanSummaryEntity plan,
+    CreateUpdateStudyPlanState state,
+  ) {
+    final startDate = state.startDate!;
+    final endDate = state.endDate!;
+    final startDateValue = StudyPlanDateUtils.formatApiDate(startDate);
+    final endDateValue = StudyPlanDateUtils.formatApiDate(endDate);
+    final today = DateTime.now();
+    final normalizedToday = DateTime(today.year, today.month, today.day);
+
+    return plan.copyWith(
+      title: state.title.trim(),
+      emoji: state.emoji.trim(),
+      subjectsCount: state.selectedSubjectsCount,
+      dailyStudyMinutes: state.dailyStudyHours * 60,
+      dailyStudyHours: state.dailyStudyHours,
+      durationDays: endDate.difference(startDate).inDays + 1,
+      startDate: startDateValue,
+      endDate: endDateValue,
+      startsInDays: startDate.difference(normalizedToday).inDays,
+      remainingDays: endDate.difference(normalizedToday).inDays,
+      isDefault: state.isDefault,
+      startDateLabel: startDateValue,
+      endDateLabel: endDateValue,
     );
   }
 }

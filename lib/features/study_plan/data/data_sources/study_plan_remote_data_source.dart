@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
 import 'package:quiz_app_grad/features/study_plan/data/models/create_study_plan_response_model.dart';
+import 'package:quiz_app_grad/features/study_plan/data/models/delete_study_plan_model.dart';
 import 'package:quiz_app_grad/features/study_plan/data/models/study_plan_details_overview_model.dart';
 import 'package:quiz_app_grad/features/study_plan/data/models/study_plan_details_tasks_model.dart';
 import 'package:quiz_app_grad/features/study_plan/data/models/study_plan_overview_model.dart';
@@ -49,6 +50,8 @@ abstract class StudyPlanRemoteDataSource {
   Future<CreateStudyPlanResponseModel> updateStudyPlan({
     required UpdateStudyPlanParams params,
   });
+
+  Future<DeleteStudyPlanModel> deleteStudyPlan({required int planId});
 }
 
 class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
@@ -514,5 +517,33 @@ class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
 
       rethrow;
     }
+  }
+
+  @override
+  Future<DeleteStudyPlanModel> deleteStudyPlan({required int planId}) async {
+    debugPrint(
+      '============ StudyPlanRemoteDataSource.deleteStudyPlan ============',
+    );
+    debugPrint('→ planId: $planId');
+
+    final endpoint = EndPoints.deleteStudyPlan(planId);
+
+    debugPrint('→ method: DELETE');
+    debugPrint('→ endpoint: $endpoint');
+
+    final response = await apiConsumer.delete(endpoint);
+
+    debugPrint('→ raw response: $response');
+
+    final json = _extractResponseMap(response);
+
+    final model = DeleteStudyPlanModel.fromJson(json);
+
+    debugPrint('→ result: $model');
+    debugPrint(
+      '===================================================================',
+    );
+
+    return model;
   }
 }

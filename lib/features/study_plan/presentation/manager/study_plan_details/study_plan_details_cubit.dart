@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/delete_study_plan_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_details_tasks_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/delete_study_plan_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_overview_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_tasks_params.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_state.dart';
@@ -11,9 +13,12 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
   final GetStudyPlanDetailsTasksUseCase getStudyPlanDetailsTasksUseCase;
   int? _planId;
 
+  final DeleteStudyPlanUseCase deleteStudyPlanUseCase;
+
   StudyPlanDetailsCubit({
     required this.getStudyPlanDetailsOverviewUseCase,
     required this.getStudyPlanDetailsTasksUseCase,
+    required this.deleteStudyPlanUseCase,
   }) : super(const StudyPlanDetailsState()) {
     debugPrint('============ StudyPlanDetailsCubit INIT ============');
   }
@@ -226,6 +231,22 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
     );
   }
 
+  Future<void> refreshAfterPlanUpdate() async {
+    debugPrint(
+      '============ StudyPlanDetailsCubit.refreshAfterPlanUpdate ============',
+    );
+
+    await getOverview(forceRefresh: true);
+
+    if (state.hasTasksData) {
+      await getTasks(forceRefresh: true);
+    }
+
+    debugPrint(
+      '=====================================================================',
+    );
+  }
+
   Future<void> retryOverview() async {
     debugPrint('============ StudyPlanDetailsCubit.retryOverview ============');
 
@@ -363,5 +384,121 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
 
   void toggleCompletedTasks() {
     emit(state.copyWith(isCompletedExpanded: !state.isCompletedExpanded));
+  }
+
+  ////////////////// delete STUDY PLAN ///////////////
+
+  Future<void> deleteStudyPlan({required int planId}) async {
+    debugPrint(
+      '============ StudyPlanDetailsCubit.deleteStudyPlan ============',
+    );
+    debugPrint('→ planId: $planId');
+    debugPrint('→ current deleteStatus: ${state.deleteStatus}');
+
+    if (state.isDeleteLoading) {
+      debugPrint('→ delete already loading, request ignored');
+      return;
+    }
+
+    if (planId <= 0) {
+      debugPrint('✗ invalid planId');
+
+      emit(
+        state.copyWith(
+          deleteStatus: DeleteStudyPlanStatus.failure,
+          deleteErrorTitle: 'خطأ',
+          deleteErrorMessage: 'معرّف الخطة الدراسية غير صالح',
+          clearDeleteSuccessData: true,
+        ),
+      );
+
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        deleteStatus: DeleteStudyPlanStatus.loading,
+        clearDeleteSuccessData: true,
+        clearDeleteError: true,
+      ),
+    );
+
+    final params = DeleteStudyPlanParams(planId: planId);
+
+    debugPrint('→ params: $params');
+
+    final result = await deleteStudyPlanUseCase(params);
+
+    result.fold(
+      (failure) {
+        debugPrint('✗ delete study plan failed');
+        debugPrint('→ failure: $failure');
+
+        emit(
+          state.copyWith(
+            deleteStatus: DeleteStudyPlanStatus.failure,
+            deleteErrorTitle: failure.title ?? 'تعذر حذف الخطة',
+            deleteErrorMessage:
+                failure.message ?? 'حدث خطأ أثناء حذف الخطة الدراسية',
+            clearDeleteSuccessData: true,
+          ),
+        );
+      },
+      (response) {
+        debugPrint('✓ delete study plan succeeded');
+        debugPrint('→ success: ${response.success}');
+        debugPrint('→ title: ${response.title}');
+        debugPrint('→ message: ${response.message}');
+        debugPrint('→ statusCode: ${response.statusCode}');
+
+        if (!response.success) {
+          emit(
+            state.copyWith(
+              deleteStatus: DeleteStudyPlanStatus.failure,
+              deleteErrorTitle: response.title.isNotEmpty
+                  ? response.title
+                  : 'تعذر حذف الخطة',
+              deleteErrorMessage: response.message.isNotEmpty
+                  ? response.message
+                  : 'تعذر حذف الخطة الدراسية',
+              clearDeleteSuccessData: true,
+            ),
+          );
+
+          return;
+        }
+
+        emit(
+          state.copyWith(
+            deleteStatus: DeleteStudyPlanStatus.success,
+            deleteSuccessTitle: response.title.isNotEmpty
+                ? response.title
+                : 'تم بنجاح',
+            deleteSuccessMessage: response.message.isNotEmpty
+                ? response.message
+                : 'تم حذف الخطة الدراسية بنجاح',
+            clearDeleteError: true,
+          ),
+        );
+      },
+    );
+
+    debugPrint(
+      '===============================================================',
+    );
+  }
+
+  void resetDeleteState() {
+    debugPrint(
+      '============ StudyPlanDetailsCubit.resetDeleteState ============',
+    );
+
+    emit(
+      state.copyWith(
+        deleteStatus: DeleteStudyPlanStatus.initial,
+        clearDeleteSuccessData: true,
+        clearDeleteError: true,
+      ),
+    );
   }
 }

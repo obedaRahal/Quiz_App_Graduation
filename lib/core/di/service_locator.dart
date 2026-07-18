@@ -183,6 +183,7 @@ import 'package:quiz_app_grad/features/study_plan/data/repo_impl/study_plan_repo
 import 'package:quiz_app_grad/features/study_plan/domain/repositories/study_plan_repository.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/create_study_plan_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/create_study_subject_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/delete_study_plan_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/delete_study_subject_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_daily_overview_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_details_overview_use_case.dart';
@@ -1716,6 +1717,9 @@ void _registerStudyPlanFeature() {
       () => GetStudyPlanDetailsOverviewUseCase(sl<StudyPlanRepository>()),
     );
   }
+  sl.registerLazySingleton<DeleteStudyPlanUseCase>(
+    () => DeleteStudyPlanUseCase(repository: sl<StudyPlanRepository>()),
+  );
 
   sl.registerLazySingleton<GetStudyPlanDetailsTasksUseCase>(
     () => GetStudyPlanDetailsTasksUseCase(sl<StudyPlanRepository>()),
@@ -1727,6 +1731,7 @@ void _registerStudyPlanFeature() {
         getStudyPlanDetailsOverviewUseCase:
             sl<GetStudyPlanDetailsOverviewUseCase>(),
         getStudyPlanDetailsTasksUseCase: sl<GetStudyPlanDetailsTasksUseCase>(),
+        deleteStudyPlanUseCase: sl<DeleteStudyPlanUseCase>(),
       ),
     );
   }

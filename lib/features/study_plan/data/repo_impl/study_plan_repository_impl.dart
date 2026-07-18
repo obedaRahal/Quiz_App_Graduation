@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/errors/exceptions.dart';
 import 'package:quiz_app_grad/core/errors/failure.dart';
 import 'package:quiz_app_grad/features/study_plan/data/data_sources/study_plan_remote_data_source.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/create_update/create_study_plan_response_entity.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/entities/details/delete_study_plan_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/details/study_plan_details_subject_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/details/study_plan_details_tasks_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_overview_entity.dart';
@@ -13,6 +14,7 @@ import 'package:quiz_app_grad/features/study_plan/domain/entities/subjects/study
 import 'package:quiz_app_grad/features/study_plan/domain/repositories/study_plan_repository.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/create_study_plan_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/create_study_subject_params.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/delete_study_plan_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/delete_study_subject_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_daily_overview_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_overview_params.dart';
@@ -630,6 +632,49 @@ class StudyPlanRepositoryImpl implements StudyPlanRepository {
 
       return const Left(
         ServerFailure(title: 'حدث خطأ', message: 'تعذر تعديل الخطة الدراسية'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, DeleteStudyPlanEntity>> deleteStudyPlan(
+    DeleteStudyPlanParams params,
+  ) async {
+    debugPrint(
+      '============ StudyPlanRepositoryImpl.deleteStudyPlan ============',
+    );
+    debugPrint('→ params: $params');
+
+    try {
+      final result = await remoteDataSource.deleteStudyPlan(
+        planId: params.planId,
+      );
+
+      debugPrint('✓ repository delete success');
+      debugPrint('→ result: $result');
+      debugPrint(
+        '================================================================',
+      );
+
+      return Right(result);
+    } on ServerException catch (exception) {
+      debugPrint('✗ repository ServerException');
+      debugPrint('→ exception: $exception');
+
+      final failure = ServerFailure(
+        message: exception.errorModel.errorMessage,
+        title: exception.errorModel.errorTitle,
+        statusCode: exception.errorModel.status,
+      );
+
+      return Left(failure);
+    } catch (error, stackTrace) {
+      debugPrint('✗ repository unexpected error');
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+
+      return const Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر حذف الخطة الدراسية'),
       );
     }
   }

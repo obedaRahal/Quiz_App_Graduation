@@ -485,4 +485,8 @@ class EndPoints {
   static String updateStudyPlan(int planId) {
     return '$baseUrl/study-plans/update/study-plan/$planId';
   }
+
+  static String deleteStudyPlan(int planId) {
+    return '$baseUrl/study-plans/delete/study-plan/$planId';
+  }
 }
