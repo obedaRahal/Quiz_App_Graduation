@@ -17,6 +17,8 @@ class ManageStudyPlansState {
   final String? errorTitle;
   final String? errorMessage;
 
+  final bool hasDataChanges;
+
   const ManageStudyPlansState({
     this.status = ManageStudyPlansStatus.initial,
     this.selectedTab = StudyPlansTab.current,
@@ -25,6 +27,8 @@ class ManageStudyPlansState {
     this.searchQuery = '',
     this.errorTitle,
     this.errorMessage,
+
+    this.hasDataChanges = false,
   });
 
   bool get isInitial => status == ManageStudyPlansStatus.initial;
@@ -67,6 +71,8 @@ class ManageStudyPlansState {
     return hasSearchQuery && plans.isNotEmpty && filteredPlans.isEmpty;
   }
 
+  bool get shouldRefreshPreviousPage => hasDataChanges;
+
   ManageStudyPlansState copyWith({
     ManageStudyPlansStatus? status,
     StudyPlansTab? selectedTab,
@@ -76,6 +82,8 @@ class ManageStudyPlansState {
     String? errorTitle,
     String? errorMessage,
     bool clearError = false,
+
+    bool? hasDataChanges,
   }) {
     return ManageStudyPlansState(
       status: status ?? this.status,
@@ -85,6 +93,8 @@ class ManageStudyPlansState {
       searchQuery: searchQuery ?? this.searchQuery,
       errorTitle: clearError ? null : errorTitle ?? this.errorTitle,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+
+      hasDataChanges: hasDataChanges ?? this.hasDataChanges,
     );
   }
 

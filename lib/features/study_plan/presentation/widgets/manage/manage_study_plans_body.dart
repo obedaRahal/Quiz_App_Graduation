@@ -35,7 +35,7 @@ class ManageStudyPlansBody extends StatelessWidget {
                   plansCount: state.plansCount,
                   maxPlansCount: ManageStudyPlansState.maxPlansCount,
                   onBackTap: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(state.hasDataChanges);
                   },
                 );
               },

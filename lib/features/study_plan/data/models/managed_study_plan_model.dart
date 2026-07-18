@@ -1,8 +1,7 @@
 import 'package:quiz_app_grad/features/study_plan/data/models/managed_study_plan_statistics_model.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/manage/managed_study_plan_entity.dart';
 
-class ManagedStudyPlanModel
-    extends ManagedStudyPlanEntity {
+class ManagedStudyPlanModel extends ManagedStudyPlanEntity {
   const ManagedStudyPlanModel({
     required super.id,
     required super.emoji,
@@ -17,55 +16,42 @@ class ManagedStudyPlanModel
     required super.remainingDays,
     required super.isDefault,
     required super.statistics,
+    required super.startDateLabel,
+    required super.endDateLabel,
   });
 
-  factory ManagedStudyPlanModel.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory ManagedStudyPlanModel.fromJson(Map<String, dynamic> json) {
     final rawStatistics = json['statistics'];
 
     return ManagedStudyPlanModel(
       id: _asInt(json['id']),
       emoji: _asString(json['emoji']),
       title: _asString(json['title']),
-      subjectsCount:
-          _asInt(json['subjects_count']),
-      dailyStudyMinutes:
-          _asInt(json['daily_study_minutes']),
-      dailyStudyHours:
-          _asInt(json['daily_study_hours']),
-      durationDays:
-          _asInt(json['duration_days']),
-      startDate:
-          _asString(json['start_date']),
-      endDate:
-          _asString(json['end_date']),
-      startsInDays:
-          _asInt(json['starts_in_days']),
-      remainingDays:
-          _asInt(json['remaining_days']),
-      isDefault:
-          _asBool(json['is_default']),
-      statistics:
-          rawStatistics is Map<String, dynamic>
-              ? ManagedStudyPlanStatisticsModel
-                  .fromJson(
-                  rawStatistics,
-                )
-              : const ManagedStudyPlanStatisticsModel(
-                  tasksCount: 0,
-                  completedTasksCount: 0,
-                  missedTasksCount: 0,
-                  pendingTasksCount: 0,
-                ),
+      subjectsCount: _asInt(json['subjects_count']),
+      dailyStudyMinutes: _asInt(json['daily_study_minutes']),
+      dailyStudyHours: _asInt(json['daily_study_hours']),
+      durationDays: _asInt(json['duration_days']),
+      startDate: _asString(json['start_date']),
+      endDate: _asString(json['end_date']),
+      startsInDays: _asInt(json['starts_in_days']),
+      remainingDays: _asInt(json['remaining_days']),
+      isDefault: _asBool(json['is_default']),
+      statistics: rawStatistics is Map<String, dynamic>
+          ? ManagedStudyPlanStatisticsModel.fromJson(rawStatistics)
+          : const ManagedStudyPlanStatisticsModel(
+              tasksCount: 0,
+              completedTasksCount: 0,
+              missedTasksCount: 0,
+              pendingTasksCount: 0,
+            ),
+
+      startDateLabel: _asString(json['start_date_label']),
+      endDateLabel: _asString(json['end_date_label']),
     );
   }
 }
 
-String _asString(
-  dynamic value, {
-  String fallback = '',
-}) {
+String _asString(dynamic value, {String fallback = ''}) {
   if (value == null) {
     return fallback;
   }
@@ -75,10 +61,7 @@ String _asString(
   return result.isEmpty ? fallback : result;
 }
 
-int _asInt(
-  dynamic value, {
-  int fallback = 0,
-}) {
+int _asInt(dynamic value, {int fallback = 0}) {
   if (value is int) {
     return value;
   }
@@ -87,16 +70,10 @@ int _asInt(
     return value.toInt();
   }
 
-  return int.tryParse(
-        value?.toString() ?? '',
-      ) ??
-      fallback;
+  return int.tryParse(value?.toString() ?? '') ?? fallback;
 }
 
-bool _asBool(
-  dynamic value, {
-  bool fallback = false,
-}) {
+bool _asBool(dynamic value, {bool fallback = false}) {
   if (value is bool) {
     return value;
   }
@@ -105,16 +82,13 @@ bool _asBool(
     return value != 0;
   }
 
-  final normalized =
-      value?.toString().trim().toLowerCase();
+  final normalized = value?.toString().trim().toLowerCase();
 
-  if (normalized == 'true' ||
-      normalized == '1') {
+  if (normalized == 'true' || normalized == '1') {
     return true;
   }
 
-  if (normalized == 'false' ||
-      normalized == '0') {
+  if (normalized == 'false' || normalized == '0') {
     return false;
   }
 

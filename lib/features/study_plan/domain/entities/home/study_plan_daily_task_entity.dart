@@ -1,12 +1,6 @@
-enum StudyPlanTaskPriority {
-  low,
-  medium,
-  high,
-  unknown,
-}
+enum StudyPlanTaskPriority { low, medium, high, unknown }
 
-extension StudyPlanTaskPriorityX
-    on StudyPlanTaskPriority {
+extension StudyPlanTaskPriorityX on StudyPlanTaskPriority {
   static StudyPlanTaskPriority fromApi(String value) {
     switch (value.trim()) {
       case 'منخفضة':
@@ -52,14 +46,15 @@ class StudyPlanDailyTaskEntity {
   bool get hasSubtasks => subtasks.total > 0;
 
   bool get hasTime {
-    return time.start.trim().isNotEmpty ||
-        time.end.trim().isNotEmpty;
+    return time.start.trim().isNotEmpty || time.end.trim().isNotEmpty;
   }
 
   bool get isCompleted {
     final value = status.trim();
 
     return value == 'تم الإنجاز' ||
+        value == 'تم إنجازها' ||
+        value == 'تم انجازها' ||
         value == 'منجزة' ||
         value == 'مكتملة';
   }
@@ -133,10 +128,8 @@ class StudyPlanTaskTimeEntity {
     return StudyPlanTaskTimeEntity(
       start: start ?? this.start,
       end: end ?? this.end,
-      durationSeconds:
-          durationSeconds ?? this.durationSeconds,
-      durationMinutes:
-          durationMinutes ?? this.durationMinutes,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
     );
   }
 }

@@ -20,6 +20,8 @@ extension ManagedStudyPlanMapper on ManagedStudyPlanEntity {
       startsInDays: startsInDays,
       remainingDays: remainingDays,
       statistics: statistics.toHomeEntity(),
+      startDateLabel: startDateLabel,
+      endDateLabel: endDateLabel,
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/errors/failure.dart';
 import 'package:quiz_app_grad/features/study_plan/data/data_sources/study_plan_remote_data_source.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/create_update/create_study_plan_response_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/details/study_plan_details_subject_entity.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/entities/details/study_plan_details_tasks_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_overview_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/manage/study_plans_response_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/subjects/study_subject_action_response_entity.dart';
@@ -15,7 +16,9 @@ import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/create
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/delete_study_subject_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_daily_overview_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_overview_params.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_tasks_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plans_params.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/update_study_plan_params.dart';
 
 class StudyPlanRepositoryImpl implements StudyPlanRepository {
   final StudyPlanRemoteDataSource remoteDataSource;
@@ -477,5 +480,157 @@ class StudyPlanRepositoryImpl implements StudyPlanRepository {
       );
     }
   }
-  
+
+  @override
+  Future<Either<Failure, StudyPlanDetailsTasksEntity>>
+  getStudyPlanDetailsTasks({
+    required GetStudyPlanDetailsTasksParams params,
+  }) async {
+    debugPrint(
+      '============ StudyPlanRepositoryImpl.getStudyPlanDetailsTasks ============',
+    );
+    debugPrint('→ params: $params');
+    debugPrint('→ planId: ${params.planId}');
+
+    if (params.planId <= 0) {
+      debugPrint('✗ invalid planId');
+      debugPrint(
+        '===========================================================================',
+      );
+
+      return const Left(
+        ServerFailure(
+          title: 'بيانات غير صالحة',
+          message: 'معرّف الخطة الدراسية غير صالح',
+        ),
+      );
+    }
+
+    try {
+      final response = await remoteDataSource.getStudyPlanDetailsTasks(
+        planId: params.planId,
+      );
+
+      debugPrint('✓ tasks received from remote');
+      debugPrint('→ title: ${response.title}');
+      debugPrint('→ old count: ${response.old.count}');
+      debugPrint('→ upcoming count: ${response.upcoming.count}');
+      debugPrint('→ completed count: ${response.completed.count}');
+      debugPrint(
+        '===========================================================================',
+      );
+
+      return Right(response);
+    } on ServerException catch (error) {
+      debugPrint('✗ getStudyPlanDetailsTasks ServerException');
+      debugPrint('→ title: ${error.errorModel.errorTitle}');
+      debugPrint('→ message: ${error.errorModel.errorMessage}');
+      debugPrint(
+        '===========================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: error.errorModel.errorTitle,
+          message: error.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (error) {
+      debugPrint('✗ getStudyPlanDetailsTasks CacheException');
+      debugPrint('→ message: ${error.errorMessage}');
+      debugPrint(
+        '===========================================================================',
+      );
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: error.errorMessage));
+    } catch (error, stackTrace) {
+      debugPrint('✗ getStudyPlanDetailsTasks Unexpected error');
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '===========================================================================',
+      );
+
+      return const Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'تعذر جلب مهام الخطة الدراسية',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, CreateStudyPlanResponseEntity>> updateStudyPlan({
+    required UpdateStudyPlanParams params,
+  }) async {
+    debugPrint(
+      '============ StudyPlanRepositoryImpl.updateStudyPlan ============',
+    );
+    debugPrint('→ params: $params');
+    debugPrint('→ planId: ${params.planId}');
+    debugPrint('→ body: ${params.toBody()}');
+
+    if (!params.isValid) {
+      debugPrint('✗ invalid update study plan params');
+      debugPrint(
+        '================================================================',
+      );
+
+      return const Left(
+        ServerFailure(
+          title: 'بيانات غير صالحة',
+          message: 'بيانات تعديل الخطة الدراسية غير مكتملة',
+        ),
+      );
+    }
+
+    try {
+      final response = await remoteDataSource.updateStudyPlan(params: params);
+
+      debugPrint('✓ repository updated study plan');
+      debugPrint('→ success: ${response.success}');
+      debugPrint('→ title: ${response.title}');
+      debugPrint('→ message: ${response.message}');
+      debugPrint('→ statusCode: ${response.statusCode}');
+      debugPrint(
+        '================================================================',
+      );
+
+      return Right(response);
+    } on ServerException catch (error) {
+      debugPrint('✗ StudyPlanRepositoryImpl.updateStudyPlan ServerException');
+      debugPrint('→ title: ${error.errorModel.errorTitle}');
+      debugPrint('→ message: ${error.errorModel.errorMessage}');
+      debugPrint(
+        '================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: error.errorModel.errorTitle,
+          message: error.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (error) {
+      debugPrint('✗ StudyPlanRepositoryImpl.updateStudyPlan CacheException');
+      debugPrint('→ message: ${error.errorMessage}');
+      debugPrint(
+        '================================================================',
+      );
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: error.errorMessage));
+    } catch (error, stackTrace) {
+      debugPrint('✗ StudyPlanRepositoryImpl.updateStudyPlan unexpected error');
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '================================================================',
+      );
+
+      return const Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر تعديل الخطة الدراسية'),
+      );
+    }
+  }
 }

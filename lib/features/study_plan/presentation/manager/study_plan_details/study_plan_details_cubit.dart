@@ -1,16 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_details_overview_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_details_tasks_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_overview_params.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_tasks_params.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_state.dart';
 
 class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
   final GetStudyPlanDetailsOverviewUseCase getStudyPlanDetailsOverviewUseCase;
-
+  final GetStudyPlanDetailsTasksUseCase getStudyPlanDetailsTasksUseCase;
   int? _planId;
 
-  StudyPlanDetailsCubit({required this.getStudyPlanDetailsOverviewUseCase})
-    : super(const StudyPlanDetailsState()) {
+  StudyPlanDetailsCubit({
+    required this.getStudyPlanDetailsOverviewUseCase,
+    required this.getStudyPlanDetailsTasksUseCase,
+  }) : super(const StudyPlanDetailsState()) {
     debugPrint('============ StudyPlanDetailsCubit INIT ============');
   }
 
@@ -67,14 +71,9 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
         break;
 
       case StudyPlanDetailsTab.tasks:
-        /*
-         * سنستدعي هنا لاحقًا:
-         *
-         * if (!state.hasTasks) {
-         *   await getTasks();
-         * }
-         */
-        debugPrint('→ tasks tab selected; API will be connected next');
+        if (!state.hasTasksData && !state.isTasksLoading) {
+          await getTasks();
+        }
         break;
     }
 
@@ -218,7 +217,7 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
         break;
 
       case StudyPlanDetailsTab.tasks:
-        debugPrint('→ tasks refresh will be connected next');
+        await getTasks(forceRefresh: true);
         break;
     }
 
@@ -239,5 +238,130 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
     }
 
     emit(state.copyWith(clearError: true));
+  }
+
+  Future<void> getTasks({bool forceRefresh = false}) async {
+    debugPrint('============ StudyPlanDetailsCubit.getTasks ============');
+    debugPrint('→ planId: $_planId');
+    debugPrint('→ forceRefresh: $forceRefresh');
+
+    final currentPlanId = _planId;
+
+    if (currentPlanId == null || currentPlanId <= 0) {
+      debugPrint('✗ invalid planId');
+
+      emit(
+        state.copyWith(
+          tasksStatus: StudyPlanDetailsTasksStatus.failure,
+          errorTitle: 'بيانات غير صالحة',
+          errorMessage: 'معرّف الخطة الدراسية غير صالح',
+        ),
+      );
+
+      debugPrint('======================================================');
+      return;
+    }
+
+    if (state.isTasksLoading) {
+      debugPrint('→ ignored: tasks already loading');
+      debugPrint('======================================================');
+      return;
+    }
+
+    if (state.hasTasksData && !forceRefresh) {
+      debugPrint('→ ignored: tasks already loaded');
+      debugPrint('======================================================');
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        tasksStatus: StudyPlanDetailsTasksStatus.loading,
+        clearError: true,
+      ),
+    );
+
+    final params = GetStudyPlanDetailsTasksParams(planId: currentPlanId);
+
+    debugPrint('→ params: $params');
+
+    try {
+      final result = await getStudyPlanDetailsTasksUseCase(params);
+
+      result.fold(
+        (failure) {
+          debugPrint('✗ getTasks failure');
+          debugPrint('→ title: ${failure.title}');
+          debugPrint('→ message: ${failure.message}');
+
+          emit(
+            state.copyWith(
+              tasksStatus: StudyPlanDetailsTasksStatus.failure,
+              errorTitle: failure.title,
+              errorMessage: failure.message,
+            ),
+          );
+        },
+        (response) {
+          debugPrint('✓ getTasks success');
+          debugPrint('→ old count: ${response.old.count}');
+          debugPrint('→ upcoming count: ${response.upcoming.count}');
+          debugPrint('→ completed count: ${response.completed.count}');
+
+          emit(
+            state.copyWith(
+              tasksStatus: StudyPlanDetailsTasksStatus.success,
+              tasks: response,
+              clearError: true,
+            ),
+          );
+        },
+      );
+    } catch (error, stackTrace) {
+      debugPrint('✗ getTasks unexpected error');
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+
+      emit(
+        state.copyWith(
+          tasksStatus: StudyPlanDetailsTasksStatus.failure,
+          errorTitle: 'حدث خطأ',
+          errorMessage: 'تعذر جلب مهام الخطة الدراسية',
+        ),
+      );
+    } finally {
+      debugPrint('======================================================');
+    }
+  }
+
+  void searchTasks(String value) {
+    debugPrint('============ StudyPlanDetailsCubit.searchTasks ============');
+    debugPrint('→ query: $value');
+
+    emit(state.copyWith(tasksSearchQuery: value));
+  }
+
+  void clearTasksSearch() {
+    if (state.tasksSearchQuery.isEmpty) {
+      return;
+    }
+
+    debugPrint(
+      '============ StudyPlanDetailsCubit.clearTasksSearch ============',
+    );
+
+    emit(state.copyWith(tasksSearchQuery: ''));
+  }
+
+  void toggleOldTasks() {
+    emit(state.copyWith(isOldExpanded: !state.isOldExpanded));
+  }
+
+  void toggleUpcomingTasks() {
+    emit(state.copyWith(isUpcomingExpanded: !state.isUpcomingExpanded));
+  }
+
+  void toggleCompletedTasks() {
+    emit(state.copyWith(isCompletedExpanded: !state.isCompletedExpanded));
   }
 }

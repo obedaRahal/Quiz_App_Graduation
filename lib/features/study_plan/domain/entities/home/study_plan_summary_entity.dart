@@ -13,6 +13,9 @@ class StudyPlanSummaryEntity {
   final bool isDefault;
   final StudyPlanStatisticsEntity statistics;
 
+  final String startDateLabel;
+  final String endDateLabel;
+
   const StudyPlanSummaryEntity({
     required this.id,
     required this.emoji,
@@ -27,6 +30,8 @@ class StudyPlanSummaryEntity {
     required this.remainingDays,
     required this.isDefault,
     required this.statistics,
+    required this.startDateLabel,
+    required this.endDateLabel,
   });
 
   bool get shouldDisplayHours => dailyStudyHours > 0;
@@ -53,16 +58,17 @@ class StudyPlanSummaryEntity {
     int? remainingDays,
     bool? isDefault,
     StudyPlanStatisticsEntity? statistics,
+
+    String? startDateLabel,
+    String? endDateLabel,
   }) {
     return StudyPlanSummaryEntity(
       id: id ?? this.id,
       emoji: emoji ?? this.emoji,
       title: title ?? this.title,
       subjectsCount: subjectsCount ?? this.subjectsCount,
-      dailyStudyMinutes:
-          dailyStudyMinutes ?? this.dailyStudyMinutes,
-      dailyStudyHours:
-          dailyStudyHours ?? this.dailyStudyHours,
+      dailyStudyMinutes: dailyStudyMinutes ?? this.dailyStudyMinutes,
+      dailyStudyHours: dailyStudyHours ?? this.dailyStudyHours,
       durationDays: durationDays ?? this.durationDays,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
@@ -70,6 +76,8 @@ class StudyPlanSummaryEntity {
       remainingDays: remainingDays ?? this.remainingDays,
       isDefault: isDefault ?? this.isDefault,
       statistics: statistics ?? this.statistics,
+      startDateLabel: startDateLabel ?? this.startDateLabel,
+      endDateLabel: endDateLabel ?? this.endDateLabel,
     );
   }
 }
@@ -95,12 +103,9 @@ class StudyPlanStatisticsEntity {
   }) {
     return StudyPlanStatisticsEntity(
       tasksCount: tasksCount ?? this.tasksCount,
-      completedTasksCount:
-          completedTasksCount ?? this.completedTasksCount,
-      missedTasksCount:
-          missedTasksCount ?? this.missedTasksCount,
-      pendingTasksCount:
-          pendingTasksCount ?? this.pendingTasksCount,
+      completedTasksCount: completedTasksCount ?? this.completedTasksCount,
+      missedTasksCount: missedTasksCount ?? this.missedTasksCount,
+      pendingTasksCount: pendingTasksCount ?? this.pendingTasksCount,
     );
   }
 }

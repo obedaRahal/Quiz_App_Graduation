@@ -121,6 +121,8 @@ class StudyPlanSummaryModel extends StudyPlanSummaryEntity {
     required super.remainingDays,
     required super.isDefault,
     required super.statistics,
+    required super.startDateLabel,
+    required super.endDateLabel,
   });
 
   factory StudyPlanSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -144,6 +146,9 @@ class StudyPlanSummaryModel extends StudyPlanSummaryEntity {
             ? rawStatistics
             : const <String, dynamic>{},
       ),
+
+      startDateLabel: json['start_date_label'] ?? '',
+      endDateLabel: json['end_date_label'] ?? '',
     );
   }
 }
@@ -215,7 +220,7 @@ class StudyPlanDailyTaskModel extends StudyPlanDailyTaskEntity {
       occurrenceId: _asInt(json['occurrence_id']),
       taskNumber: _asInt(json['task_number']),
       title: _asString(json['title']),
-      status: _asString(json['status']),
+      status: _normalizeStatus(json['status']),
       priority: _asString(json['priority']),
       subtasks: StudyPlanTaskSubtasksModel.fromJson(
         rawSubtasks is Map<String, dynamic>
@@ -226,6 +231,18 @@ class StudyPlanDailyTaskModel extends StudyPlanDailyTaskEntity {
         rawTime is Map<String, dynamic> ? rawTime : const <String, dynamic>{},
       ),
     );
+  }
+  static String _normalizeStatus(dynamic value) {
+    final status = value?.toString().trim() ?? '';
+
+    switch (status) {
+      case 'تم انجازها':
+      case 'تم إنجازها':
+        return 'تم الإنجاز';
+
+      default:
+        return status;
+    }
   }
 }
 

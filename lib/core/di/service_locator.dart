@@ -186,8 +186,10 @@ import 'package:quiz_app_grad/features/study_plan/domain/use_cases/create_study_
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/delete_study_subject_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_daily_overview_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_details_overview_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_details_tasks_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plans_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_subjects_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/update_study_plan_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/create_update_study_plan/create_update_study_plan_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/manage_study_plans/manage_study_plans_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
@@ -1674,12 +1676,25 @@ void _registerStudyPlanFeature() {
       () => CreateUpdateStudyPlanCubit(
         getStudySubjectsUseCase: sl<GetStudySubjectsUseCase>(),
         createStudyPlanUseCase: sl<CreateStudyPlanUseCase>(),
+        updateStudyPlanUseCase: sl<UpdateStudyPlanUseCase>(),
+        getStudyPlanDetailsOverviewUseCase:
+            sl<GetStudyPlanDetailsOverviewUseCase>(),
       ),
     );
   }
   if (!sl.isRegistered<CreateStudyPlanUseCase>()) {
     sl.registerLazySingleton<CreateStudyPlanUseCase>(
       () => CreateStudyPlanUseCase(sl<StudyPlanRepository>()),
+    );
+  }
+  if (!sl.isRegistered<UpdateStudyPlanUseCase>()) {
+    sl.registerLazySingleton<UpdateStudyPlanUseCase>(
+      () => UpdateStudyPlanUseCase(sl<StudyPlanRepository>()),
+    );
+  }
+  if (!sl.isRegistered<GetStudyPlanDetailsOverviewUseCase>()) {
+    sl.registerLazySingleton<GetStudyPlanDetailsOverviewUseCase>(
+      () => GetStudyPlanDetailsOverviewUseCase(sl<StudyPlanRepository>()),
     );
   }
 
@@ -1702,11 +1717,16 @@ void _registerStudyPlanFeature() {
     );
   }
 
+  sl.registerLazySingleton<GetStudyPlanDetailsTasksUseCase>(
+    () => GetStudyPlanDetailsTasksUseCase(sl<StudyPlanRepository>()),
+  );
+
   if (!sl.isRegistered<StudyPlanDetailsCubit>()) {
     sl.registerFactory<StudyPlanDetailsCubit>(
       () => StudyPlanDetailsCubit(
         getStudyPlanDetailsOverviewUseCase:
             sl<GetStudyPlanDetailsOverviewUseCase>(),
+        getStudyPlanDetailsTasksUseCase: sl<GetStudyPlanDetailsTasksUseCase>(),
       ),
     );
   }

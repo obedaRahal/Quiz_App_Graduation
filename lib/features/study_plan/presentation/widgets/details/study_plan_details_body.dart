@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -37,6 +39,7 @@ class StudyPlanDetailsBody extends StatelessWidget {
               onActionTap: () {
                 Navigator.of(context).pop();
               },
+              actionIcon: Icons.arrow_back_ios,
             ),
 
             SizedBox(height: SizeConfig.h(0.018)),
@@ -46,6 +49,10 @@ class StudyPlanDetailsBody extends StatelessWidget {
               onTap: null,
               bottomBg: AppPalette.primarySoft,
               bottomText: AppPalette.primary,
+              onEditTap: () {
+                debugPrint('Open edit plan');
+                context.pushNamed(AppRouterName.createStudyPlan, extra: plan);
+              },
             ),
 
             SizedBox(height: SizeConfig.h(0.022)),

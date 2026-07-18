@@ -28,27 +28,25 @@ class CreateStudyPlanBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StudyPlanHomeHeader(
-            title: 'إنشاء خطة دراسية',
-            actionIcon: Icons.close_rounded,
-            onActionTap: () {
-              Navigator.of(context).pop();
+          BlocBuilder<CreateUpdateStudyPlanCubit, CreateUpdateStudyPlanState>(
+            buildWhen: (previous, current) {
+              return previous.mode != current.mode;
+            },
+            builder: (context, state) {
+              return StudyPlanHomeHeader(
+                title: state.isUpdateMode
+                    ? 'تعديل خطة دراسية'
+                    : 'إنشاء خطة دراسية',
+                actionIcon: Icons.close_rounded,
+                onActionTap: () {
+                  Navigator.of(context).pop();
+                },
+              );
             },
           ),
 
           SizedBox(height: SizeConfig.h(0.025)),
 
-          // StudyPlanTitleSection(
-          //   title: '',
-          //   emoji: '',
-          //   onChanged: (value) {
-          //     debugPrint('→ study plan title: $value');
-          //   },
-          //   onEmojiChanged: (value) {
-          //     debugPrint('→ study plan emoji: $value');
-          //   },
-          // ),
-          // const CustomDivider(height: 35, thickness: 3),
           BlocBuilder<CreateUpdateStudyPlanCubit, CreateUpdateStudyPlanState>(
             buildWhen: (previous, current) {
               return previous.title != current.title ||
@@ -72,7 +70,8 @@ class CreateStudyPlanBody extends StatelessWidget {
 
           BlocBuilder<CreateUpdateStudyPlanCubit, CreateUpdateStudyPlanState>(
             buildWhen: (previous, current) {
-              return previous.startDate != current.startDate ||
+              return previous.mode != current.mode ||
+                  previous.startDate != current.startDate ||
                   previous.endDate != current.endDate;
             },
             builder: (context, state) {
@@ -84,12 +83,38 @@ class CreateStudyPlanBody extends StatelessWidget {
 
                   final today = DateTime(now.year, now.month, now.day);
 
+                  final currentStartDate = state.startDate;
+
+                  final firstAllowedDate =
+                      state.isUpdateMode &&
+                          currentStartDate != null &&
+                          currentStartDate.isBefore(today)
+                      ? currentStartDate
+                      : today;
+
+                  final initialDate = currentStartDate ?? today;
+
+                  final safeInitialDate = initialDate.isBefore(firstAllowedDate)
+                      ? firstAllowedDate
+                      : initialDate;
+
+                  debugPrint(
+                    '============ Select study plan start date ============',
+                  );
+                  debugPrint('→ mode: ${state.mode}');
+                  debugPrint('→ today: $today');
+                  debugPrint('→ currentStartDate: $currentStartDate');
+                  debugPrint('→ firstAllowedDate: $firstAllowedDate');
+                  debugPrint('→ initialDate: $safeInitialDate');
+
                   final selectedDate = await showDatePicker(
                     context: context,
-                    initialDate: state.startDate ?? today,
-                    firstDate: today,
+                    initialDate: safeInitialDate,
+                    firstDate: firstAllowedDate,
                     lastDate: DateTime(today.year + 5, today.month, today.day),
-                    helpText: 'اختر تاريخ بداية الخطة',
+                    helpText: state.isUpdateMode
+                        ? 'عدّل تاريخ بداية الخطة'
+                        : 'اختر تاريخ بداية الخطة',
                     cancelText: 'إلغاء',
                     confirmText: 'تأكيد',
                   );
@@ -112,18 +137,29 @@ class CreateStudyPlanBody extends StatelessWidget {
 
                   final firstAllowedDate = state.startDate ?? today;
 
-                  final initialDate = state.endDate ?? firstAllowedDate;
+                  final currentEndDate = state.endDate ?? firstAllowedDate;
 
-                  final safeInitialDate = initialDate.isBefore(firstAllowedDate)
+                  final safeInitialDate =
+                      currentEndDate.isBefore(firstAllowedDate)
                       ? firstAllowedDate
-                      : initialDate;
+                      : currentEndDate;
+
+                  debugPrint(
+                    '============ Select study plan end date ============',
+                  );
+                  debugPrint('→ mode: ${state.mode}');
+                  debugPrint('→ firstAllowedDate: $firstAllowedDate');
+                  debugPrint('→ currentEndDate: $currentEndDate');
+                  debugPrint('→ initialDate: $safeInitialDate');
 
                   final selectedDate = await showDatePicker(
                     context: context,
                     initialDate: safeInitialDate,
                     firstDate: firstAllowedDate,
                     lastDate: DateTime(today.year + 5, today.month, today.day),
-                    helpText: 'اختر تاريخ نهاية الخطة',
+                    helpText: state.isUpdateMode
+                        ? 'عدّل تاريخ نهاية الخطة'
+                        : 'اختر تاريخ نهاية الخطة',
                     cancelText: 'إلغاء',
                     confirmText: 'تأكيد',
                   );
@@ -150,25 +186,47 @@ class CreateStudyPlanBody extends StatelessWidget {
               return previous.selectedSubjectIds !=
                       current.selectedSubjectIds ||
                   previous.subjectsStatus != current.subjectsStatus ||
-                  previous.availableSubjects != current.availableSubjects;
+                  previous.availableSubjects != current.availableSubjects ||
+                  previous.isFormInitialized != current.isFormInitialized;
             },
             builder: (context, state) {
               return StudyPlanSubjectsSection(
                 selectedSubjectsCount: state.selectedSubjectsCount,
                 maxSubjects: CreateUpdateStudyPlanState.maxSelectedSubjects,
-                isLoading: state.isSubjectsLoading,
+                isLoading:
+                    state.isSubjectsLoading ||
+                    (state.isUpdateMode && !state.isFormInitialized),
                 onTap: () async {
                   debugPrint(
                     '============ Open Select Study Subjects Dialog ============',
                   );
-                  debugPrint('→ subjects status: ${state.subjectsStatus}');
+                  debugPrint('→ mode: ${state.mode}');
                   debugPrint(
-                    '→ available subjects: ${state.availableSubjects.length}',
+                    '→ form initialized: '
+                    '${state.isFormInitialized}',
                   );
-                  debugPrint('→ selected ids: ${state.selectedSubjectIds}');
+                  debugPrint(
+                    '→ subjects status: '
+                    '${state.subjectsStatus}',
+                  );
+                  debugPrint(
+                    '→ available subjects: '
+                    '${state.availableSubjects.length}',
+                  );
+                  debugPrint(
+                    '→ selected ids: '
+                    '${state.selectedSubjectIds}',
+                  );
 
                   if (state.isSubjectsLoading) {
                     debugPrint('✗ dialog ignored: subjects still loading');
+                    return;
+                  }
+
+                  if (state.isUpdateMode && !state.isFormInitialized) {
+                    debugPrint(
+                      '✗ dialog ignored: update form still initializing',
+                    );
                     return;
                   }
 
@@ -269,6 +327,7 @@ class CreateStudyPlanBody extends StatelessWidget {
               );
             },
           ),
+
           SizedBox(height: SizeConfig.h(0.025)),
         ],
       ),

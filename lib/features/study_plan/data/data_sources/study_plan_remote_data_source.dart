@@ -3,6 +3,7 @@ import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
 import 'package:quiz_app_grad/features/study_plan/data/models/create_study_plan_response_model.dart';
 import 'package:quiz_app_grad/features/study_plan/data/models/study_plan_details_overview_model.dart';
+import 'package:quiz_app_grad/features/study_plan/data/models/study_plan_details_tasks_model.dart';
 import 'package:quiz_app_grad/features/study_plan/data/models/study_plan_overview_model.dart';
 import 'package:quiz_app_grad/features/study_plan/data/models/study_plans_response_model.dart';
 import 'package:quiz_app_grad/features/study_plan/data/models/study_subject_action_response_model.dart';
@@ -12,6 +13,7 @@ import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/create
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/delete_study_subject_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_daily_overview_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plans_params.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/update_study_plan_params.dart';
 
 abstract class StudyPlanRemoteDataSource {
   Future<StudyPlanOverviewModel> getDailyTasksOverview({
@@ -38,6 +40,14 @@ abstract class StudyPlanRemoteDataSource {
 
   Future<StudyPlanDetailsOverviewModel> getStudyPlanDetailsOverview({
     required int planId,
+  });
+
+  Future<StudyPlanDetailsTasksModel> getStudyPlanDetailsTasks({
+    required int planId,
+  });
+
+  Future<CreateStudyPlanResponseModel> updateStudyPlan({
+    required UpdateStudyPlanParams params,
   });
 }
 
@@ -384,6 +394,122 @@ class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
       debugPrint('→ stackTrace: $stackTrace');
       debugPrint(
         '==============================================================================',
+      );
+
+      rethrow;
+    }
+  }
+
+  @override
+  Future<StudyPlanDetailsTasksModel> getStudyPlanDetailsTasks({
+    required int planId,
+  }) async {
+    debugPrint(
+      '============ StudyPlanRemoteDataSource.getStudyPlanDetailsTasks ============',
+    );
+    debugPrint('→ planId: $planId');
+
+    if (planId <= 0) {
+      debugPrint('✗ invalid planId: $planId');
+      debugPrint(
+        '============================================================================',
+      );
+
+      throw const FormatException('Invalid study plan id');
+    }
+
+    final endpoint = EndPoints.getStudyPlanDetailsTasks(planId);
+
+    debugPrint('→ endpoint: $endpoint');
+
+    try {
+      final response = await apiConsumer.get(endpoint);
+
+      debugPrint('✓ tasks response received');
+      debugPrint('→ response runtimeType: ${response.runtimeType}');
+
+      final json = response is Map<String, dynamic>
+          ? response
+          : Map<String, dynamic>.from(response as Map);
+
+      final model = StudyPlanDetailsTasksModel.fromJson(json);
+
+      debugPrint('→ title: ${model.title}');
+      debugPrint('→ old count: ${model.old.count}');
+      debugPrint('→ upcoming count: ${model.upcoming.count}');
+      debugPrint('→ completed count: ${model.completed.count}');
+      debugPrint('→ total count: ${model.totalCount}');
+      debugPrint(
+        '============================================================================',
+      );
+
+      return model;
+    } catch (error, stackTrace) {
+      debugPrint('✗ StudyPlanRemoteDataSource.getStudyPlanDetailsTasks error');
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '============================================================================',
+      );
+
+      rethrow;
+    }
+  }
+
+  @override
+  Future<CreateStudyPlanResponseModel> updateStudyPlan({
+    required UpdateStudyPlanParams params,
+  }) async {
+    final endpoint = EndPoints.updateStudyPlan(params.planId);
+    final body = params.toBody();
+
+    debugPrint(
+      '============ StudyPlanRemoteDataSource.updateStudyPlan ============',
+    );
+    debugPrint('→ planId: ${params.planId}');
+    debugPrint('→ endpoint: $endpoint');
+    debugPrint('→ body: $body');
+
+    if (!params.isValid) {
+      debugPrint('✗ invalid update study plan params');
+      debugPrint(
+        '==================================================================',
+      );
+
+      throw const FormatException('Invalid update study plan parameters');
+    }
+
+    try {
+      final response = await apiConsumer.post(endpoint, data: body);
+
+      debugPrint('✓ update study plan response received');
+      debugPrint('→ response type: ${response.runtimeType}');
+
+      final responseMap = _extractResponseMap(response);
+
+      debugPrint('→ raw success: ${responseMap['success']}');
+      debugPrint('→ raw title: ${responseMap['title']}');
+      debugPrint('→ raw message: ${responseMap['message']}');
+      debugPrint('→ raw statusCode: ${responseMap['status_code']}');
+
+      final model = CreateStudyPlanResponseModel.fromJson(responseMap);
+
+      debugPrint('→ success: ${model.success}');
+      debugPrint('→ title: ${model.title}');
+      debugPrint('→ message: ${model.message}');
+      debugPrint('→ statusCode: ${model.statusCode}');
+      debugPrint(
+        '==================================================================',
+      );
+
+      return model;
+    } catch (error, stackTrace) {
+      debugPrint('✗ StudyPlanRemoteDataSource.updateStudyPlan failure');
+      debugPrint('→ planId: ${params.planId}');
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '==================================================================',
       );
 
       rethrow;

@@ -1,47 +1,132 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_state.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/details/study_plan_tasks_search_field.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/details/tudy_plan_tasks_group_section.dart';
 
-class StudyPlanDetailsTasksContent
-    extends StatelessWidget {
-  const StudyPlanDetailsTasksContent({
-    super.key,
-  });
+class StudyPlanDetailsTasksContent extends StatelessWidget {
+  const StudyPlanDetailsTasksContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: SizeConfig.h(0.06),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.checklist_rounded,
-            size: SizeConfig.text(0.13),
-            color: AppPalette.greyMedium,
-          ),
+    return BlocBuilder<StudyPlanDetailsCubit, StudyPlanDetailsState>(
+      buildWhen: (previous, current) {
+        return previous.tasksStatus != current.tasksStatus ||
+            previous.tasks != current.tasks ||
+            previous.tasksSearchQuery != current.tasksSearchQuery ||
+            previous.isOldExpanded != current.isOldExpanded ||
+            previous.isUpcomingExpanded != current.isUpcomingExpanded ||
+            previous.isCompletedExpanded != current.isCompletedExpanded;
+      },
+      builder: (context, state) {
+        if (state.isTasksLoading && !state.hasTasksData) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.08)),
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        }
 
-          SizedBox(height: SizeConfig.h(0.014)),
+        if (state.isTasksFailure && !state.hasTasksData) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
+            child: Column(
+              children: [
+                const Icon(Icons.error_outline_rounded, color: AppPalette.red),
+                SizedBox(height: SizeConfig.h(0.012)),
+                CustomTextWidget(
+                  state.errorMessage ?? 'تعذر جلب مهام الخطة',
+                  textAlign: TextAlign.center,
+                  color: AppPalette.red,
+                ),
+                TextButton(
+                  onPressed: () {
+                    context.read<StudyPlanDetailsCubit>().getTasks(
+                      forceRefresh: true,
+                    );
+                  },
+                  child: const Text('إعادة المحاولة'),
+                ),
+              ],
+            ),
+          );
+        }
 
-          CustomTextWidget(
-            'قائمة المهام',
-            fontSize: SizeConfig.text(0.037),
-            fontWeight: FontWeight.w700,
-            textAlign: TextAlign.center,
-          ),
+        final tasks = state.tasks;
 
-          SizedBox(height: SizeConfig.h(0.006)),
+        if (tasks == null) {
+          return const SizedBox.shrink();
+        }
 
-          CustomTextWidget(
-            'سيتم عرض مهام الخطة هنا',
-            fontSize: SizeConfig.text(0.03),
-            color: AppPalette.greyMedium,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            StudyPlanTasksSearchField(
+              value: state.tasksSearchQuery,
+              onChanged: context.read<StudyPlanDetailsCubit>().searchTasks,
+              onClear: context.read<StudyPlanDetailsCubit>().clearTasksSearch,
+            ),
+
+            SizedBox(height: SizeConfig.h(0.02)),
+
+            if (state.tasksSearchQuery.trim().isNotEmpty &&
+                !state.hasSearchResults)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.04)),
+                child: CustomTextWidget(
+                  'لا توجد مهام مطابقة للبحث',
+                  color: AppPalette.greyMedium,
+                  textAlign: TextAlign.center,
+                ),
+              )
+            else ...[
+              StudyPlanTasksGroupSection(
+                title: 'مهام قديمة',
+                count: tasks.old.count,
+                tasks: state.filteredOldTasks,
+                isExpanded: state.isOldExpanded,
+                onToggle: context.read<StudyPlanDetailsCubit>().toggleOldTasks,
+              ),
+
+              SizedBox(height: SizeConfig.h(0.016)),
+
+              CustomDivider(height: 1, thickness: 1),
+
+              SizedBox(height: SizeConfig.h(0.016)),
+
+              StudyPlanTasksGroupSection(
+                title: 'مهام قادمة',
+                count: tasks.upcoming.count,
+                tasks: state.filteredUpcomingTasks,
+                isExpanded: state.isUpcomingExpanded,
+                onToggle: context
+                    .read<StudyPlanDetailsCubit>()
+                    .toggleUpcomingTasks,
+              ),
+
+              SizedBox(height: SizeConfig.h(0.016)),
+
+              CustomDivider(height: 1, thickness: 1),
+
+              SizedBox(height: SizeConfig.h(0.016)),
+
+              StudyPlanTasksGroupSection(
+                title: 'مهام مكتملة',
+                count: tasks.completed.count,
+                tasks: state.filteredCompletedTasks,
+                isExpanded: state.isCompletedExpanded,
+                onToggle: context
+                    .read<StudyPlanDetailsCubit>()
+                    .toggleCompletedTasks,
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }

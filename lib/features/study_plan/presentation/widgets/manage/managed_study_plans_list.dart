@@ -9,6 +9,7 @@ import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plans_params.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/manage_study_plans/manage_study_plans_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/manage_study_plans/manage_study_plans_state.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/mappers/managed_study_plan_mapper.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/active_study_plan_card.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/manage/managed_study_plan_card.dart';
@@ -101,6 +102,38 @@ class ManagedStudyPlansList extends StatelessWidget {
                     AppRouterName.studyPlanDetails,
                     extra: summaryPlan,
                   );
+                },
+
+                // onEditTap: () {
+                //   debugPrint('Open edit plan');
+                //   context.pushNamed(
+                //     AppRouterName.createStudyPlan,
+                //     extra: summaryPlan,
+                //   );
+                // },
+                onEditTap: () async {
+                  debugPrint(
+                    '============ Open Update Plan From Manage ============',
+                  );
+                  debugPrint('→ planId: ${summaryPlan.id}');
+
+                  final didChange = await context.pushNamed<bool>(
+                    AppRouterName.createStudyPlan,
+                    extra: summaryPlan,
+                  );
+
+                  debugPrint('→ update result: $didChange');
+
+                  if (didChange != true || !context.mounted) {
+                    debugPrint('→ no change, refresh skipped');
+                    return;
+                  }
+
+                  final cubit = context.read<ManageStudyPlansCubit>();
+
+                  cubit.markDataChanged();
+
+                  await cubit.refreshPlans();
                 },
               ),
             );

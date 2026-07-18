@@ -13,6 +13,7 @@ import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_pla
 class ActiveStudyPlanCard extends StatelessWidget {
   final StudyPlanSummaryEntity plan;
   final VoidCallback? onTap;
+  final VoidCallback onEditTap;
   final Color bottomText;
   final Color bottomBg;
 
@@ -20,6 +21,7 @@ class ActiveStudyPlanCard extends StatelessWidget {
     super.key,
     required this.plan,
     this.onTap,
+    required this.onEditTap,
     required this.bottomText,
     required this.bottomBg,
   });
@@ -75,12 +77,7 @@ class ActiveStudyPlanCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _PlanTitleRow(
-                      plan: plan,
-                      onEditTap: () {
-                        debugPrint("on edit tap ");
-                      },
-                    ),
+                    _PlanTitleRow(plan: plan, onEditTap: onEditTap),
                     SizedBox(height: SizeConfig.h(0.018)),
                     _PlanInformationRow(plan: plan),
                   ],

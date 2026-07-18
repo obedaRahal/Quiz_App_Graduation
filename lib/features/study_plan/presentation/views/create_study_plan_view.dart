@@ -37,6 +37,7 @@ class CreateStudyPlanView extends StatelessWidget {
                 debugPrint(
                   '============ CreateStudyPlanView subjects failure ============',
                 );
+                debugPrint('→ mode: ${state.mode}');
                 debugPrint('→ title: ${state.errorTitle}');
                 debugPrint('→ message: ${state.errorMessage}');
 
@@ -59,17 +60,24 @@ class CreateStudyPlanView extends StatelessWidget {
                 return previous.submitStatus != current.submitStatus;
               },
               listener: (context, state) {
+                final isUpdateMode = state.isUpdateMode;
+
                 if (state.isSubmitSuccess) {
+                  final fallbackMessage = isUpdateMode
+                      ? 'تم تعديل الخطة الدراسية بنجاح'
+                      : 'تم إنشاء الخطة الدراسية بنجاح';
+
                   debugPrint(
                     '============ CreateStudyPlanView submit success ============',
                   );
+                  debugPrint('→ mode: ${state.mode}');
+                  debugPrint('→ planId: ${state.planId}');
                   debugPrint('→ message: ${state.actionMessage}');
 
                   showValidationTopSnackBar(
                     context,
                     title: 'تم بنجاح',
-                    message:
-                        state.actionMessage ?? 'تم إنشاء الخطة الدراسية بنجاح',
+                    message: state.actionMessage ?? fallbackMessage,
                     type: AppValidationSnackBarType.success,
                   );
 
@@ -78,16 +86,22 @@ class CreateStudyPlanView extends StatelessWidget {
                 }
 
                 if (state.isSubmitFailure) {
+                  final fallbackMessage = isUpdateMode
+                      ? 'تعذر تعديل الخطة الدراسية'
+                      : 'تعذر إنشاء الخطة الدراسية';
+
                   debugPrint(
                     '============ CreateStudyPlanView submit failure ============',
                   );
+                  debugPrint('→ mode: ${state.mode}');
+                  debugPrint('→ planId: ${state.planId}');
                   debugPrint('→ title: ${state.errorTitle}');
                   debugPrint('→ message: ${state.errorMessage}');
 
                   showValidationTopSnackBar(
                     context,
                     title: state.errorTitle ?? 'خطأ',
-                    message: state.errorMessage ?? 'تعذر إنشاء الخطة الدراسية',
+                    message: state.errorMessage ?? fallbackMessage,
                     type: AppValidationSnackBarType.error,
                   );
 
@@ -105,20 +119,27 @@ class CreateStudyPlanView extends StatelessWidget {
                 CreateUpdateStudyPlanState
               >(
                 buildWhen: (previous, current) {
-                  return previous.submitStatus != current.submitStatus ||
+                  return previous.mode != current.mode ||
+                      previous.planId != current.planId ||
+                      previous.submitStatus != current.submitStatus ||
                       previous.title != current.title ||
                       previous.emoji != current.emoji ||
                       previous.startDate != current.startDate ||
                       previous.endDate != current.endDate ||
                       previous.selectedSubjectIds !=
                           current.selectedSubjectIds ||
-                      previous.dailyStudyHours != current.dailyStudyHours;
+                      previous.dailyStudyHours != current.dailyStudyHours ||
+                      previous.isDefault != current.isDefault ||
+                      previous.isFormInitialized != current.isFormInitialized;
                 },
                 builder: (context, state) {
                   final appColors = context.appColors;
 
-                  final isButtonEnabled =
-                      state.canSubmit && !state.isSubmitLoading;
+                  final isButtonEnabled = state.canSubmit;
+
+                  final buttonText = state.isUpdateMode
+                      ? 'حفظ التعديلات'
+                      : 'إنشاء الخطة';
 
                   return Container(
                     width: double.infinity,
@@ -149,15 +170,39 @@ class CreateStudyPlanView extends StatelessWidget {
                       onTap: isButtonEnabled
                           ? () {
                               debugPrint(
-                                '============ CreateStudyPlanView.createPlan ============',
+                                '============ CreateStudyPlanView.submitStudyPlan ============',
                               );
+                              debugPrint('→ mode: ${state.mode}');
+                              debugPrint('→ planId: ${state.planId}');
+                              debugPrint(
+                                '→ isFormInitialized: '
+                                '${state.isFormInitialized}',
+                              );
+                              debugPrint('→ hasChanges: ${state.hasChanges}');
+                              debugPrint('→ canSubmit: ${state.canSubmit}');
 
                               context
                                   .read<CreateUpdateStudyPlanCubit>()
-                                  .createStudyPlan();
+                                  .submitStudyPlan();
                             }
                           : () {
-                              debugPrint('✗ Create study plan button disabled');
+                              debugPrint(
+                                '============ Study plan submit disabled ============',
+                              );
+                              debugPrint('→ mode: ${state.mode}');
+                              debugPrint(
+                                '→ isFormInitialized: '
+                                '${state.isFormInitialized}',
+                              );
+                              debugPrint('→ hasChanges: ${state.hasChanges}');
+                              debugPrint(
+                                '→ isSubmitLoading: '
+                                '${state.isSubmitLoading}',
+                              );
+                              debugPrint('→ canSubmit: ${state.canSubmit}');
+                              debugPrint(
+                                '=====================================================',
+                              );
                             },
                       child: state.isSubmitLoading
                           ? SizedBox(
@@ -169,7 +214,7 @@ class CreateStudyPlanView extends StatelessWidget {
                               ),
                             )
                           : CustomTextWidget(
-                              'إنشاء الخطة',
+                              buttonText,
                               fontSize: SizeConfig.text(0.03),
                               color: isButtonEnabled
                                   ? AppPalette.white

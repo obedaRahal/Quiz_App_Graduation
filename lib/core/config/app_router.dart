@@ -627,9 +627,20 @@ class AppRouter {
           path: AppRouterPath.createStudyPlan,
           name: AppRouterName.createStudyPlan,
           builder: (context, state) {
+            final plan = state.extra as StudyPlanSummaryEntity?;
+
             return BlocProvider<CreateUpdateStudyPlanCubit>(
-              create: (_) =>
-                  sl<CreateUpdateStudyPlanCubit>()..initializeCreate(),
+              create: (_) {
+                final cubit = sl<CreateUpdateStudyPlanCubit>();
+
+                if (plan == null) {
+                  cubit.initializeCreate();
+                } else {
+                  cubit.initializeUpdate(plan);
+                }
+
+                return cubit;
+              },
               child: const CreateStudyPlanView(),
             );
           },

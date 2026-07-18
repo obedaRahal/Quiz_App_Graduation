@@ -18,12 +18,6 @@ class ManageStudyPlansView extends StatelessWidget {
                 current.errorMessage != null;
           },
           listener: (context, state) {
-            /*
-             * نظهر SnackBar فقط إذا كانت هناك
-             * بيانات قديمة ما زالت معروضة وفشل Refresh.
-             *
-             * أما الفشل الأول فسيظهر داخل القائمة.
-             */
             if (state.plans.isEmpty) {
               return;
             }

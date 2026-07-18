@@ -205,4 +205,16 @@ class ManageStudyPlansCubit extends Cubit<ManageStudyPlansState> {
   void resetError() {
     emit(state.copyWith(clearError: true));
   }
+
+  /////////////////////
+  void markDataChanged() {
+    if (state.hasDataChanges) {
+      debugPrint('→ ManageStudyPlansCubit already marked as changed');
+      return;
+    }
+
+    debugPrint('✓ ManageStudyPlansCubit marked as changed');
+
+    emit(state.copyWith(hasDataChanges: true));
+  }
 }

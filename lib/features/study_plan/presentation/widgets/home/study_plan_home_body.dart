@@ -53,12 +53,14 @@ class StudyPlanHomeBody extends StatelessWidget {
                     onActionTap: () async {
                       debugPrint('Create study plan');
                       // context.pushNamed(AppRouterName.createStudyPlan);
-                      final created = await context.pushNamed<bool>(
+                      final didChange = await context.pushNamed<bool>(
                         AppRouterName.createStudyPlan,
                       );
 
-                      if (created == true && context.mounted) {
-                        context.read<StudyPlanHomeCubit>().refreshOverview();
+                      if (didChange == true && context.mounted) {
+                        await context
+                            .read<StudyPlanHomeCubit>()
+                            .refreshOverview();
                       }
                     },
                   ),
@@ -108,13 +110,25 @@ class StudyPlanHomeBody extends StatelessWidget {
                         '============ Open Manage Study Plans ============',
                       );
 
-                      await context.pushNamed(AppRouterName.manageStudyPlans);
+                      final didChange = await context.pushNamed<bool>(
+                        AppRouterName.manageStudyPlans,
+                      );
 
-                      if (!context.mounted) {
-                        return;
+                      debugPrint('→ manage plans result: $didChange');
+
+                      if (didChange == true && context.mounted) {
+                        debugPrint(
+                          '✓ managed plans changed, refreshing home overview',
+                        );
+
+                        await context
+                            .read<StudyPlanHomeCubit>()
+                            .refreshOverview();
+                      } else {
+                        debugPrint(
+                          '→ managed plans unchanged, home refresh skipped',
+                        );
                       }
-
-                      context.read<StudyPlanHomeCubit>().refreshOverview();
                     },
                   ),
 
@@ -134,6 +148,31 @@ class StudyPlanHomeBody extends StatelessWidget {
                           AppRouterName.studyPlanDetails,
                           extra: overview.data.plan!,
                         );
+                      },
+                      onEditTap: () async {
+                        debugPrint(
+                          '============ Open Update Plan From Home ============',
+                        );
+                        debugPrint('→ planId: ${overview.data.plan!.id}');
+
+                        final didChange = await context.pushNamed<bool>(
+                          AppRouterName.createStudyPlan,
+                          extra: overview.data.plan!,
+                        );
+
+                        debugPrint('→ update result: $didChange');
+
+                        if (didChange == true && context.mounted) {
+                          debugPrint(
+                            '✓ plan changed, refreshing home overview',
+                          );
+
+                          await context
+                              .read<StudyPlanHomeCubit>()
+                              .refreshOverview();
+                        } else {
+                          debugPrint('→ no change, home refresh skipped');
+                        }
                       },
                       bottomText: context.appColors.primaryToPrimaryDark,
                       bottomBg: context.appColors.primarySoftTogreyLightDark,

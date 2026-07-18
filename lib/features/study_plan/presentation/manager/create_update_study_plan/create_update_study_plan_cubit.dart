@@ -1,18 +1,28 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_summary_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/subjects/study_subject_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/create_study_plan_use_case.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plan_details_overview_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_subjects_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/create_study_plan_params.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_overview_params.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/update_study_plan_params.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/use_cases/update_study_plan_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/create_update_study_plan/create_update_study_plan_state.dart';
 
 class CreateUpdateStudyPlanCubit extends Cubit<CreateUpdateStudyPlanState> {
   final GetStudySubjectsUseCase getStudySubjectsUseCase;
   final CreateStudyPlanUseCase createStudyPlanUseCase;
 
+  final UpdateStudyPlanUseCase updateStudyPlanUseCase;
+  final GetStudyPlanDetailsOverviewUseCase getStudyPlanDetailsOverviewUseCase;
   CreateUpdateStudyPlanCubit({
     required this.getStudySubjectsUseCase,
     required this.createStudyPlanUseCase,
+
+    required this.updateStudyPlanUseCase,
+    required this.getStudyPlanDetailsOverviewUseCase,
   }) : super(const CreateUpdateStudyPlanState()) {
     debugPrint('============ CreateUpdateStudyPlanCubit INIT ============');
   }
@@ -42,6 +52,249 @@ class CreateUpdateStudyPlanCubit extends Cubit<CreateUpdateStudyPlanState> {
     debugPrint(
       '=====================================================================',
     );
+  }
+
+  ///////////// initialize  update
+  Future<void> initializeUpdate(StudyPlanSummaryEntity plan) async {
+    debugPrint(
+      '============ CreateUpdateStudyPlanCubit.initializeUpdate ============',
+    );
+    debugPrint('→ planId: ${plan.id}');
+    debugPrint('→ title: ${plan.title}');
+    debugPrint('→ emoji: ${plan.emoji}');
+
+    debugPrint('→ startDate display: ${plan.startDate}');
+    debugPrint('→ endDate display: ${plan.endDate}');
+
+    debugPrint('→ startDateLabel raw: ${plan.startDateLabel}');
+    debugPrint('→ endDateLabel raw: ${plan.endDateLabel}');
+
+    debugPrint('→ dailyStudyHours: ${plan.dailyStudyHours}');
+    debugPrint('→ isDefault: ${plan.isDefault}');
+
+    if (plan.id <= 0) {
+      debugPrint('✗ initializeUpdate invalid plan id');
+
+      emit(
+        CreateUpdateStudyPlanState(
+          mode: StudyPlanFormMode.update,
+          planId: plan.id,
+          errorTitle: 'بيانات غير صالحة',
+          errorMessage: 'معرّف الخطة الدراسية غير صالح',
+        ),
+      );
+
+      return;
+    }
+
+    final parsedStartDate = _parseApiDate(plan.startDateLabel);
+
+    final parsedEndDate = _parseApiDate(plan.endDateLabel);
+
+    debugPrint('→ parsedStartDate: $parsedStartDate');
+    debugPrint('→ parsedEndDate: $parsedEndDate');
+
+    if (parsedStartDate == null || parsedEndDate == null) {
+      debugPrint('✗ initializeUpdate invalid plan dates');
+      debugPrint('→ startDateLabel: ${plan.startDateLabel}');
+      debugPrint('→ endDateLabel: ${plan.endDateLabel}');
+
+      emit(
+        CreateUpdateStudyPlanState(
+          mode: StudyPlanFormMode.update,
+          planId: plan.id,
+          title: plan.title,
+          emoji: plan.emoji,
+          dailyStudyHours: plan.dailyStudyHours,
+          isDefault: plan.isDefault,
+          errorTitle: 'بيانات غير صالحة',
+          errorMessage: 'تعذر قراءة تواريخ الخطة الدراسية',
+          isFormInitialized: false,
+        ),
+      );
+
+      return;
+    }
+
+    emit(
+      CreateUpdateStudyPlanState(
+        mode: StudyPlanFormMode.update,
+        planId: plan.id,
+        title: plan.title,
+        emoji: plan.emoji,
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        dailyStudyHours: plan.dailyStudyHours,
+        isDefault: plan.isDefault,
+        isFormInitialized: false,
+      ),
+    );
+
+    debugPrint('✓ basic update values emitted');
+    debugPrint('→ state.title: ${state.title}');
+    debugPrint('→ state.emoji: ${state.emoji}');
+    debugPrint('→ state.startDate: ${state.startDate}');
+    debugPrint('→ state.endDate: ${state.endDate}');
+    debugPrint('→ state.dailyStudyHours: ${state.dailyStudyHours}');
+    debugPrint('→ state.isDefault: ${state.isDefault}');
+
+    await getAvailableSubjects();
+
+    debugPrint(
+      '→ subjects request completed with status: ${state.subjectsStatus}',
+    );
+
+    if (!state.isSubjectsSuccess) {
+      debugPrint(
+        '✗ initializeUpdate stopped: available subjects request failed',
+      );
+      return;
+    }
+
+    await _loadOverviewForUpdate(plan.id);
+  }
+
+  DateTime? _parseApiDate(String value) {
+    final normalized = value.trim();
+
+    if (normalized.isEmpty) {
+      debugPrint('✗ _parseApiDate received empty value');
+      return null;
+    }
+
+    final parsedDate = DateTime.tryParse(normalized);
+
+    if (parsedDate == null) {
+      debugPrint('✗ _parseApiDate failed');
+      debugPrint('→ raw value: $value');
+      return null;
+    }
+
+    final localDate = parsedDate.isUtc ? parsedDate.toLocal() : parsedDate;
+
+    final normalizedDate = DateTime(
+      localDate.year,
+      localDate.month,
+      localDate.day,
+    );
+
+    debugPrint('✓ _parseApiDate');
+    debugPrint('→ raw: $value');
+    debugPrint('→ parsed: $parsedDate');
+    debugPrint('→ local: $localDate');
+    debugPrint('→ normalized: $normalizedDate');
+
+    return normalizedDate;
+  }
+
+  Future<void> _loadOverviewForUpdate(int planId) async {
+    debugPrint(
+      '============ CreateUpdateStudyPlanCubit._loadOverviewForUpdate ============',
+    );
+    debugPrint('→ planId: $planId');
+
+    final params = GetStudyPlanDetailsOverviewParams(planId: planId);
+
+    try {
+      final result = await getStudyPlanDetailsOverviewUseCase(params);
+
+      result.fold(
+        (failure) {
+          debugPrint('✗ overview loading failure');
+          debugPrint('→ title: ${failure.title}');
+          debugPrint('→ message: ${failure.message}');
+
+          emit(
+            state.copyWith(
+              errorTitle: failure.title,
+              errorMessage: failure.message,
+              isFormInitialized: false,
+            ),
+          );
+        },
+        (response) {
+          debugPrint('✓ overview loaded');
+
+          final overviewSubjectIds = response.subjects.items
+              .map((subject) => subject.id)
+              .toSet();
+
+          final availableSubjectIds = state.availableSubjects
+              .map((subject) => subject.id)
+              .toSet();
+
+          final validSelectedIds = overviewSubjectIds
+              .where(availableSubjectIds.contains)
+              .take(CreateUpdateStudyPlanState.maxSelectedSubjects)
+              .toSet();
+
+          debugPrint('→ overview subject ids: $overviewSubjectIds');
+          debugPrint('→ available subject ids: $availableSubjectIds');
+          debugPrint('→ valid selected ids: $validSelectedIds');
+
+          _completeUpdateInitialization(selectedSubjectIds: validSelectedIds);
+        },
+      );
+    } catch (error, stackTrace) {
+      debugPrint('✗ overview unexpected error');
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+
+      emit(
+        state.copyWith(
+          errorTitle: 'حدث خطأ',
+          errorMessage: 'تعذر جلب تفاصيل الخطة الدراسية',
+          isFormInitialized: false,
+        ),
+      );
+    } finally {
+      debugPrint(
+        '============================================================================',
+      );
+    }
+  }
+
+  void _completeUpdateInitialization({required Set<int> selectedSubjectIds}) {
+    debugPrint(
+      '============ CreateUpdateStudyPlanCubit._completeUpdateInitialization ============',
+    );
+
+    final originalSelectedIds = Set<int>.unmodifiable(selectedSubjectIds);
+
+    emit(
+      state.copyWith(
+        selectedSubjectIds: originalSelectedIds,
+
+        initialTitle: state.title,
+        initialEmoji: state.emoji,
+        initialStartDate: state.startDate,
+        initialEndDate: state.endDate,
+        initialSelectedSubjectIds: originalSelectedIds,
+        initialDailyStudyHours: state.dailyStudyHours,
+        initialIsDefault: state.isDefault,
+
+        isFormInitialized: true,
+        submitStatus: CreateUpdateStudyPlanSubmitStatus.initial,
+        clearActionMessage: true,
+        clearError: true,
+      ),
+    );
+
+    debugPrint('✓ update form initialized');
+    debugPrint('→ initialTitle: ${state.initialTitle}');
+    debugPrint('→ initialEmoji: ${state.initialEmoji}');
+    debugPrint('→ initialStartDate: ${state.initialStartDate}');
+    debugPrint('→ initialEndDate: ${state.initialEndDate}');
+    debugPrint(
+      '→ initialSelectedSubjectIds: '
+      '${state.initialSelectedSubjectIds}',
+    );
+    debugPrint(
+      '→ initialDailyStudyHours: '
+      '${state.initialDailyStudyHours}',
+    );
+    debugPrint('→ initialIsDefault: ${state.initialIsDefault}');
+    debugPrint('→ hasChanges: ${state.hasChanges}');
   }
 
   // =========================================================
@@ -451,6 +704,19 @@ class CreateUpdateStudyPlanCubit extends Cubit<CreateUpdateStudyPlanState> {
       '============ CreateUpdateStudyPlanCubit.validateBeforeSubmit ============',
     );
 
+    if (state.isUpdateMode && !state.isFormInitialized) {
+      debugPrint('✗ update form is not initialized');
+
+      emit(
+        state.copyWith(
+          errorTitle: 'يرجى الانتظار',
+          errorMessage: 'لم يكتمل تحميل بيانات الخطة بعد',
+        ),
+      );
+
+      return false;
+    }
+
     if (!state.hasValidTitle) {
       debugPrint('✗ invalid title');
 
@@ -577,6 +843,11 @@ class CreateUpdateStudyPlanCubit extends Cubit<CreateUpdateStudyPlanState> {
 
   ///////////////////// create API ////////////
   Future<void> createStudyPlan() async {
+    if (!state.isCreateMode) {
+      debugPrint('✗ createStudyPlan ignored: state is not create mode');
+      return;
+    }
+
     debugPrint(
       '============ CreateUpdateStudyPlanCubit.createStudyPlan ============',
     );
@@ -667,6 +938,224 @@ class CreateUpdateStudyPlanCubit extends Cubit<CreateUpdateStudyPlanState> {
           submitStatus: CreateUpdateStudyPlanSubmitStatus.failure,
           errorTitle: 'حدث خطأ',
           errorMessage: 'تعذر إنشاء الخطة الدراسية',
+        ),
+      );
+    } finally {
+      debugPrint(
+        '==================================================================',
+      );
+    }
+  }
+
+  /////////////// update ////////////////////
+  /////////////// update ////////////////////
+  /////////////// update ////////////////////
+  /////////////// update ////////////////////
+  /////////////// update ////////////////////
+  Future<void> submitStudyPlan() async {
+    debugPrint(
+      '============ CreateUpdateStudyPlanCubit.submitStudyPlan ============',
+    );
+    debugPrint('→ mode: ${state.mode}');
+    debugPrint('→ planId: ${state.planId}');
+    debugPrint('→ isFormInitialized: ${state.isFormInitialized}');
+    debugPrint('→ hasChanges: ${state.hasChanges}');
+    debugPrint('→ canSubmit: ${state.canSubmit}');
+
+    if (state.isSubmitLoading) {
+      debugPrint('✗ submit ignored: request already loading');
+      debugPrint(
+        '===================================================================',
+      );
+      return;
+    }
+
+    if (state.isUpdateMode) {
+      await updateStudyPlan();
+      return;
+    }
+
+    await createStudyPlan();
+  }
+
+  Future<void> updateStudyPlan() async {
+    debugPrint(
+      '============ CreateUpdateStudyPlanCubit.updateStudyPlan ============',
+    );
+
+    if (state.isSubmitLoading) {
+      debugPrint('✗ update ignored: request already loading');
+      debugPrint(
+        '==================================================================',
+      );
+      return;
+    }
+
+    if (!state.isUpdateMode) {
+      debugPrint('✗ update ignored: state is not update mode');
+      debugPrint(
+        '==================================================================',
+      );
+      return;
+    }
+
+    if (!state.isFormInitialized) {
+      debugPrint('✗ update ignored: form is not initialized');
+
+      emit(
+        state.copyWith(
+          errorTitle: 'يرجى الانتظار',
+          errorMessage: 'لم يكتمل تحميل بيانات الخطة بعد',
+        ),
+      );
+
+      return;
+    }
+
+    if (!state.hasChanges) {
+      debugPrint('✗ update ignored: no changes detected');
+
+      emit(
+        state.copyWith(
+          errorTitle: 'لا توجد تعديلات',
+          errorMessage: 'قم بتعديل حقل واحد على الأقل قبل الحفظ',
+        ),
+      );
+
+      return;
+    }
+
+    final planId = state.planId;
+
+    if (planId == null || planId <= 0) {
+      debugPrint('✗ update failed: invalid planId');
+
+      emit(
+        state.copyWith(
+          errorTitle: 'بيانات غير صالحة',
+          errorMessage: 'معرّف الخطة الدراسية غير صالح',
+        ),
+      );
+
+      return;
+    }
+
+    final isValid = validateBeforeSubmit();
+
+    debugPrint('→ isValid: $isValid');
+
+    if (!isValid) {
+      debugPrint('✗ update stopped: form validation failed');
+      debugPrint(
+        '==================================================================',
+      );
+      return;
+    }
+
+    final params = UpdateStudyPlanParams(
+      planId: planId,
+
+      title: state.title.trim() != state.initialTitle.trim()
+          ? state.title.trim()
+          : null,
+
+      emoji: state.emoji.trim() != state.initialEmoji.trim()
+          ? state.emoji.trim()
+          : null,
+
+      startDate: !state.isSameDate(state.startDate, state.initialStartDate)
+          ? state.startDate
+          : null,
+
+      endDate: !state.isSameDate(state.endDate, state.initialEndDate)
+          ? state.endDate
+          : null,
+
+      subjectIds:
+          !state.isSameIdSet(
+            state.selectedSubjectIds,
+            state.initialSelectedSubjectIds,
+          )
+          ? state.selectedSubjectIdsList
+          : null,
+
+      dailyStudyHours: state.dailyStudyHours != state.initialDailyStudyHours
+          ? state.dailyStudyHours
+          : null,
+
+      isDefault: state.isDefault != state.initialIsDefault
+          ? state.isDefault
+          : null,
+    );
+
+    debugPrint('→ params: $params');
+    // debugPrint('→ body: ${params.toBody()}');
+    final body = params.toBody();
+    debugPrint('→ changed fields body: $body');
+    if (body.isEmpty) {
+      debugPrint('✗ update stopped: body is empty');
+
+      emit(
+        state.copyWith(
+          errorTitle: 'لا توجد تعديلات',
+          errorMessage: 'قم بتعديل حقل واحد على الأقل قبل الحفظ',
+        ),
+      );
+
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        submitStatus: CreateUpdateStudyPlanSubmitStatus.loading,
+        clearActionMessage: true,
+        clearError: true,
+      ),
+    );
+
+    try {
+      final result = await updateStudyPlanUseCase(params);
+
+      result.fold(
+        (failure) {
+          debugPrint('✗ updateStudyPlan failure');
+          debugPrint('→ title: ${failure.title}');
+          debugPrint('→ message: ${failure.message}');
+
+          emit(
+            state.copyWith(
+              submitStatus: CreateUpdateStudyPlanSubmitStatus.failure,
+              errorTitle: failure.title,
+              errorMessage: failure.message,
+            ),
+          );
+        },
+        (response) {
+          debugPrint('✓ updateStudyPlan success');
+          debugPrint('→ success: ${response.success}');
+          debugPrint('→ title: ${response.title}');
+          debugPrint('→ message: ${response.message}');
+          debugPrint('→ statusCode: ${response.statusCode}');
+
+          emit(
+            state.copyWith(
+              submitStatus: CreateUpdateStudyPlanSubmitStatus.success,
+              actionMessage: response.message,
+              clearError: true,
+            ),
+          );
+        },
+      );
+    } catch (error, stackTrace) {
+      debugPrint('✗ updateStudyPlan unexpected error');
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+
+      emit(
+        state.copyWith(
+          submitStatus: CreateUpdateStudyPlanSubmitStatus.failure,
+          errorTitle: 'حدث خطأ',
+          errorMessage: 'تعذر تعديل الخطة الدراسية',
         ),
       );
     } finally {

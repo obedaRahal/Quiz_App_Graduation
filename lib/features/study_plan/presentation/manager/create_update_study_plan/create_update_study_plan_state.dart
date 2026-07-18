@@ -32,6 +32,16 @@ class CreateUpdateStudyPlanState {
   final String? errorTitle;
   final String? errorMessage;
 
+  final String initialTitle;
+  final String initialEmoji;
+  final DateTime? initialStartDate;
+  final DateTime? initialEndDate;
+  final Set<int> initialSelectedSubjectIds;
+  final int initialDailyStudyHours;
+  final bool initialIsDefault;
+
+  final bool isFormInitialized;
+
   const CreateUpdateStudyPlanState({
     this.mode = StudyPlanFormMode.create,
     this.planId,
@@ -48,6 +58,15 @@ class CreateUpdateStudyPlanState {
     this.actionMessage,
     this.errorTitle,
     this.errorMessage,
+
+    this.initialTitle = '',
+    this.initialEmoji = '',
+    this.initialStartDate,
+    this.initialEndDate,
+    this.initialSelectedSubjectIds = const {},
+    this.initialDailyStudyHours = 0,
+    this.initialIsDefault = false,
+    this.isFormInitialized = false,
   });
 
   bool get isCreateMode => mode == StudyPlanFormMode.create;
@@ -112,12 +131,83 @@ class CreateUpdateStudyPlanState {
       dailyStudyHours >= 1 && dailyStudyHours <= 10;
 
   bool get canSubmit {
-    return hasValidTitle &&
+    final isValid =
+        hasValidTitle &&
         hasValidEmoji &&
         hasValidDates &&
         hasSelectedSubjects &&
         hasValidDailyStudyTime &&
         !isSubmitLoading;
+
+    if (!isValid) {
+      return false;
+    }
+
+    if (isUpdateMode) {
+      return isFormInitialized && hasChanges;
+    }
+
+    return true;
+  }
+
+  bool get hasChanges {
+    if (isCreateMode) {
+      return true;
+    }
+
+    if (!isFormInitialized) {
+      return false;
+    }
+
+    return title.trim() != initialTitle.trim() ||
+        emoji.trim() != initialEmoji.trim() ||
+        !isSameDate(startDate, initialStartDate) ||
+        !isSameDate(endDate, initialEndDate) ||
+        !isSameIdSet(selectedSubjectIds, initialSelectedSubjectIds) ||
+        dailyStudyHours != initialDailyStudyHours ||
+        isDefault != initialIsDefault;
+  }
+
+  bool isSameDate(DateTime? first, DateTime? second) {
+    if (first == null || second == null) {
+      return first == second;
+    }
+
+    return first.year == second.year &&
+        first.month == second.month &&
+        first.day == second.day;
+  }
+
+  bool isSameIdSet(Set<int> first, Set<int> second) {
+    return first.length == second.length && first.containsAll(second);
+  }
+
+  bool get hasTitleChanged {
+    return title.trim() != initialTitle.trim();
+  }
+
+  bool get hasEmojiChanged {
+    return emoji.trim() != initialEmoji.trim();
+  }
+
+  bool get hasStartDateChanged {
+    return !isSameDate(startDate, initialStartDate);
+  }
+
+  bool get hasEndDateChanged {
+    return !isSameDate(endDate, initialEndDate);
+  }
+
+  bool get haveSubjectsChanged {
+    return !isSameIdSet(selectedSubjectIds, initialSelectedSubjectIds);
+  }
+
+  bool get hasDailyStudyHoursChanged {
+    return dailyStudyHours != initialDailyStudyHours;
+  }
+
+  bool get hasDefaultStatusChanged {
+    return isDefault != initialIsDefault;
   }
 
   CreateUpdateStudyPlanState copyWith({
@@ -141,6 +231,15 @@ class CreateUpdateStudyPlanState {
     bool clearEndDate = false,
     bool clearActionMessage = false,
     bool clearError = false,
+
+    String? initialTitle,
+    String? initialEmoji,
+    DateTime? initialStartDate,
+    DateTime? initialEndDate,
+    Set<int>? initialSelectedSubjectIds,
+    int? initialDailyStudyHours,
+    bool? initialIsDefault,
+    bool? isFormInitialized,
   }) {
     return CreateUpdateStudyPlanState(
       mode: mode ?? this.mode,
@@ -160,6 +259,17 @@ class CreateUpdateStudyPlanState {
           : actionMessage ?? this.actionMessage,
       errorTitle: clearError ? null : errorTitle ?? this.errorTitle,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+
+      initialTitle: initialTitle ?? this.initialTitle,
+      initialEmoji: initialEmoji ?? this.initialEmoji,
+      initialStartDate: initialStartDate ?? this.initialStartDate,
+      initialEndDate: initialEndDate ?? this.initialEndDate,
+      initialSelectedSubjectIds:
+          initialSelectedSubjectIds ?? this.initialSelectedSubjectIds,
+      initialDailyStudyHours:
+          initialDailyStudyHours ?? this.initialDailyStudyHours,
+      initialIsDefault: initialIsDefault ?? this.initialIsDefault,
+      isFormInitialized: isFormInitialized ?? this.isFormInitialized,
     );
   }
 }

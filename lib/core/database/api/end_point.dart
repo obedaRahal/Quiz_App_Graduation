@@ -477,4 +477,12 @@ class EndPoints {
   static String getStudyPlanDetailsOverview(int planId) {
     return '$baseUrl/study-plans/details/overview/$planId';
   }
+
+  static String getStudyPlanDetailsTasks(int planId) {
+    return '$baseUrl/study-plans/details/tasks/$planId';
+  }
+
+  static String updateStudyPlan(int planId) {
+    return '$baseUrl/study-plans/update/study-plan/$planId';
+  }
 }

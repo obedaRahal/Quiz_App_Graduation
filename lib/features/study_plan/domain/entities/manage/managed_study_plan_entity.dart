@@ -20,6 +20,9 @@ class ManagedStudyPlanEntity {
 
   final StudyPlanStatisticsEntity statistics;
 
+  final String startDateLabel;
+  final String endDateLabel;
+
   const ManagedStudyPlanEntity({
     required this.id,
     required this.emoji,
@@ -34,6 +37,9 @@ class ManagedStudyPlanEntity {
     required this.remainingDays,
     required this.isDefault,
     required this.statistics,
+
+    required this.startDateLabel,
+    required this.endDateLabel,
   });
 
   bool get hasStarted => startsInDays <= 0;
