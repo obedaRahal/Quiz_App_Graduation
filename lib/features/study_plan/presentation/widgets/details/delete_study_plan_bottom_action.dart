@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
@@ -9,8 +10,13 @@ import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_pla
 
 class DeleteStudyPlanBottomAction extends StatelessWidget {
   final VoidCallback onDeleteTap;
+  final VoidCallback onCreateTask;
 
-  const DeleteStudyPlanBottomAction({super.key, required this.onDeleteTap});
+  const DeleteStudyPlanBottomAction({
+    super.key,
+    required this.onDeleteTap,
+    required this.onCreateTask,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +27,110 @@ class DeleteStudyPlanBottomAction extends StatelessWidget {
         return previous.deleteStatus != current.deleteStatus;
       },
       builder: (context, state) {
+        // return SizedBox(
+        //   width: double.infinity,
+        //   child: Row(
+        //     children: [
+        //       Container(
+        //         //width: double.infinity,
+        //         padding: EdgeInsets.symmetric(
+        //           horizontal: SizeConfig.w(0.035),
+        //           vertical: SizeConfig.h(0.012),
+        //         ),
+        //         decoration: BoxDecoration(
+        //           color: isDark ? AppPalette.black : AppPalette.white,
+        //           boxShadow: [
+        //             BoxShadow(
+        //               color: AppPalette.greyMedium.withValues(alpha: 0.25),
+        //               blurRadius: 6,
+        //               offset: const Offset(0, -3),
+        //             ),
+        //           ],
+        //         ),
+        //         child: CustomButtonWidget(
+        //           //  width: double.infinity,
+        //           backgroundColor: AppPalette.primary,
+        //           borderRadius: 6,
+        //           childHorizontalPad: SizeConfig.w(0.04),
+        //           childVerticalPad: SizeConfig.w(0.013),
+        //           onTap: state.isDeleteLoading ? () {} : onDeleteTap,
+        //           child: state.isDeleteLoading
+        //               ? SizedBox(
+        //                   width: SizeConfig.w(0.045),
+        //                   height: SizeConfig.w(0.045),
+        //                   child: const CircularProgressIndicator(
+        //                     strokeWidth: 2,
+        //                     color: AppPalette.white,
+        //                   ),
+        //                 )
+        //               : Row(
+        //                   mainAxisAlignment: MainAxisAlignment.center,
+        //                   children: [
+        //                     const Icon(Icons.add, color: AppPalette.white),
+        //                     SizedBox(width: SizeConfig.w(0.02)),
+        //                     CustomTextWidget(
+        //                       'إضافة مهمة جديدة',
+        //                       color: AppPalette.white,
+        //                       fontSize: SizeConfig.text(0.03),
+        //                     ),
+        //                   ],
+        //                 ),
+        //         ),
+        //       ),
+
+        //       Container(
+        //         //  width: double.infinity,
+        //         padding: EdgeInsets.symmetric(
+        //           horizontal: SizeConfig.w(0.035),
+        //           vertical: SizeConfig.h(0.012),
+        //         ),
+        //         decoration: BoxDecoration(
+        //           color: isDark ? AppPalette.black : AppPalette.white,
+        //           boxShadow: [
+        //             BoxShadow(
+        //               color: AppPalette.greyMedium.withValues(alpha: 0.25),
+        //               blurRadius: 6,
+        //               offset: const Offset(0, -3),
+        //             ),
+        //           ],
+        //         ),
+        //         child: CustomButtonWidget(
+        //           //   width: double.infinity,
+        //           backgroundColor: AppPalette.red,
+        //           borderRadius: 6,
+        //           childHorizontalPad: SizeConfig.w(0.04),
+        //           childVerticalPad: SizeConfig.w(0.013),
+        //           onTap: state.isDeleteLoading ? () {} : onDeleteTap,
+        //           child: state.isDeleteLoading
+        //               ? SizedBox(
+        //                   width: SizeConfig.w(0.045),
+        //                   height: SizeConfig.w(0.045),
+        //                   child: const CircularProgressIndicator(
+        //                     strokeWidth: 2,
+        //                     color: AppPalette.white,
+        //                   ),
+        //                 )
+        //               : Row(
+        //                   mainAxisAlignment: MainAxisAlignment.center,
+        //                   children: [
+        //                     const Icon(
+        //                       Icons.delete_outline_rounded,
+        //                       color: AppPalette.white,
+        //                     ),
+        //                     SizedBox(width: SizeConfig.w(0.02)),
+        //                     CustomTextWidget(
+        //                       'حذف الخطة الدراسية',
+        //                       color: AppPalette.white,
+        //                       fontSize: SizeConfig.text(0.03),
+        //                     ),
+        //                   ],
+        //                 ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // );
+
         return Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(
@@ -37,40 +147,61 @@ class DeleteStudyPlanBottomAction extends StatelessWidget {
               ),
             ],
           ),
-          child: CustomButtonWidget(
-            width: double.infinity,
-            backgroundColor: AppPalette.red,
-            borderRadius: 6,
-            childHorizontalPad: SizeConfig.w(0.04),
-            childVerticalPad: SizeConfig.w(0.013),
-            onTap: state.isDeleteLoading ? () {} : onDeleteTap,
-            child: state.isDeleteLoading
-                ? SizedBox(
-                    width: SizeConfig.w(0.045),
-                    height: SizeConfig.w(0.045),
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppPalette.white,
-                    ),
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.delete_outline_rounded,
-                        color: AppPalette.white,
-                      ),
-                      SizedBox(width: SizeConfig.w(0.02)),
-                      CustomTextWidget(
-                        'حذف الخطة الدراسية',
-                        color: AppPalette.white,
-                        fontSize: SizeConfig.text(0.03),
-                      ),
-                    ],
-                  ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _BottomActionButton(
+                  title: "إضافة مهمة",
+                  backgroundColor: AppPalette.primary,
+                  onTap: onCreateTask,
+                ),
+              ),
+
+              SizedBox(width: SizeConfig.w(0.025)),
+
+              Expanded(
+                child: _BottomActionButton(
+                  title: 'حذف الخطة',
+                  backgroundColor: AppPalette.red,
+                  onTap: onDeleteTap,
+                ),
+              ),
+            ],
           ),
         );
       },
+    );
+  }
+}
+
+class _BottomActionButton extends StatelessWidget {
+  final String title;
+  final Color backgroundColor;
+  final VoidCallback onTap;
+
+  const _BottomActionButton({
+    required this.title,
+    required this.backgroundColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomButtonWidget(
+      width: double.infinity,
+      backgroundColor: backgroundColor,
+      borderRadius: 6,
+      childHorizontalPad: SizeConfig.w(0.025),
+      childVerticalPad: SizeConfig.w(0.013),
+      onTap: onTap,
+      child: CustomTextWidget(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        color: AppPalette.white,
+        fontFamily: AppFont.elMessiriSemiBold,
+        fontSize: SizeConfig.text(0.03),
+      ),
     );
   }
 }

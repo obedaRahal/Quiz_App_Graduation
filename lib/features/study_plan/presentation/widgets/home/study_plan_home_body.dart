@@ -229,15 +229,55 @@ class StudyPlanHomeBody extends StatelessWidget {
                             );
                           },
                           onTap: () async {
-                            debugPrint('Open task: ${task.id}');
+                            final activePlan = overview.data.plan;
+
+                            debugPrint(
+                              '============ Open Study Task Details From Home ============',
+                            );
+                            debugPrint('→ taskId: ${task.id}');
+                            debugPrint('→ active planId: ${activePlan?.id}');
+
+                            if (activePlan == null) {
+                              debugPrint(
+                                '✗ cannot open task details: no active study plan',
+                              );
+
+                              if (!context.mounted) {
+                                return;
+                              }
+
+                              ScaffoldMessenger.of(context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'لا توجد خطة دراسية فعالة مرتبطة بهذه المهمة',
+                                    ),
+                                  ),
+                                );
+
+                              return;
+                            }
+
                             final didChange = await context.pushNamed<bool>(
                               AppRouterName.studyTaskDetails,
                               extra: StudyTaskDetailsArgs(
-                                // هون لازم اعدل
-                                planId: 6,
+                                planId: activePlan.id,
                                 taskId: task.id,
                               ),
                             );
+
+                            debugPrint('→ task details result: $didChange');
+
+                            if (didChange == true && context.mounted) {
+                              debugPrint(
+                                '✓ task changed, refreshing home overview',
+                              );
+
+                              await context
+                                  .read<StudyPlanHomeCubit>()
+                                  .refreshOverview();
+                            }
                           },
                         ),
                       );

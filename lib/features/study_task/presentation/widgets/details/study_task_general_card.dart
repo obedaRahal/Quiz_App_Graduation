@@ -110,6 +110,12 @@ class StudyTaskGeneralDetailsCard extends StatelessWidget {
           backgroundColor: Color(0xff2ECC71),
           textColor: Colors.white,
         );
+      case StudyTaskStatus.missed:
+        return  _TaskStatusStyle(
+          title: 'فائتة',
+          backgroundColor: AppPalette.red,
+          textColor: Colors.white,
+        );
     }
   }
 }

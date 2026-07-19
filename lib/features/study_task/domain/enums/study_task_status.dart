@@ -1,4 +1,4 @@
-enum StudyTaskStatus { todo, inProgress, completed }
+enum StudyTaskStatus { todo, inProgress, completed, missed }
 
 extension StudyTaskStatusExtension on StudyTaskStatus {
   String get label {
@@ -11,6 +11,9 @@ extension StudyTaskStatusExtension on StudyTaskStatus {
 
       case StudyTaskStatus.completed:
         return 'تم الإنجاز';
+
+      case StudyTaskStatus.missed:
+        return 'فائتة';
     }
   }
 
@@ -24,6 +27,9 @@ extension StudyTaskStatusExtension on StudyTaskStatus {
 
       case StudyTaskStatus.completed:
         return StudyTaskStatus.todo;
+
+      case StudyTaskStatus.missed:
+        return StudyTaskStatus.missed;
     }
   }
 
@@ -40,7 +46,12 @@ StudyTaskStatus studyTaskStatusFromApi(String value) {
     case 'تم الإنجاز':
       return StudyTaskStatus.completed;
 
+    case 'فائتة':
+      return StudyTaskStatus.missed;
+
     case 'للقيام':
+      return StudyTaskStatus.todo;
+
     default:
       return StudyTaskStatus.todo;
   }

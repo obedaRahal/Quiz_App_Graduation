@@ -40,6 +40,7 @@ abstract class AppRouterName {
   static const String studyPlanDetails = 'studyPlanDetails';
 
   static const String studyTaskDetails = 'studyTaskDetails';
+  static const String createStudyTask = 'createStudyTask';
 }
 
 abstract class AppRouterPath {
@@ -90,4 +91,5 @@ abstract class AppRouterPath {
   static const String studyPlanDetails = '/study-plan/details';
 
   static const String studyTaskDetails = '/study-task-details';
+  static const String createStudyTask = '/create-study-task';
 }

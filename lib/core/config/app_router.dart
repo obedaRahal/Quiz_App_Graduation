@@ -69,7 +69,10 @@ import 'package:quiz_app_grad/features/study_plan/presentation/views/create_stud
 import 'package:quiz_app_grad/features/study_plan/presentation/views/manage_study_plans_view.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_details_view.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/study_task_details_args.dart';
+import 'package:quiz_app_grad/features/study_task/data/models/create_study_task_args.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_cubit.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/views/create_study_task_view.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/views/study_task_details_view.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
@@ -657,9 +660,6 @@ class AppRouter {
           },
         ),
 
-
-
-
         GoRoute(
           path: AppRouterPath.studyPlanDetails,
           name: AppRouterName.studyPlanDetails,
@@ -696,6 +696,38 @@ class AppRouter {
                 planId: args.planId,
                 taskId: args.taskId,
               ),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.createStudyTask,
+          name: AppRouterName.createStudyTask,
+          builder: (context, state) {
+            final args = state.extra as CreateStudyTaskArgs?;
+
+            debugPrint(
+              '============ Open Create Study Task Route ============',
+            );
+            debugPrint('→ args: $args');
+            debugPrint(
+              '======================================================',
+            );
+
+            if (args == null || !args.isValid) {
+              debugPrint('✗ Create Study Task Route: invalid arguments');
+
+              return const Scaffold(
+                body: SafeArea(
+                  child: Center(child: Text('بيانات الخطة غير صالحة')),
+                ),
+              );
+            }
+
+            return BlocProvider<CreateStudyTaskCubit>(
+              create: (_) =>
+                  sl<CreateStudyTaskCubit>()..initialize(planId: args.planId),
+              child: CreateStudyTaskView(planId: args.planId),
             );
           },
         ),

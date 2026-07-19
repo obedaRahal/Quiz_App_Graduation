@@ -22,11 +22,7 @@ class StudyPlanHomeHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        
-          HeaderActionButton(
-            icon: Icons.arrow_back_ios_rounded,
-            onTap: onActionTap,
-          ),
+        HeaderActionButton(icon: actionIcon, onTap: onActionTap),
         CustomTextWidget(
           title,
           fontSize: SizeConfig.text(0.055),

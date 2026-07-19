@@ -77,6 +77,7 @@ class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
 
       debugPrint('✓ study plan overview response received');
       debugPrint('→ response type: ${response.runtimeType}');
+      debugPrint('→ response  ${response.toString()}');
 
       final responseMap = _extractResponseMap(response);
 
@@ -138,6 +139,7 @@ class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
 
       debugPrint('✓ study subjects response received');
       debugPrint('→ response type: ${response.runtimeType}');
+      debugPrint('→ response  ${response.toString()}');
 
       final responseMap = _extractResponseMap(response);
 
@@ -181,6 +183,7 @@ class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
 
       debugPrint('✓ create study subject response received');
       debugPrint('→ response type: ${response.runtimeType}');
+      debugPrint('→ response  ${response.toString()}');
 
       final responseMap = _extractResponseMap(response);
 
@@ -224,6 +227,7 @@ class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
 
       debugPrint('✓ delete study subject response received');
       debugPrint('→ response type: ${response.runtimeType}');
+      debugPrint('→ response  ${response.toString()}');
 
       final responseMap = _extractResponseMap(response);
 
@@ -268,6 +272,7 @@ class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
 
       debugPrint('√ create study plan response received');
       debugPrint('→ response type: ${response.runtimeType}');
+      debugPrint('→ response  ${response.toString()}');
 
       final responseMap = _extractResponseMap(response);
 
@@ -312,6 +317,7 @@ class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
 
       debugPrint('√ study plans response received');
       debugPrint('→ response type: ${response.runtimeType}');
+      debugPrint('→ response  ${response.toString()}');
 
       final responseMap = _extractResponseMap(response);
 
@@ -487,6 +493,7 @@ class StudyPlanRemoteDataSourceImpl implements StudyPlanRemoteDataSource {
 
       debugPrint('✓ update study plan response received');
       debugPrint('→ response type: ${response.runtimeType}');
+      debugPrint('→ response  ${response.toString()}');
 
       final responseMap = _extractResponseMap(response);
 

@@ -199,7 +199,10 @@ import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_sub
 import 'package:quiz_app_grad/features/study_task/data/data_sources/study_task_remote_data_source.dart';
 import 'package:quiz_app_grad/features/study_task/data/repo_impl/study_task_repository_impl.dart';
 import 'package:quiz_app_grad/features/study_task/domain/repositories/study_task_repository.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/create_study_task_use_case.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/get_study_plan_subjects_use_case.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/get_study_task_details_use_case.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/data_sources/test_play_modes_remote_data_source.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/repo_impl/test_play_modes_repository_impl.dart';
@@ -1762,5 +1765,20 @@ void _registerStudyTaskFeature() {
 
   sl.registerLazySingleton<StudyTaskRemoteDataSource>(
     () => StudyTaskRemoteDataSourceImpl(apiConsumer: sl()),
+  );
+
+  sl.registerLazySingleton<GetStudyPlanSubjectsUseCase>(
+    () => GetStudyPlanSubjectsUseCase(sl<StudyTaskRepository>()),
+  );
+
+  sl.registerLazySingleton<CreateStudyTaskUseCase>(
+    () => CreateStudyTaskUseCase(sl<StudyTaskRepository>()),
+  );
+
+  sl.registerFactory<CreateStudyTaskCubit>(
+    () => CreateStudyTaskCubit(
+      getStudyPlanSubjectsUseCase: sl<GetStudyPlanSubjectsUseCase>(),
+      createStudyTaskUseCase: sl<CreateStudyTaskUseCase>(),
+    ),
   );
 }

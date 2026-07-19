@@ -7,8 +7,13 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_
 
 class StudyTaskDetailsHeader extends StatelessWidget {
   final VoidCallback onBackTap;
+  final String? title;
 
-  const StudyTaskDetailsHeader({super.key, required this.onBackTap});
+  const StudyTaskDetailsHeader({
+    super.key,
+    required this.onBackTap,
+    this.title = 'تفاصيل المهمة',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +30,7 @@ class StudyTaskDetailsHeader extends StatelessWidget {
             onTap: onBackTap,
           ),
           CustomTextWidget(
-            'تفاصيل المهمة',
+            title ?? "",
             fontSize: SizeConfig.text(0.047),
             fontFamily: AppFont.elMessiriBold,
             color: context.appColors.blackToGrey2Dark,

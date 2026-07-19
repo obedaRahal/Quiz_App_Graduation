@@ -495,4 +495,13 @@ class EndPoints {
     return '$baseUrl/study-plans/study-plans/'
         '$planId/tasks/$taskId/details';
   }
+
+  static String createStudyTask(int planId) {
+    return '$baseUrl/study-plans/create/task/$planId';
+  }
+
+  static String getStudyPlanSubjects(int planId) {
+    return '$baseUrl/study-plans/'
+        'subjects-related-plan/$planId';
+  }
 }

@@ -6,16 +6,12 @@ import 'package:quiz_app_grad/features/study_task/domain/use_cases/get_study_tas
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/get_study_task_details_params.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_state.dart';
 
-class StudyTaskDetailsCubit
-    extends Cubit<StudyTaskDetailsState> {
+class StudyTaskDetailsCubit extends Cubit<StudyTaskDetailsState> {
   final GetStudyTaskDetailsUseCase getStudyTaskDetailsUseCase;
 
-  StudyTaskDetailsCubit({
-    required this.getStudyTaskDetailsUseCase,
-  }) : super(const StudyTaskDetailsState()) {
-    debugPrint(
-      '============ StudyTaskDetailsCubit INIT ============',
-    );
+  StudyTaskDetailsCubit({required this.getStudyTaskDetailsUseCase})
+    : super(const StudyTaskDetailsState()) {
+    debugPrint('============ StudyTaskDetailsCubit INIT ============');
   }
 
   // =========================================================
@@ -33,9 +29,7 @@ class StudyTaskDetailsCubit
     debugPrint('→ taskId: $taskId');
 
     if (state.isLoading) {
-      debugPrint(
-        '✗ getStudyTaskDetails ignored: request already loading',
-      );
+      debugPrint('✗ getStudyTaskDetails ignored: request already loading');
       debugPrint(
         '=================================================================',
       );
@@ -68,10 +62,7 @@ class StudyTaskDetailsCubit
     );
 
     try {
-      final params = GetStudyTaskDetailsParams(
-        planId: planId,
-        taskId: taskId,
-      );
+      final params = GetStudyTaskDetailsParams(planId: planId, taskId: taskId);
 
       debugPrint('→ params: $params');
 
@@ -79,46 +70,31 @@ class StudyTaskDetailsCubit
 
       result.fold(
         (failure) {
-          debugPrint(
-            '✗ StudyTaskDetailsCubit.getStudyTaskDetails failure',
-          );
+          debugPrint('✗ StudyTaskDetailsCubit.getStudyTaskDetails failure');
           debugPrint('→ title: ${failure.title}');
           debugPrint('→ message: ${failure.message}');
 
           emit(
             state.copyWith(
-              loadStatus:
-                  StudyTaskDetailsLoadStatus.failure,
+              loadStatus: StudyTaskDetailsLoadStatus.failure,
               errorTitle: failure.title,
               errorMessage: failure.message,
             ),
           );
         },
         (response) {
-          debugPrint(
-            '✓ StudyTaskDetailsCubit.getStudyTaskDetails success',
-          );
-          debugPrint(
-            '→ taskId: ${response.data.basicInfo.id}',
-          );
-          debugPrint(
-            '→ title: ${response.data.basicInfo.title}',
-          );
-          debugPrint(
-            '→ status: ${response.data.basicInfo.status}',
-          );
-          debugPrint(
-            '→ subtasks: ${response.data.subtasks.length}',
-          );
+          debugPrint('✓ StudyTaskDetailsCubit.getStudyTaskDetails success');
+          debugPrint('→ taskId: ${response.data.basicInfo.id}');
+          debugPrint('→ title: ${response.data.basicInfo.title}');
+          debugPrint('→ status: ${response.data.basicInfo.status}');
+          debugPrint('→ subtasks: ${response.data.subtasks.length}');
 
           emit(
             state.copyWith(
               taskDetails: response,
-              loadStatus:
-                  StudyTaskDetailsLoadStatus.success,
+              loadStatus: StudyTaskDetailsLoadStatus.success,
               changeStatus: ChangeStudyTaskStatus.initial,
-              toggleSubTaskStatus:
-                  ToggleStudySubTaskStatus.initial,
+              toggleSubTaskStatus: ToggleStudySubTaskStatus.initial,
               deleteStatus: DeleteStudyTaskStatus.initial,
               clearUpdatingSubTaskId: true,
               clearDeletedTaskId: true,
@@ -159,9 +135,7 @@ class StudyTaskDetailsCubit
     );
 
     if (state.isChangeStatusLoading) {
-      debugPrint(
-        '✗ changeTaskStatus ignored: operation already loading',
-      );
+      debugPrint('✗ changeTaskStatus ignored: operation already loading');
       debugPrint(
         '===============================================================',
       );
@@ -196,16 +170,14 @@ class StudyTaskDetailsCubit
     );
 
     try {
-      final currentStatus =
-          currentTask.data.basicInfo.status;
+      final currentStatus = currentTask.data.basicInfo.status;
 
       final newStatus = currentStatus.nextStatus;
 
       debugPrint('→ old status: $currentStatus');
       debugPrint('→ new status: $newStatus');
 
-      final updatedBasicInfo =
-          currentTask.data.basicInfo.copyWith(
+      final updatedBasicInfo = currentTask.data.basicInfo.copyWith(
         status: newStatus,
       );
 
@@ -231,9 +203,7 @@ class StudyTaskDetailsCubit
 
       debugPrint('✓ task status changed locally');
     } catch (error, stackTrace) {
-      debugPrint(
-        '✗ StudyTaskDetailsCubit.changeTaskStatus unexpected error',
-      );
+      debugPrint('✗ StudyTaskDetailsCubit.changeTaskStatus unexpected error');
       debugPrint('→ error: $error');
       debugPrint('→ stackTrace: $stackTrace');
 
@@ -255,18 +225,14 @@ class StudyTaskDetailsCubit
   // TOGGLE SUBTASK STATUS LOCALLY
   // =========================================================
 
-  void toggleSubTaskStatus({
-    required int subTaskId,
-  }) {
+  void toggleSubTaskStatus({required int subTaskId}) {
     debugPrint(
       '============ StudyTaskDetailsCubit.toggleSubTaskStatus ============',
     );
     debugPrint('→ subTaskId: $subTaskId');
 
     if (state.isToggleSubTaskLoading) {
-      debugPrint(
-        '✗ toggleSubTaskStatus ignored: operation already loading',
-      );
+      debugPrint('✗ toggleSubTaskStatus ignored: operation already loading');
       debugPrint(
         '=================================================================',
       );
@@ -280,8 +246,7 @@ class StudyTaskDetailsCubit
 
       emit(
         state.copyWith(
-          toggleSubTaskStatus:
-              ToggleStudySubTaskStatus.failure,
+          toggleSubTaskStatus: ToggleStudySubTaskStatus.failure,
           errorTitle: 'تعذر تنفيذ العملية',
           errorMessage: 'تفاصيل المهمة غير متاحة',
         ),
@@ -302,8 +267,7 @@ class StudyTaskDetailsCubit
 
       emit(
         state.copyWith(
-          toggleSubTaskStatus:
-              ToggleStudySubTaskStatus.failure,
+          toggleSubTaskStatus: ToggleStudySubTaskStatus.failure,
           errorTitle: 'تعذر تنفيذ العملية',
           errorMessage: 'المهمة الفرعية غير موجودة',
         ),
@@ -317,8 +281,7 @@ class StudyTaskDetailsCubit
 
     emit(
       state.copyWith(
-        toggleSubTaskStatus:
-            ToggleStudySubTaskStatus.loading,
+        toggleSubTaskStatus: ToggleStudySubTaskStatus.loading,
         updatingSubTaskId: subTaskId,
         clearActionMessage: true,
         clearError: true,
@@ -326,8 +289,7 @@ class StudyTaskDetailsCubit
     );
 
     try {
-      final updatedSubTasks =
-          currentTask.data.subtasks.map((subTask) {
+      final updatedSubTasks = currentTask.data.subtasks.map((subTask) {
         if (subTask.id != subTaskId) {
           return subTask;
         }
@@ -337,9 +299,7 @@ class StudyTaskDetailsCubit
           '${subTask.isCompleted} → ${!subTask.isCompleted}',
         );
 
-        return subTask.copyWith(
-          isCompleted: !subTask.isCompleted,
-        );
+        return subTask.copyWith(isCompleted: !subTask.isCompleted);
       }).toList();
 
       final completedCount = updatedSubTasks
@@ -348,23 +308,19 @@ class StudyTaskDetailsCubit
 
       final totalCount = updatedSubTasks.length;
 
-      final updatedCount =
-          currentTask.data.basicInfo.subtasksCount.copyWith(
+      final updatedCount = currentTask.data.basicInfo.subtasksCount.copyWith(
         completed: completedCount,
         total: totalCount,
         label: '$completedCount من $totalCount',
       );
 
-      final updatedBasicInfo =
-          currentTask.data.basicInfo.copyWith(
+      final updatedBasicInfo = currentTask.data.basicInfo.copyWith(
         subtasksCount: updatedCount,
       );
 
       final updatedData = currentTask.data.copyWith(
         basicInfo: updatedBasicInfo,
-        subtasks: List<StudySubTaskEntity>.unmodifiable(
-          updatedSubTasks,
-        ),
+        subtasks: List<StudySubTaskEntity>.unmodifiable(updatedSubTasks),
       );
 
       final updatedTask = StudyTaskDetailsEntity(
@@ -377,8 +333,7 @@ class StudyTaskDetailsCubit
       emit(
         state.copyWith(
           taskDetails: updatedTask,
-          toggleSubTaskStatus:
-              ToggleStudySubTaskStatus.success,
+          toggleSubTaskStatus: ToggleStudySubTaskStatus.success,
           clearUpdatingSubTaskId: true,
           actionMessage: 'تم تحديث حالة المهمة الفرعية',
           clearError: true,
@@ -397,8 +352,7 @@ class StudyTaskDetailsCubit
 
       emit(
         state.copyWith(
-          toggleSubTaskStatus:
-              ToggleStudySubTaskStatus.failure,
+          toggleSubTaskStatus: ToggleStudySubTaskStatus.failure,
           clearUpdatingSubTaskId: true,
           errorTitle: 'حدث خطأ',
           errorMessage: 'تعذر تحديث حالة المهمة الفرعية',
@@ -416,17 +370,11 @@ class StudyTaskDetailsCubit
   // =========================================================
 
   void deleteTask() {
-    debugPrint(
-      '============ StudyTaskDetailsCubit.deleteTask ============',
-    );
+    debugPrint('============ StudyTaskDetailsCubit.deleteTask ============');
 
     if (state.isDeleteLoading) {
-      debugPrint(
-        '✗ deleteTask ignored: operation already loading',
-      );
-      debugPrint(
-        '==========================================================',
-      );
+      debugPrint('✗ deleteTask ignored: operation already loading');
+      debugPrint('==========================================================');
       return;
     }
 
@@ -443,9 +391,7 @@ class StudyTaskDetailsCubit
         ),
       );
 
-      debugPrint(
-        '==========================================================',
-      );
+      debugPrint('==========================================================');
       return;
     }
 
@@ -476,9 +422,7 @@ class StudyTaskDetailsCubit
 
       debugPrint('✓ local task deletion emitted');
     } catch (error, stackTrace) {
-      debugPrint(
-        '✗ StudyTaskDetailsCubit.deleteTask unexpected error',
-      );
+      debugPrint('✗ StudyTaskDetailsCubit.deleteTask unexpected error');
       debugPrint('→ error: $error');
       debugPrint('→ stackTrace: $stackTrace');
 
@@ -490,9 +434,7 @@ class StudyTaskDetailsCubit
         ),
       );
     } finally {
-      debugPrint(
-        '==========================================================',
-      );
+      debugPrint('==========================================================');
     }
   }
 
@@ -500,9 +442,7 @@ class StudyTaskDetailsCubit
   // HELPERS
   // =========================================================
 
-  String _statusActionMessage(
-    StudyTaskStatus status,
-  ) {
+  String _statusActionMessage(StudyTaskStatus status) {
     switch (status) {
       case StudyTaskStatus.todo:
         return 'تمت إعادة فتح المهمة';
@@ -512,6 +452,8 @@ class StudyTaskDetailsCubit
 
       case StudyTaskStatus.completed:
         return 'تم إكمال المهمة';
+      case StudyTaskStatus.missed:
+        return 'المهمة فائتة';
     }
   }
 
@@ -540,8 +482,7 @@ class StudyTaskDetailsCubit
 
     emit(
       state.copyWith(
-        toggleSubTaskStatus:
-            ToggleStudySubTaskStatus.initial,
+        toggleSubTaskStatus: ToggleStudySubTaskStatus.initial,
         clearUpdatingSubTaskId: true,
         clearActionMessage: true,
         clearError: true,
@@ -565,18 +506,10 @@ class StudyTaskDetailsCubit
   }
 
   void resetError() {
-    emit(
-      state.copyWith(
-        clearError: true,
-      ),
-    );
+    emit(state.copyWith(clearError: true));
   }
 
   void resetActionMessage() {
-    emit(
-      state.copyWith(
-        clearActionMessage: true,
-      ),
-    );
+    emit(state.copyWith(clearActionMessage: true));
   }
 }

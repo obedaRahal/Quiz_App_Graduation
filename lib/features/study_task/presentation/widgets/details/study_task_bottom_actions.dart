@@ -6,12 +6,12 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class StudyTaskBottomActions extends StatelessWidget {
-  final VoidCallback onStatusTap;
+  final VoidCallback onEditTap;
   final VoidCallback onDeleteTap;
 
   const StudyTaskBottomActions({
     super.key,
-    required this.onStatusTap,
+    required this.onEditTap,
     required this.onDeleteTap,
   });
 
@@ -41,7 +41,7 @@ class StudyTaskBottomActions extends StatelessWidget {
             child: _BottomActionButton(
               title: "تعديل المهمة",
               backgroundColor: AppPalette.primary,
-              onTap: onStatusTap,
+              onTap: onEditTap,
             ),
           ),
 
