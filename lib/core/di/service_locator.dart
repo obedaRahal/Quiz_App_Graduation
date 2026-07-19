@@ -196,6 +196,11 @@ import 'package:quiz_app_grad/features/study_plan/presentation/manager/manage_st
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_subjects/study_subjects_cubit.dart';
+import 'package:quiz_app_grad/features/study_task/data/data_sources/study_task_remote_data_source.dart';
+import 'package:quiz_app_grad/features/study_task/data/repo_impl/study_task_repository_impl.dart';
+import 'package:quiz_app_grad/features/study_task/domain/repositories/study_task_repository.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/get_study_task_details_use_case.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/data_sources/test_play_modes_remote_data_source.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/repo_impl/test_play_modes_repository_impl.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/services/challenge_result_pdf_service.dart';
@@ -238,6 +243,7 @@ Future<void> initSl() async {
   _registerMyProfileFeature();
 
   _registerStudyPlanFeature();
+  _registerStudyTaskFeature();
 }
 
 Future<void> _registerCore() async {
@@ -1735,4 +1741,26 @@ void _registerStudyPlanFeature() {
       ),
     );
   }
+}
+
+void _registerStudyTaskFeature() {
+  sl.registerFactory<StudyTaskDetailsCubit>(
+    () => StudyTaskDetailsCubit(
+      getStudyTaskDetailsUseCase: sl<GetStudyTaskDetailsUseCase>(),
+    ),
+  );
+
+  sl.registerLazySingleton<GetStudyTaskDetailsUseCase>(
+    () => GetStudyTaskDetailsUseCase(sl<StudyTaskRepository>()),
+  );
+
+  sl.registerLazySingleton<StudyTaskRepository>(
+    () => StudyTaskRepositoryImpl(
+      remoteDataSource: sl<StudyTaskRemoteDataSource>(),
+    ),
+  );
+
+  sl.registerLazySingleton<StudyTaskRemoteDataSource>(
+    () => StudyTaskRemoteDataSourceImpl(apiConsumer: sl()),
+  );
 }

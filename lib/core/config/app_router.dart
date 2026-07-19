@@ -68,6 +68,9 @@ import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_pla
 import 'package:quiz_app_grad/features/study_plan/presentation/views/create_study_plan_view.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/manage_study_plans_view.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_details_view.dart';
+import 'package:quiz_app_grad/features/study_task/data/models/study_task_details_args.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_cubit.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/views/study_task_details_view.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/views/CHALLENGE/challenge_setup_view.dart';
@@ -654,6 +657,9 @@ class AppRouter {
           },
         ),
 
+
+
+
         GoRoute(
           path: AppRouterPath.studyPlanDetails,
           name: AppRouterName.studyPlanDetails,
@@ -664,6 +670,32 @@ class AppRouter {
               create: (_) =>
                   sl<StudyPlanDetailsCubit>()..initialize(planId: plan.id),
               child: StudyPlanDetailsView(plan: plan),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.studyTaskDetails,
+          name: AppRouterName.studyTaskDetails,
+          builder: (context, state) {
+            final args = state.extra as StudyTaskDetailsArgs;
+
+            debugPrint(
+              '============ Open Study Task Details Route ============',
+            );
+            debugPrint('→ planId: ${args.planId}');
+            debugPrint('→ taskId: ${args.taskId}');
+            debugPrint(
+              '=======================================================',
+            );
+
+            return BlocProvider<StudyTaskDetailsCubit>(
+              create: (_) => sl<StudyTaskDetailsCubit>()
+                ..getStudyTaskDetails(planId: args.planId, taskId: args.taskId),
+              child: StudyTaskDetailsView(
+                planId: args.planId,
+                taskId: args.taskId,
+              ),
             );
           },
         ),

@@ -20,13 +20,13 @@ class StudyPlanHomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         
-        HeaderActionButton(
-          icon: actionIcon,
-          onTap: onActionTap,
-        ),
-        const Spacer(),
+          HeaderActionButton(
+            icon: Icons.arrow_back_ios_rounded,
+            onTap: onActionTap,
+          ),
         CustomTextWidget(
           title,
           fontSize: SizeConfig.text(0.055),

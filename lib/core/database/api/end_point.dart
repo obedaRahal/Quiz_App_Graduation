@@ -489,4 +489,10 @@ class EndPoints {
   static String deleteStudyPlan(int planId) {
     return '$baseUrl/study-plans/delete/study-plan/$planId';
   }
+
+  //////////////// task
+  static String getStudyTaskDetails(int planId, int taskId) {
+    return '$baseUrl/study-plans/study-plans/'
+        '$planId/tasks/$taskId/details';
+  }
 }

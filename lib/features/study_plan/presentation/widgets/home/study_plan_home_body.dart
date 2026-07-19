@@ -19,6 +19,7 @@ import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/stud
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_session_header_and_botton.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_week_selector.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/subjects/show_study_subjects_bottom_sheet.dart';
+import 'package:quiz_app_grad/features/study_task/data/models/study_task_details_args.dart';
 
 class StudyPlanHomeBody extends StatelessWidget {
   const StudyPlanHomeBody({super.key});
@@ -227,28 +228,16 @@ class StudyPlanHomeBody extends StatelessWidget {
                               taskId: task.id,
                             );
                           },
-                          onTap: () {
+                          onTap: () async {
                             debugPrint('Open task: ${task.id}');
-                          },
-                        ),
-                      );
-                    }).toList(),
-                  ),
-
-                  Column(
-                    children: state.tasks.map((task) {
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: SizeConfig.h(0.012)),
-                        child: StudyPlanDailyTaskCard(
-                          task: task,
-                          isUpdating: state.isUpdatingTask(task.id),
-                          onStatusToggle: () {
-                            context.read<StudyPlanHomeCubit>().toggleTaskStatus(
-                              taskId: task.id,
+                            final didChange = await context.pushNamed<bool>(
+                              AppRouterName.studyTaskDetails,
+                              extra: StudyTaskDetailsArgs(
+                                // هون لازم اعدل
+                                planId: 6,
+                                taskId: task.id,
+                              ),
                             );
-                          },
-                          onTap: () {
-                            debugPrint('Open task: ${task.id}');
                           },
                         ),
                       );
