@@ -41,7 +41,7 @@ class StudyPlanHomeView extends StatelessWidget {
             showValidationTopSnackBar(
               context,
               title: 'تم بنجاح',
-              message: 'تم تحديث حالة المهمة بنجاح',
+              message: state.taskUpdateMessage ?? 'تم تحديث حالة المهمة بنجاح',
               type: AppValidationSnackBarType.success,
             );
 

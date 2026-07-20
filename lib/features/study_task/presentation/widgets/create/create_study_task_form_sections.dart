@@ -56,7 +56,6 @@ import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/cr
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_repeat_section.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_subjects_section.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_subtasks_section.dart';
-import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_title_description_section.dart';
 
 class CreateStudyTaskFormSections extends StatelessWidget {
   const CreateStudyTaskFormSections({super.key});

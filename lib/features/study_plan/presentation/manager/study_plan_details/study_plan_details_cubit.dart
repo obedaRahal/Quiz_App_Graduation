@@ -6,11 +6,16 @@ import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_pla
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/delete_study_plan_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_overview_params.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_details_tasks_params.dart';
+import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_daily_task_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_state.dart';
+import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_status.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/change_study_task_status_use_case.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/change_study_task_status_params.dart';
 
 class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
   final GetStudyPlanDetailsOverviewUseCase getStudyPlanDetailsOverviewUseCase;
   final GetStudyPlanDetailsTasksUseCase getStudyPlanDetailsTasksUseCase;
+  final ChangeStudyTaskStatusUseCase changeStudyTaskStatusUseCase;
   int? _planId;
   bool _hasDataChanges = false;
 
@@ -19,6 +24,7 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
   StudyPlanDetailsCubit({
     required this.getStudyPlanDetailsOverviewUseCase,
     required this.getStudyPlanDetailsTasksUseCase,
+    required this.changeStudyTaskStatusUseCase,
     required this.deleteStudyPlanUseCase,
   }) : super(const StudyPlanDetailsState()) {
     debugPrint('============ StudyPlanDetailsCubit INIT ============');
@@ -254,10 +260,156 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
   }
 
   Future<void> refreshAfterTaskCreation() async {
+    await refreshAfterTaskMutation();
+  }
+
+  Future<void> refreshAfterTaskMutation() async {
     markDataChanged();
 
     await getOverview(forceRefresh: true);
     await getTasks(forceRefresh: true);
+  }
+
+  Future<void> toggleTaskStatus({required int taskId}) async {
+    if (state.isTaskUpdateLoading) {
+      return;
+    }
+
+    final currentPlanId = _planId;
+    final currentTask = _findTask(taskId);
+
+    if (currentPlanId == null ||
+        currentPlanId <= 0 ||
+        taskId <= 0 ||
+        currentTask == null) {
+      emit(
+        state.copyWith(
+          taskUpdateStatus: StudyPlanDetailsTaskUpdateStatus.failure,
+          clearUpdatingTaskId: true,
+          clearTaskUpdateMessage: true,
+          taskUpdateErrorTitle: 'بيانات غير صالحة',
+          taskUpdateErrorMessage: 'معرّف الخطة أو المهمة غير صالح',
+        ),
+      );
+      return;
+    }
+
+    final currentStatus = currentTask.parsedStatus;
+
+    if (currentStatus == StudyTaskStatus.missed) {
+      emit(
+        state.copyWith(
+          taskUpdateStatus: StudyPlanDetailsTaskUpdateStatus.failure,
+          clearUpdatingTaskId: true,
+          clearTaskUpdateMessage: true,
+          taskUpdateErrorTitle: 'عملية غير متاحة',
+          taskUpdateErrorMessage: 'لا يمكن تغيير حالة المهمة الفائتة',
+        ),
+      );
+      return;
+    }
+
+    final targetStatus = currentStatus.nextStatus;
+
+    emit(
+      state.copyWith(
+        taskUpdateStatus: StudyPlanDetailsTaskUpdateStatus.loading,
+        updatingTaskId: taskId,
+        clearTaskUpdateMessage: true,
+        clearTaskUpdateError: true,
+      ),
+    );
+
+    try {
+      final result = await changeStudyTaskStatusUseCase(
+        ChangeStudyTaskStatusParams(
+          planId: currentPlanId,
+          taskId: taskId,
+          targetStatus: targetStatus,
+        ),
+      );
+
+      await result.fold<Future<void>>(
+        (failure) async {
+          emit(
+            state.copyWith(
+              taskUpdateStatus: StudyPlanDetailsTaskUpdateStatus.failure,
+              clearUpdatingTaskId: true,
+              clearTaskUpdateMessage: true,
+              taskUpdateErrorTitle: failure.title,
+              taskUpdateErrorMessage: failure.message,
+            ),
+          );
+        },
+        (response) async {
+          if (!response.success) {
+            emit(
+              state.copyWith(
+                taskUpdateStatus: StudyPlanDetailsTaskUpdateStatus.failure,
+                clearUpdatingTaskId: true,
+                clearTaskUpdateMessage: true,
+                taskUpdateErrorTitle: response.title,
+                taskUpdateErrorMessage: response.message,
+              ),
+            );
+            return;
+          }
+
+          await refreshAfterTaskMutation();
+
+          emit(
+            state.copyWith(
+              taskUpdateStatus: StudyPlanDetailsTaskUpdateStatus.success,
+              clearUpdatingTaskId: true,
+              taskUpdateMessage: response.message,
+              clearTaskUpdateError: true,
+            ),
+          );
+        },
+      );
+    } catch (error, stackTrace) {
+      debugPrint('✗ StudyPlanDetailsCubit.toggleTaskStatus error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+
+      emit(
+        state.copyWith(
+          taskUpdateStatus: StudyPlanDetailsTaskUpdateStatus.failure,
+          clearUpdatingTaskId: true,
+          clearTaskUpdateMessage: true,
+          taskUpdateErrorTitle: 'حدث خطأ',
+          taskUpdateErrorMessage: 'تعذر تغيير حالة المهمة',
+        ),
+      );
+    }
+  }
+
+  void resetTaskUpdateState() {
+    emit(
+      state.copyWith(
+        taskUpdateStatus: StudyPlanDetailsTaskUpdateStatus.initial,
+        clearUpdatingTaskId: true,
+        clearTaskUpdateMessage: true,
+        clearTaskUpdateError: true,
+      ),
+    );
+  }
+
+  StudyPlanDailyTaskEntity? _findTask(int taskId) {
+    final groups = [
+      state.tasks?.old.tasks ?? const [],
+      state.tasks?.upcoming.tasks ?? const [],
+      state.tasks?.completed.tasks ?? const [],
+    ];
+
+    for (final group in groups) {
+      for (final task in group) {
+        if (task.id == taskId) {
+          return task;
+        }
+      }
+    }
+
+    return null;
   }
 
   Future<void> retryOverview() async {
@@ -450,9 +602,8 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
         emit(
           state.copyWith(
             deleteStatus: DeleteStudyPlanStatus.failure,
-            deleteErrorTitle: failure.title ?? 'تعذر حذف الخطة',
-            deleteErrorMessage:
-                failure.message ?? 'حدث خطأ أثناء حذف الخطة الدراسية',
+            deleteErrorTitle: failure.title,
+            deleteErrorMessage: failure.message,
             clearDeleteSuccessData: true,
           ),
         );

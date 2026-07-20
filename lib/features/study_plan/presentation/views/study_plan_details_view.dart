@@ -23,9 +23,37 @@ class StudyPlanDetailsView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<StudyPlanDetailsCubit, StudyPlanDetailsState>(
           listenWhen: (previous, current) {
-            return previous.deleteStatus != current.deleteStatus;
+            return previous.deleteStatus != current.deleteStatus ||
+                previous.taskUpdateStatus != current.taskUpdateStatus;
           },
           listener: (context, state) {
+            if (state.isTaskUpdateSuccess) {
+              showValidationTopSnackBar(
+                context,
+                title: 'تم بنجاح',
+                message:
+                    state.taskUpdateMessage ?? 'تم تحديث حالة المهمة بنجاح',
+                type: AppValidationSnackBarType.success,
+              );
+
+              context.read<StudyPlanDetailsCubit>().resetTaskUpdateState();
+              return;
+            }
+
+            if (state.isTaskUpdateFailure) {
+              showValidationTopSnackBar(
+                context,
+                title: state.taskUpdateErrorTitle ?? 'تعذر تحديث المهمة',
+                message:
+                    state.taskUpdateErrorMessage ??
+                    'حدث خطأ أثناء تحديث حالة المهمة',
+                type: AppValidationSnackBarType.error,
+              );
+
+              context.read<StudyPlanDetailsCubit>().resetTaskUpdateState();
+              return;
+            }
+
             if (state.isDeleteSuccess) {
               debugPrint(
                 '============ StudyPlanDetailsView delete success ============',
@@ -109,7 +137,7 @@ class StudyPlanDetailsView extends StatelessWidget {
     debugPrint('→ planId: $planId');
     debugPrint('→ planTitle: $planTitle');
 
-    final confirmed = await showCustomConfirmationDialog(
+    await showCustomConfirmationDialog(
       context: context,
       title: 'حذف الخطة الدراسية',
       message:
@@ -130,7 +158,7 @@ class StudyPlanDetailsView extends StatelessWidget {
       },
       //confirmTextColor: AppPalette.red,
       iconColor: AppPalette.red,
-      iconBackgroundColor: AppPalette.red.withOpacity(0.1),
+      iconBackgroundColor: AppPalette.red.withValues(alpha: 0.1),
       confirmBackgroundColor: AppPalette.red,
     );
   }

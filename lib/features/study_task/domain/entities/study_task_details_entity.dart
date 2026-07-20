@@ -126,12 +126,14 @@ class StudyTaskTimingInfoEntity {
   final String startTime;
   final StudyTaskDurationEntity duration;
   final String repeatPattern;
+  final int? repeatWeekday;
   final StudyTaskReminderEntity reminder;
 
   const StudyTaskTimingInfoEntity({
     required this.startTime,
     required this.duration,
     required this.repeatPattern,
+    required this.repeatWeekday,
     required this.reminder,
   });
 }

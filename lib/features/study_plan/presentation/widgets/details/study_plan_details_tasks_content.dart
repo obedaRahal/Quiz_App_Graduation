@@ -24,7 +24,9 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
             previous.tasksSearchQuery != current.tasksSearchQuery ||
             previous.isOldExpanded != current.isOldExpanded ||
             previous.isUpcomingExpanded != current.isUpcomingExpanded ||
-            previous.isCompletedExpanded != current.isCompletedExpanded;
+            previous.isCompletedExpanded != current.isCompletedExpanded ||
+            previous.taskUpdateStatus != current.taskUpdateStatus ||
+            previous.updatingTaskId != current.updatingTaskId;
       },
       builder: (context, state) {
         final planId = context.read<StudyPlanDetailsCubit>().planId;
@@ -135,8 +137,7 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
                 isExpanded: state.isOldExpanded,
                 onToggle: context.read<StudyPlanDetailsCubit>().toggleOldTasks,
                 isTaskUpdating: (taskId) {
-                  return false;
-                  //state.isUpdatingTask(taskId);
+                  return state.isUpdatingTask(taskId);
                 },
                 onTaskTap: (task) async {
                   await _openTaskDetails(
@@ -146,9 +147,9 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
                   );
                 },
                 onTaskStatusToggle: (task) {
-                  // context.read<StudyPlanDetailsCubit>().toggleTaskStatus(
-                  //   taskId: task.id,
-                  // );
+                  context.read<StudyPlanDetailsCubit>().toggleTaskStatus(
+                    taskId: task.id,
+                  );
                 },
               ),
 
@@ -167,8 +168,7 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
                     .read<StudyPlanDetailsCubit>()
                     .toggleUpcomingTasks,
                 isTaskUpdating: (taskId) {
-                  return false;
-                  // state.isUpdatingTask(taskId);
+                  return state.isUpdatingTask(taskId);
                 },
                 onTaskTap: (task) async {
                   await _openTaskDetails(
@@ -178,9 +178,9 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
                   );
                 },
                 onTaskStatusToggle: (task) {
-                  // context.read<StudyPlanDetailsCubit>().toggleTaskStatus(
-                  //   taskId: task.id,
-                  // );
+                  context.read<StudyPlanDetailsCubit>().toggleTaskStatus(
+                    taskId: task.id,
+                  );
                 },
               ),
 
@@ -199,8 +199,7 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
                     .read<StudyPlanDetailsCubit>()
                     .toggleCompletedTasks,
                 isTaskUpdating: (taskId) {
-                  return false;
-                  //state.isUpdatingTask(taskId);
+                  return state.isUpdatingTask(taskId);
                 },
                 onTaskTap: (task) async {
                   await _openTaskDetails(
@@ -210,9 +209,9 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
                   );
                 },
                 onTaskStatusToggle: (task) {
-                  // context.read<StudyPlanDetailsCubit>().toggleTaskStatus(
-                  //   taskId: task.id,
-                  // );
+                  context.read<StudyPlanDetailsCubit>().toggleTaskStatus(
+                    taskId: task.id,
+                  );
                 },
               ),
             ],
@@ -244,7 +243,7 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
     if (didChange == true && context.mounted) {
       debugPrint('✓ task changed, refreshing plan tasks');
 
-      await context.read<StudyPlanDetailsCubit>().getTasks(forceRefresh: true);
+      await context.read<StudyPlanDetailsCubit>().refreshAfterTaskMutation();
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_status.dart';
+
 enum StudyPlanTaskPriority { low, medium, high, unknown }
 
 extension StudyPlanTaskPriorityX on StudyPlanTaskPriority {
@@ -43,6 +45,10 @@ class StudyPlanDailyTaskEntity {
     return StudyPlanTaskPriorityX.fromApi(priority);
   }
 
+  StudyTaskStatus get parsedStatus {
+    return studyTaskStatusFromApi(status);
+  }
+
   bool get hasSubtasks => subtasks.total > 0;
 
   bool get hasTime {
@@ -50,13 +56,7 @@ class StudyPlanDailyTaskEntity {
   }
 
   bool get isCompleted {
-    final value = status.trim();
-
-    return value == 'تم الإنجاز' ||
-        value == 'تم إنجازها' ||
-        value == 'تم انجازها' ||
-        value == 'منجزة' ||
-        value == 'مكتملة';
+    return parsedStatus.isCompleted;
   }
 
   StudyPlanDailyTaskEntity copyWith({

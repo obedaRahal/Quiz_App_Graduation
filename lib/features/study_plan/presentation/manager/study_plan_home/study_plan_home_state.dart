@@ -15,6 +15,7 @@ class StudyPlanHomeState {
 
   final StudyPlanTaskUpdateStatus taskUpdateStatus;
   final int? updatingTaskId;
+  final String? taskUpdateMessage;
 
   final String? errorTitle;
   final String? errorMessage;
@@ -25,6 +26,7 @@ class StudyPlanHomeState {
     this.activeMockScenario = StudyPlanHomeMockScenario.noPlan,
     this.taskUpdateStatus = StudyPlanTaskUpdateStatus.initial,
     this.updatingTaskId,
+    this.taskUpdateMessage,
     this.errorTitle,
     this.errorMessage,
   });
@@ -94,6 +96,8 @@ class StudyPlanHomeState {
     StudyPlanTaskUpdateStatus? taskUpdateStatus,
     int? updatingTaskId,
     bool clearUpdatingTaskId = false,
+    String? taskUpdateMessage,
+    bool clearTaskUpdateMessage = false,
 
     String? errorTitle,
     String? errorMessage,
@@ -111,6 +115,10 @@ class StudyPlanHomeState {
       updatingTaskId: clearUpdatingTaskId
           ? null
           : updatingTaskId ?? this.updatingTaskId,
+
+      taskUpdateMessage: clearTaskUpdateMessage
+          ? null
+          : taskUpdateMessage ?? this.taskUpdateMessage,
 
       errorTitle: clearError ? null : errorTitle ?? this.errorTitle,
 

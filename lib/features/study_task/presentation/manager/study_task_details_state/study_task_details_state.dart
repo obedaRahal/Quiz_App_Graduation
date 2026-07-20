@@ -1,5 +1,4 @@
 import 'package:quiz_app_grad/features/study_task/domain/entities/study_task_details_entity.dart';
-import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_status.dart';
 
 enum StudyTaskDetailsLoadStatus { initial, loading, success, failure }
 
@@ -23,7 +22,6 @@ class StudyTaskDetailsState {
   final String? actionMessage;
   final String? errorTitle;
   final String? errorMessage;
-
 
   const StudyTaskDetailsState({
     this.taskDetails,
@@ -132,7 +130,6 @@ class StudyTaskDetailsState {
           : actionMessage ?? this.actionMessage,
       errorTitle: clearError ? null : errorTitle ?? this.errorTitle,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
-
     );
   }
 }

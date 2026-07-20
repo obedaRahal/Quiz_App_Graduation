@@ -227,6 +227,10 @@ class UpdateStudyTaskCubit extends Cubit<UpdateStudyTaskState> {
         ? const [UpdateStudyTaskSubtaskState()]
         : currentSubtasks;
 
+    final repeatWeekday = repeatPattern == StudyTaskRepeatPattern.none
+        ? null
+        : timingInfo.repeatWeekday;
+
     emit(
       state.copyWith(
         // =====================================================
@@ -254,11 +258,9 @@ class UpdateStudyTaskCubit extends Cubit<UpdateStudyTaskState> {
 
         repeatPattern: repeatPattern,
 
-        /*
-       * الـBackend لا يعيد يوم التكرار،
-       * لذلك يبقى غير محدد حتى يختاره المستخدم.
-       */
-        clearRepeatWeekday: true,
+        repeatWeekday: repeatWeekday,
+
+        clearRepeatWeekday: repeatWeekday == null,
 
         reminderOffsetMinutes: reminderOffset,
 
@@ -289,11 +291,9 @@ class UpdateStudyTaskCubit extends Cubit<UpdateStudyTaskState> {
 
         initialRepeatPattern: repeatPattern,
 
-        /*
-       * اليوم الأصلي غير معروف لأن الـBackend
-       * لا يعيده، لذلك القيمة الأصلية أيضًا null.
-       */
-        clearInitialRepeatWeekday: true,
+        initialRepeatWeekday: repeatWeekday,
+
+        clearInitialRepeatWeekday: repeatWeekday == null,
 
         initialReminderOffsetMinutes: reminderOffset,
 

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
-import 'package:quiz_app_grad/core/errors/exceptions.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/create_study_task_response_model.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/delete_study_task_response_model.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/study_plan_subjects_response_model.dart';

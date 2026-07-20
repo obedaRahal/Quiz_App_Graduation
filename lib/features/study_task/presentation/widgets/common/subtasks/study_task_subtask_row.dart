@@ -303,10 +303,6 @@ import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 //   }
 // }
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
-
 class StudyTaskSubtaskRow extends StatefulWidget {
   final int index;
   final String value;

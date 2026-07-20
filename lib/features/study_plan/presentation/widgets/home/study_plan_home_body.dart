@@ -30,7 +30,9 @@ class StudyPlanHomeBody extends StatelessWidget {
       buildWhen: (previous, current) {
         return previous.overview != current.overview ||
             previous.status != current.status ||
-            previous.activeMockScenario != current.activeMockScenario;
+            previous.activeMockScenario != current.activeMockScenario ||
+            previous.taskUpdateStatus != current.taskUpdateStatus ||
+            previous.updatingTaskId != current.updatingTaskId;
       },
       builder: (context, state) {
         final overview = state.overview;

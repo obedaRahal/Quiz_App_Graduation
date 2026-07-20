@@ -11,14 +11,20 @@ import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_pla
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plan_daily_overview_params.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_state.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/utils/study_plan_date_utils.dart';
+import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_status.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/change_study_task_status_use_case.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/change_study_task_status_params.dart';
 
 class StudyPlanHomeCubit extends Cubit<StudyPlanHomeState> {
   static const bool useMockData = false;
 
   final GetStudyPlanDailyOverviewUseCase getStudyPlanDailyOverviewUseCase;
+  final ChangeStudyTaskStatusUseCase changeStudyTaskStatusUseCase;
 
-  StudyPlanHomeCubit({required this.getStudyPlanDailyOverviewUseCase})
-    : super(const StudyPlanHomeState()) {
+  StudyPlanHomeCubit({
+    required this.getStudyPlanDailyOverviewUseCase,
+    required this.changeStudyTaskStatusUseCase,
+  }) : super(const StudyPlanHomeState()) {
     debugPrint("============ StudyPlanHomeCubit INIT ============");
   }
 
@@ -149,12 +155,159 @@ class StudyPlanHomeCubit extends Cubit<StudyPlanHomeState> {
     debugPrint('→ useMockData: $useMockData');
 
     if (!useMockData) {
-      debugPrint('✗ task status API is not connected yet');
-      debugPrint('===========================================================');
+      await _changeTaskStatus(taskId: taskId);
       return;
     }
 
     await _toggleMockTaskStatus(taskId: taskId);
+  }
+
+  Future<void> _changeTaskStatus({required int taskId}) async {
+    final currentOverview = state.overview;
+
+    if (currentOverview == null || state.isTaskUpdating) {
+      return;
+    }
+
+    final planId = currentOverview.data.plan?.id;
+    StudyPlanDailyTaskEntity? selectedTask;
+
+    for (final task in currentOverview.data.tasks) {
+      if (task.id == taskId) {
+        selectedTask = task;
+        break;
+      }
+    }
+
+    if (planId == null || planId <= 0 || selectedTask == null || taskId <= 0) {
+      emit(
+        state.copyWith(
+          taskUpdateStatus: StudyPlanTaskUpdateStatus.failure,
+          errorTitle: 'بيانات غير صالحة',
+          errorMessage: 'معرّف الخطة أو المهمة غير صالح',
+          clearTaskUpdateMessage: true,
+        ),
+      );
+      return;
+    }
+
+    final currentStatus = selectedTask.parsedStatus;
+
+    if (currentStatus == StudyTaskStatus.missed) {
+      emit(
+        state.copyWith(
+          taskUpdateStatus: StudyPlanTaskUpdateStatus.failure,
+          errorTitle: 'عملية غير متاحة',
+          errorMessage: 'لا يمكن تغيير حالة المهمة الفائتة',
+          clearTaskUpdateMessage: true,
+        ),
+      );
+      return;
+    }
+
+    final targetStatus = currentStatus.nextStatus;
+
+    emit(
+      state.copyWith(
+        taskUpdateStatus: StudyPlanTaskUpdateStatus.loading,
+        updatingTaskId: taskId,
+        clearTaskUpdateMessage: true,
+        clearError: true,
+      ),
+    );
+
+    try {
+      final result = await changeStudyTaskStatusUseCase(
+        ChangeStudyTaskStatusParams(
+          planId: planId,
+          taskId: taskId,
+          targetStatus: targetStatus,
+        ),
+      );
+
+      result.fold(
+        (failure) {
+          emit(
+            state.copyWith(
+              taskUpdateStatus: StudyPlanTaskUpdateStatus.failure,
+              clearUpdatingTaskId: true,
+              clearTaskUpdateMessage: true,
+              errorTitle: failure.title,
+              errorMessage: failure.message,
+            ),
+          );
+        },
+        (response) {
+          if (!response.success) {
+            emit(
+              state.copyWith(
+                taskUpdateStatus: StudyPlanTaskUpdateStatus.failure,
+                clearUpdatingTaskId: true,
+                clearTaskUpdateMessage: true,
+                errorTitle: response.title,
+                errorMessage: response.message,
+              ),
+            );
+            return;
+          }
+
+          final latestOverview = state.overview;
+
+          if (latestOverview == null) {
+            emit(
+              state.copyWith(
+                taskUpdateStatus: StudyPlanTaskUpdateStatus.failure,
+                clearUpdatingTaskId: true,
+                clearTaskUpdateMessage: true,
+                errorTitle: 'تعذر تحديث الواجهة',
+                errorMessage: 'بيانات الخطة لم تعد متاحة',
+              ),
+            );
+            return;
+          }
+
+          final updatedTasks = latestOverview.data.tasks
+              .map((task) {
+                return task.id == taskId
+                    ? task.copyWith(status: targetStatus.label)
+                    : task;
+              })
+              .toList(growable: false);
+
+          final updatedDays = _updateSelectedDayAfterTaskToggle(
+            data: latestOverview.data,
+            updatedTasks: updatedTasks,
+          );
+          final updatedData = latestOverview.data.copyWith(
+            tasks: updatedTasks,
+            days: updatedDays,
+          );
+
+          emit(
+            state.copyWith(
+              overview: latestOverview.copyWith(data: updatedData),
+              taskUpdateStatus: StudyPlanTaskUpdateStatus.success,
+              clearUpdatingTaskId: true,
+              taskUpdateMessage: response.message,
+              clearError: true,
+            ),
+          );
+        },
+      );
+    } catch (error, stackTrace) {
+      debugPrint('✗ StudyPlanHomeCubit._changeTaskStatus error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+
+      emit(
+        state.copyWith(
+          taskUpdateStatus: StudyPlanTaskUpdateStatus.failure,
+          clearUpdatingTaskId: true,
+          clearTaskUpdateMessage: true,
+          errorTitle: 'حدث خطأ',
+          errorMessage: 'تعذر تغيير حالة المهمة',
+        ),
+      );
+    }
   }
 
   Future<void> _toggleMockTaskStatus({required int taskId}) async {
@@ -260,6 +413,7 @@ class StudyPlanHomeCubit extends Cubit<StudyPlanHomeState> {
       state.copyWith(
         taskUpdateStatus: StudyPlanTaskUpdateStatus.initial,
         clearUpdatingTaskId: true,
+        clearTaskUpdateMessage: true,
         clearError: true,
       ),
     );

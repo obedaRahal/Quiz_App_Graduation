@@ -1655,6 +1655,7 @@ void _registerStudyPlanFeature() {
       () => StudyPlanHomeCubit(
         getStudyPlanDailyOverviewUseCase:
             sl<GetStudyPlanDailyOverviewUseCase>(),
+        changeStudyTaskStatusUseCase: sl<ChangeStudyTaskStatusUseCase>(),
       ),
     );
   }
@@ -1745,6 +1746,7 @@ void _registerStudyPlanFeature() {
         getStudyPlanDetailsOverviewUseCase:
             sl<GetStudyPlanDetailsOverviewUseCase>(),
         getStudyPlanDetailsTasksUseCase: sl<GetStudyPlanDetailsTasksUseCase>(),
+        changeStudyTaskStatusUseCase: sl<ChangeStudyTaskStatusUseCase>(),
         deleteStudyPlanUseCase: sl<DeleteStudyPlanUseCase>(),
       ),
     );

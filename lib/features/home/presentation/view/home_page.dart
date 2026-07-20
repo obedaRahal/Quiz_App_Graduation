@@ -152,17 +152,17 @@ class HomePage extends StatelessWidget {
                   );
                 },
               ),
-              BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  return HomeSliderSection(
-                    controller2: controller2,
-                    isDark: isDark,
-                    appColors: appColors,
-                    colorScheme: colorScheme,
-                    state: state,
-                  );
-                },
-              ),
+              // BlocBuilder<HomeCubit, HomeState>(
+              //   builder: (context, state) {
+              //     return HomeSliderSection(
+              //       controller2: controller2,
+              //       isDark: isDark,
+              //       appColors: appColors,
+              //       colorScheme: colorScheme,
+              //       state: state,
+              //     );
+              //   },
+              // ),
 
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {

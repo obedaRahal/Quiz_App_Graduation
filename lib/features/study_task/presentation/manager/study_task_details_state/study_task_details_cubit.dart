@@ -17,6 +17,7 @@ class StudyTaskDetailsCubit extends Cubit<StudyTaskDetailsState> {
   final DeleteStudyTaskUseCase deleteStudyTaskUseCase;
   final ChangeStudyTaskStatusUseCase changeStudyTaskStatusUseCase;
   final ToggleStudySubTaskStatusUseCase toggleStudySubTaskStatusUseCase;
+  bool _hasDataChanges = false;
 
   StudyTaskDetailsCubit({
     required this.getStudyTaskDetailsUseCase,
@@ -25,6 +26,12 @@ class StudyTaskDetailsCubit extends Cubit<StudyTaskDetailsState> {
     required this.toggleStudySubTaskStatusUseCase,
   }) : super(const StudyTaskDetailsState()) {
     debugPrint('============ StudyTaskDetailsCubit INIT ============');
+  }
+
+  bool get hasDataChanges => _hasDataChanges;
+
+  void markDataChanged() {
+    _hasDataChanges = true;
   }
 
   // =========================================================
@@ -305,6 +312,8 @@ class StudyTaskDetailsCubit extends Cubit<StudyTaskDetailsState> {
             statusCode: latestTask.statusCode,
           );
 
+          markDataChanged();
+
           emit(
             state.copyWith(
               taskDetails: updatedTask,
@@ -504,6 +513,8 @@ class StudyTaskDetailsCubit extends Cubit<StudyTaskDetailsState> {
             statusCode: currentTask.statusCode,
           );
 
+          markDataChanged();
+
           emit(
             state.copyWith(
               taskDetails: updatedTask,
@@ -648,6 +659,8 @@ class StudyTaskDetailsCubit extends Cubit<StudyTaskDetailsState> {
           debugPrint('→ title: ${response.title}');
           debugPrint('→ message: ${response.message}');
           debugPrint('→ statusCode: ${response.statusCode}');
+
+          markDataChanged();
 
           emit(
             state.copyWith(

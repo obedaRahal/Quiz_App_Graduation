@@ -126,6 +126,7 @@ class StudyTaskTimingInfoModel extends StudyTaskTimingInfoEntity {
     required super.startTime,
     required super.duration,
     required super.repeatPattern,
+    required super.repeatWeekday,
     required super.reminder,
   });
 
@@ -139,6 +140,7 @@ class StudyTaskTimingInfoModel extends StudyTaskTimingInfoEntity {
       ),
       repeatPattern:
           json['repeat_pattern']?.toString() ?? '',
+      repeatWeekday: _parseRepeatWeekday(json['repeat_weekday']),
       reminder: StudyTaskReminderModel.fromJson(
         _asMap(json['reminder']),
       ),
@@ -214,4 +216,33 @@ int _parseInt(dynamic value) {
   if (value is int) return value;
 
   return int.tryParse(value?.toString() ?? '') ?? 0;
+}
+
+int? _parseRepeatWeekday(dynamic value) {
+  if (value == null) return null;
+
+  final numericWeekday = value is int
+      ? value
+      : int.tryParse(value.toString().trim());
+
+  if (numericWeekday != null) {
+    return numericWeekday >= 0 && numericWeekday <= 6
+        ? numericWeekday
+        : null;
+  }
+
+  const weekdayByArabicName = <String, int>{
+    'الأحد': 0,
+    'الاحد': 0,
+    'الإثنين': 1,
+    'الاثنين': 1,
+    'الثلاثاء': 2,
+    'الأربعاء': 3,
+    'الاربعاء': 3,
+    'الخميس': 4,
+    'الجمعة': 5,
+    'السبت': 6,
+  };
+
+  return weekdayByArabicName[value.toString().trim()];
 }

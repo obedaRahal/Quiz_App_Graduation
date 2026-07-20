@@ -41,12 +41,18 @@ extension StudyTaskStatusExtension on StudyTaskStatus {
 StudyTaskStatus studyTaskStatusFromApi(String value) {
   switch (value.trim()) {
     case 'قيد المعالجة':
+    case 'قيد التنفيذ':
       return StudyTaskStatus.inProgress;
 
     case 'تم الإنجاز':
+    case 'تم إنجازها':
+    case 'تم انجازها':
+    case 'منجزة':
+    case 'مكتملة':
       return StudyTaskStatus.completed;
 
     case 'فائتة':
+    case 'فشلت':
       return StudyTaskStatus.missed;
 
     case 'للقيام':

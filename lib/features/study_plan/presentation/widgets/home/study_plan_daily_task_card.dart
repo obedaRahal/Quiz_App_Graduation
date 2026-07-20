@@ -275,7 +275,7 @@ class _TaskDetailsRow extends StatelessWidget {
         Expanded(
           child: _TaskInfoColumn(
             title: 'رقم المهمة',
-            value: '#${task.id}',
+            value: '#${task.taskNumber}',
             valueColor: context.appColors.primaryToPrimaryDark,
           ),
         ),

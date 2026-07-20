@@ -11,7 +11,7 @@ import 'package:quiz_app_grad/features/study_task/presentation/manager/study_tas
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/details/study_task_bottom_actions.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/details/study_task_details_body.dart';
 
-class StudyTaskDetailsView extends StatelessWidget {
+class StudyTaskDetailsView extends StatefulWidget {
   final int planId;
   final int taskId;
 
@@ -22,71 +22,91 @@ class StudyTaskDetailsView extends StatelessWidget {
   });
 
   @override
+  State<StudyTaskDetailsView> createState() => _StudyTaskDetailsViewState();
+}
+
+class _StudyTaskDetailsViewState extends State<StudyTaskDetailsView> {
+  bool _allowPop = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: BlocListener<StudyTaskDetailsCubit, StudyTaskDetailsState>(
-          listenWhen: (previous, current) {
-            return previous.deleteStatus != current.deleteStatus ||
-                previous.changeStatus != current.changeStatus ||
-                previous.toggleSubTaskStatus != current.toggleSubTaskStatus;
-          },
-          listener: _handleStateListener,
-          child: Column(
-            children: [
-              Expanded(
-                child: StudyTaskDetailsBody(planId: planId, taskId: taskId),
-              ),
-              BlocBuilder<StudyTaskDetailsCubit, StudyTaskDetailsState>(
-                buildWhen: (previous, current) {
-                  return previous.taskDetails != current.taskDetails ||
-                      previous.changeStatus != current.changeStatus ||
-                      previous.deleteStatus != current.deleteStatus;
-                },
-                builder: (context, state) {
-                  final taskDetails = state.taskDetails;
+    return PopScope<bool>(
+      canPop: _allowPop,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _popWithResult();
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: BlocListener<StudyTaskDetailsCubit, StudyTaskDetailsState>(
+            listenWhen: (previous, current) {
+              return previous.deleteStatus != current.deleteStatus ||
+                  previous.changeStatus != current.changeStatus ||
+                  previous.toggleSubTaskStatus != current.toggleSubTaskStatus;
+            },
+            listener: _handleStateListener,
+            child: Column(
+              children: [
+                Expanded(
+                  child: StudyTaskDetailsBody(
+                    planId: widget.planId,
+                    taskId: widget.taskId,
+                    onBackTap: _popWithResult,
+                  ),
+                ),
+                BlocBuilder<StudyTaskDetailsCubit, StudyTaskDetailsState>(
+                  buildWhen: (previous, current) {
+                    return previous.taskDetails != current.taskDetails ||
+                        previous.changeStatus != current.changeStatus ||
+                        previous.deleteStatus != current.deleteStatus;
+                  },
+                  builder: (context, state) {
+                    final taskDetails = state.taskDetails;
 
-                  if (!state.isLoadSuccess || taskDetails == null) {
-                    return const SizedBox.shrink();
-                  }
+                    if (!state.isLoadSuccess || taskDetails == null) {
+                      return const SizedBox.shrink();
+                    }
 
-                  return StudyTaskBottomActions(
-                    onEditTap: () async {
-                      debugPrint('on edit task tap');
+                    return StudyTaskBottomActions(
+                      onEditTap: () async {
+                        debugPrint('on edit task tap');
 
-                      final isUpdated = await context.pushNamed<bool>(
-                        AppRouterName.updateStudyTask,
-                        extra: UpdateStudyTaskArgs(
-                          planId: planId,
-                          taskId: taskId,
-                        ),
-                      );
+                        final isUpdated = await context.pushNamed<bool>(
+                          AppRouterName.updateStudyTask,
+                          extra: UpdateStudyTaskArgs(
+                            planId: widget.planId,
+                            taskId: widget.taskId,
+                          ),
+                        );
 
-                      if (!context.mounted) {
-                        return;
-                      }
+                        if (!context.mounted) {
+                          return;
+                        }
 
-                      if (isUpdated == true) {
-                        context
-                            .read<StudyTaskDetailsCubit>()
-                            .getStudyTaskDetails(
-                              planId: planId,
-                              taskId: taskId,
-                            );
-                      }
-                    },
-                    onDeleteTap: () {
-                      _showDeleteConfirmation(
-                        context,
-                        planId: planId,
-                        taskId: taskDetails.data.basicInfo.id,
-                        taskTitle: taskDetails.data.basicInfo.title,
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
+                        if (isUpdated == true) {
+                          final cubit = context.read<StudyTaskDetailsCubit>();
+
+                          cubit.markDataChanged();
+                          await cubit.getStudyTaskDetails(
+                            planId: widget.planId,
+                            taskId: widget.taskId,
+                          );
+                        }
+                      },
+                      onDeleteTap: () {
+                        _showDeleteConfirmation(
+                          context,
+                          planId: widget.planId,
+                          taskId: taskDetails.data.basicInfo.id,
+                          taskTitle: taskDetails.data.basicInfo.title,
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -176,7 +196,7 @@ class StudyTaskDetailsView extends StatelessWidget {
         type: AppValidationSnackBarType.success,
       );
 
-      Navigator.of(context).pop(true);
+      _popWithResult(forceChanged: true);
       return;
     }
 
@@ -196,6 +216,30 @@ class StudyTaskDetailsView extends StatelessWidget {
 
       context.read<StudyTaskDetailsCubit>().resetDeleteState();
     }
+  }
+
+  void _popWithResult({bool forceChanged = false}) {
+    if (_allowPop) {
+      return;
+    }
+
+    final hasDataChanges =
+        forceChanged || context.read<StudyTaskDetailsCubit>().hasDataChanges;
+
+    debugPrint('============ StudyTaskDetailsView pop result ============');
+    debugPrint('→ forceChanged: $forceChanged');
+    debugPrint('→ hasDataChanges: $hasDataChanges');
+    debugPrint('==========================================================');
+
+    setState(() {
+      _allowPop = true;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.pop<bool>(hasDataChanges);
+      }
+    });
   }
 
   Future<void> _showDeleteConfirmation(

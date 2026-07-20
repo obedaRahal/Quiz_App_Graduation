@@ -8,6 +8,8 @@ enum StudyPlanDetailsOverviewStatus { initial, loading, success, failure }
 
 enum StudyPlanDetailsTasksStatus { initial, loading, success, failure }
 
+enum StudyPlanDetailsTaskUpdateStatus { initial, loading, success, failure }
+
 enum DeleteStudyPlanStatus { initial, loading, success, failure }
 
 class StudyPlanDetailsState {
@@ -25,6 +27,12 @@ class StudyPlanDetailsState {
   final bool isOldExpanded;
   final bool isUpcomingExpanded;
   final bool isCompletedExpanded;
+
+  final StudyPlanDetailsTaskUpdateStatus taskUpdateStatus;
+  final int? updatingTaskId;
+  final String? taskUpdateMessage;
+  final String? taskUpdateErrorTitle;
+  final String? taskUpdateErrorMessage;
 
   final DeleteStudyPlanStatus deleteStatus;
   final String? deleteSuccessTitle;
@@ -45,6 +53,12 @@ class StudyPlanDetailsState {
     this.isOldExpanded = true,
     this.isUpcomingExpanded = true,
     this.isCompletedExpanded = true,
+
+    this.taskUpdateStatus = StudyPlanDetailsTaskUpdateStatus.initial,
+    this.updatingTaskId,
+    this.taskUpdateMessage,
+    this.taskUpdateErrorTitle,
+    this.taskUpdateErrorMessage,
 
     this.deleteStatus = DeleteStudyPlanStatus.initial,
     this.deleteSuccessTitle,
@@ -73,6 +87,17 @@ class StudyPlanDetailsState {
   bool get isTasksFailure => tasksStatus == StudyPlanDetailsTasksStatus.failure;
 
   bool get hasTasksData => tasks != null;
+
+  bool get isTaskUpdateLoading =>
+      taskUpdateStatus == StudyPlanDetailsTaskUpdateStatus.loading;
+  bool get isTaskUpdateSuccess =>
+      taskUpdateStatus == StudyPlanDetailsTaskUpdateStatus.success;
+  bool get isTaskUpdateFailure =>
+      taskUpdateStatus == StudyPlanDetailsTaskUpdateStatus.failure;
+
+  bool isUpdatingTask(int taskId) {
+    return isTaskUpdateLoading && updatingTaskId == taskId;
+  }
 
   String get normalizedTasksSearchQuery =>
       tasksSearchQuery.trim().toLowerCase();
@@ -139,6 +164,15 @@ class StudyPlanDetailsState {
     bool? isCompletedExpanded,
     bool clearTasks = false,
 
+    StudyPlanDetailsTaskUpdateStatus? taskUpdateStatus,
+    int? updatingTaskId,
+    String? taskUpdateMessage,
+    String? taskUpdateErrorTitle,
+    String? taskUpdateErrorMessage,
+    bool clearUpdatingTaskId = false,
+    bool clearTaskUpdateMessage = false,
+    bool clearTaskUpdateError = false,
+
     DeleteStudyPlanStatus? deleteStatus,
     String? deleteSuccessTitle,
     String? deleteSuccessMessage,
@@ -161,6 +195,20 @@ class StudyPlanDetailsState {
       isOldExpanded: isOldExpanded ?? this.isOldExpanded,
       isUpcomingExpanded: isUpcomingExpanded ?? this.isUpcomingExpanded,
       isCompletedExpanded: isCompletedExpanded ?? this.isCompletedExpanded,
+
+      taskUpdateStatus: taskUpdateStatus ?? this.taskUpdateStatus,
+      updatingTaskId: clearUpdatingTaskId
+          ? null
+          : updatingTaskId ?? this.updatingTaskId,
+      taskUpdateMessage: clearTaskUpdateMessage
+          ? null
+          : taskUpdateMessage ?? this.taskUpdateMessage,
+      taskUpdateErrorTitle: clearTaskUpdateError
+          ? null
+          : taskUpdateErrorTitle ?? this.taskUpdateErrorTitle,
+      taskUpdateErrorMessage: clearTaskUpdateError
+          ? null
+          : taskUpdateErrorMessage ?? this.taskUpdateErrorMessage,
 
       deleteStatus: deleteStatus ?? this.deleteStatus,
       deleteSuccessTitle: clearDeleteSuccessData

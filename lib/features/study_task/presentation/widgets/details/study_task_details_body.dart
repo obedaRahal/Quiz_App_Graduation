@@ -12,22 +12,20 @@ import 'package:quiz_app_grad/features/study_task/presentation/widgets/details/s
 class StudyTaskDetailsBody extends StatelessWidget {
   final int planId;
   final int taskId;
+  final VoidCallback onBackTap;
 
   const StudyTaskDetailsBody({
     super.key,
     required this.planId,
     required this.taskId,
+    required this.onBackTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        StudyTaskDetailsHeader(
-          onBackTap: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        StudyTaskDetailsHeader(onBackTap: onBackTap),
         Expanded(
           child: BlocBuilder<StudyTaskDetailsCubit, StudyTaskDetailsState>(
             buildWhen: (previous, current) {
@@ -35,7 +33,7 @@ class StudyTaskDetailsBody extends StatelessWidget {
                   previous.taskDetails != current.taskDetails ||
                   previous.changeStatus != current.changeStatus ||
                   previous.updatingSubTaskId != current.updatingSubTaskId ||
-                  previous.updatingSubTaskId != current.updatingSubTaskId;
+                  previous.toggleSubTaskStatus != current.toggleSubTaskStatus;
             },
             builder: (context, state) {
               if (state.isInitial || state.isLoading) {
