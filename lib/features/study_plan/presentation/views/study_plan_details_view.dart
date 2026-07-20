@@ -88,9 +88,9 @@ class StudyPlanDetailsView extends StatelessWidget {
                     return;
                   }
 
-                  // context.read<StudyPlanDetailsCubit>().getStudyPlanDetails(
-                  //   planId: planId,
-                  // );
+                  await context
+                      .read<StudyPlanDetailsCubit>()
+                      .refreshAfterTaskCreation();
                 },
               ),
             ],

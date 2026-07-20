@@ -74,6 +74,19 @@ class StudyPlanDetailsOverviewContent extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
+        final statistics = plan.statistics;
+        final pendingTasksCount =
+            overview.progress.totalTasksCount -
+            overview.progress.completedTasksCount -
+            statistics.missedTasksCount;
+        final refreshedPlan = plan.copyWith(
+          statistics: statistics.copyWith(
+            tasksCount: overview.progress.totalTasksCount,
+            completedTasksCount: overview.progress.completedTasksCount,
+            pendingTasksCount: pendingTasksCount < 0 ? 0 : pendingTasksCount,
+          ),
+        );
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -86,10 +99,10 @@ class StudyPlanDetailsOverviewContent extends StatelessWidget {
             SizedBox(height: SizeConfig.h(0.025)),
 
             StudyPlanDetailsStatisticsSection(
-              plan: plan,
+              plan: refreshedPlan,
               totalTasksImage: AppImage.oldTask,
-              completedTasksImage:  AppImage.doneTask,
-              pendingTasksImage:  AppImage.currentTask,
+              completedTasksImage: AppImage.doneTask,
+              pendingTasksImage: AppImage.currentTask,
             ),
 
             SizedBox(height: SizeConfig.h(0.02)),

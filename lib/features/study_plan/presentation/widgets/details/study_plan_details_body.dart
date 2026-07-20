@@ -150,13 +150,16 @@ class _StudyPlanDetailsBodyState extends State<StudyPlanDetailsBody> {
       return;
     }
 
+    final hasDataChanges =
+        _hasDataChanges || context.read<StudyPlanDetailsCubit>().hasDataChanges;
+
     setState(() {
       _allowPop = true;
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        Navigator.of(context).pop(_hasDataChanges);
+        Navigator.of(context).pop(hasDataChanges);
       }
     });
   }

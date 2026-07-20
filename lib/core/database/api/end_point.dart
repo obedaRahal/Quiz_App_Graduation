@@ -504,4 +504,8 @@ class EndPoints {
     return '$baseUrl/study-plans/'
         'subjects-related-plan/$planId';
   }
+
+  static String updateStudyTask(int planId, int taskId) {
+    return '$baseUrl/study-plans/update/task/$planId/$taskId';
+  }
 }

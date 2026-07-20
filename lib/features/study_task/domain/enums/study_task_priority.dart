@@ -1,6 +1,14 @@
 enum StudyTaskPriority { low, medium, high, unknown }
 
+const selectableStudyTaskPriorities = <StudyTaskPriority>[
+  StudyTaskPriority.low,
+  StudyTaskPriority.medium,
+  StudyTaskPriority.high,
+];
+
 extension StudyTaskPriorityExtension on StudyTaskPriority {
+  bool get isKnown => this != StudyTaskPriority.unknown;
+
   String get label {
     switch (this) {
       case StudyTaskPriority.low:
@@ -14,6 +22,22 @@ extension StudyTaskPriorityExtension on StudyTaskPriority {
 
       case StudyTaskPriority.unknown:
         return 'غير محددة';
+    }
+  }
+
+  String get apiValue {
+    switch (this) {
+      case StudyTaskPriority.low:
+        return 'منخفضة';
+
+      case StudyTaskPriority.medium:
+        return 'متوسطة';
+
+      case StudyTaskPriority.high:
+        return 'عالية';
+
+      case StudyTaskPriority.unknown:
+        return '';
     }
   }
 }

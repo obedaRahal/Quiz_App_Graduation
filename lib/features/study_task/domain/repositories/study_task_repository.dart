@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/features/study_task/domain/entities/study_plan_sub
 import 'package:quiz_app_grad/features/study_task/domain/entities/study_task_details_entity.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/create_study_task_params.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/get_study_task_details_params.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/update_study_task_params.dart';
 
 abstract class StudyTaskRepository {
   Future<Either<Failure, StudyTaskDetailsEntity>> getStudyTaskDetails({
@@ -17,4 +18,8 @@ abstract class StudyTaskRepository {
 
   Future<Either<Failure, StudyPlanSubjectsResponseEntity>>
   getStudyPlanSubjects({required int planId});
+
+  Future<Either<Failure, CreateStudyTaskResponseEntity>> updateStudyTask({
+    required UpdateStudyTaskParams params,
+  });
 }

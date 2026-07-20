@@ -5,11 +5,11 @@
 // import 'package:quiz_app_grad/features/study_plan/presentation/widgets/create/study_plan_form_section_header.dart';
 // import 'package:quiz_app_grad/features/study_plan/presentation/widgets/create/study_plan_selection_box.dart';
 // import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_priority.dart';
-// import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
-// import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_state.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_cubit.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_state.dart';
 
-// class CreateStudyTaskOptionsSection extends StatelessWidget {
-//   const CreateStudyTaskOptionsSection({super.key});
+// class UpdateStudyTaskOptionsSection extends StatelessWidget {
+//   const UpdateStudyTaskOptionsSection({super.key});
 
 //   static const List<int> _durationOptions = [
 //     10,
@@ -28,6 +28,7 @@
 //     600,
 //     720,
 //   ];
+
 //   static const List<int?> _reminderOptions = [
 //     null,
 //     0,
@@ -46,7 +47,7 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return BlocBuilder<CreateStudyTaskCubit, CreateStudyTaskState>(
+//     return BlocBuilder<UpdateStudyTaskCubit, UpdateStudyTaskState>(
 //       buildWhen: (previous, current) {
 //         return previous.startTime != current.startTime ||
 //             previous.durationMinutes != current.durationMinutes ||
@@ -60,17 +61,19 @@
 //             StudyPlanFormSectionHeader(
 //               title: 'إعدادات المهمة',
 //               description:
-//                   'حدد وقت البداية ومدة المهمة وأولويتها وموعد التذكير المناسب.',
+//                   'عدّل وقت البداية ومدة المهمة وأولويتها وموعد التذكير المناسب.',
 //               image: AppImage.timer,
 //             ),
+
 //             SizedBox(height: SizeConfig.h(0.016)),
+
 //             Row(
 //               textDirection: TextDirection.rtl,
 //               children: [
 //                 Expanded(
 //                   child: StudyPlanSelectionBox(
 //                     title: 'وقت البداية',
-//                     value: state.startTime.isEmpty
+//                     value: state.startTime.trim().isEmpty
 //                         ? null
 //                         : _formatTimeForDisplay(state.startTime),
 //                     icon: Icons.access_time_rounded,
@@ -79,7 +82,9 @@
 //                     },
 //                   ),
 //                 ),
+
 //                 SizedBox(width: SizeConfig.w(0.025)),
+
 //                 Expanded(
 //                   child: StudyPlanSelectionBox(
 //                     title: 'مدة المهمة',
@@ -94,7 +99,9 @@
 //                 ),
 //               ],
 //             ),
+
 //             SizedBox(height: SizeConfig.h(0.014)),
+
 //             Row(
 //               textDirection: TextDirection.rtl,
 //               children: [
@@ -108,11 +115,13 @@
 //                     },
 //                   ),
 //                 ),
+
 //                 SizedBox(width: SizeConfig.w(0.025)),
+
 //                 Expanded(
 //                   child: StudyPlanSelectionBox(
 //                     title: 'التذكير',
-//                     value: _reminderDisplayValue(state.reminderOffsetMinutes),
+//                     value: _formatReminder(state.reminderOffsetMinutes),
 //                     icon: Icons.notifications_outlined,
 //                     onTap: () {
 //                       _showReminderSheet(context, state.reminderOffsetMinutes);
@@ -129,7 +138,7 @@
 
 //   Future<void> _selectStartTime(
 //     BuildContext context,
-//     CreateStudyTaskState state,
+//     UpdateStudyTaskState state,
 //   ) async {
 //     final initialTime = _parseTime(state.startTime) ?? TimeOfDay.now();
 
@@ -145,10 +154,15 @@
 //       return;
 //     }
 
-//     context.read<CreateStudyTaskCubit>().changeStartTimeFromParts(
-//       hour: selectedTime.hour,
-//       minute: selectedTime.minute,
-//     );
+//     final formattedTime =
+//         '${selectedTime.hour.toString().padLeft(2, '0')}:'
+//         '${selectedTime.minute.toString().padLeft(2, '0')}';
+
+//     debugPrint('============ Update Study Task Start Time ============');
+//     debugPrint('→ selected time: $formattedTime');
+//     debugPrint('=====================================================');
+
+//     context.read<UpdateStudyTaskCubit>().startTimeChanged(formattedTime);
 //   }
 
 //   Future<void> _showDurationSheet(
@@ -172,7 +186,7 @@
 //       return;
 //     }
 
-//     context.read<CreateStudyTaskCubit>().changeDurationMinutes(value);
+//     context.read<UpdateStudyTaskCubit>().durationChanged(value);
 //   }
 
 //   Future<void> _showPrioritySheet(
@@ -187,8 +201,8 @@
 //           title: 'أولوية المهمة',
 //           values: selectableStudyTaskPriorities,
 //           selectedValue: selectedPriority,
-//           labelBuilder: (value) {
-//             return value.apiValue;
+//           labelBuilder: (priority) {
+//             return priority.apiValue;
 //           },
 //         );
 //       },
@@ -198,13 +212,22 @@
 //       return;
 //     }
 
-//     context.read<CreateStudyTaskCubit>().changePriority(value);
+//     context.read<UpdateStudyTaskCubit>().priorityChanged(value);
 //   }
 
 //   Future<void> _showReminderSheet(
 //     BuildContext context,
 //     int? selectedReminder,
 //   ) async {
+//     /*
+//      * نستخدم _ReminderResult بدل إعادة int? مباشرة.
+//      *
+//      * لأن null قد تعني أحد أمرين:
+//      * 1- المستخدم أغلق النافذة.
+//      * 2- المستخدم اختار "بدون تذكير".
+//      *
+//      * التغليف يسمح لنا بالتمييز بين الحالتين.
+//      */
 //     final result = await showModalBottomSheet<_ReminderResult>(
 //       context: context,
 //       showDragHandle: true,
@@ -224,6 +247,7 @@
 //                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
 //                 ),
 //               ),
+
 //               ..._reminderOptions.map((minutes) {
 //                 final isSelected = selectedReminder == minutes;
 
@@ -251,15 +275,15 @@
 //       return;
 //     }
 
-//     context.read<CreateStudyTaskCubit>().changeReminderOffsetMinutes(
-//       result.minutes,
-//     );
+//     context.read<UpdateStudyTaskCubit>().reminderChanged(result.minutes);
 //   }
 
 //   static TimeOfDay? _parseTime(String value) {
-//     final parts = value.split(':');
+//     final normalized = value.trim();
 
-//     if (parts.length != 2) {
+//     final parts = normalized.split(':');
+
+//     if (parts.length < 2) {
 //       return null;
 //     }
 
@@ -306,22 +330,21 @@
 //     if (minutes % 60 == 0) {
 //       final hours = minutes ~/ 60;
 
-//       return hours == 1 ? 'ساعة واحدة' : '$hours ساعات';
+//       if (hours == 1) {
+//         return 'ساعة واحدة';
+//       }
+
+//       if (hours == 2) {
+//         return 'ساعتان';
+//       }
+
+//       return '$hours ساعات';
 //     }
 
 //     final hours = minutes ~/ 60;
 //     final remainingMinutes = minutes % 60;
 
-//     return '$hours ساعة و'
-//         '$remainingMinutes دقيقة';
-//   }
-
-//   static String? _reminderDisplayValue(int? minutes) {
-//     if (minutes == null) {
-//       return null;
-//     }
-
-//     return _formatReminder(minutes);
+//     return '$hours ساعة و$remainingMinutes دقيقة';
 //   }
 
 //   static String _formatReminder(int? minutes) {
@@ -402,6 +425,7 @@
 //               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
 //             ),
 //           ),
+
 //           ...values.map((value) {
 //             final isSelected = value == selectedValue;
 
@@ -431,16 +455,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
-import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_state.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_cubit.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_state.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/common/options/study_task_options_section.dart';
 
-class CreateStudyTaskOptionsSection extends StatelessWidget {
-  const CreateStudyTaskOptionsSection({super.key});
+class UpdateStudyTaskOptionsSection extends StatelessWidget {
+  const UpdateStudyTaskOptionsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CreateStudyTaskCubit, CreateStudyTaskState>(
+    return BlocBuilder<UpdateStudyTaskCubit, UpdateStudyTaskState>(
       buildWhen: (previous, current) {
         return previous.startTime != current.startTime ||
             previous.durationMinutes != current.durationMinutes ||
@@ -448,17 +472,19 @@ class CreateStudyTaskOptionsSection extends StatelessWidget {
             previous.reminderOffsetMinutes != current.reminderOffsetMinutes;
       },
       builder: (context, state) {
-        final cubit = context.read<CreateStudyTaskCubit>();
+        final cubit = context.read<UpdateStudyTaskCubit>();
 
         return StudyTaskOptionsSection(
           startTime: state.startTime,
           durationMinutes: state.durationMinutes,
           priority: state.priority,
           reminderOffsetMinutes: state.reminderOffsetMinutes,
-          onStartTimeChanged: cubit.changeStartTime,
-          onDurationChanged: cubit.changeDurationMinutes,
-          onPriorityChanged: cubit.changePriority,
-          onReminderChanged: cubit.changeReminderOffsetMinutes,
+          sectionDescription:
+              'عدّل وقت البداية والمدة والأولوية وموعد التذكير.',
+          onStartTimeChanged: cubit.startTimeChanged,
+          onDurationChanged: cubit.durationChanged,
+          onPriorityChanged: cubit.priorityChanged,
+          onReminderChanged: cubit.reminderChanged,
         );
       },
     );

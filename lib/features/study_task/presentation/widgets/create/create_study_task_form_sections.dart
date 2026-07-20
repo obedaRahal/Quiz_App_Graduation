@@ -1,3 +1,46 @@
+// import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
+// import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+// import 'package:quiz_app_grad/core/theme/assets/images.dart';
+// import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+// import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+// import 'package:quiz_app_grad/features/create_test/presentation/widgets/create_test_title_description_section.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_state.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_date_section.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_options_section.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_repeat_section.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_subjects_section.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_subtasks_section.dart';
+
+// class CreateStudyTaskFormSections extends StatelessWidget {
+//   const CreateStudyTaskFormSections({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Column(
+//       crossAxisAlignment: CrossAxisAlignment.stretch,
+//       children: [
+//         CreateStudyTaskTitleDescriptionSection(),
+//         CustomDivider(height: 30, thickness: 2),
+//         CreateStudyTaskDateSection(),
+//         CustomDivider(height: 30, thickness: 2),
+//         CreateStudyTaskOptionsSection(),
+
+//         CustomDivider(height: 30, thickness: 2),
+//         CreateStudyTaskSubjectsSection(),
+//         CustomDivider(height: 30, thickness: 2),
+
+//         CreateStudyTaskRepeatSection(),
+//         CustomDivider(height: 30, thickness: 2),
+
+//         CreateStudyTaskSubtasksSection(),
+//       ],
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
@@ -13,6 +56,7 @@ import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/cr
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_repeat_section.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_subjects_section.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_subtasks_section.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_title_description_section.dart';
 
 class CreateStudyTaskFormSections extends StatelessWidget {
   const CreateStudyTaskFormSections({super.key});
@@ -23,16 +67,23 @@ class CreateStudyTaskFormSections extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CreateStudyTaskTitleDescriptionSection(),
+
         CustomDivider(height: 30, thickness: 2),
+
         CreateStudyTaskDateSection(),
+
         CustomDivider(height: 30, thickness: 2),
+
         CreateStudyTaskOptionsSection(),
 
         CustomDivider(height: 30, thickness: 2),
+
         CreateStudyTaskSubjectsSection(),
+
         CustomDivider(height: 30, thickness: 2),
 
         CreateStudyTaskRepeatSection(),
+
         CustomDivider(height: 30, thickness: 2),
 
         CreateStudyTaskSubtasksSection(),

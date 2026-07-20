@@ -1,12 +1,5 @@
-enum StudyTaskPriority { low, medium, high }
-
-enum StudyTaskRepeatPattern {
-  none,
-  weekly,
-  everyTwoWeeks,
-  everyThreeWeeks,
-  everyFourWeeks,
-}
+import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_priority.dart';
+import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_repeat_pattern.dart';
 
 class CreateStudyTaskSubtaskParams {
   final String title;
@@ -235,6 +228,10 @@ class CreateStudyTaskParams {
       return false;
     }
 
+    if (!priority.isKnown) {
+      return false;
+    }
+
     if (!haveValidSubtasks) {
       return false;
     }
@@ -333,41 +330,5 @@ class CreateStudyTaskParams {
         'repeatWeekday: $repeatWeekday, '
         'reminderOffsetMinutes: $reminderOffsetMinutes'
         ')';
-  }
-}
-
-extension StudyTaskPriorityApiValue on StudyTaskPriority {
-  String get apiValue {
-    switch (this) {
-      case StudyTaskPriority.low:
-        return 'منخفضة';
-
-      case StudyTaskPriority.medium:
-        return 'متوسطة';
-
-      case StudyTaskPriority.high:
-        return 'عالية';
-    }
-  }
-}
-
-extension StudyTaskRepeatPatternApiValue on StudyTaskRepeatPattern {
-  String get apiValue {
-    switch (this) {
-      case StudyTaskRepeatPattern.none:
-        return 'بدون تكرار';
-
-      case StudyTaskRepeatPattern.weekly:
-        return 'كل أسبوع';
-
-      case StudyTaskRepeatPattern.everyTwoWeeks:
-        return 'كل أسبوعين';
-
-      case StudyTaskRepeatPattern.everyThreeWeeks:
-        return 'كل 3 أسابيع';
-
-      case StudyTaskRepeatPattern.everyFourWeeks:
-        return 'كل 4 أسابيع';
-    }
   }
 }

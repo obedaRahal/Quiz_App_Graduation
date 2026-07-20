@@ -9,6 +9,7 @@ import 'package:quiz_app_grad/features/study_task/domain/entities/study_task_det
 import 'package:quiz_app_grad/features/study_task/domain/repositories/study_task_repository.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/create_study_task_params.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/get_study_task_details_params.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/update_study_task_params.dart';
 
 class StudyTaskRepositoryImpl implements StudyTaskRepository {
   final StudyTaskRemoteDataSource remoteDataSource;
@@ -237,6 +238,110 @@ class StudyTaskRepositoryImpl implements StudyTaskRepository {
           title: 'حدث خطأ',
           message: 'تعذر جلب مواد الخطة الدراسية',
         ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, CreateStudyTaskResponseEntity>> updateStudyTask({
+    required UpdateStudyTaskParams params,
+  }) async {
+    debugPrint(
+      '============ '
+      'StudyTaskRepositoryImpl.updateStudyTask '
+      '============',
+    );
+
+    debugPrint('→ params: $params');
+    debugPrint('→ planId: ${params.planId}');
+    debugPrint('→ taskId: ${params.taskId}');
+    //debugPrint('→ hasChanges: ${params.hasChanges}');
+    debugPrint('→ body: ${params.toBody()}');
+
+    // if (!params.hasChanges) {
+    //   debugPrint('✗ no study task changes detected');
+    //   debugPrint(
+    //     '===============================================================',
+    //   );
+
+    //   return const Left(
+    //     ServerFailure(
+    //       title: 'لا توجد تعديلات',
+    //       message: 'لم يتم إجراء أي تعديل على بيانات المهمة',
+    //     ),
+    //   );
+    // }
+
+    if (!params.isValid) {
+      debugPrint('✗ invalid update study task params');
+      debugPrint(
+        '===============================================================',
+      );
+
+      return const Left(
+        ServerFailure(
+          title: 'بيانات غير صالحة',
+          message: 'بيانات تعديل المهمة الدراسية غير صالحة',
+        ),
+      );
+    }
+
+    try {
+      final response = await remoteDataSource.updateStudyTask(params: params);
+
+      debugPrint('✓ repository updated study task');
+      debugPrint('→ success: ${response.success}');
+      debugPrint('→ title: ${response.title}');
+      debugPrint('→ message: ${response.message}');
+      debugPrint('→ statusCode: ${response.statusCode}');
+      debugPrint(
+        '===============================================================',
+      );
+
+      return Right(response);
+    } on ServerException catch (error) {
+      debugPrint(
+        '✗ StudyTaskRepositoryImpl.'
+        'updateStudyTask ServerException',
+      );
+      debugPrint('→ title: ${error.errorModel.errorTitle}');
+      debugPrint('→ message: ${error.errorModel.errorMessage}');
+      debugPrint('→ status: ${error.errorModel.status}');
+      debugPrint(
+        '===============================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: error.errorModel.errorTitle,
+          message: error.errorModel.errorMessage,
+          statusCode: error.errorModel.status,
+        ),
+      );
+    } on CacheException catch (error) {
+      debugPrint(
+        '✗ StudyTaskRepositoryImpl.'
+        'updateStudyTask CacheException',
+      );
+      debugPrint('→ message: ${error.errorMessage}');
+      debugPrint(
+        '===============================================================',
+      );
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: error.errorMessage));
+    } catch (error, stackTrace) {
+      debugPrint(
+        '✗ StudyTaskRepositoryImpl.'
+        'updateStudyTask unexpected error',
+      );
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '===============================================================',
+      );
+
+      return const Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر تعديل المهمة الدراسية'),
       );
     }
   }

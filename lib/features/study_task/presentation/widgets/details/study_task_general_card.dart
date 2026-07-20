@@ -111,7 +111,7 @@ class StudyTaskGeneralDetailsCard extends StatelessWidget {
           textColor: Colors.white,
         );
       case StudyTaskStatus.missed:
-        return  _TaskStatusStyle(
+        return _TaskStatusStyle(
           title: 'فائتة',
           backgroundColor: AppPalette.red,
           textColor: Colors.white,
@@ -230,7 +230,6 @@ class _TaskDetailsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final basicInfo = task.basicInfo;
-    final timingInfo = task.timingInfo;
 
     return Row(
       textDirection: TextDirection.rtl,
@@ -239,7 +238,7 @@ class _TaskDetailsRow extends StatelessWidget {
         Expanded(
           child: _TaskInfoColumn(
             title: 'رقم المهمة',
-            value: '#${basicInfo.id}',
+            value: '#${basicInfo.taskNumber}',
             valueColor: context.appColors.primaryToPrimaryDark,
           ),
         ),
@@ -422,15 +421,13 @@ class _TaskSubjectSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
 
           backgroundColor: context.appColors.primaryToPrimaryDark,
-          child: Expanded(
-            child: CustomTextWidget(
-              value,
-              textAlign: TextAlign.right,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              fontSize: SizeConfig.text(0.032),
-              color: context.appColors.whiteToblack,
-            ),
+          child: CustomTextWidget(
+            value,
+            textAlign: TextAlign.right,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            fontSize: SizeConfig.text(0.032),
+            color: context.appColors.whiteToblack,
           ),
         ),
       ],

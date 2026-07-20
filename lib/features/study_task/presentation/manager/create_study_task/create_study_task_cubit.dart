@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/features/study_task/domain/entities/study_plan_subjects_response_entity.dart';
+import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_priority.dart';
+import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_repeat_pattern.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/create_study_task_use_case.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/get_study_plan_subjects_use_case.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/create_study_task_params.dart';

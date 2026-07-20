@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/features/study_task/data/models/create_study_task_
 import 'package:quiz_app_grad/features/study_task/data/models/study_plan_subjects_response_model.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/study_task_details_model.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/create_study_task_params.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/update_study_task_params.dart';
 
 abstract class StudyTaskRemoteDataSource {
   Future<StudyTaskDetailsModel> getStudyTaskDetails({
@@ -18,6 +19,10 @@ abstract class StudyTaskRemoteDataSource {
 
   Future<StudyPlanSubjectsResponseModel> getStudyPlanSubjects({
     required int planId,
+  });
+
+  Future<CreateStudyTaskResponseModel> updateStudyTask({
+    required UpdateStudyTaskParams params,
   });
 }
 
@@ -212,6 +217,82 @@ class StudyTaskRemoteDataSourceImpl implements StudyTaskRemoteDataSource {
       debugPrint('→ error: $error');
       debugPrint('→ stackTrace: $stackTrace');
       debugPrint('===========================================================');
+
+      rethrow;
+    }
+  }
+
+  @override
+  Future<CreateStudyTaskResponseModel> updateStudyTask({
+    required UpdateStudyTaskParams params,
+  }) async {
+    debugPrint(
+      '============ '
+      'StudyTaskRemoteDataSource.updateStudyTask '
+      '============',
+    );
+
+    debugPrint('→ planId: ${params.planId}');
+    debugPrint('→ taskId: ${params.taskId}');
+    debugPrint('→ params: $params');
+
+    if (!params.isValid) {
+      debugPrint('✗ invalid update study task params');
+      //debugPrint('→ hasChanges: ${params.hasChanges}');
+      debugPrint('→ body: ${params.toBody()}');
+      debugPrint(
+        '===============================================================',
+      );
+
+      throw const FormatException('Invalid update study task parameters');
+    }
+
+    final endpoint = EndPoints.updateStudyTask(params.planId, params.taskId);
+
+    final body = params.toBody();
+
+    debugPrint('→ endpoint: $endpoint');
+    debugPrint('→ method: post');
+    debugPrint('→ body: $body');
+
+    try {
+      final response = await apiConsumer.post(endpoint, data: body);
+
+      debugPrint('✓ update study task response received');
+      debugPrint('→ response type: ${response.runtimeType}');
+      debugPrint('→ response: ${response.toString()}');
+
+      final responseMap = _extractResponseMap(response);
+
+      debugPrint('→ raw success: ${responseMap['success']}');
+      debugPrint('→ raw title: ${responseMap['title']}');
+      debugPrint('→ raw message: ${responseMap['message']}');
+      debugPrint('→ raw statusCode: ${responseMap['status_code']}');
+
+      final model = CreateStudyTaskResponseModel.fromJson(responseMap);
+
+      debugPrint('→ success: ${model.success}');
+      debugPrint('→ title: ${model.title}');
+      debugPrint('→ message: ${model.message}');
+      debugPrint('→ statusCode: ${model.statusCode}');
+      debugPrint(
+        '===============================================================',
+      );
+
+      return model;
+    } catch (error, stackTrace) {
+      debugPrint(
+        '✗ StudyTaskRemoteDataSource.'
+        'updateStudyTask failure',
+      );
+      debugPrint('→ planId: ${params.planId}');
+      debugPrint('→ taskId: ${params.taskId}');
+      debugPrint('→ body: $body');
+      debugPrint('→ error: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '===============================================================',
+      );
 
       rethrow;
     }

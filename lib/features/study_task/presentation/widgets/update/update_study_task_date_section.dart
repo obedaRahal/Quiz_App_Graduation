@@ -6,18 +6,19 @@
 // import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 // import 'package:quiz_app_grad/features/study_plan/presentation/widgets/create/study_plan_form_section_header.dart';
 // import 'package:quiz_app_grad/features/study_plan/presentation/widgets/create/study_plan_selection_box.dart';
-// import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
-// import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_state.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_cubit.dart';
+// import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_state.dart';
 
-// class CreateStudyTaskDateSection extends StatelessWidget {
-//   const CreateStudyTaskDateSection({super.key});
+// class UpdateStudyTaskDateSection extends StatelessWidget {
+//   const UpdateStudyTaskDateSection({super.key});
 
-//   /// المدة القصوى للمهمة شاملة تاريخ البداية والنهاية.
+//   /// المدة القصوى للمهمة شاملة
+//   /// تاريخ البداية والنهاية.
 //   static const int _maxTaskRangeDays = 7;
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return BlocBuilder<CreateStudyTaskCubit, CreateStudyTaskState>(
+//     return BlocBuilder<UpdateStudyTaskCubit, UpdateStudyTaskState>(
 //       buildWhen: (previous, current) {
 //         return previous.startDate != current.startDate ||
 //             previous.endDate != current.endDate;
@@ -29,10 +30,12 @@
 //             StudyPlanFormSectionHeader(
 //               title: 'تاريخ ومدة المهمة',
 //               description:
-//                   'اختر تاريخ بداية ونهاية المهمة، على ألا تتجاوز مدتها 7 أيام.',
+//                   'عدّل تاريخ بداية ونهاية المهمة، على ألا تتجاوز مدتها 7 أيام.',
 //               image: AppImage.stopwatch,
 //             ),
+
 //             SizedBox(height: SizeConfig.h(0.016)),
+
 //             Row(
 //               textDirection: TextDirection.rtl,
 //               children: [
@@ -48,12 +51,16 @@
 //                     },
 //                   ),
 //                 ),
+
 //                 SizedBox(width: SizeConfig.w(0.025)),
+
 //                 const Icon(
 //                   Icons.arrow_back_rounded,
 //                   color: AppPalette.greyMedium,
 //                 ),
+
 //                 SizedBox(width: SizeConfig.w(0.025)),
+
 //                 Expanded(
 //                   child: StudyPlanSelectionBox(
 //                     title: 'إلى',
@@ -76,32 +83,55 @@
 
 //   Future<void> _selectStartDate(
 //     BuildContext context,
-//     CreateStudyTaskState state,
+//     UpdateStudyTaskState state,
 //   ) async {
 //     final today = _normalizeDate(DateTime.now());
 
 //     final lastAllowedDate = DateTime(today.year + 10, 12, 31);
 
+//     /*
+//      * في حال كان التاريخ الحالي قديمًا،
+//      * لا يمكن استخدامه مباشرة مع firstDate = today.
+//      *
+//      * لذلك نجعل initialDate اليوم.
+//      */
 //     var initialDate = state.startDate ?? today;
 
 //     initialDate = _normalizeDate(initialDate);
 
-//     /*
-//      * حماية showDatePicker من استقبال initialDate
-//      * خارج المجال المسموح.
-//      */
 //     initialDate = _clampDate(
 //       date: initialDate,
 //       firstDate: today,
 //       lastDate: lastAllowedDate,
 //     );
 
-//     debugPrint('============ Select Study Task Start Date ============');
-//     debugPrint('→ current start date: ${state.startDate}');
-//     debugPrint('→ current end date: ${state.endDate}');
-//     debugPrint('→ picker initial date: $initialDate');
+//     debugPrint(
+//       '============ '
+//       'Select Update Study Task Start Date '
+//       '============',
+//     );
+
+//     debugPrint(
+//       '→ current start date: '
+//       '${state.startDate}',
+//     );
+
+//     debugPrint(
+//       '→ current end date: '
+//       '${state.endDate}',
+//     );
+
+//     debugPrint(
+//       '→ picker initial date: '
+//       '$initialDate',
+//     );
+
 //     debugPrint('→ picker first date: $today');
-//     debugPrint('→ picker last date: $lastAllowedDate');
+
+//     debugPrint(
+//       '→ picker last date: '
+//       '$lastAllowedDate',
+//     );
 
 //     final selectedDate = await showDatePicker(
 //       context: context,
@@ -115,27 +145,59 @@
 
 //     if (selectedDate == null || !context.mounted) {
 //       debugPrint('→ start date selection cancelled');
+
 //       return;
 //     }
 
 //     final normalizedDate = _normalizeDate(selectedDate);
 
-//     debugPrint('→ selected start date: $normalizedDate');
-//     debugPrint('=====================================================');
+//     debugPrint(
+//       '→ selected start date: '
+//       '$normalizedDate',
+//     );
 
-//     context.read<CreateStudyTaskCubit>().changeStartDate(normalizedDate);
+//     debugPrint('====================================================');
+
+//     final cubit = context.read<UpdateStudyTaskCubit>();
+
+//     cubit.startDateChanged(normalizedDate);
+
+//     /*
+//      * إذا أصبحت النهاية قبل البداية الجديدة،
+//      * نعيد ضبط النهاية لتساوي البداية.
+//      *
+//      * هذا يمنع بقاء النموذج في حالة غير صالحة.
+//      */
+//     final currentEndDate = cubit.state.endDate;
+
+//     if (currentEndDate != null &&
+//         _normalizeDate(currentEndDate).isBefore(normalizedDate)) {
+//       cubit.endDateChanged(normalizedDate);
+
+//       return;
+//     }
+
+//     /*
+//      * إذا تجاوزت النهاية الحد الأقصى
+//      * بعد تغيير البداية، نضبطها على اليوم السابع.
+//      */
+//     if (currentEndDate != null) {
+//       final lastAllowedEndDate = normalizedDate.add(
+//         const Duration(days: _maxTaskRangeDays - 1),
+//       );
+
+//       if (_normalizeDate(currentEndDate).isAfter(lastAllowedEndDate)) {
+//         cubit.endDateChanged(lastAllowedEndDate);
+//       }
+//     }
 //   }
 
 //   Future<void> _selectEndDate(
 //     BuildContext context,
-//     CreateStudyTaskState state,
+//     UpdateStudyTaskState state,
 //   ) async {
 //     final startDate = state.startDate;
 
-//     /*
-//      * لا نسمح بفتح منتقي النهاية قبل اختيار البداية،
-//      * لأن حدود النهاية تعتمد بالكامل على البداية.
-//      */
 //     if (startDate == null) {
 //       showValidationTopSnackBar(
 //         context,
@@ -149,12 +211,6 @@
 
 //     final normalizedStartDate = _normalizeDate(startDate);
 
-//     /*
-//      * المهمة مدتها 7 أيام شاملة يوم البداية:
-//      *
-//      * اليوم الأول = startDate
-//      * اليوم السابع = startDate + 6 أيام
-//      */
 //     final lastAllowedEndDate = normalizedStartDate.add(
 //       const Duration(days: _maxTaskRangeDays - 1),
 //     );
@@ -169,12 +225,36 @@
 //       lastDate: lastAllowedEndDate,
 //     );
 
-//     debugPrint('============ Select Study Task End Date ============');
-//     debugPrint('→ start date: $normalizedStartDate');
-//     debugPrint('→ current end date: ${state.endDate}');
-//     debugPrint('→ picker initial date: $initialDate');
-//     debugPrint('→ picker first date: $normalizedStartDate');
-//     debugPrint('→ picker last date: $lastAllowedEndDate');
+//     debugPrint(
+//       '============ '
+//       'Select Update Study Task End Date '
+//       '============',
+//     );
+
+//     debugPrint(
+//       '→ start date: '
+//       '$normalizedStartDate',
+//     );
+
+//     debugPrint(
+//       '→ current end date: '
+//       '${state.endDate}',
+//     );
+
+//     debugPrint(
+//       '→ picker initial date: '
+//       '$initialDate',
+//     );
+
+//     debugPrint(
+//       '→ picker first date: '
+//       '$normalizedStartDate',
+//     );
+
+//     debugPrint(
+//       '→ picker last date: '
+//       '$lastAllowedEndDate',
+//     );
 
 //     final selectedDate = await showDatePicker(
 //       context: context,
@@ -188,15 +268,20 @@
 
 //     if (selectedDate == null || !context.mounted) {
 //       debugPrint('→ end date selection cancelled');
+
 //       return;
 //     }
 
 //     final normalizedDate = _normalizeDate(selectedDate);
 
-//     debugPrint('→ selected end date: $normalizedDate');
-//     debugPrint('===================================================');
+//     debugPrint(
+//       '→ selected end date: '
+//       '$normalizedDate',
+//     );
 
-//     context.read<CreateStudyTaskCubit>().changeEndDate(normalizedDate);
+//     debugPrint('==================================================');
+
+//     context.read<UpdateStudyTaskCubit>().endDateChanged(normalizedDate);
 //   }
 
 //   static DateTime _normalizeDate(DateTime date) {
@@ -234,22 +319,22 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
-import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_state.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_cubit.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_state.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/common/study_task_date_section.dart';
 
-class CreateStudyTaskDateSection extends StatelessWidget {
-  const CreateStudyTaskDateSection({super.key});
+class UpdateStudyTaskDateSection extends StatelessWidget {
+  const UpdateStudyTaskDateSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CreateStudyTaskCubit, CreateStudyTaskState>(
+    return BlocBuilder<UpdateStudyTaskCubit, UpdateStudyTaskState>(
       buildWhen: (previous, current) {
         return previous.startDate != current.startDate ||
             previous.endDate != current.endDate;
       },
       builder: (context, state) {
-        final cubit = context.read<CreateStudyTaskCubit>();
+        final cubit = context.read<UpdateStudyTaskCubit>();
 
         final today = _normalizeDate(DateTime.now());
 
@@ -258,21 +343,26 @@ class CreateStudyTaskDateSection extends StatelessWidget {
         return StudyTaskDateSection(
           startDate: state.startDate,
           endDate: state.endDate,
+
+          /*
+           * نعرض التاريخ القديم الموجود في state،
+           * لكن عند فتح المنتقي يبدأ المجال من اليوم.
+           *
+           * الـWidget المشترك يقوم بعمل clamp
+           * للـinitialDate لمنع assertion.
+           */
           firstSelectableStartDate: today,
+
           lastSelectableStartDate: lastSelectableDate,
+
           maxRangeDays: 7,
+
           sectionDescription:
-              'حدد تاريخ بداية ونهاية المهمة، على ألا تتجاوز مدتها 7 أيام.',
-          onStartDateChanged: (date) {
-            if (date != null) {
-              cubit.changeStartDate(date);
-            }
-          },
-          onEndDateChanged: (date) {
-            if (date != null) {
-              cubit.changeEndDate(date);
-            }
-          },
+              'عدّل تاريخ بداية ونهاية المهمة، على ألا تتجاوز مدتها 7 أيام.',
+
+          onStartDateChanged: cubit.startDateChanged,
+
+          onEndDateChanged: cubit.endDateChanged,
         );
       },
     );

@@ -12,6 +12,7 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
   final GetStudyPlanDetailsOverviewUseCase getStudyPlanDetailsOverviewUseCase;
   final GetStudyPlanDetailsTasksUseCase getStudyPlanDetailsTasksUseCase;
   int? _planId;
+  bool _hasDataChanges = false;
 
   final DeleteStudyPlanUseCase deleteStudyPlanUseCase;
 
@@ -24,6 +25,11 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
   }
 
   int? get planId => _planId;
+  bool get hasDataChanges => _hasDataChanges;
+
+  void markDataChanged() {
+    _hasDataChanges = true;
+  }
 
   Future<void> initialize({required int planId}) async {
     debugPrint('============ StudyPlanDetailsCubit.initialize ============');
@@ -245,6 +251,13 @@ class StudyPlanDetailsCubit extends Cubit<StudyPlanDetailsState> {
     debugPrint(
       '=====================================================================',
     );
+  }
+
+  Future<void> refreshAfterTaskCreation() async {
+    markDataChanged();
+
+    await getOverview(forceRefresh: true);
+    await getTasks(forceRefresh: true);
   }
 
   Future<void> retryOverview() async {

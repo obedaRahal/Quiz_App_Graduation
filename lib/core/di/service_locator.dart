@@ -202,8 +202,10 @@ import 'package:quiz_app_grad/features/study_task/domain/repositories/study_task
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/create_study_task_use_case.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/get_study_plan_subjects_use_case.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/get_study_task_details_use_case.dart';
+import 'package:quiz_app_grad/features/study_task/domain/use_cases/update_study_task_use_case.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_cubit.dart';
+import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_cubit.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/data_sources/test_play_modes_remote_data_source.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/repo_impl/test_play_modes_repository_impl.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/services/challenge_result_pdf_service.dart';
@@ -1747,38 +1749,76 @@ void _registerStudyPlanFeature() {
 }
 
 void _registerStudyTaskFeature() {
-  sl.registerFactory<StudyTaskDetailsCubit>(
-    () => StudyTaskDetailsCubit(
-      getStudyTaskDetailsUseCase: sl<GetStudyTaskDetailsUseCase>(),
-    ),
-  );
+  // ================= Remote Data Source =================
 
-  sl.registerLazySingleton<GetStudyTaskDetailsUseCase>(
-    () => GetStudyTaskDetailsUseCase(sl<StudyTaskRepository>()),
-  );
+  if (!sl.isRegistered<StudyTaskRemoteDataSource>()) {
+    sl.registerLazySingleton<StudyTaskRemoteDataSource>(
+      () => StudyTaskRemoteDataSourceImpl(apiConsumer: sl<ApiConsumer>()),
+    );
+  }
 
-  sl.registerLazySingleton<StudyTaskRepository>(
-    () => StudyTaskRepositoryImpl(
-      remoteDataSource: sl<StudyTaskRemoteDataSource>(),
-    ),
-  );
+  // ================= Repository =================
 
-  sl.registerLazySingleton<StudyTaskRemoteDataSource>(
-    () => StudyTaskRemoteDataSourceImpl(apiConsumer: sl()),
-  );
+  if (!sl.isRegistered<StudyTaskRepository>()) {
+    sl.registerLazySingleton<StudyTaskRepository>(
+      () => StudyTaskRepositoryImpl(
+        remoteDataSource: sl<StudyTaskRemoteDataSource>(),
+      ),
+    );
+  }
 
-  sl.registerLazySingleton<GetStudyPlanSubjectsUseCase>(
-    () => GetStudyPlanSubjectsUseCase(sl<StudyTaskRepository>()),
-  );
+  // ================= Use Cases =================
 
-  sl.registerLazySingleton<CreateStudyTaskUseCase>(
-    () => CreateStudyTaskUseCase(sl<StudyTaskRepository>()),
-  );
+  if (!sl.isRegistered<GetStudyTaskDetailsUseCase>()) {
+    sl.registerLazySingleton<GetStudyTaskDetailsUseCase>(
+      () => GetStudyTaskDetailsUseCase(sl<StudyTaskRepository>()),
+    );
+  }
 
-  sl.registerFactory<CreateStudyTaskCubit>(
-    () => CreateStudyTaskCubit(
-      getStudyPlanSubjectsUseCase: sl<GetStudyPlanSubjectsUseCase>(),
-      createStudyTaskUseCase: sl<CreateStudyTaskUseCase>(),
-    ),
-  );
+  if (!sl.isRegistered<GetStudyPlanSubjectsUseCase>()) {
+    sl.registerLazySingleton<GetStudyPlanSubjectsUseCase>(
+      () => GetStudyPlanSubjectsUseCase(sl<StudyTaskRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<CreateStudyTaskUseCase>()) {
+    sl.registerLazySingleton<CreateStudyTaskUseCase>(
+      () => CreateStudyTaskUseCase(sl<StudyTaskRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<UpdateStudyTaskUseCase>()) {
+    sl.registerLazySingleton<UpdateStudyTaskUseCase>(
+      () => UpdateStudyTaskUseCase(sl<StudyTaskRepository>()),
+    );
+  }
+
+  // ================= Cubits =================
+
+  if (!sl.isRegistered<StudyTaskDetailsCubit>()) {
+    sl.registerFactory<StudyTaskDetailsCubit>(
+      () => StudyTaskDetailsCubit(
+        getStudyTaskDetailsUseCase: sl<GetStudyTaskDetailsUseCase>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<CreateStudyTaskCubit>()) {
+    sl.registerFactory<CreateStudyTaskCubit>(
+      () => CreateStudyTaskCubit(
+        getStudyPlanSubjectsUseCase: sl<GetStudyPlanSubjectsUseCase>(),
+        createStudyTaskUseCase: sl<CreateStudyTaskUseCase>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<UpdateStudyTaskCubit>()) {
+    sl.registerFactory<UpdateStudyTaskCubit>(
+      () => UpdateStudyTaskCubit(
+        getStudyTaskDetailsUseCase: sl<GetStudyTaskDetailsUseCase>(),
+        getStudyPlanSubjectsUseCase: sl<GetStudyPlanSubjectsUseCase>(),
+        updateStudyTaskUseCase: sl<UpdateStudyTaskUseCase>(),
+      ),
+    );
+  }
 }
