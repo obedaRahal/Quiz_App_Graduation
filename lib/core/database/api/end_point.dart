@@ -508,4 +508,31 @@ class EndPoints {
   static String updateStudyTask(int planId, int taskId) {
     return '$baseUrl/study-plans/update/task/$planId/$taskId';
   }
+
+  static String deleteStudyTask(int planId, int taskId) {
+    return '$baseUrl/study-plans/delete/task/$planId/$taskId';
+  }
+
+  static String startStudyTask({required int planId, required int taskId}) {
+    return '$baseUrl/study-plans/study-plans/$planId/tasks/$taskId/start';
+  }
+
+  static String completeStudyTask({required int planId, required int taskId}) {
+    return '$baseUrl/study-plans/study-plans/$planId/tasks/$taskId/complete';
+  }
+
+  static String unCompleteStudyTask({
+    required int planId,
+    required int taskId,
+  }) {
+    return '$baseUrl/study-plans/study-plans/$planId/tasks/$taskId/un-complete';
+  }
+
+  static String completeStudySubTask(int planId, int taskId, int subTaskId) {
+    return '$baseUrl/study-plans/study-plans/$planId/tasks/$taskId/subtasks/$subTaskId/complete';
+  }
+
+  static String unCompleteStudySubTask(int planId, int taskId, int subTaskId) {
+    return '$baseUrl/study-plans/study-plans/$planId/tasks/$taskId/subtasks/$subTaskId/un-complete';
+  }
 }

@@ -3,16 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_confirmation_dialog.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
-import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
-import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
-import 'package:quiz_app_grad/features/study_task/data/models/create_study_task_args.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/update_study_task_args.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_cubit.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_state.dart';
-import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_cubit.dart';
-import 'package:quiz_app_grad/features/study_task/presentation/views/update_study_task_view.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/details/study_task_bottom_actions.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/details/study_task_details_body.dart';
 
@@ -83,6 +78,7 @@ class StudyTaskDetailsView extends StatelessWidget {
                     onDeleteTap: () {
                       _showDeleteConfirmation(
                         context,
+                        planId: planId,
                         taskId: taskDetails.data.basicInfo.id,
                         taskTitle: taskDetails.data.basicInfo.title,
                       );
@@ -204,6 +200,7 @@ class StudyTaskDetailsView extends StatelessWidget {
 
   Future<void> _showDeleteConfirmation(
     BuildContext context, {
+    required int planId,
     required int taskId,
     required String taskTitle,
   }) async {
@@ -221,7 +218,7 @@ class StudyTaskDetailsView extends StatelessWidget {
       cancelText: 'إلغاء',
       icon: Icons.delete,
       onConfirm: () {
-        context.read<StudyTaskDetailsCubit>().deleteTask();
+        context.read<StudyTaskDetailsCubit>().deleteTask(planId: planId);
       },
       iconColor: AppPalette.red,
       iconBackgroundColor: AppPalette.red.withValues(alpha: 0.1),

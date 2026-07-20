@@ -33,6 +33,8 @@ class StudyTaskDetailsBody extends StatelessWidget {
             buildWhen: (previous, current) {
               return previous.loadStatus != current.loadStatus ||
                   previous.taskDetails != current.taskDetails ||
+                  previous.changeStatus != current.changeStatus ||
+                  previous.updatingSubTaskId != current.updatingSubTaskId ||
                   previous.updatingSubTaskId != current.updatingSubTaskId;
             },
             builder: (context, state) {
@@ -76,9 +78,9 @@ class StudyTaskDetailsBody extends StatelessWidget {
                       taskDetails: task,
                       task: task,
                       onStatusToggle: () {
-                        context
-                            .read<StudyTaskDetailsCubit>()
-                            .changeTaskStatus();
+                        context.read<StudyTaskDetailsCubit>().changeTaskStatus(
+                          planId: planId,
+                        );
                       },
                     ),
                     SizedBox(height: SizeConfig.h(0.02)),
@@ -91,7 +93,10 @@ class StudyTaskDetailsBody extends StatelessWidget {
                       onSubTaskTap: (subTaskId) {
                         context
                             .read<StudyTaskDetailsCubit>()
-                            .toggleSubTaskStatus(subTaskId: subTaskId);
+                            .toggleSubTaskStatus(
+                              planId: planId,
+                              subTaskId: subTaskId,
+                            );
                       },
                     ),
                     SizedBox(height: SizeConfig.h(0.025)),
