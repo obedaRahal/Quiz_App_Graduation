@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/app_theme_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_day_entity.dart';
 
@@ -18,9 +20,12 @@ class StudyPlanWeekDayItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
     final colors = _resolveColors(
       state: day.parsedDisplayState,
       isSelected: isSelected,
+      appColors: appColors,
     );
 
     final size = SizeConfig.h(0.057);
@@ -64,37 +69,38 @@ class StudyPlanWeekDayItem extends StatelessWidget {
   _StudyDayVisualColors _resolveColors({
     required StudyPlanDayDisplayState state,
     required bool isSelected,
+    required AppThemeColors appColors,
   }) {
     // اليوم المختار دائمًا أزرق، مهما كانت حالته الأصلية.
     if (isSelected) {
-      return const _StudyDayVisualColors(
-        backgroundColor: AppPalette.primarySoft,
-        borderColor: AppPalette.primary,
-        textColor: AppPalette.primary,
+      return _StudyDayVisualColors(
+        backgroundColor: appColors.primarySoftTogreyLightDark,
+        borderColor: appColors.primaryToPrimaryDark,
+        textColor: appColors.primaryToPrimaryDark,
         borderWidth: 2,
       );
     }
 
     switch (state) {
       case StudyPlanDayDisplayState.completed:
-        return const _StudyDayVisualColors(
+        return _StudyDayVisualColors(
           backgroundColor: AppPalette.green,
           borderColor: AppPalette.green,
-          textColor: AppPalette.white,
+          textColor: appColors.whiteToblack,
           borderWidth: 1,
         );
 
       case StudyPlanDayDisplayState.incompleted:
-        return const _StudyDayVisualColors(
+        return _StudyDayVisualColors(
           backgroundColor: AppPalette.red,
           borderColor: AppPalette.red,
-          textColor: Colors.white,
+          textColor: appColors.whiteToblack,
           borderWidth: 1,
         );
 
       case StudyPlanDayDisplayState.scheduled:
-        return const _StudyDayVisualColors(
-          backgroundColor: AppPalette.grey,
+        return _StudyDayVisualColors(
+          backgroundColor: appColors.greyToGreyMediumDark,
           borderColor: AppPalette.greyLightDark,
           textColor: AppPalette.greyLightDark,
           borderWidth: 1,
@@ -102,10 +108,10 @@ class StudyPlanWeekDayItem extends StatelessWidget {
 
       case StudyPlanDayDisplayState.today:
       case StudyPlanDayDisplayState.empty:
-        return const _StudyDayVisualColors(
-          backgroundColor: AppPalette.grey,
-          borderColor: AppPalette.greyBorder,
-          textColor: AppPalette.greyBorder,
+        return _StudyDayVisualColors(
+          backgroundColor: appColors.greyToGreyMediumDark,
+          borderColor: appColors.borderFieldColorNLightToborderFieldColorNDark,
+          textColor: appColors.borderFieldColorNLightToborderFieldColorNDark,
           borderWidth: 1.5,
         );
 

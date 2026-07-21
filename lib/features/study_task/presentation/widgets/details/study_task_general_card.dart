@@ -177,7 +177,7 @@ class _TaskStatusBadge extends StatelessWidget {
         style.title,
         maxLines: 1,
         fontSize: SizeConfig.text(0.025),
-        color: style.textColor,
+        color: context.appColors.whiteToblack,
       ),
     );
   }
@@ -238,7 +238,7 @@ class _TaskDetailsRow extends StatelessWidget {
         Expanded(
           child: _TaskInfoColumn(
             title: 'رقم المهمة',
-            value: '#${basicInfo.id}',
+            value: '#${basicInfo.taskNumber}',
             valueColor: context.appColors.primaryToPrimaryDark,
           ),
         ),

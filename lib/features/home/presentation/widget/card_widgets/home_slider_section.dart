@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 import 'home_slider_card.dart';
 
@@ -23,9 +26,14 @@ class HomeSliderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textScale = SizeConfig.textScaleFactor.clamp(1.0, 1.25);
+    final cardHeight = (SizeConfig.w(0.80) * textScale)
+        .clamp(285.0, 360.0)
+        .toDouble();
+
     if (state.isRecommendedTestsLoading) {
       return SizedBox(
-        height: SizeConfig.h(0.40),
+        height: cardHeight,
         child: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -55,13 +63,12 @@ class HomeSliderSection extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.w(0.02),
+        vertical: SizeConfig.h(0.01).clamp(6.0, 10.0).toDouble(),
+      ),
       child: SizedBox(
-        height: SizeConfig.isSmallPhone
-            ? SizeConfig.h(0.38)
-            : SizeConfig.isMediumPhone
-            ? SizeConfig.h(0.40)
-            : SizeConfig.h(0.41),
+        height: cardHeight,
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: PageView.builder(
@@ -76,6 +83,15 @@ class HomeSliderSection extends StatelessWidget {
                 isDark: isDark,
                 appColors: appColors,
                 colorScheme: colorScheme,
+                onViewTap: () {
+                  debugPrint(
+                    "go to other test and test id is : ${item.test.id}",
+                  );
+                  context.pushNamed(
+                    AppRouterName.detailsOfTest,
+                    extra: DetailsOfTestRouteArgs(testId: item.test.id),
+                  );
+                },
               );
             },
           ),

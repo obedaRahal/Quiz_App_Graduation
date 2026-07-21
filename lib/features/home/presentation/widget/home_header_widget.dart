@@ -3,7 +3,8 @@ import 'package:quiz_app_grad/features/home/presentation/widget/notification_but
 import 'package:quiz_app_grad/features/home/presentation/widget/profile_section_widget.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({super.key});
+  final VoidCallback onProfileTap;
+  const HomeHeader({super.key, required this.onProfileTap});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,10 @@ class HomeHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         textDirection: TextDirection.rtl,
         children: [
-          ProfileSection(isDark: isDark),
+          InkWell(
+            onTap: onProfileTap,
+            child: ProfileSection(isDark: isDark),
+          ),
           NotificationButton(isDark: isDark),
         ],
       ),

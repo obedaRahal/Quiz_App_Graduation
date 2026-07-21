@@ -36,7 +36,7 @@ class StudyPlanDailyTaskCard extends StatelessWidget {
       curve: Curves.easeOut,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: context.appColors.whiteToblack,
+        color: context.appColors.greyToGreyMediumDark,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: borderColor,
@@ -203,7 +203,7 @@ class _TaskStatusBadge extends StatelessWidget {
         maxLines: 1,
         fontSize: SizeConfig.text(0.025),
         // fontFamily: AppFont.elMessiriSemiBold,
-        color: style.textColor,
+        color: context.appColors.whiteToblack,
       ),
     );
   }

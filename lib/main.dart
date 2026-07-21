@@ -24,30 +24,6 @@ void main() async {
   runApp(const QuizApp());
 }
 
-// class QuizApp extends StatelessWidget {
-//   const QuizApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocProvider(
-//       create: (_) => sl<ThemeCubit>()..loadTheme(),
-//       child: BlocBuilder<ThemeCubit, ThemeState>(
-//         builder: (context, state) {
-//           return MaterialApp.router(
-//             debugShowCheckedModeBanner: false,
-//             theme: AppTheme.light(),
-//             darkTheme: AppTheme.dark(),
-//             themeMode: state.themeMode,
-//             //themeAnimationDuration: const Duration(milliseconds: 900),
-//             //themeAnimationCurve: Curves.easeInOutCubic,
-//             routerConfig: AppRouter.router,
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-
 class QuizApp extends StatefulWidget {
   const QuizApp({super.key});
 

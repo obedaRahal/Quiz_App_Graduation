@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_tests_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_tests_tab_shimmer.dart';
@@ -50,13 +54,22 @@ class OtherProfileTestsTab extends StatelessWidget {
             ),
           )
         else
-        //OtherProfileTestsTabShimmer(),
+          //OtherProfileTestsTabShimmer(),
           Column(
             children: [
               ...tests.map((test) {
                 return Padding(
                   padding: EdgeInsets.only(bottom: SizeConfig.h(0.014)),
-                  child: OtherProfileTestCard(item: test),
+                  child: OtherProfileTestCard(
+                    item: test,
+                    onTestTap: () {
+                      debugPrint("test id is ${test.id}");
+                      context.pushNamed(
+                        AppRouterName.detailsOfTest,
+                        extra: DetailsOfTestRouteArgs(testId: test.id),
+                      );
+                    },
+                  ),
                 );
               }),
 

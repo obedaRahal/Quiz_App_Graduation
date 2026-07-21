@@ -24,9 +24,11 @@ class HomeTopBannerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.02)),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(
+          SizeConfig.w(0.05).clamp(16.0, 20.0).toDouble(),
+        ),
         child: Stack(
           children: [
             Container(
@@ -41,74 +43,90 @@ class HomeTopBannerCard extends StatelessWidget {
               child: Row(
                 textDirection: TextDirection.rtl,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 28,
-                          bottom: 16,
-                          right: 8,
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: SizeConfig.h(
+                              0.012,
+                            ).clamp(8.0, 12.0).toDouble(),
+                            bottom: SizeConfig.h(
+                              0.008,
+                            ).clamp(5.0, 8.0).toDouble(),
+                            right: SizeConfig.w(0.02),
+                          ),
+                          child: CustomTextWidget(
+                            index == 0
+                                ? "انشر معرفتك وخبراتك\n و دع الأخرين يتعلمون شيئا جديدا\n بطريقة سهلة وواضحة"
+                                : index == 1
+                                ? "ابدء بمتابعة مقراراتك الدراسية\n بشكل سهل وبسيط وبمتابعة\n يومية ممتعة"
+                                : "شارك محتواك العلمي المفيد مع\n المجتمع لتحسين تجربة التعلم\n في مكان واحد",
+                            color: colorScheme.onSecondary,
+                            fontWeight: FontWeight.bold,
+                            textAlign: TextAlign.right,
+                            fontSize: SizeConfig.text(0.032).clamp(11.0, 16.0),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        child: CustomTextWidget(
-                          index == 0
-                              ? "انشر معرفتك وخبراتك\n و دع الأخرين يتعلمون شيئا جديدا\n بطريقة سهلة وواضحة"
-                              : index == 1
-                              ? "ابدء بمتابعة مقراراتك الدراسية\n بشكل سهل وبسيط وبمتابعة\n يومية ممتعة"
-                              : "شارك محتواك العلمي المفيد مع\n المجتمع لتحسين تجربة التعلم\n في مكان واحد",
-                          color: colorScheme.onSecondary,
-                          fontWeight: FontWeight.bold,
-                          textAlign: TextAlign.right,
-                          fontSize: SizeConfig.text(0.032).clamp(11.0, 16.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: InkWell(
-                          onTap: () {
-                            if (index == 0) {
-                              // context.push("/route1");
-                            } else if (index == 1) {
-                              // context.push("/route2");
-                            } else {
-                              // context.push("/route3");
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(18),
-                                color: isDark
-                                    ? AppPalette.fieldColorNDark
-                                    : AppPalette.white,
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.w(0.02),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              if (index == 0) {
+                                // context.push("/route1");
+                              } else if (index == 1) {
+                                // context.push("/route2");
+                              } else {
+                                // context.push("/route3");
+                              }
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.w(0.02),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 2,
-                                  horizontal: 12,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(18),
+                                  color: isDark
+                                      ? AppPalette.fieldColorNDark
+                                      : AppPalette.white,
                                 ),
-                                child: CustomTextWidget(
-                                  index == 0
-                                      ? "انشئ اختبارا جديدا"
-                                      : index == 1
-                                      ? "انشئ خطة دراسية"
-                                      : "انشئ محتوى للمكتبة",
-                                  fontSize: SizeConfig.diagonal * .015,
-                                  color: index == 0
-                                      ? AppPalette.homeContainer1
-                                      : index == 1
-                                      ? AppPalette.homeContainer2
-                                      : AppPalette.homeContainer3,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: SizeConfig.h(
+                                      0.003,
+                                    ).clamp(2.0, 3.0).toDouble(),
+                                    horizontal: SizeConfig.w(0.03),
+                                  ),
+                                  child: CustomTextWidget(
+                                    index == 0
+                                        ? "انشئ اختبارا جديدا"
+                                        : index == 1
+                                        ? "انشئ خطة دراسية"
+                                        : "انشئ محتوى للمكتبة",
+                                    fontSize: SizeConfig.diagonal * .015,
+                                    color: index == 0
+                                        ? AppPalette.homeContainer1
+                                        : index == 1
+                                        ? AppPalette.homeContainer2
+                                        : AppPalette.homeContainer3,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                  SizedBox(width: circleSize * 0.82),
                 ],
               ),
             ),

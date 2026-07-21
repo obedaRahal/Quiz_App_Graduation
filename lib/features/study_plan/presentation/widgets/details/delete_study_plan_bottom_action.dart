@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_state.dart';
@@ -27,110 +28,6 @@ class DeleteStudyPlanBottomAction extends StatelessWidget {
         return previous.deleteStatus != current.deleteStatus;
       },
       builder: (context, state) {
-        // return SizedBox(
-        //   width: double.infinity,
-        //   child: Row(
-        //     children: [
-        //       Container(
-        //         //width: double.infinity,
-        //         padding: EdgeInsets.symmetric(
-        //           horizontal: SizeConfig.w(0.035),
-        //           vertical: SizeConfig.h(0.012),
-        //         ),
-        //         decoration: BoxDecoration(
-        //           color: isDark ? AppPalette.black : AppPalette.white,
-        //           boxShadow: [
-        //             BoxShadow(
-        //               color: AppPalette.greyMedium.withValues(alpha: 0.25),
-        //               blurRadius: 6,
-        //               offset: const Offset(0, -3),
-        //             ),
-        //           ],
-        //         ),
-        //         child: CustomButtonWidget(
-        //           //  width: double.infinity,
-        //           backgroundColor: AppPalette.primary,
-        //           borderRadius: 6,
-        //           childHorizontalPad: SizeConfig.w(0.04),
-        //           childVerticalPad: SizeConfig.w(0.013),
-        //           onTap: state.isDeleteLoading ? () {} : onDeleteTap,
-        //           child: state.isDeleteLoading
-        //               ? SizedBox(
-        //                   width: SizeConfig.w(0.045),
-        //                   height: SizeConfig.w(0.045),
-        //                   child: const CircularProgressIndicator(
-        //                     strokeWidth: 2,
-        //                     color: AppPalette.white,
-        //                   ),
-        //                 )
-        //               : Row(
-        //                   mainAxisAlignment: MainAxisAlignment.center,
-        //                   children: [
-        //                     const Icon(Icons.add, color: AppPalette.white),
-        //                     SizedBox(width: SizeConfig.w(0.02)),
-        //                     CustomTextWidget(
-        //                       'إضافة مهمة جديدة',
-        //                       color: AppPalette.white,
-        //                       fontSize: SizeConfig.text(0.03),
-        //                     ),
-        //                   ],
-        //                 ),
-        //         ),
-        //       ),
-
-        //       Container(
-        //         //  width: double.infinity,
-        //         padding: EdgeInsets.symmetric(
-        //           horizontal: SizeConfig.w(0.035),
-        //           vertical: SizeConfig.h(0.012),
-        //         ),
-        //         decoration: BoxDecoration(
-        //           color: isDark ? AppPalette.black : AppPalette.white,
-        //           boxShadow: [
-        //             BoxShadow(
-        //               color: AppPalette.greyMedium.withValues(alpha: 0.25),
-        //               blurRadius: 6,
-        //               offset: const Offset(0, -3),
-        //             ),
-        //           ],
-        //         ),
-        //         child: CustomButtonWidget(
-        //           //   width: double.infinity,
-        //           backgroundColor: AppPalette.red,
-        //           borderRadius: 6,
-        //           childHorizontalPad: SizeConfig.w(0.04),
-        //           childVerticalPad: SizeConfig.w(0.013),
-        //           onTap: state.isDeleteLoading ? () {} : onDeleteTap,
-        //           child: state.isDeleteLoading
-        //               ? SizedBox(
-        //                   width: SizeConfig.w(0.045),
-        //                   height: SizeConfig.w(0.045),
-        //                   child: const CircularProgressIndicator(
-        //                     strokeWidth: 2,
-        //                     color: AppPalette.white,
-        //                   ),
-        //                 )
-        //               : Row(
-        //                   mainAxisAlignment: MainAxisAlignment.center,
-        //                   children: [
-        //                     const Icon(
-        //                       Icons.delete_outline_rounded,
-        //                       color: AppPalette.white,
-        //                     ),
-        //                     SizedBox(width: SizeConfig.w(0.02)),
-        //                     CustomTextWidget(
-        //                       'حذف الخطة الدراسية',
-        //                       color: AppPalette.white,
-        //                       fontSize: SizeConfig.text(0.03),
-        //                     ),
-        //                   ],
-        //                 ),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // );
-
         return Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(
@@ -138,7 +35,7 @@ class DeleteStudyPlanBottomAction extends StatelessWidget {
             vertical: SizeConfig.h(0.012),
           ),
           decoration: BoxDecoration(
-            color: isDark ? AppPalette.black : AppPalette.white,
+            color: context.appColors.whiteToblack,
             boxShadow: [
               BoxShadow(
                 color: AppPalette.greyMedium.withValues(alpha: 0.25),
@@ -152,7 +49,7 @@ class DeleteStudyPlanBottomAction extends StatelessWidget {
               Expanded(
                 child: _BottomActionButton(
                   title: "إضافة مهمة",
-                  backgroundColor: AppPalette.primary,
+                  backgroundColor: context.appColors.primaryToPrimaryDark,
                   onTap: onCreateTask,
                 ),
               ),
@@ -198,7 +95,7 @@ class _BottomActionButton extends StatelessWidget {
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        color: AppPalette.white,
+        color: context.appColors.whiteToblack,
         fontFamily: AppFont.elMessiriSemiBold,
         fontSize: SizeConfig.text(0.03),
       ),

@@ -51,12 +51,15 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/home_instructor_card.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 
 class InstructorsSection extends StatelessWidget {
   final HomeState state;
@@ -127,7 +130,16 @@ class InstructorsSection extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(width: 14),
             itemBuilder: (context, index) {
               final item = state.recommendedUsers[index];
-              return InstructorCard(item: item);
+              return InstructorCard(
+                item: item,
+                onProfileTap: () {
+                  debugPrint("go to other profile and userid is : ${item.id}");
+                  context.pushNamed(
+                    AppRouterName.otherProfile,
+                    extra: OtherProfileRouteArgs(userId: item.id),
+                  );
+                },
+              );
             },
           ),
         ),

@@ -14,6 +14,7 @@ class HomeSliderCard extends StatelessWidget {
   final bool isDark;
   final dynamic appColors;
   final dynamic colorScheme;
+  final VoidCallback onViewTap;
 
   const HomeSliderCard({
     super.key,
@@ -21,6 +22,7 @@ class HomeSliderCard extends StatelessWidget {
     required this.isDark,
     required this.appColors,
     required this.colorScheme,
+    required this.onViewTap,
   });
 
   @override
@@ -30,7 +32,8 @@ class HomeSliderCard extends StatelessWidget {
         showTestCardLongPressMenu(context: context, isDark: isDark, item: item);
       },
       child: Container(
-        margin:  EdgeInsets.symmetric(horizontal: SizeConfig.w(0.01), vertical: 0),
+        margin: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.01)),
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
@@ -44,7 +47,7 @@ class HomeSliderCard extends StatelessWidget {
             BoxShadow(
               color:
                   (isDark ? const Color(0xFF484848) : const Color(0xFFD9D9D9))
-                      .withOpacity(0.30),
+                      .withValues(alpha: 0.30),
               offset: const Offset(0, 4),
               blurRadius: 14,
               spreadRadius: -1,
@@ -56,12 +59,13 @@ class HomeSliderCard extends StatelessWidget {
           children: [
             HomeSliderCardHeader(isDark: isDark, owner: item.owner),
             Divider(
+              height: SizeConfig.h(0.012).clamp(8.0, 12.0).toDouble(),
               color: isDark
                   ? AppPalette.borderFieldColorNDark
                   : AppPalette.greyBorderCart,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.02)),
               child: CustomTextWidget(
                 item.test.title,
                 textAlign: TextAlign.right,
@@ -75,7 +79,10 @@ class HomeSliderCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.w(0.02),
+                vertical: SizeConfig.h(0.006).clamp(4.0, 6.0).toDouble(),
+              ),
               child: CustomTextWidget(
                 item.test.description,
                 fontSize: SizeConfig.diagonal * .014,
@@ -86,16 +93,19 @@ class HomeSliderCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
+              padding: EdgeInsets.symmetric(
+                vertical: SizeConfig.h(0.003).clamp(2.0, 3.0).toDouble(),
+              ),
               child: HomeSliderCardTags(
                 isDark: isDark,
                 tags: item.test.interestNames,
               ),
             ),
-            SizedBox(height: SizeConfig.height * .005),
+            SizedBox(height: SizeConfig.h(0.005).clamp(3.0, 5.0).toDouble()),
             HomeSliderCardStats(isDark: isDark, test: item.test),
-            SizedBox(height: SizeConfig.height * .003),
+            SizedBox(height: SizeConfig.h(0.003).clamp(2.0, 3.0).toDouble()),
             Divider(
+              height: SizeConfig.h(0.012).clamp(8.0, 12.0).toDouble(),
               color: isDark
                   ? AppPalette.borderFieldColorNDark
                   : AppPalette.greyBorderCart,
@@ -105,6 +115,7 @@ class HomeSliderCard extends StatelessWidget {
               appColors: appColors,
               colorScheme: colorScheme,
               price: item.test.price,
+              onViewTap: onViewTap,
             ),
           ],
         ),

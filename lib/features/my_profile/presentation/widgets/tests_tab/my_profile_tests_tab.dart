@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/create_edit_folder/my_profile_picker_tests_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_filtered_tests_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_state.dart';
+import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile_folder_editor/my_profile_folder_editor_state.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/tests_tab/filter/my_profile_tests_header_section.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/tests_tab/my_profile_tests_search_field.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_tests_entity.dart';
@@ -29,7 +33,6 @@ class MyProfileTestsTab extends StatelessWidget {
           previous.testsSearchLoadMoreStatus !=
               current.testsSearchLoadMoreStatus ||
           previous.testsSearchResponse != current.testsSearchResponse ||
-          // حالات الفلترة الجديدة
           previous.isTestsFilterMode != current.isTestsFilterMode ||
           previous.testsFilterStatus != current.testsFilterStatus ||
           previous.testsFilterLoadMoreStatus !=
@@ -124,6 +127,7 @@ class MyProfileTestsTab extends StatelessWidget {
               _NormalTestsList(
                 tests: normalTests,
                 isLoadingMore: isLoadingMore,
+                selectedTab: state.selectedTestsTab,
               ),
           ],
         );
@@ -147,8 +151,13 @@ class MyProfileTestsTab extends StatelessWidget {
 class _NormalTestsList extends StatelessWidget {
   final List<MyProfilePickerTestItemEntity> tests;
   final bool isLoadingMore;
+  final MyProfilePickerTestsTab selectedTab;
 
-  const _NormalTestsList({required this.tests, required this.isLoadingMore});
+  const _NormalTestsList({
+    required this.tests,
+    required this.isLoadingMore,
+    required this.selectedTab,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +176,26 @@ class _NormalTestsList extends StatelessWidget {
 
         final test = tests[index];
 
-        return OtherProfileTestCard(item: _mapNormalTest(test));
+        return OtherProfileTestCard(
+          item: _mapNormalTest(test),
+          onTestTap: () {
+            debugPrint("my test and test id is ${test.id}  ");
+            final routeName = selectedTab == MyProfilePickerTestsTab.private
+                ? AppRouterName.myPrivateTestDetails
+                : AppRouterName.myTestDetails;
+
+            debugPrint(
+              'Opening test: ${test.id}, '
+              'tab: ${selectedTab.apiValue}, '
+              'route: $routeName',
+            );
+
+            context.pushNamed(
+              routeName,
+              extra: DetailsOfTestRouteArgs(testId: test.id),
+            );
+          },
+        );
       },
     );
   }

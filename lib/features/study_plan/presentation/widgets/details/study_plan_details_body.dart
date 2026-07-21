@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_summary_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_details/study_plan_details_cubit.dart';
@@ -76,8 +76,8 @@ class _StudyPlanDetailsBodyState extends State<StudyPlanDetailsBody> {
               ActiveStudyPlanCard(
                 plan: _plan,
                 onTap: null,
-                bottomBg: AppPalette.primarySoft,
-                bottomText: AppPalette.primary,
+                bottomBg: context.appColors.primarySoftTogreyLightDark,
+                bottomText: context.appColors.primaryToPrimaryDark,
                 onEditTap: _editPlan,
               ),
 

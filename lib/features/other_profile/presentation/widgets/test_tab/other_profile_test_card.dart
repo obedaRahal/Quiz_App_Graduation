@@ -10,6 +10,7 @@ class OtherProfileTestCard extends StatelessWidget {
   final bool showSaveButton;
   final bool isSaved;
   final VoidCallback? onSaveTap;
+  final VoidCallback? onTestTap;
 
   const OtherProfileTestCard({
     super.key,
@@ -18,6 +19,7 @@ class OtherProfileTestCard extends StatelessWidget {
     this.showSaveButton = false,
     this.isSaved = false,
     this.onSaveTap,
+    this.onTestTap
   });
 
   Color _difficultyColor() {
@@ -55,68 +57,71 @@ class OtherProfileTestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            height: SizeConfig.h(0.17),
-            margin: EdgeInsets.symmetric(
-              horizontal: SizeConfig.w(horizonMargin ?? 0),
-            ),
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 6,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: ClipPath(
-              clipper: _ExamTicketClipper(),
-              child: Container(
-                color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
-                padding: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.w(0.026),
-                  vertical: SizeConfig.h(0.014),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: _OtherProfilePricePanel(
-                        item: item,
-                        priceText: priceText,
-                        isDark: isDark,
+    return InkWell(
+      onTap:onTestTap,
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              height: SizeConfig.h(0.17),
+              margin: EdgeInsets.symmetric(
+                horizontal: SizeConfig.w(horizonMargin ?? 0),
+              ),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 6,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: ClipPath(
+                clipper: _ExamTicketClipper(),
+                child: Container(
+                  color: isDark ? const Color(0xFF1F1F1F) : Colors.white,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.w(0.026),
+                    vertical: SizeConfig.h(0.014),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: _OtherProfilePricePanel(
+                          item: item,
+                          priceText: priceText,
+                          isDark: isDark,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: SizeConfig.w(0.010)),
-                    _DashedVerticalDivider(isDark: isDark),
-                    SizedBox(width: SizeConfig.w(0.010)),
-                    Expanded(
-                      flex: 7,
-                      child: _OtherProfileInfoPanel(
-                        item: item,
-                        isDark: isDark,
-                        difficultyColor: _difficultyColor(),
-                        levelOrDifficultyText: levelOrDifficultyText,
+                      SizedBox(width: SizeConfig.w(0.010)),
+                      _DashedVerticalDivider(isDark: isDark),
+                      SizedBox(width: SizeConfig.w(0.010)),
+                      Expanded(
+                        flex: 7,
+                        child: _OtherProfileInfoPanel(
+                          item: item,
+                          isDark: isDark,
+                          difficultyColor: _difficultyColor(),
+                          levelOrDifficultyText: levelOrDifficultyText,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          if (showSaveButton)
-            Positioned(
-              top: SizeConfig.h(0.01),
-              right: SizeConfig.w(0.02),
-              child: _SaveButton(isSaved: isSaved, onTap: onSaveTap ?? () {}),
-            ),
-        ],
+            if (showSaveButton)
+              Positioned(
+                top: SizeConfig.h(0.01),
+                right: SizeConfig.w(0.02),
+                child: _SaveButton(isSaved: isSaved, onTap: onSaveTap ?? () {}),
+              ),
+          ],
+        ),
       ),
     );
   }

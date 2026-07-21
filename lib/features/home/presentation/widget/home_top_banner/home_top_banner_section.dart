@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 
@@ -36,10 +37,8 @@ class HomeTopBannerSection extends StatelessWidget {
               circleSize: circleSize,
               imageSize: imageSize,
             ),
-            const SizedBox(height: 10),
-            HomeTopBannerIndicator(
-              currentIndex: state.pageIndex,
-            ),
+            SizedBox(height: SizeConfig.h(0.012).clamp(8.0, 12.0).toDouble()),
+            HomeTopBannerIndicator(currentIndex: state.pageIndex),
           ],
         );
       },

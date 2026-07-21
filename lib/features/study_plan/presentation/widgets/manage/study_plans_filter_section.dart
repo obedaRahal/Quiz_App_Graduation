@@ -106,7 +106,7 @@ class _StudyPlansFilterChip extends StatelessWidget {
               : CustomTextWidget(
                   title,
                   fontSize: SizeConfig.text(0.031),
-                  color: isSelected ? Colors.white : AppPalette.greyMedium,
+                  color: isSelected ? appColors.whiteToblack : AppPalette.greyMedium,
                   textAlign: TextAlign.center,
                   fontWeight: FontWeight.w600,
                 ),

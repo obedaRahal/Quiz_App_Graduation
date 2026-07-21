@@ -3,6 +3,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class StudyTaskBottomActions extends StatelessWidget {
@@ -17,8 +18,6 @@ class StudyTaskBottomActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
@@ -26,7 +25,7 @@ class StudyTaskBottomActions extends StatelessWidget {
         vertical: SizeConfig.h(0.012),
       ),
       decoration: BoxDecoration(
-        color: isDark ? AppPalette.black : AppPalette.white,
+        color: context.appColors.whiteToblack,
         boxShadow: [
           BoxShadow(
             color: AppPalette.greyMedium.withValues(alpha: 0.25),
@@ -40,7 +39,7 @@ class StudyTaskBottomActions extends StatelessWidget {
           Expanded(
             child: _BottomActionButton(
               title: "تعديل المهمة",
-              backgroundColor: AppPalette.primary,
+              backgroundColor: context.appColors.primaryToPrimaryDark,
               onTap: onEditTap,
             ),
           ),
@@ -58,7 +57,6 @@ class StudyTaskBottomActions extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _BottomActionButton extends StatelessWidget {
@@ -85,7 +83,7 @@ class _BottomActionButton extends StatelessWidget {
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        color: AppPalette.white,
+        color: context.appColors.whiteToblack,
         fontFamily: AppFont.elMessiriSemiBold,
         fontSize: SizeConfig.text(0.03),
       ),

@@ -45,7 +45,17 @@ class HomePage extends StatelessWidget {
           child: Column(
             textDirection: TextDirection.rtl,
             children: [
-              HomeHeader(),
+              HomeHeader(
+                onProfileTap: () {
+                  debugPrint("go to my profile ");
+                  context.pushNamed(
+                    AppRouterName.myProfile,
+                    //extra: OtherProfileRouteArgs(userId: 815),
+                    // تمرير userid
+                    extra: OtherProfileRouteArgs(userId:828 ),
+                  );
+                },
+              ),
               SizedBox(height: 20),
               HomeTopBannerSection(
                 controller: controller,
@@ -152,17 +162,17 @@ class HomePage extends StatelessWidget {
                   );
                 },
               ),
-              // BlocBuilder<HomeCubit, HomeState>(
-              //   builder: (context, state) {
-              //     return HomeSliderSection(
-              //       controller2: controller2,
-              //       isDark: isDark,
-              //       appColors: appColors,
-              //       colorScheme: colorScheme,
-              //       state: state,
-              //     );
-              //   },
-              // ),
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return HomeSliderSection(
+                    controller2: controller2,
+                    isDark: isDark,
+                    appColors: appColors,
+                    colorScheme: colorScheme,
+                    state: state,
+                  );
+                },
+              ),
 
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {

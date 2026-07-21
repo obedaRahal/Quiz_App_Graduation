@@ -91,7 +91,7 @@ class StudySubjectNameSection extends StatelessWidget {
                       'إنشاء المادة',
                       fontSize:
                           SizeConfig.text(0.031),
-                      color: Colors.white,
+                      color: context.appColors.whiteToblack,
                     ),
             ),
           ],

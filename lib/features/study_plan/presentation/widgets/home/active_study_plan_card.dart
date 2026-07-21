@@ -61,7 +61,7 @@ class ActiveStudyPlanCard extends StatelessWidget {
                     .borderFieldColorNLightToborderFieldColorNDark,
                 width: 2,
               ),
-              backgroundColor: AppPalette.grey,
+              backgroundColor: context.appColors.greyToGreyMediumDark,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.06),

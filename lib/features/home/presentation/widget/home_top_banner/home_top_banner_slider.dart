@@ -89,23 +89,20 @@ class _HomeTopBannerSliderState extends State<HomeTopBannerSlider> {
   void _startAutoSlide() {
     _autoSlideTimer?.cancel();
 
-    _autoSlideTimer = Timer.periodic(
-      const Duration(seconds: 5),
-      (_) {
-        if (!mounted || !widget.controller.hasClients) return;
+    _autoSlideTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!mounted || !widget.controller.hasClients) return;
 
-        final currentIndex = context.read<HomeCubit>().state.pageIndex;
-        final nextIndex = (currentIndex + 1) % _bannerCount;
+      final currentIndex = context.read<HomeCubit>().state.pageIndex;
+      final nextIndex = (currentIndex + 1) % _bannerCount;
 
-        widget.controller.animateToPage(
-          nextIndex,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
+      widget.controller.animateToPage(
+        nextIndex,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
 
-        context.read<HomeCubit>().changePage(nextIndex);
-      },
-    );
+      context.read<HomeCubit>().changePage(nextIndex);
+    });
   }
 
   @override
@@ -116,8 +113,13 @@ class _HomeTopBannerSliderState extends State<HomeTopBannerSlider> {
 
   @override
   Widget build(BuildContext context) {
+    final textScale = SizeConfig.textScaleFactor.clamp(1.0, 1.20);
+    final bannerHeight = (SizeConfig.w(0.44) * textScale)
+        .clamp(148.0, 190.0)
+        .toDouble();
+
     return SizedBox(
-      height: SizeConfig.h(0.178),
+      height: bannerHeight,
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: PageView.builder(

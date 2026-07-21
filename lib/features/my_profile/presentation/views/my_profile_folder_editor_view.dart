@@ -119,58 +119,58 @@ class _MyProfileFolderEditorViewState extends State<MyProfileFolderEditorView> {
                       ),
                     ),
 
-                    // Container(
-                    //   width: double.infinity,
-                    //   padding: EdgeInsets.symmetric(
-                    //     horizontal: SizeConfig.w(0.035),
-                    //     vertical: SizeConfig.h(0.012),
-                    //   ),
-                    //   decoration: BoxDecoration(
-                    //     color: appColors.whiteToblack,
-                    //     boxShadow: [
-                    //       BoxShadow(
-                    //         color: isDark
-                    //             ? AppPalette.greyMediumDark
-                    //             : AppPalette.greyBorderCart,
-                    //         blurRadius: 4,
-                    //         offset: const Offset(0, -4),
-                    //       ),
-                    //     ],
-                    //   ),
-                    //   child: CustomButtonWidget(
-                    //     width: double.infinity,
-                    //     backgroundColor: isButtonEnabled
-                    //         ? appColors.primaryToPrimaryDark
-                    //         : appColors.greyToGreyMediumDark,
-                    //     childHorizontalPad: SizeConfig.w(0.04),
-                    //     childVerticalPad: SizeConfig.w(0.013),
-                    //     borderRadius: 6,
-                    //     onTap: isButtonEnabled
-                    //         ? () {
-                    //             debugPrint('submit folder editor');
-                    //             context
-                    //                 .read<MyProfileFolderEditorCubit>()
-                    //                 .submitFolderEditor();
-                    //           }
-                    //         : () {},
-                    //     child: state.isSubmitLoading
-                    //         ? SizedBox(
-                    //             width: SizeConfig.w(0.045),
-                    //             height: SizeConfig.w(0.045),
-                    //             child: const CircularProgressIndicator(
-                    //               strokeWidth: 2,
-                    //               color: AppPalette.white,
-                    //             ),
-                    //           )
-                    //         : CustomTextWidget(
-                    //             state.submitButtonTitle,
-                    //             fontSize: SizeConfig.text(0.03),
-                    //             color: isButtonEnabled
-                    //                 ? appColors.whiteToblack
-                    //                 : AppPalette.greyMedium,
-                    //           ),
-                    //   ),
-                    // ),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.w(0.035),
+                        vertical: SizeConfig.h(0.012),
+                      ),
+                      decoration: BoxDecoration(
+                        color: appColors.whiteToblack,
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDark
+                                ? AppPalette.greyMediumDark
+                                : AppPalette.greyBorderCart,
+                            blurRadius: 4,
+                            offset: const Offset(0, -4),
+                          ),
+                        ],
+                      ),
+                      child: CustomButtonWidget(
+                        width: double.infinity,
+                        backgroundColor: isButtonEnabled
+                            ? appColors.primaryToPrimaryDark
+                            : appColors.greyToGreyMediumDark,
+                        childHorizontalPad: SizeConfig.w(0.04),
+                        childVerticalPad: SizeConfig.w(0.013),
+                        borderRadius: 6,
+                        onTap: isButtonEnabled
+                            ? () {
+                                debugPrint('submit folder editor');
+                                context
+                                    .read<MyProfileFolderEditorCubit>()
+                                    .submitFolderEditor();
+                              }
+                            : () {},
+                        child: state.isSubmitLoading
+                            ? SizedBox(
+                                width: SizeConfig.w(0.045),
+                                height: SizeConfig.w(0.045),
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppPalette.white,
+                                ),
+                              )
+                            : CustomTextWidget(
+                                state.submitButtonTitle,
+                                fontSize: SizeConfig.text(0.03),
+                                color: isButtonEnabled
+                                    ? appColors.whiteToblack
+                                    : AppPalette.greyMedium,
+                              ),
+                      ),
+                    ),
                   ],
                 );
               },
