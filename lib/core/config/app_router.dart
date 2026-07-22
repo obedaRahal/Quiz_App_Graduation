@@ -42,6 +42,7 @@ import 'package:quiz_app_grad/features/my_profile/presentation/views/my_profile_
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_private_test_details_view.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_test_details_view.dart';
+import 'package:quiz_app_grad/features/notification/presentation/views/notification_view.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_progress_preview_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
@@ -59,6 +60,8 @@ import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_r
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/views/other_profile_view.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/views/shared_profile_redirect_view.dart';
+import 'package:quiz_app_grad/features/search/presentation/manager/search/search_cubit.dart';
+import 'package:quiz_app_grad/features/search/presentation/view/search_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_summary_entity.dart';
@@ -767,6 +770,32 @@ class AppRouter {
                 planId: args.planId,
                 taskId: args.taskId,
               ),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.notifications,
+          name: AppRouterName.notifications,
+
+          builder: (context, state) {
+            debugPrint('============ Open Notifications Route ============');
+
+            debugPrint('→ no arguments');
+
+            debugPrint('==================================================');
+
+            return const NotificationView();
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.search,
+          name: AppRouterName.search,
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => sl<SearchCubit>(),
+              child: const SearchView(),
             );
           },
         ),

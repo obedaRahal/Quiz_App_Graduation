@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "334636454148",
+    "project_id": "nerd-notification-bc9b8",
+    "storage_bucket": "nerd-notification-bc9b8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334636454148:android:893e15d19e0c96ac9fc051",
+        "android_client_info": {
+          "package_name": "com.example.quiz_app_grad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeVronskuWtCoLtL1aYRbSG9HovZST5ik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -19,6 +19,7 @@ import 'package:quiz_app_grad/features/home/presentation/widget/home_header_widg
 import 'package:quiz_app_grad/features/home/presentation/widget/home_popular_instructors_section.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/home_top_banner/home_top_banner_section.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
+import 'package:quiz_app_grad/features/notification/presentation/manager/notification_unread_count/notification_unread_count_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 
@@ -48,12 +49,24 @@ class HomePage extends StatelessWidget {
               HomeHeader(
                 onProfileTap: () {
                   debugPrint("go to my profile ");
+
                   context.pushNamed(
                     AppRouterName.myProfile,
                     //extra: OtherProfileRouteArgs(userId: 815),
                     // تمرير userid
-                    extra: OtherProfileRouteArgs(userId:828 ),
+                    extra: OtherProfileRouteArgs(userId: 828),
                   );
+                },
+                onNotificationTap: () async {
+                  debugPrint('Open notifications');
+
+                  await context.pushNamed(AppRouterName.notifications);
+
+                  if (!context.mounted) return;
+
+                  context
+                      .read<NotificationUnreadCountCubit>()
+                      .fetchUnreadCount();
                 },
               ),
               SizedBox(height: 20),

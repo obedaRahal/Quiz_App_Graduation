@@ -2,8 +2,8 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 class EndPoints {
-  //static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
-  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
+  //static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -534,5 +534,35 @@ class EndPoints {
 
   static String unCompleteStudySubTask(int planId, int taskId, int subTaskId) {
     return '$baseUrl/study-plans/study-plans/$planId/tasks/$taskId/subtasks/$subTaskId/un-complete';
+  }
+
+  ////////// notification
+  static String notifications({String? cursor}) {
+    final endpoint = '$baseUrl/notification/show';
+
+    if (cursor == null || cursor.trim().isEmpty) {
+      return endpoint;
+    }
+
+    return '$endpoint?cursor=${Uri.encodeQueryComponent(cursor)}';
+  }
+
+  static String markNotificationsAsRead() {
+    return '$baseUrl/notification/notifications/read';
+  }
+
+  static String notificationUnreadCount() {
+    return '$baseUrl/notification/notifications/unread-count';
+  }
+
+  static String searchUsers({required String query, String? cursor}) {
+    final endpoint =
+        '$baseUrl/home/users/search?query=${Uri.encodeQueryComponent(query)}';
+
+    if (cursor == null || cursor.trim().isEmpty) {
+      return endpoint;
+    }
+
+    return '$endpoint&cursor=${Uri.encodeQueryComponent(cursor)}';
   }
 }

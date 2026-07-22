@@ -139,6 +139,14 @@ import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_p
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_public_test_status_history_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/get_my_test_modifications_use_case.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_cubit.dart';
+import 'package:quiz_app_grad/features/notification/data/remote_data_source/notification_remote_data_source.dart';
+import 'package:quiz_app_grad/features/notification/data/repo_impl/notification_repository_impl.dart';
+import 'package:quiz_app_grad/features/notification/domain/reposirories/notification_repository.dart';
+import 'package:quiz_app_grad/features/notification/domain/use_cases/get_notification_unread_count_use_case.dart';
+import 'package:quiz_app_grad/features/notification/domain/use_cases/get_notifications_use_case.dart';
+import 'package:quiz_app_grad/features/notification/domain/use_cases/mark_notifications_as_read_use_case.dart';
+import 'package:quiz_app_grad/features/notification/presentation/manager/notification/notification_cubit.dart';
+import 'package:quiz_app_grad/features/notification/presentation/manager/notification_unread_count/notification_unread_count_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/data/data_sources/onboarding_remote_data_source.dart';
 import 'package:quiz_app_grad/features/onboarding/data/repository_impl/onboarding_repository_impl.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -162,13 +170,17 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_connections_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_receive_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_profile_share_link_use_case.dart';
-import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fetch_other_profile_overview_params.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_content_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_folder_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_content_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_folder_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_connections/other_profile_connections_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
+import 'package:quiz_app_grad/features/search/data/remote_data_source/search_remote_data_source.dart';
+import 'package:quiz_app_grad/features/search/data/repo_impl/search_repository_impl.dart';
+import 'package:quiz_app_grad/features/search/domain/reposirories/search_repository.dart';
+import 'package:quiz_app_grad/features/search/domain/use_cases/search_users_use_case.dart';
+import 'package:quiz_app_grad/features/search/presentation/manager/search/search_cubit.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repository_impl.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/theme_repository.dart';
@@ -252,6 +264,9 @@ Future<void> initSl() async {
 
   _registerStudyPlanFeature();
   _registerStudyTaskFeature();
+
+  _registerNotificationFeature();
+  _registerSearchFeature();
 }
 
 Future<void> _registerCore() async {
@@ -1848,4 +1863,75 @@ void _registerStudyTaskFeature() {
       ),
     );
   }
+}
+
+void _registerNotificationFeature() {
+  // ================= Remote Data Source =================
+
+  if (!sl.isRegistered<NotificationRemoteDataSource>()) {
+    sl.registerLazySingleton<NotificationRemoteDataSource>(
+      () => NotificationRemoteDataSourceImpl(apiConsumer: sl<ApiConsumer>()),
+    );
+  }
+
+  // ================= Repository =================
+
+  if (!sl.isRegistered<NotificationRepository>()) {
+    sl.registerLazySingleton<NotificationRepository>(
+      () => NotificationRepositoryImpl(
+        remoteDataSource: sl<NotificationRemoteDataSource>(),
+      ),
+    );
+  }
+
+  // ================= Use Cases =================
+
+  if (!sl.isRegistered<GetNotificationsUseCase>()) {
+    sl.registerLazySingleton<GetNotificationsUseCase>(
+      () => GetNotificationsUseCase(sl<NotificationRepository>()),
+    );
+  }
+
+  sl.registerLazySingleton<MarkNotificationsAsReadUseCase>(
+    () => MarkNotificationsAsReadUseCase(sl()),
+  );
+
+  sl.registerLazySingleton<GetNotificationUnreadCountUseCase>(
+    () => GetNotificationUnreadCountUseCase(sl()),
+  );
+
+  // ================= Cubit =================
+
+  if (!sl.isRegistered<NotificationCubit>()) {
+    sl.registerFactory<NotificationCubit>(
+      () => NotificationCubit(
+        getNotificationsUseCase: sl<GetNotificationsUseCase>(),
+        markNotificationsAsReadUseCase: sl<MarkNotificationsAsReadUseCase>(),
+      ),
+    );
+  }
+
+  sl.registerFactory<NotificationUnreadCountCubit>(
+    () => NotificationUnreadCountCubit(getNotificationUnreadCountUseCase: sl()),
+  );
+}
+
+void _registerSearchFeature() {
+  sl.registerLazySingleton<SearchRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(apiConsumer: sl()),
+  );
+
+  sl.registerLazySingleton<SearchRepository>(
+    () => SearchRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton(() => SearchUsersUseCase(sl()));
+
+  sl.registerFactory(
+    () => SearchCubit(
+      searchUsersUseCase: sl(),
+      followCreatorUseCase: sl(),
+      unfollowCreatorUseCase: sl(),
+    ),
+  );
 }

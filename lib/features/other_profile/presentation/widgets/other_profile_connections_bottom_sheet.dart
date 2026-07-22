@@ -322,8 +322,10 @@ class _ConnectionsContent extends StatelessWidget {
                 state.activeFollowUserId == user.userId;
 
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 OtherProfileConnectionUserTile(
+
                   userName: user.name,
                   avatarUrl: user.avatarUrl,
                   educationLevel: user.educationLevel,
@@ -381,6 +383,7 @@ class OtherProfileConnectionUserTile extends StatelessWidget {
       ),
       child: Row(
         textDirection: TextDirection.ltr,
+        
         children: [
           _FollowButton(
             isFollowing: isFollowing,

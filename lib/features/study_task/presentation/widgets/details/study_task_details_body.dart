@@ -26,6 +26,7 @@ class StudyTaskDetailsBody extends StatelessWidget {
     return Column(
       children: [
         StudyTaskDetailsHeader(onBackTap: onBackTap),
+        
         Expanded(
           child: BlocBuilder<StudyTaskDetailsCubit, StudyTaskDetailsState>(
             buildWhen: (previous, current) {

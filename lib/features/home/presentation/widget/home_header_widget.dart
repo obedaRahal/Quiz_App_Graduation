@@ -4,7 +4,12 @@ import 'package:quiz_app_grad/features/home/presentation/widget/profile_section_
 
 class HomeHeader extends StatelessWidget {
   final VoidCallback onProfileTap;
-  const HomeHeader({super.key, required this.onProfileTap});
+  final VoidCallback onNotificationTap;
+  const HomeHeader({
+    super.key,
+    required this.onProfileTap,
+    required this.onNotificationTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +25,10 @@ class HomeHeader extends StatelessWidget {
             onTap: onProfileTap,
             child: ProfileSection(isDark: isDark),
           ),
-          NotificationButton(isDark: isDark),
+          InkWell(
+            onTap: onNotificationTap,
+            child: NotificationButton(isDark: isDark),
+          ),
         ],
       ),
     );
