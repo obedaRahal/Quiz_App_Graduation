@@ -82,23 +82,58 @@ class NotificationMetadataEntity {
 
   final String? category;
 
+  final NotificationPresentationEntity? presentation;
+
+  final NotificationActorEntity? actor;
+
   final String? screen;
 
   final String? action;
 
   final Map<String, dynamic> params;
 
+  final String? notificationKey;
+
   const NotificationMetadataEntity({
     required this.type,
 
     required this.category,
+
+    this.presentation,
+
+    this.actor,
 
     required this.screen,
 
     required this.action,
 
     required this.params,
+
+    this.notificationKey,
   });
+
+  int? get testId => _notificationPositiveInt(params['test_id']);
+
+  int? get buyerUserId => _notificationPositiveInt(params['buyer_user_id']);
+
+  int? get actorUserId => _notificationPositiveInt(params['actor_user_id']);
+
+  int? get materialId => _notificationPositiveInt(params['material_id']);
+
+  int? get creatorUserId =>
+      _notificationPositiveInt(params['creator_user_id']);
+
+  int? get userId => _notificationPositiveInt(params['user_id']);
+
+  int? get banId => _notificationPositiveInt(params['ban_id']);
+
+  String? get deletionType => _notificationNullableString(
+    params['deletion_type'],
+  );
+
+  String? get banType => _notificationNullableString(params['ban_type']);
+
+  bool? get isPermanent => _notificationNullableBool(params['is_permanent']);
 
   @override
   String toString() {
@@ -106,9 +141,30 @@ class NotificationMetadataEntity {
         'type: $type, '
         'category: $category, '
         'screen: $screen, '
-        'params: $params'
+        'params: $params, '
+        'notificationKey: $notificationKey'
         ')';
   }
+}
+
+class NotificationPresentationEntity {
+  final String? mode;
+  final String? floorColor;
+  final String? icon;
+
+  const NotificationPresentationEntity({
+    this.mode,
+    this.floorColor,
+    this.icon,
+  });
+}
+
+class NotificationActorEntity {
+  final int? id;
+  final String? name;
+  final String? avatarUrl;
+
+  const NotificationActorEntity({this.id, this.name, this.avatarUrl});
 }
 
 class NotificationPaginationEntity {
@@ -132,5 +188,36 @@ class NotificationPaginationEntity {
         'prevCursor: $prevCursor, '
         'hasMorePages: $hasMorePages'
         ')';
+  }
+}
+
+int? _notificationPositiveInt(dynamic value) {
+  final parsed = value is int
+      ? value
+      : int.tryParse(value?.toString().trim() ?? '');
+
+  return parsed != null && parsed > 0 ? parsed : null;
+}
+
+String? _notificationNullableString(dynamic value) {
+  if (value == null) return null;
+
+  final text = value.toString().trim();
+  return text.isEmpty || text.toLowerCase() == 'null' ? null : text;
+}
+
+bool? _notificationNullableBool(dynamic value) {
+  if (value is bool) return value;
+  if (value is num) return value != 0;
+
+  switch (value?.toString().trim().toLowerCase()) {
+    case 'true':
+    case '1':
+      return true;
+    case 'false':
+    case '0':
+      return false;
+    default:
+      return null;
   }
 }

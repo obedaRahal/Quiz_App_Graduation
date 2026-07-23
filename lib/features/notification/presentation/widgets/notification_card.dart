@@ -13,8 +13,13 @@ import 'notification_avatar.dart';
 
 class NotificationCard extends StatelessWidget {
   final NotificationEntity notification;
+  final VoidCallback navigateToPage;
 
-  const NotificationCard({super.key, required this.notification});
+  const NotificationCard({
+    super.key,
+    required this.notification,
+    required this.navigateToPage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +104,7 @@ class NotificationCard extends StatelessWidget {
               borderRadius: 10,
               childHorizontalPad: SizeConfig.w(0.035),
               childVerticalPad: SizeConfig.h(0.003),
-              onTap: () {},
+              onTap: navigateToPage,
               child: CustomTextWidget(
                 "انتقال",
                 color: AppPalette.white,

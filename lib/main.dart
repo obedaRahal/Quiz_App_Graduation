@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/config/app_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
-import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
 import 'package:quiz_app_grad/core/services/notification/local_votification_service.dart';
@@ -19,17 +18,17 @@ import 'package:quiz_app_grad/firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
- FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
   await CacheHelper.init();
   await initSl();
   AppRouter.init();
   await initializeDateFormatting('ar');
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await LocalNotificationService.init();
-  await PushNotificationService.init();
+  // FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  // await LocalNotificationService.init();
+  // await PushNotificationService.init();
 
   runApp(const QuizApp());
 }

@@ -179,6 +179,9 @@ import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_
 import 'package:quiz_app_grad/features/search/data/remote_data_source/search_remote_data_source.dart';
 import 'package:quiz_app_grad/features/search/data/repo_impl/search_repository_impl.dart';
 import 'package:quiz_app_grad/features/search/domain/reposirories/search_repository.dart';
+import 'package:quiz_app_grad/features/search/domain/use_cases/clear_search_history_use_case.dart';
+import 'package:quiz_app_grad/features/search/domain/use_cases/delete_search_history_item_use_case.dart';
+import 'package:quiz_app_grad/features/search/domain/use_cases/get_search_history_use_case.dart';
 import 'package:quiz_app_grad/features/search/domain/use_cases/search_users_use_case.dart';
 import 'package:quiz_app_grad/features/search/presentation/manager/search/search_cubit.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
@@ -1927,11 +1930,26 @@ void _registerSearchFeature() {
 
   sl.registerLazySingleton(() => SearchUsersUseCase(sl()));
 
+  sl.registerLazySingleton<GetSearchHistoryUseCase>(
+    () => GetSearchHistoryUseCase(sl<SearchRepository>()),
+  );
+
+  sl.registerLazySingleton<DeleteSearchHistoryItemUseCase>(
+    () => DeleteSearchHistoryItemUseCase(sl<SearchRepository>()),
+  );
+
+  sl.registerLazySingleton<ClearSearchHistoryUseCase>(
+    () => ClearSearchHistoryUseCase(sl<SearchRepository>()),
+  );
+
   sl.registerFactory(
     () => SearchCubit(
-      searchUsersUseCase: sl(),
-      followCreatorUseCase: sl(),
-      unfollowCreatorUseCase: sl(),
+      searchUsersUseCase: sl<SearchUsersUseCase>(),
+      followCreatorUseCase: sl<FollowCreatorUseCase>(),
+      unfollowCreatorUseCase: sl<UnfollowCreatorUseCase>(),
+      getSearchHistoryUseCase: sl<GetSearchHistoryUseCase>(),
+      deleteSearchHistoryItemUseCase: sl<DeleteSearchHistoryItemUseCase>(),
+      clearSearchHistoryUseCase: sl<ClearSearchHistoryUseCase>(),
     ),
   );
 }

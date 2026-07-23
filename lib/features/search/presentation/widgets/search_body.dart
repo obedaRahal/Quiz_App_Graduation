@@ -31,42 +31,93 @@ class SearchBody extends StatelessWidget {
           ),
         ),
 
-        CustomDivider(height: 10, thickness: 1),
+        const CustomDivider(height: 10, thickness: 1),
 
         Expanded(
           child: BlocConsumer<SearchCubit, SearchState>(
-            listenWhen: (previous, current) =>
-                previous.followErrorMessage != current.followErrorMessage &&
-                current.hasFollowError,
-            listener: (context, state) {
-              showValidationTopSnackBar(
-                context,
-                title: state.followErrorTitle ?? 'خطأ',
-                message:
-                    state.followErrorMessage ?? 'تعذر تنفيذ عملية المتابعة',
-                type: AppValidationSnackBarType.error,
-              );
+            listenWhen: (previous, current) {
+              final searchErrorChanged =
+                  previous.errorMessage != current.errorMessage &&
+                  current.hasError;
 
-              context.read<SearchCubit>().clearFollowError();
+              final followErrorChanged =
+                  previous.followErrorMessage != current.followErrorMessage &&
+                  current.hasFollowError;
+
+              final historyErrorChanged =
+                  previous.historyErrorMessage != current.historyErrorMessage &&
+                  current.hasHistoryError;
+
+              final historyActionErrorChanged =
+                  previous.historyActionErrorMessage !=
+                      current.historyActionErrorMessage &&
+                  current.hasHistoryActionError;
+
+              return searchErrorChanged ||
+                  followErrorChanged ||
+                  historyErrorChanged ||
+                  historyActionErrorChanged;
+            },
+            listener: (context, state) {
+              final cubit = context.read<SearchCubit>();
+
+              if (state.hasFollowError) {
+                showValidationTopSnackBar(
+                  context,
+                  title: state.followErrorTitle ?? 'خطأ',
+                  message:
+                      state.followErrorMessage ?? 'تعذر تنفيذ عملية المتابعة',
+                  type: AppValidationSnackBarType.error,
+                );
+
+                cubit.clearFollowError();
+                return;
+              }
+
+              if (state.hasHistoryActionError) {
+                showValidationTopSnackBar(
+                  context,
+                  title: state.historyActionErrorTitle ?? 'خطأ',
+                  message:
+                      state.historyActionErrorMessage ??
+                      'تعذر تنفيذ العملية على سجل البحث',
+                  type: AppValidationSnackBarType.error,
+                );
+
+                cubit.clearHistoryActionError();
+                return;
+              }
+
+              if (state.hasHistoryError) {
+                showValidationTopSnackBar(
+                  context,
+                  title: state.historyErrorTitle ?? 'خطأ',
+                  message: state.historyErrorMessage ?? 'تعذر جلب سجل البحث',
+                  type: AppValidationSnackBarType.error,
+                );
+
+                cubit.clearHistoryError();
+                return;
+              }
+
+              if (state.hasError) {
+                showValidationTopSnackBar(
+                  context,
+                  title: state.errorTitle ?? 'خطأ',
+                  message: state.errorMessage ?? 'تعذر إجراء البحث',
+                  type: AppValidationSnackBarType.error,
+                );
+
+                cubit.clearSearchError();
+              }
             },
             builder: (context, state) {
               if (!state.isSearching) {
-                return _buildHistory(context);
+                return _buildHistory(context, state);
               }
 
               if (state.isLoading) {
                 return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state.hasError && state.users.isEmpty) {
-                return Center(
-                  child: CustomTextWidget(
-                    state.errorMessage ?? 'تعذر إجراء البحث',
-                    color: AppPalette.red,
-                    textAlign: TextAlign.center,
-                    fontSize: SizeConfig.text(0.034),
-                  ),
-                );
               }
 
               return SearchResultsList(
@@ -96,18 +147,27 @@ class SearchBody extends StatelessWidget {
   }
 }
 
-Widget _buildHistory(BuildContext context) {
+Widget _buildHistory(BuildContext context, SearchState state) {
   final cubit = context.read<SearchCubit>();
 
+  if (state.isHistoryLoading) {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  final histories = state.histories
+      .map(
+        (history) => SearchHistoryUiModel(id: history.id, query: history.query),
+      )
+      .toList();
+
   return SearchHistorySection(
-    histories: const [
-      SearchHistoryUiModel(id: 1, query: 'نور'),
-      SearchHistoryUiModel(id: 2, query: 'عبد الهادي'),
-    ],
+    histories: histories,
     onHistoryTap: (history) {
       cubit.selectHistoryQuery(history.query);
     },
-    onDeleteHistory: (_) {},
-    onClearAll: () {},
+    onDeleteHistory: (history) {
+      cubit.deleteSearchHistoryItem(historyId: history.id);
+    },
+    onClearAll: cubit.clearAllSearchHistory,
   );
 }

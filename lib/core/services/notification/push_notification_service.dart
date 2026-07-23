@@ -9,8 +9,13 @@ import 'package:quiz_app_grad/firebase_options.dart';
 
 class PushNotificationService {
   static FirebaseMessaging messaging = FirebaseMessaging.instance;
+  static Future<void>? _initializationFuture;
 
-  static Future<void> init() async {
+  static Future<void> init() {
+    return _initializationFuture ??= _init();
+  }
+
+  static Future<void> _init() async {
     final settings = await messaging.requestPermission();
     debugPrint('🔐 FCM permission: ${settings.authorizationStatus}');
 
@@ -23,16 +28,19 @@ class PushNotificationService {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       debugPrint('📬 onMessageOpenedApp: ${message.messageId}');
+      debugPrint('📬 data: ${message.data}');
     });
   }
 
   static void _handleForegroundMessages() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint('🚀 ENTERED onMessage (foreground)');
+      debugPrint('📩 messageId: ${message.messageId}');
       debugPrint('📩 title: ${message.notification?.title}');
       debugPrint('📩 body : ${message.notification?.body}');
+      debugPrint('📩 data  : ${message.data}');
 
-      LocalNotificationService.showBasicNotification(message);
+      await LocalNotificationService.showBasicNotification(message);
     });
   }
 }
@@ -41,9 +49,16 @@ class PushNotificationService {
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await LocalNotificationService.init();
+  // FCM/APNs displays notification payloads automatically in the background.
+  // Only data-only messages need us to create a local notification.
+  if (message.notification == null) {
+    await LocalNotificationService.init();
+    await LocalNotificationService.showBasicNotification(message);
+  }
 
-  await LocalNotificationService.showBasicNotification(message);
-
-  debugPrint('📩 Background message: ${message.messageId}');
+  debugPrint(
+    '📩 Background message: ${message.messageId}, '
+    'systemDisplayed: ${message.notification != null}',
+  );
+  debugPrint('📩 Background data: ${message.data}');
 }

@@ -5,10 +5,13 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
+import 'package:quiz_app_grad/features/notification/domain/entities/notification_entity.dart';
 import 'package:quiz_app_grad/features/notification/presentation/manager/notification/notification_cubit.dart';
 import 'package:quiz_app_grad/features/notification/presentation/manager/notification/notification_state.dart';
+import 'package:quiz_app_grad/features/notification/presentation/navigation/notification_navigation_resolver.dart';
 import 'package:quiz_app_grad/features/notification/presentation/widgets/notification_card.dart';
 
 class NotificationView extends StatelessWidget {
@@ -33,6 +36,8 @@ class _NotificationBody extends StatefulWidget {
 }
 
 class _NotificationBodyState extends State<_NotificationBody> {
+  static const _navigationResolver = NotificationNavigationResolver();
+
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -56,6 +61,24 @@ class _NotificationBodyState extends State<_NotificationBody> {
     if (position.pixels >= position.maxScrollExtent * 0.8) {
       context.read<NotificationCubit>().fetchMoreIfNeeded();
     }
+  }
+
+  void _navigateToNotificationPage(NotificationEntity notification) {
+    final decision = _navigationResolver.resolve(notification);
+
+    if (decision.canNavigate) {
+      context.pushNamed(decision.routeName!, extra: decision.extra);
+      return;
+    }
+
+    showValidationTopSnackBar(
+      context,
+      title: decision.isBlocked ? 'الاختبار غير متاح' : 'تعذر فتح الوجهة',
+      message: decision.message ?? 'تعذر فتح الوجهة المرتبطة بهذا الإشعار.',
+      type: decision.isBlocked
+          ? AppValidationSnackBarType.hint
+          : AppValidationSnackBarType.error,
+    );
   }
 
   @override
@@ -156,7 +179,11 @@ class _NotificationBodyState extends State<_NotificationBody> {
 
                         final notification = state.notifications[index];
 
-                        return NotificationCard(notification: notification);
+                        return NotificationCard(
+                          notification: notification,
+                          navigateToPage: () =>
+                              _navigateToNotificationPage(notification),
+                        );
                       },
                     ),
                   );

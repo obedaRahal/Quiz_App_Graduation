@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:quiz_app_grad/core/database/api/end_point.dart';
 
 import '../../domain/entities/notification_entity.dart';
 
@@ -80,11 +81,11 @@ class NotificationModel extends NotificationEntity {
 
       mode: json['mode']?.toString() ?? '',
 
-      image: json['image']?.toString(),
+      image: _resolveMediaUrl(json['image']),
 
       floorColor: json['floor_color']?.toString(),
 
-      icon: json['icon']?.toString(),
+      icon: _resolveMediaUrl(json['icon']),
 
       title: json['title']?.toString() ?? '',
 
@@ -116,11 +117,17 @@ class NotificationMetadataModel extends NotificationMetadataEntity {
 
     required super.category,
 
+    super.presentation,
+
+    super.actor,
+
     required super.screen,
 
     required super.action,
 
     required super.params,
+
+    super.notificationKey,
   });
 
   factory NotificationMetadataModel.fromJson(dynamic json) {
@@ -132,28 +139,48 @@ class NotificationMetadataModel extends NotificationMetadataEntity {
 
         category: null,
 
+        presentation: null,
+
+        actor: null,
+
         screen: null,
 
         action: null,
 
         params: {},
+
+        notificationKey: null,
       );
     }
 
     final navigation = json['navigation'];
+    final presentation = json['presentation'];
+    final actor = json['actor'];
 
     final model = NotificationMetadataModel(
       type: json['type']?.toString(),
 
       category: json['category']?.toString(),
 
+      presentation: presentation is Map
+          ? NotificationPresentationModel.fromJson(
+              Map<String, dynamic>.from(presentation),
+            )
+          : null,
+
+      actor: actor is Map
+          ? NotificationActorModel.fromJson(Map<String, dynamic>.from(actor))
+          : null,
+
       screen: navigation is Map ? navigation['screen']?.toString() : null,
 
       action: navigation is Map ? navigation['action']?.toString() : null,
 
-      params: json['params'] is Map<String, dynamic>
-          ? Map<String, dynamic>.from(json['params'])
+      params: json['params'] is Map
+          ? Map<String, dynamic>.from(json['params'] as Map)
           : {},
+
+      notificationKey: _asNullableString(json['notification_key']),
     );
 
     debugPrint('============ NotificationMetadataModel.fromJson ============');
@@ -167,6 +194,34 @@ class NotificationMetadataModel extends NotificationMetadataEntity {
     debugPrint('============================================================');
 
     return model;
+  }
+}
+
+class NotificationPresentationModel extends NotificationPresentationEntity {
+  const NotificationPresentationModel({
+    super.mode,
+    super.floorColor,
+    super.icon,
+  });
+
+  factory NotificationPresentationModel.fromJson(Map<String, dynamic> json) {
+    return NotificationPresentationModel(
+      mode: _asNullableString(json['mode']),
+      floorColor: _asNullableString(json['floor_color']),
+      icon: _resolveMediaUrl(json['icon']),
+    );
+  }
+}
+
+class NotificationActorModel extends NotificationActorEntity {
+  const NotificationActorModel({super.id, super.name, super.avatarUrl});
+
+  factory NotificationActorModel.fromJson(Map<String, dynamic> json) {
+    return NotificationActorModel(
+      id: _asNullablePositiveInt(json['id']),
+      name: _asNullableString(json['name']),
+      avatarUrl: _resolveMediaUrl(json['avatar_url']),
+    );
   }
 }
 
@@ -204,6 +259,11 @@ int _asInt(dynamic value, {int fallback = 0}) {
   return fallback;
 }
 
+int? _asNullablePositiveInt(dynamic value) {
+  final parsed = _asInt(value);
+  return parsed > 0 ? parsed : null;
+}
+
 String? _asNullableString(dynamic value) {
   if (value == null) return null;
 
@@ -214,4 +274,33 @@ String? _asNullableString(dynamic value) {
   }
 
   return text;
+}
+
+String? _resolveMediaUrl(dynamic value) {
+  final mediaUrl = _asNullableString(value);
+
+  if (mediaUrl == null) {
+    return null;
+  }
+
+  final uri = Uri.tryParse(mediaUrl);
+
+  if (uri == null ||
+      (uri.host.toLowerCase() != 'localhost' && uri.host != '127.0.0.1')) {
+    return mediaUrl;
+  }
+
+  final apiUri = Uri.tryParse(EndPoints.baseUrl);
+
+  if (apiUri == null || apiUri.host.isEmpty) {
+    return mediaUrl;
+  }
+
+  return uri
+      .replace(
+        scheme: apiUri.scheme,
+        host: apiUri.host,
+        port: apiUri.hasPort ? apiUri.port : null,
+      )
+      .toString();
 }

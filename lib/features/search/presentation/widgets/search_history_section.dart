@@ -18,37 +18,32 @@ class SearchHistorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SearchHistoryHeader(
-            onClearAll: onClearAll,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SearchHistoryHeader(
+          onClearAll: onClearAll,
+        ),
+        const SizedBox(height: 8),
+        if (histories.isEmpty)
+          const _EmptySearchHistory()
+        else
+          Wrap(
+            alignment: WrapAlignment.start,
+            runAlignment: WrapAlignment.start,
+            spacing: 8,
+            runSpacing: 8,
+            textDirection: TextDirection.rtl,
+            children: histories.map((history) {
+              return SearchHistoryChip(
+                historyId: history.id,
+                query: history.query,
+                onTap: () => onHistoryTap(history),
+                onDelete: () => onDeleteHistory(history),
+              );
+            }).toList(),
           ),
-          const SizedBox(height: 8),
-          if (histories.isEmpty)
-            const _EmptySearchHistory()
-          else
-            Wrap(
-              alignment: WrapAlignment.start,
-              runAlignment: WrapAlignment.start,
-              spacing: 8,
-              runSpacing: 8,
-              textDirection: TextDirection.rtl,
-              children: histories.map((history) {
-                return SearchHistoryChip(
-                  historyId: history.id,
-                  query: history.query,
-                  onTap: () => onHistoryTap(history),
-                  onDelete: () => onDeleteHistory(history),
-                );
-              }).toList(),
-            ),
-        ],
-      ),
+      ],
     );
   }
 }

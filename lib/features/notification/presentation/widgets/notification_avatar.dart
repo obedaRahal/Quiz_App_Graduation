@@ -14,26 +14,25 @@ class NotificationAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final avatarSize = SizeConfig.w(0.13);
+    final imageUrl = _nonEmpty(notification.image);
 
-    if (notification.mode == 'user') {
-      return CircleAvatar(
-        radius: SizeConfig.w(0.065),
-        backgroundColor: AppPalette.greyLight,
-        child: notification.image != null
-            ? ClipOval(
-                child: SizedBox(
-                  width: avatarSize,
-                  height: avatarSize,
-                  child: CustomAppImage(path: notification.image!),
-                ),
-              )
-            : Icon(
-                Icons.person,
-                color: AppPalette.greyMedium,
-                size: SizeConfig.text(0.06),
-              ),
+    if (imageUrl != null) {
+      return ClipOval(
+        child: CustomAppImage(
+          path: imageUrl,
+          width: avatarSize,
+          height: avatarSize,
+          fit: BoxFit.cover,
+          fallback: _buildIconAvatar(avatarSize),
+        ),
       );
     }
+
+    return _buildIconAvatar(avatarSize);
+  }
+
+  Widget _buildIconAvatar(double avatarSize) {
+    final iconUrl = _nonEmpty(notification.icon);
 
     return Container(
       width: avatarSize,
@@ -43,10 +42,28 @@ class NotificationAvatar extends StatelessWidget {
         shape: BoxShape.circle,
         color: _parseColor(notification.floorColor) ?? AppPalette.primarySoft,
       ),
-      child: notification.icon != null
-          ? CustomAppImage(path: notification.icon!)
+      child: iconUrl != null
+          ? CustomAppImage(
+              path: iconUrl,
+              width: avatarSize,
+              height: avatarSize,
+              fit: BoxFit.contain,
+              fallback: Icon(Icons.notifications, color: AppPalette.primary),
+            )
           : Icon(Icons.notifications, color: AppPalette.primary),
     );
+  }
+
+  String? _nonEmpty(String? value) {
+    final normalized = value?.trim();
+
+    if (normalized == null ||
+        normalized.isEmpty ||
+        normalized.toLowerCase() == 'null') {
+      return null;
+    }
+
+    return normalized;
   }
 
   Color? _parseColor(String? value) {

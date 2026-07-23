@@ -60,13 +60,19 @@ class HomePage extends StatelessWidget {
                 onNotificationTap: () async {
                   debugPrint('Open notifications');
 
+                  final unreadCountCubit = context
+                      .read<NotificationUnreadCountCubit>();
+
+                  // The notifications screen marks the loaded unread items as
+                  // read. Hide the stale badge immediately, then confirm the
+                  // real value with the API when the user comes back.
+                  unreadCountCubit.clearUnreadCount();
+
                   await context.pushNamed(AppRouterName.notifications);
 
                   if (!context.mounted) return;
 
-                  context
-                      .read<NotificationUnreadCountCubit>()
-                      .fetchUnreadCount();
+                  await unreadCountCubit.fetchUnreadCount();
                 },
               ),
               SizedBox(height: 20),

@@ -1,3 +1,4 @@
+import 'package:quiz_app_grad/features/search/domain/entities/search_history_entity.dart';
 import 'package:quiz_app_grad/features/search/domain/entities/search_user_entity.dart';
 
 class SearchState {
@@ -22,6 +23,18 @@ class SearchState {
   final String? followErrorTitle;
   final String? followErrorMessage;
 
+  final bool isHistoryLoading;
+  final List<SearchHistoryEntity> histories;
+
+  final int? deletingHistoryId;
+  final bool isClearingHistory;
+
+  final String? historyErrorTitle;
+  final String? historyErrorMessage;
+
+  final String? historyActionErrorTitle;
+  final String? historyActionErrorMessage;
+
   const SearchState({
     this.isLoading = false,
     this.isLoadingMore = false,
@@ -37,6 +50,15 @@ class SearchState {
     this.activeFollowUserId,
     this.followErrorTitle,
     this.followErrorMessage,
+
+    this.isHistoryLoading = false,
+    this.histories = const [],
+    this.deletingHistoryId,
+    this.isClearingHistory = false,
+    this.historyErrorTitle,
+    this.historyErrorMessage,
+    this.historyActionErrorTitle,
+    this.historyActionErrorMessage,
   });
 
   bool get isSearching {
@@ -64,6 +86,20 @@ class SearchState {
     return query.trim().isEmpty && users.isEmpty && !isLoading && !hasError;
   }
 
+  bool get hasHistoryError {
+    return historyErrorMessage != null &&
+        historyErrorMessage!.trim().isNotEmpty;
+  }
+
+  bool get hasHistoryActionError {
+    return historyActionErrorMessage != null &&
+        historyActionErrorMessage!.trim().isNotEmpty;
+  }
+
+  bool get hasHistories {
+    return histories.isNotEmpty;
+  }
+
   SearchState copyWith({
     bool? isLoading,
     bool? isLoadingMore,
@@ -84,6 +120,22 @@ class SearchState {
     String? followErrorTitle,
     String? followErrorMessage,
     bool clearFollowError = false,
+
+    bool? isHistoryLoading,
+    List<SearchHistoryEntity>? histories,
+
+    int? deletingHistoryId,
+    bool clearDeletingHistoryId = false,
+
+    bool? isClearingHistory,
+
+    String? historyErrorTitle,
+    String? historyErrorMessage,
+    bool clearHistoryError = false,
+
+    String? historyActionErrorTitle,
+    String? historyActionErrorMessage,
+    bool clearHistoryActionError = false,
   }) {
     return SearchState(
       isLoading: isLoading ?? this.isLoading,
@@ -110,6 +162,25 @@ class SearchState {
       followErrorMessage: clearFollowError
           ? null
           : followErrorMessage ?? this.followErrorMessage,
+
+      isHistoryLoading: isHistoryLoading ?? this.isHistoryLoading,
+      histories: histories ?? this.histories,
+      deletingHistoryId: clearDeletingHistoryId
+          ? null
+          : deletingHistoryId ?? this.deletingHistoryId,
+      isClearingHistory: isClearingHistory ?? this.isClearingHistory,
+      historyErrorTitle: clearHistoryError
+          ? null
+          : historyErrorTitle ?? this.historyErrorTitle,
+      historyErrorMessage: clearHistoryError
+          ? null
+          : historyErrorMessage ?? this.historyErrorMessage,
+      historyActionErrorTitle: clearHistoryActionError
+          ? null
+          : historyActionErrorTitle ?? this.historyActionErrorTitle,
+      historyActionErrorMessage: clearHistoryActionError
+          ? null
+          : historyActionErrorMessage ?? this.historyActionErrorMessage,
     );
   }
 }

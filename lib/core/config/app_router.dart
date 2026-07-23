@@ -43,6 +43,7 @@ import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_t
 import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_private_test_details_view.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/views/my_test_details_view.dart';
 import 'package:quiz_app_grad/features/notification/presentation/views/notification_view.dart';
+import 'package:quiz_app_grad/features/notification/presentation/manager/notification_unread_count/notification_unread_count_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_progress_preview_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
@@ -325,13 +326,23 @@ class AppRouter {
           path: AppRouterPath.home,
           name: AppRouterName.home,
           builder: (context, state) {
-            return BlocProvider(
-              create: (context) => HomeCubit(
-                getRecommendedTestsUseCase: sl<GetRecommendedTestsUseCase>(),
-                getRecommendedInterestsUseCase:
-                    sl<GetRecommendedInterestsUseCase>(),
-                getRecommendedUsersUseCase: sl<GetRecommendedUsersUseCase>(),
-              )..getHomeData(),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<HomeCubit>(
+                  create: (_) => HomeCubit(
+                    getRecommendedTestsUseCase:
+                        sl<GetRecommendedTestsUseCase>(),
+                    getRecommendedInterestsUseCase:
+                        sl<GetRecommendedInterestsUseCase>(),
+                    getRecommendedUsersUseCase:
+                        sl<GetRecommendedUsersUseCase>(),
+                  )..getHomeData(),
+                ),
+                BlocProvider<NotificationUnreadCountCubit>(
+                  create: (_) =>
+                      sl<NotificationUnreadCountCubit>()..fetchUnreadCount(),
+                ),
+              ],
               child: const HomePage(),
             );
           },
@@ -794,7 +805,7 @@ class AppRouter {
           name: AppRouterName.search,
           builder: (context, state) {
             return BlocProvider(
-              create: (_) => sl<SearchCubit>(),
+              create: (_) => sl<SearchCubit>()..getSearchHistory(),
               child: const SearchView(),
             );
           },
