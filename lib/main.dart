@@ -1,3 +1,4 @@
+import 'package:alarm/alarm.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -18,17 +19,19 @@ import 'package:quiz_app_grad/firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Alarm.init();
+
   await CacheHelper.init();
   await initSl();
   AppRouter.init();
   await initializeDateFormatting('ar');
 
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  // await LocalNotificationService.init();
-  // await PushNotificationService.init();
+  await LocalNotificationService.init();
+  await PushNotificationService.init();
 
   runApp(const QuizApp());
 }

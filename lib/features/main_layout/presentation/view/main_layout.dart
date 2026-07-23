@@ -19,9 +19,89 @@ import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bo
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_state.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/widget/custom_bottom_nav_bar.dart';
 import 'package:quiz_app_grad/features/notification/presentation/manager/notification_unread_count/notification_unread_count_cubit.dart';
+import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/mock/study_plan_home_mock_scenario.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_home_view.dart';
+
+// class MainLayoutBody extends StatelessWidget {
+//   const MainLayoutBody({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocBuilder<BottomNavCubit, BottomNavState>(
+//       buildWhen: (previous, current) =>
+//           previous.currentIndex != current.currentIndex,
+//       builder: (context, state) {
+//         return Scaffold(
+//           body: SafeArea(
+//             child: IndexedStack(
+//               index: state.currentIndex,
+//               children: [
+//                 MultiBlocProvider(
+//                   providers: [
+//                     BlocProvider<HomeCubit>(
+//                       create: (_) => HomeCubit(
+//                         getRecommendedTestsUseCase:
+//                             sl<GetRecommendedTestsUseCase>(),
+//                         getRecommendedInterestsUseCase:
+//                             sl<GetRecommendedInterestsUseCase>(),
+//                         getRecommendedUsersUseCase:
+//                             sl<GetRecommendedUsersUseCase>(),
+//                       )..getHomeData(),
+//                     ),
+
+//                     BlocProvider<NotificationUnreadCountCubit>(
+//                       create: (_) =>
+//                           sl<NotificationUnreadCountCubit>()
+//                             ..fetchUnreadCount(),
+//                     ),
+
+//                     BlocProvider(
+//                       create: (_) =>
+//                           sl<StudyAlarmCubit>()..fetchStudyAlarmSchedule(),
+//                     ),
+//                   ],
+//                   child: const HomePage(),
+//                 ),
+//                 const LibraryPage(),
+//                 BlocProvider(
+//                   create: (_) =>
+//                       LaboratoryCubit(
+//                           getTestsByInterestUseCase:
+//                               sl<GetTestsByInterestUseCase>(),
+//                           searchTestsByInterestUseCase:
+//                               sl<SearchTestsByInterestUseCase>(),
+//                           getLabRecommendedTestsUseCase:
+//                               sl<GetLabRecommendedTestsUseCase>(),
+//                           getAllInterestsUseCase: sl<GetAllInterestsUseCase>(),
+//                           filterTestsUseCase: sl<FilterTestsUseCase>(),
+//                           getAiGenerationDailyLimitUseCase:
+//                               sl<GetAiGenerationDailyLimitUseCase>(),
+//                         )
+//                         ..initScrollListener()
+//                         ..getAiGenerationDailyLimit()
+//                         ..getInitialLabTests(tab: 'trending'),
+//                   child: const LaboratoryPage(),
+//                 ),
+
+//                 BlocProvider<StudyPlanHomeCubit>(
+//                   create: (_) => sl<StudyPlanHomeCubit>()
+//                     ..initialize(
+//                       mockScenario: StudyPlanHomeMockScenario.planWithTasks,
+//                       weekStartsOn: 'السبت',
+//                     ),
+//                   child: const StudyPlanHomeView(),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           bottomNavigationBar: const CustomBottomNavBar(),
+//         );
+//       },
+//     );
+//   }
+// }
 
 class MainLayoutBody extends StatelessWidget {
   const MainLayoutBody({super.key});
@@ -34,66 +114,94 @@ class MainLayoutBody extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           body: SafeArea(
-            child: IndexedStack(
-              index: state.currentIndex,
-              children: [
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider<HomeCubit>(
-                      create: (_) => HomeCubit(
-                        getRecommendedTestsUseCase:
-                            sl<GetRecommendedTestsUseCase>(),
-                        getRecommendedInterestsUseCase:
-                            sl<GetRecommendedInterestsUseCase>(),
-                        getRecommendedUsersUseCase:
-                            sl<GetRecommendedUsersUseCase>(),
-                      )..getHomeData(),
-                    ),
-
-                    BlocProvider<NotificationUnreadCountCubit>(
-                      create: (_) =>
-                          sl<NotificationUnreadCountCubit>()
-                            ..fetchUnreadCount(),
-                    ),
-                  ],
-                  child: const HomePage(),
-                ),
-                const LibraryPage(),
-                BlocProvider(
-                  create: (_) =>
-                      LaboratoryCubit(
-                          getTestsByInterestUseCase:
-                              sl<GetTestsByInterestUseCase>(),
-                          searchTestsByInterestUseCase:
-                              sl<SearchTestsByInterestUseCase>(),
-                          getLabRecommendedTestsUseCase:
-                              sl<GetLabRecommendedTestsUseCase>(),
-                          getAllInterestsUseCase: sl<GetAllInterestsUseCase>(),
-                          filterTestsUseCase: sl<FilterTestsUseCase>(),
-                          getAiGenerationDailyLimitUseCase:
-                              sl<GetAiGenerationDailyLimitUseCase>(),
-                        )
-                        ..initScrollListener()
-                        ..getAiGenerationDailyLimit()
-                        ..getInitialLabTests(tab: 'trending'),
-                  child: const LaboratoryPage(),
-                ),
-
-                //const Center(child: Text('الخطة')),
-                BlocProvider<StudyPlanHomeCubit>(
-                  create: (_) => sl<StudyPlanHomeCubit>()
-                    ..initialize(
-                      mockScenario: StudyPlanHomeMockScenario.planWithTasks,
-                      weekStartsOn: 'السبت',
-                    ),
-                  child: const StudyPlanHomeView(),
-                ),
-              ],
+            child: KeyedSubtree(
+              key: ValueKey(state.currentIndex),
+              child: _buildCurrentTab(state.currentIndex),
             ),
           ),
           bottomNavigationBar: const CustomBottomNavBar(),
         );
       },
+    );
+  }
+
+  Widget _buildCurrentTab(int index) {
+    switch (index) {
+      case 0:
+        return _buildHomeTab();
+
+      case 1:
+        return const LibraryPage();
+
+      case 2:
+        return _buildLaboratoryTab();
+
+      case 3:
+        return _buildStudyPlanTab();
+
+      default:
+        return _buildHomeTab();
+    }
+  }
+
+  Widget _buildHomeTab() {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HomeCubit>(
+          create: (_) => HomeCubit(
+            getRecommendedTestsUseCase: sl<GetRecommendedTestsUseCase>(),
+            getRecommendedInterestsUseCase:
+                sl<GetRecommendedInterestsUseCase>(),
+            getRecommendedUsersUseCase: sl<GetRecommendedUsersUseCase>(),
+          )..getHomeData(),
+        ),
+
+        BlocProvider<NotificationUnreadCountCubit>(
+          create: (_) => sl<NotificationUnreadCountCubit>()..fetchUnreadCount(),
+        ),
+
+        BlocProvider<StudyAlarmCubit>(
+          lazy: false,
+          create: (_) {
+            debugPrint(
+              '============ Creating StudyAlarmCubit from Home ============',
+            );
+            return sl<StudyAlarmCubit>()..fetchStudyAlarmSchedule();
+          },
+        ),
+      ],
+      child: const HomePage(),
+    );
+  }
+
+  Widget _buildLaboratoryTab() {
+    return BlocProvider<LaboratoryCubit>(
+      create: (_) =>
+          LaboratoryCubit(
+              getTestsByInterestUseCase: sl<GetTestsByInterestUseCase>(),
+              searchTestsByInterestUseCase: sl<SearchTestsByInterestUseCase>(),
+              getLabRecommendedTestsUseCase:
+                  sl<GetLabRecommendedTestsUseCase>(),
+              getAllInterestsUseCase: sl<GetAllInterestsUseCase>(),
+              filterTestsUseCase: sl<FilterTestsUseCase>(),
+              getAiGenerationDailyLimitUseCase:
+                  sl<GetAiGenerationDailyLimitUseCase>(),
+            )
+            ..initScrollListener()
+            ..getAiGenerationDailyLimit()
+            ..getInitialLabTests(tab: 'trending'),
+      child: const LaboratoryPage(),
+    );
+  }
+
+  Widget _buildStudyPlanTab() {
+    return BlocProvider<StudyPlanHomeCubit>(
+      create: (_) => sl<StudyPlanHomeCubit>()
+        ..initialize(
+          mockScenario: StudyPlanHomeMockScenario.planWithTasks,
+          weekStartsOn: 'السبت',
+        ),
+      child: const StudyPlanHomeView(),
     );
   }
 }

@@ -193,6 +193,12 @@ import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit
 import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_cubit.dart';
+import 'package:quiz_app_grad/features/study_alarm/data/data_sources/study_alarm_remote_data_source.dart';
+import 'package:quiz_app_grad/features/study_alarm/data/repo_impl/study_alarm_repository_impl.dart';
+import 'package:quiz_app_grad/features/study_alarm/domain/repositories/study_alarm_repository.dart';
+import 'package:quiz_app_grad/features/study_alarm/domain/use_cases/get_study_alarm_schedule_use_case.dart';
+import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_cubit.dart';
+import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_scheduler_service.dart';
 import 'package:quiz_app_grad/features/study_plan/data/data_sources/study_plan_remote_data_source.dart';
 import 'package:quiz_app_grad/features/study_plan/data/repo_impl/study_plan_repository_impl.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/repositories/study_plan_repository.dart';
@@ -267,6 +273,7 @@ Future<void> initSl() async {
 
   _registerStudyPlanFeature();
   _registerStudyTaskFeature();
+  _registerStudyAlarmsFeature();
 
   _registerNotificationFeature();
   _registerSearchFeature();
@@ -1950,6 +1957,33 @@ void _registerSearchFeature() {
       getSearchHistoryUseCase: sl<GetSearchHistoryUseCase>(),
       deleteSearchHistoryItemUseCase: sl<DeleteSearchHistoryItemUseCase>(),
       clearSearchHistoryUseCase: sl<ClearSearchHistoryUseCase>(),
+    ),
+  );
+}
+
+void _registerStudyAlarmsFeature() {
+  sl.registerLazySingleton<StudyAlarmRemoteDataSource>(
+    () => StudyAlarmRemoteDataSourceImpl(apiConsumer: sl<ApiConsumer>()),
+  );
+
+  sl.registerLazySingleton<StudyAlarmRepository>(
+    () => StudyAlarmRepositoryImpl(
+      remoteDataSource: sl<StudyAlarmRemoteDataSource>(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => GetStudyAlarmScheduleUseCase(repository: sl<StudyAlarmRepository>()),
+  );
+
+  sl.registerLazySingleton<StudyAlarmSchedulerService>(
+    () => StudyAlarmSchedulerServiceImpl(),
+  );
+
+  sl.registerFactory<StudyAlarmCubit>(
+    () => StudyAlarmCubit(
+      getStudyAlarmScheduleUseCase: sl<GetStudyAlarmScheduleUseCase>(),
+      schedulerService: sl<StudyAlarmSchedulerService>(),
     ),
   );
 }

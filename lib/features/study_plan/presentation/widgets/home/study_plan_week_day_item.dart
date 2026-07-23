@@ -28,7 +28,7 @@ class StudyPlanWeekDayItem extends StatelessWidget {
       appColors: appColors,
     );
 
-    final size = SizeConfig.h(0.057);
+    final size = SizeConfig.h(0.055);
 
     return Semantics(
       button: true,

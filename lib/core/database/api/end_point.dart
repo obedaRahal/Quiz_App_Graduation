@@ -2,8 +2,8 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 class EndPoints {
-  //static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
-  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
+  static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
+  //  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   static const String refreshToken = 'http://localhost/api/v1/refresh';
   // authhhhhh
@@ -574,4 +574,8 @@ class EndPoints {
   static String deleteSearchHistoryItem({required int historyId}) {
     return '$baseUrl/home/users/search-history/$historyId';
   }
+
+  //////////////// alarms /////////////////
+  static const String studyAlarmReminderSchedule =
+      '$baseUrl/study-plans/reminder-schedule';
 }
