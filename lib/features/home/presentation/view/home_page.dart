@@ -7,6 +7,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
@@ -22,6 +23,8 @@ import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bo
 import 'package:quiz_app_grad/features/notification/presentation/manager/notification_unread_count/notification_unread_count_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
+import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_cubit.dart';
+import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_state.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -39,282 +42,298 @@ class HomePage extends StatelessWidget {
     double titleSize = SizeConfig.text(0.06).clamp(16.0, 22.0);
     double actionSize = SizeConfig.text(0.045).clamp(12.0, 16.0);
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 46),
-          child: Column(
-            textDirection: TextDirection.rtl,
-            children: [
-              HomeHeader(
-                onProfileTap: () {
-                  debugPrint("go to my profile ");
+    return BlocListener<StudyAlarmCubit, StudyAlarmState>(
+      listenWhen: (previous, current) =>
+          current.hasError &&
+          (previous.errorMessage != current.errorMessage || !previous.hasError),
+      listener: (context, state) {
+        showValidationTopSnackBar(
+          context,
+          title: state.errorTitle ?? 'تعذر إعداد منبهات الدراسة',
+          message:
+              state.errorMessage ??
+              'تعذر مزامنة منبهات الدراسة على هذا الجهاز.',
+          type: AppValidationSnackBarType.error,
+        );
+        context.read<StudyAlarmCubit>().clearError();
+      },
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 46),
+            child: Column(
+              textDirection: TextDirection.rtl,
+              children: [
+                HomeHeader(
+                  onProfileTap: () {
+                    debugPrint("go to my profile ");
 
-                  context.pushNamed(
-                    AppRouterName.myProfile,
-                    //extra: OtherProfileRouteArgs(userId: 815),
-                    // تمرير userid
-                    extra: OtherProfileRouteArgs(userId: 828),
-                  );
-                },
-                onNotificationTap: () async {
-                  debugPrint('Open notifications');
+                    context.pushNamed(
+                      AppRouterName.myProfile,
+                      //extra: OtherProfileRouteArgs(userId: 815),
+                      // تمرير userid
+                      extra: OtherProfileRouteArgs(userId: 828),
+                    );
+                  },
+                  onNotificationTap: () async {
+                    debugPrint('Open notifications');
 
-                  final unreadCountCubit = context
-                      .read<NotificationUnreadCountCubit>();
+                    final unreadCountCubit = context
+                        .read<NotificationUnreadCountCubit>();
 
-                  // The notifications screen marks the loaded unread items as
-                  // read. Hide the stale badge immediately, then confirm the
-                  // real value with the API when the user comes back.
-                  unreadCountCubit.clearUnreadCount();
+                    // The notifications screen marks the loaded unread items as
+                    // read. Hide the stale badge immediately, then confirm the
+                    // real value with the API when the user comes back.
+                    unreadCountCubit.clearUnreadCount();
 
-                  await context.pushNamed(AppRouterName.notifications);
+                    await context.pushNamed(AppRouterName.notifications);
 
-                  if (!context.mounted) return;
+                    if (!context.mounted) return;
 
-                  await unreadCountCubit.fetchUnreadCount();
-                },
-              ),
-              SizedBox(height: 20),
-              HomeTopBannerSection(
-                controller: controller,
-                isDark: isDark,
-                colorScheme: colorScheme,
-                circleSize: circleSize,
-                imageSize: imageSize,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.w(0.036),
-                  vertical: SizeConfig.h(0.02),
+                    await unreadCountCubit.fetchUnreadCount();
+                  },
                 ),
-                child: Row(
-                  textDirection: TextDirection.rtl,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      child: CustomTextWidget(
-                        "قائمة الاختبارات",
-                        fontSize: titleSize,
-                        color: colorScheme.secondary,
-                        textAlign: TextAlign.right,
-                        fontWeight: FontWeight.bold,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                SizedBox(height: 20),
+                HomeTopBannerSection(
+                  controller: controller,
+                  isDark: isDark,
+                  colorScheme: colorScheme,
+                  circleSize: circleSize,
+                  imageSize: imageSize,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.w(0.036),
+                    vertical: SizeConfig.h(0.02),
+                  ),
+                  child: Row(
+                    textDirection: TextDirection.rtl,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: CustomTextWidget(
+                          "قائمة الاختبارات",
+                          fontSize: titleSize,
+                          color: colorScheme.secondary,
+                          textAlign: TextAlign.right,
+                          fontWeight: FontWeight.bold,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      textDirection: TextDirection.rtl,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            context.read<BottomNavCubit>().changeTab(2);
-                          },
-                          child: CustomTextWidget(
-                            "عرض الكل",
-                            fontSize: actionSize,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              context.read<BottomNavCubit>().changeTab(2);
+                            },
+                            child: CustomTextWidget(
+                              "عرض الكل",
+                              fontSize: actionSize,
+                            ),
+                          ),
+                          SizedBox(width: SizeConfig.w(0.01)),
+                          Icon(
+                            Icons.keyboard_arrow_left,
+                            size: actionSize + 2,
+                            color: colorScheme.primary,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                BlocBuilder<HomeCubit, HomeState>(
+                  builder: (context, state) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.w(0.036),
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            textDirection: TextDirection.rtl,
+                            children: [
+                              FilterItem(
+                                title: "رائج",
+                                index: 0,
+                                state: state,
+                                onTap: () =>
+                                    context.read<HomeCubit>().changeFilter(0),
+                              ),
+                              SizedBox(width: SizeConfig.w(0.03)),
+
+                              FilterItem(
+                                title: "مجاني",
+                                index: 3,
+                                state: state,
+                                onTap: () =>
+                                    context.read<HomeCubit>().changeFilter(3),
+                              ),
+                              SizedBox(width: SizeConfig.w(0.03)),
+
+                              FilterItem(
+                                title: "جديد",
+                                index: 1,
+                                state: state,
+                                onTap: () =>
+                                    context.read<HomeCubit>().changeFilter(1),
+                              ),
+                              SizedBox(width: SizeConfig.w(0.03)),
+
+                              FilterItem(
+                                title: "الأكثر تقدما",
+                                index: 2,
+                                state: state,
+                                onTap: () =>
+                                    context.read<HomeCubit>().changeFilter(2),
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(width: SizeConfig.w(0.01)),
-                        Icon(
-                          Icons.keyboard_arrow_left,
-                          size: actionSize + 2,
-                          color: colorScheme.primary,
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    );
+                  },
                 ),
-              ),
-              BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.w(0.036),
-                    ),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          textDirection: TextDirection.rtl,
-                          children: [
-                            FilterItem(
-                              title: "رائج",
-                              index: 0,
-                              state: state,
-                              onTap: () =>
-                                  context.read<HomeCubit>().changeFilter(0),
-                            ),
-                            SizedBox(width: SizeConfig.w(0.03)),
+                BlocBuilder<HomeCubit, HomeState>(
+                  builder: (context, state) {
+                    return HomeSliderSection(
+                      controller2: controller2,
+                      isDark: isDark,
+                      appColors: appColors,
+                      colorScheme: colorScheme,
+                      state: state,
+                    );
+                  },
+                ),
 
-                            FilterItem(
-                              title: "مجاني",
-                              index: 3,
-                              state: state,
-                              onTap: () =>
-                                  context.read<HomeCubit>().changeFilter(3),
-                            ),
-                            SizedBox(width: SizeConfig.w(0.03)),
+                BlocBuilder<HomeCubit, HomeState>(
+                  builder: (context, state) {
+                    return Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: CategoriesSection(state: state),
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+                BlocBuilder<HomeCubit, HomeState>(
+                  builder: (context, state) {
+                    return Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: InstructorsSection(state: state),
+                    );
+                  },
+                ),
 
-                            FilterItem(
-                              title: "جديد",
-                              index: 1,
-                              state: state,
-                              onTap: () =>
-                                  context.read<HomeCubit>().changeFilter(1),
-                            ),
-                            SizedBox(width: SizeConfig.w(0.03)),
-
-                            FilterItem(
-                              title: "الأكثر تقدما",
-                              index: 2,
-                              state: state,
-                              onTap: () =>
-                                  context.read<HomeCubit>().changeFilter(2),
-                            ),
-                          ],
+                Center(
+                  child: Column(
+                    children: [
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.detailsOfTest,
+                              extra: DetailsOfTestRouteArgs(testId: 100),
+                            );
+                          },
+                          child: Text("details of test"),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-              BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  return HomeSliderSection(
-                    controller2: controller2,
-                    isDark: isDark,
-                    appColors: appColors,
-                    colorScheme: colorScheme,
-                    state: state,
-                  );
-                },
-              ),
 
-              BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  return Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: CategoriesSection(state: state),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  return Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: InstructorsSection(state: state),
-                  );
-                },
-              ),
+                      SizedBox(height: 40),
 
-              Center(
-                child: Column(
-                  children: [
-                    Center(
-                      child: InkWell(
+                      SizedBox(height: 40),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.myTestDetails,
+                              extra: DetailsOfTestRouteArgs(testId: 11),
+                            );
+                          },
+                          child: Text("my test detailssssssssss"),
+                        ),
+                      ),
+
+                      SizedBox(height: 40),
+                      SizedBox(height: 40),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.myPrivateTestDetails,
+                              extra: DetailsOfTestRouteArgs(testId: 805),
+                            );
+                          },
+                          child: Text("my test private detailssssssssss"),
+                        ),
+                      ),
+
+                      SizedBox(height: 40),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.otherProfile,
+                              //extra: OtherProfileRouteArgs(userId: 815),
+                              extra: OtherProfileRouteArgs(userId: 811),
+                            );
+                          },
+                          child: Text(" other profile "),
+                        ),
+                      ),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            context.pushNamed(
+                              AppRouterName.otherContentDetails,
+                              extra: const ContentDetailsRouteArgs(
+                                contentId: 2,
+                                isMyContent: true,
+                              ),
+                            );
+                          },
+                          child: const Text('عرض محتواي'),
+                        ),
+                      ),
+                      CustomButtonWidget(
                         onTap: () {
-                          //context.pushNamed(AppRouterName.detailsOfTest);
-                          context.pushNamed(
-                            AppRouterName.detailsOfTest,
-                            extra: DetailsOfTestRouteArgs(testId: 100),
-                          );
+                          debugPrint("change mode ");
+                          context.read<ThemeCubit>().toggleTheme();
                         },
-                        child: Text("details of test"),
+                        child: ThemedAppImage(
+                          darkPath: AppImage.logoDark,
+                          lightPath: AppImage.logoLight,
+                        ),
                       ),
-                    ),
 
-                    SizedBox(height: 40),
-
-                    SizedBox(height: 40),
-                    Center(
-                      child: InkWell(
-                        onTap: () {
-                          //context.pushNamed(AppRouterName.detailsOfTest);
-                          context.pushNamed(
-                            AppRouterName.myTestDetails,
-                            extra: DetailsOfTestRouteArgs(testId: 11),
-                          );
-                        },
-                        child: Text("my test detailssssssssss"),
+                      SizedBox(height: 40),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            //context.pushNamed(AppRouterName.detailsOfTest);
+                            context.pushNamed(
+                              AppRouterName.myProfile,
+                              //extra: OtherProfileRouteArgs(userId: 815),
+                              extra: OtherProfileRouteArgs(userId: 828),
+                            );
+                          },
+                          child: Text(" my profile "),
+                        ),
                       ),
-                    ),
-
-                    SizedBox(height: 40),
-                    SizedBox(height: 40),
-                    Center(
-                      child: InkWell(
-                        onTap: () {
-                          //context.pushNamed(AppRouterName.detailsOfTest);
-                          context.pushNamed(
-                            AppRouterName.myPrivateTestDetails,
-                            extra: DetailsOfTestRouteArgs(testId: 805),
-                          );
-                        },
-                        child: Text("my test private detailssssssssss"),
-                      ),
-                    ),
-
-                    SizedBox(height: 40),
-                    Center(
-                      child: InkWell(
-                        onTap: () {
-                          //context.pushNamed(AppRouterName.detailsOfTest);
-                          context.pushNamed(
-                            AppRouterName.otherProfile,
-                            //extra: OtherProfileRouteArgs(userId: 815),
-                            extra: OtherProfileRouteArgs(userId: 811),
-                          );
-                        },
-                        child: Text(" other profile "),
-                      ),
-                    ),
-                    Center(
-                      child: InkWell(
-                        onTap: () {
-                          context.pushNamed(
-                            AppRouterName.otherContentDetails,
-                            extra: const ContentDetailsRouteArgs(
-                              contentId: 2,
-                              isMyContent: true,
-                            ),
-                          );
-                        },
-                        child: const Text('عرض محتواي'),
-                      ),
-                    ),
-                    CustomButtonWidget(
-                      onTap: () {
-                        debugPrint("change mode ");
-                        context.read<ThemeCubit>().toggleTheme();
-                      },
-                      child: ThemedAppImage(
-                        darkPath: AppImage.logoDark,
-                        lightPath: AppImage.logoLight,
-                      ),
-                    ),
-
-                    SizedBox(height: 40),
-                    Center(
-                      child: InkWell(
-                        onTap: () {
-                          //context.pushNamed(AppRouterName.detailsOfTest);
-                          context.pushNamed(
-                            AppRouterName.myProfile,
-                            //extra: OtherProfileRouteArgs(userId: 815),
-                            extra: OtherProfileRouteArgs(userId: 828),
-                          );
-                        },
-                        child: Text(" my profile "),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -19,7 +19,6 @@ import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bo
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_state.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/widget/custom_bottom_nav_bar.dart';
 import 'package:quiz_app_grad/features/notification/presentation/manager/notification_unread_count/notification_unread_count_cubit.dart';
-import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/mock/study_plan_home_mock_scenario.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_home_view.dart';
@@ -158,16 +157,6 @@ class MainLayoutBody extends StatelessWidget {
 
         BlocProvider<NotificationUnreadCountCubit>(
           create: (_) => sl<NotificationUnreadCountCubit>()..fetchUnreadCount(),
-        ),
-
-        BlocProvider<StudyAlarmCubit>(
-          lazy: false,
-          create: (_) {
-            debugPrint(
-              '============ Creating StudyAlarmCubit from Home ============',
-            );
-            return sl<StudyAlarmCubit>()..fetchStudyAlarmSchedule();
-          },
         ),
       ],
       child: const HomePage(),

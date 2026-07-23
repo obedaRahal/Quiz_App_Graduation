@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
+import 'package:quiz_app_grad/features/study_alarm/presentation/utils/synchronize_study_alarms_after_task_mutation.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_state.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/create/create_study_task_body.dart';
@@ -65,7 +66,7 @@ class CreateStudyTaskView extends StatelessWidget {
               listenWhen: (previous, current) {
                 return previous.submitStatus != current.submitStatus;
               },
-              listener: (context, state) {
+              listener: (context, state) async {
                 if (state.isSubmitSuccess) {
                   debugPrint(
                     '============ '
@@ -86,6 +87,12 @@ class CreateStudyTaskView extends StatelessWidget {
                         state.actionMessage ?? 'تم إنشاء المهمة الدراسية بنجاح',
                     type: AppValidationSnackBarType.success,
                   );
+
+                  await synchronizeStudyAlarmsAfterTaskMutation(context);
+
+                  if (!context.mounted) {
+                    return;
+                  }
 
                   Navigator.of(context).pop(true);
 

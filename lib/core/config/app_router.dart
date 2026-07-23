@@ -1,3 +1,4 @@
+import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -72,6 +73,8 @@ import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_pla
 import 'package:quiz_app_grad/features/study_plan/presentation/views/create_study_plan_view.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/manage_study_plans_view.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/views/study_plan_details_view.dart';
+import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_cubit.dart';
+import 'package:quiz_app_grad/features/study_alarm/presentation/views/study_alarm_ringing_view.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/study_task_details_args.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/create_study_task_args.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/update_study_task_args.dart';
@@ -316,8 +319,15 @@ class AppRouter {
           path: AppRouterPath.mainLayout,
           name: AppRouterName.mainLayout,
           builder: (context, state) {
-            return BlocProvider(
-              create: (_) => BottomNavCubit(),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => BottomNavCubit()),
+                BlocProvider<StudyAlarmCubit>(
+                  lazy: false,
+                  create: (_) =>
+                      sl<StudyAlarmCubit>()..fetchStudyAlarmSchedule(),
+                ),
+              ],
               child: const MainLayoutBody(),
             );
           },
@@ -341,6 +351,11 @@ class AppRouter {
                 BlocProvider<NotificationUnreadCountCubit>(
                   create: (_) =>
                       sl<NotificationUnreadCountCubit>()..fetchUnreadCount(),
+                ),
+                BlocProvider<StudyAlarmCubit>(
+                  lazy: false,
+                  create: (_) =>
+                      sl<StudyAlarmCubit>()..fetchStudyAlarmSchedule(),
                 ),
               ],
               child: const HomePage(),
@@ -692,6 +707,24 @@ class AppRouter {
         ),
 
         GoRoute(
+          path: AppRouterPath.studyAlarmRinging,
+          name: AppRouterName.studyAlarmRinging,
+          builder: (context, state) {
+            final alarmSettings = state.extra as AlarmSettings?;
+
+            if (alarmSettings == null) {
+              return const Scaffold(
+                body: SafeArea(
+                  child: Center(child: Text('تعذر فتح منبه الدراسة')),
+                ),
+              );
+            }
+
+            return StudyAlarmRingingView(alarmSettings: alarmSettings);
+          },
+        ),
+
+        GoRoute(
           path: AppRouterPath.studyTaskDetails,
           name: AppRouterName.studyTaskDetails,
           builder: (context, state) {
@@ -886,6 +919,7 @@ class AppRouter {
     AppRouterPath.forgotPasswordEmail,
     AppRouterPath.forgotPasswordOtpCode,
     AppRouterPath.forgotPasswordNewPassword,
+    AppRouterPath.studyAlarmRinging,
 
     AppRouterPath.home,
     AppRouterPath.mainLayout,

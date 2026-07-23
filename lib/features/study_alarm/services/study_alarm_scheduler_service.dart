@@ -1,8 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:alarm/alarm.dart';
-import 'package:alarm/model/alarm_settings.dart';
-import 'package:alarm/model/notification_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/features/study_alarm/domain/entities/study_alarm_task_entity.dart';
 
@@ -27,108 +26,127 @@ abstract class StudyAlarmSchedulerService {
 
 class StudyAlarmSchedulerServiceImpl implements StudyAlarmSchedulerService {
   static const String _studyAlarmPayloadType = 'study_alarm';
+  static final Object _lockZoneKey = Object();
+
+  Future<void> _operationQueue = Future<void>.value();
+  String? _lastScheduleFingerprint;
 
   StudyAlarmSchedulerServiceImpl() {
     debugPrint('============ StudyAlarmSchedulerServiceImpl INIT ============');
   }
 
   @override
-  Future<void> syncStudyAlarms({
-    required StudyAlarmScheduleEntity schedule,
-  }) async {
-    debugPrint(
-      '============ StudyAlarmSchedulerServiceImpl.syncStudyAlarms ============',
-    );
+  Future<void> syncStudyAlarms({required StudyAlarmScheduleEntity schedule}) {
+    return _withLock(() async {
+      debugPrint(
+        '============ StudyAlarmSchedulerServiceImpl.syncStudyAlarms ============',
+      );
 
-    debugPrint('→ taskRemindersEnabled: ${schedule.taskRemindersEnabled}');
-    debugPrint(
-      '→ shouldCancelExistingAlarms: '
-      '${schedule.shouldCancelExistingAlarms}',
-    );
-    debugPrint('→ alarmsCount: ${schedule.alarms.length}');
-    debugPrint(
-      '→ schedulableAlarmsCount: ${schedule.schedulableAlarms.length}',
-    );
+      debugPrint('→ taskRemindersEnabled: ${schedule.taskRemindersEnabled}');
+      debugPrint(
+        '→ shouldCancelExistingAlarms: '
+        '${schedule.shouldCancelExistingAlarms}',
+      );
+      debugPrint('→ alarmsCount: ${schedule.alarms.length}');
+      debugPrint(
+        '→ schedulableAlarmsCount: ${schedule.schedulableAlarms.length}',
+      );
 
-    if (schedule.shouldCancelExistingAlarms || !schedule.taskRemindersEnabled) {
-      debugPrint('→ reminders disabled or cancellation requested');
+      final fingerprint = _buildScheduleFingerprint(schedule);
+      final scheduleChanged = _lastScheduleFingerprint != fingerprint;
 
-      await cancelAllStudyAlarms();
+      if (!scheduleChanged) {
+        debugPrint(
+          '→ study alarm schedule did not change; '
+          'installed alarms will only be verified',
+        );
+      }
 
-      debugPrint('✓ study alarms cancelled');
+      if (schedule.shouldCancelExistingAlarms ||
+          !schedule.taskRemindersEnabled) {
+        debugPrint('→ reminders disabled or cancellation requested');
+
+        await cancelAllStudyAlarms();
+        _lastScheduleFingerprint = fingerprint;
+
+        debugPrint('✓ study alarms cancelled');
+        debugPrint(
+          '=======================================================================',
+        );
+        return;
+      }
+
+      await _syncChangedStudyAlarms(schedule);
+      _lastScheduleFingerprint = fingerprint;
+
+      debugPrint('✓ study alarms synchronized successfully');
       debugPrint(
         '=======================================================================',
       );
-      return;
-    }
-
-    await cancelAllStudyAlarms();
-
-    if (schedule.schedulableAlarms.isEmpty) {
-      debugPrint('→ no schedulable study alarms found');
-      debugPrint(
-        '=======================================================================',
-      );
-      return;
-    }
-
-    await scheduleAllStudyAlarms(alarms: schedule.schedulableAlarms);
-
-    debugPrint('✓ study alarms synchronized successfully');
-    debugPrint(
-      '=======================================================================',
-    );
+    });
   }
 
   @override
   Future<void> scheduleAllStudyAlarms({
     required List<StudyAlarmEntity> alarms,
-  }) async {
-    debugPrint(
-      '============ StudyAlarmSchedulerServiceImpl.scheduleAllStudyAlarms ============',
-    );
+  }) {
+    return _withLock(() async {
+      debugPrint(
+        '============ StudyAlarmSchedulerServiceImpl.scheduleAllStudyAlarms ============',
+      );
 
-    debugPrint('→ alarmsCount: ${alarms.length}');
+      debugPrint('→ alarmsCount: ${alarms.length}');
 
-    var scheduledCount = 0;
-    var skippedCount = 0;
-    var failedCount = 0;
+      var scheduledCount = 0;
+      var skippedCount = 0;
+      var failedCount = 0;
 
-    for (final alarm in alarms) {
-      try {
-        if (!alarm.canBeScheduled) {
-          skippedCount++;
+      for (final alarm in alarms) {
+        try {
+          if (!alarm.canBeScheduled) {
+            skippedCount++;
 
-          debugPrint('⚠ alarm skipped');
+            debugPrint('⚠ alarm skipped');
+            debugPrint('→ alarmKey: ${alarm.alarmKey}');
+            debugPrint('→ shouldScheduleAlarm: ${alarm.shouldScheduleAlarm}');
+            debugPrint('→ alarmAt: ${alarm.alarmAt}');
+            debugPrint('→ isExpired: ${alarm.isExpired}');
+            continue;
+          }
+
+          await scheduleStudyAlarm(alarm: alarm);
+          scheduledCount++;
+        } catch (error, stackTrace) {
+          failedCount++;
+
+          debugPrint('✗ scheduleStudyAlarm failed inside list');
           debugPrint('→ alarmKey: ${alarm.alarmKey}');
-          debugPrint('→ shouldScheduleAlarm: ${alarm.shouldScheduleAlarm}');
-          debugPrint('→ alarmAt: ${alarm.alarmAt}');
-          debugPrint('→ isExpired: ${alarm.isExpired}');
-          continue;
+          debugPrint('→ error: $error');
+          debugPrint('→ stackTrace: $stackTrace');
         }
-
-        await scheduleStudyAlarm(alarm: alarm);
-        scheduledCount++;
-      } catch (error, stackTrace) {
-        failedCount++;
-
-        debugPrint('✗ scheduleStudyAlarm failed inside list');
-        debugPrint('→ alarmKey: ${alarm.alarmKey}');
-        debugPrint('→ error: $error');
-        debugPrint('→ stackTrace: $stackTrace');
       }
-    }
 
-    debugPrint('→ scheduledCount: $scheduledCount');
-    debugPrint('→ skippedCount: $skippedCount');
-    debugPrint('→ failedCount: $failedCount');
-    debugPrint(
-      '===============================================================================',
-    );
+      debugPrint('→ scheduledCount: $scheduledCount');
+      debugPrint('→ skippedCount: $skippedCount');
+      debugPrint('→ failedCount: $failedCount');
+      debugPrint(
+        '===============================================================================',
+      );
+
+      if (failedCount > 0) {
+        throw StudyAlarmSynchronizationException(
+          'تعذر إعداد $failedCount منبه من أصل ${alarms.length}.',
+        );
+      }
+    });
   }
 
   @override
-  Future<void> scheduleStudyAlarm({required StudyAlarmEntity alarm}) async {
+  Future<void> scheduleStudyAlarm({required StudyAlarmEntity alarm}) {
+    return _withLock(() => _scheduleStudyAlarmUnlocked(alarm));
+  }
+
+  Future<void> _scheduleStudyAlarmUnlocked(StudyAlarmEntity alarm) async {
     debugPrint(
       '============ StudyAlarmSchedulerServiceImpl.scheduleStudyAlarm ============',
     );
@@ -153,37 +171,7 @@ class StudyAlarmSchedulerServiceImpl implements StudyAlarmSchedulerService {
 
     final alarmId = _generateAlarmId(alarm.alarmKey);
 
-    final alarmSettings = AlarmSettings(
-      id: alarmId,
-      dateTime: alarm.alarmAt,
-      assetAudioPath: null,
-      loopAudio: true,
-      vibrate: true,
-      warningNotificationOnKill: true,
-      androidFullScreenIntent: true,
-      androidStopAlarmOnTermination: false,
-      allowAlarmOverlap: false,
-
-      volumeSettings: VolumeSettings.fade(
-        volume: 1.0,
-        fadeDuration: const Duration(seconds: 3),
-        volumeEnforced: true,
-      ),
-
-      payload: jsonEncode({
-        'type': _studyAlarmPayloadType,
-        'alarm_key': alarm.alarmKey,
-        'task_id': alarm.task.id,
-        'occurrence_id': alarm.occurrence.id,
-        'study_plan_id': alarm.studyPlan.id,
-      }),
-
-      notificationSettings: NotificationSettings(
-        title: alarm.task.title,
-        body: _buildNotificationBody(alarm),
-        stopButton: 'إيقاف',
-      ),
-    );
+    final alarmSettings = _buildAlarmSettings(alarm);
 
     final didSetAlarm = await Alarm.set(alarmSettings: alarmSettings);
 
@@ -201,124 +189,408 @@ class StudyAlarmSchedulerServiceImpl implements StudyAlarmSchedulerService {
   }
 
   @override
-  Future<void> cancelStudyAlarm({required int alarmId}) async {
-    debugPrint(
-      '============ StudyAlarmSchedulerServiceImpl.cancelStudyAlarm ============',
-    );
+  Future<void> cancelStudyAlarm({required int alarmId}) {
+    return _withLock(() async {
+      debugPrint(
+        '============ StudyAlarmSchedulerServiceImpl.cancelStudyAlarm ============',
+      );
 
-    debugPrint('→ alarmId: $alarmId');
+      debugPrint('→ alarmId: $alarmId');
 
-    final didStopAlarm = await Alarm.stop(alarmId);
+      final didStopAlarm = await Alarm.stop(alarmId);
 
-    debugPrint('→ didStopAlarm: $didStopAlarm');
+      debugPrint('→ didStopAlarm: $didStopAlarm');
 
-    if (didStopAlarm) {
-      debugPrint('✓ study alarm cancelled');
-    } else {
-      debugPrint('⚠ study alarm was not found or was already stopped');
-    }
+      if (didStopAlarm) {
+        _lastScheduleFingerprint = null;
+        debugPrint('✓ study alarm cancelled');
+      } else {
+        debugPrint('⚠ study alarm was not found or was already stopped');
+      }
 
-    debugPrint(
-      '=========================================================================',
-    );
+      debugPrint(
+        '=========================================================================',
+      );
+    });
   }
 
   @override
-  Future<void> cancelAllStudyAlarms() async {
-    debugPrint(
-      '============ StudyAlarmSchedulerServiceImpl.cancelAllStudyAlarms ============',
-    );
+  Future<void> cancelAllStudyAlarms() {
+    return _withLock(() async {
+      _lastScheduleFingerprint = null;
 
-    final scheduledAlarms = await Alarm.getAlarms();
+      debugPrint(
+        '============ StudyAlarmSchedulerServiceImpl.cancelAllStudyAlarms ============',
+      );
 
-    debugPrint('→ totalScheduledAlarms: ${scheduledAlarms.length}');
+      final scheduledAlarms = await Alarm.getAlarms();
 
-    final studyAlarms = scheduledAlarms.where(_isStudyAlarm).toList();
+      debugPrint('→ totalScheduledAlarms: ${scheduledAlarms.length}');
 
-    debugPrint('→ studyAlarmsCount: ${studyAlarms.length}');
+      final studyAlarms = scheduledAlarms.where(_isStudyAlarm).toList();
 
-    if (studyAlarms.isEmpty) {
-      debugPrint('→ no study alarms to cancel');
+      debugPrint('→ studyAlarmsCount: ${studyAlarms.length}');
+
+      if (studyAlarms.isEmpty) {
+        debugPrint('→ no study alarms to cancel');
+        debugPrint(
+          '============================================================================',
+        );
+        return;
+      }
+
+      var cancelledCount = 0;
+      var failedCount = 0;
+
+      for (final alarmSettings in studyAlarms) {
+        try {
+          final didStopAlarm = await Alarm.stop(alarmSettings.id);
+
+          if (didStopAlarm) {
+            cancelledCount++;
+            debugPrint('✓ cancelled study alarm id: ${alarmSettings.id}');
+          } else {
+            failedCount++;
+            debugPrint(
+              '⚠ failed to cancel study alarm id: ${alarmSettings.id}',
+            );
+          }
+        } catch (error, stackTrace) {
+          failedCount++;
+
+          debugPrint(
+            '✗ exception while cancelling alarm id: '
+            '${alarmSettings.id}',
+          );
+          debugPrint('→ error: $error');
+          debugPrint('→ stackTrace: $stackTrace');
+        }
+      }
+
+      debugPrint('→ cancelledCount: $cancelledCount');
+      debugPrint('→ failedCount: $failedCount');
       debugPrint(
         '============================================================================',
       );
-      return;
-    }
 
-    var cancelledCount = 0;
-    var failedCount = 0;
-
-    for (final alarmSettings in studyAlarms) {
-      try {
-        final didStopAlarm = await Alarm.stop(alarmSettings.id);
-
-        if (didStopAlarm) {
-          cancelledCount++;
-          debugPrint('✓ cancelled study alarm id: ${alarmSettings.id}');
-        } else {
-          failedCount++;
-          debugPrint('⚠ failed to cancel study alarm id: ${alarmSettings.id}');
-        }
-      } catch (error, stackTrace) {
-        failedCount++;
-
-        debugPrint(
-          '✗ exception while cancelling alarm id: '
-          '${alarmSettings.id}',
+      if (failedCount > 0) {
+        throw StudyAlarmSynchronizationException(
+          'تعذر إلغاء $failedCount منبه دراسة قديم.',
         );
-        debugPrint('→ error: $error');
-        debugPrint('→ stackTrace: $stackTrace');
       }
-    }
-
-    debugPrint('→ cancelledCount: $cancelledCount');
-    debugPrint('→ failedCount: $failedCount');
-    debugPrint(
-      '============================================================================',
-    );
+    });
   }
 
   @override
-  Future<void> stopStudyAlarm({required int alarmId}) async {
-    debugPrint(
-      '============ StudyAlarmSchedulerServiceImpl.stopStudyAlarm ============',
-    );
+  Future<void> stopStudyAlarm({required int alarmId}) {
+    return _withLock(() async {
+      debugPrint(
+        '============ StudyAlarmSchedulerServiceImpl.stopStudyAlarm ============',
+      );
 
-    debugPrint('→ alarmId: $alarmId');
+      debugPrint('→ alarmId: $alarmId');
 
-    final didStopAlarm = await Alarm.stop(alarmId);
+      final didStopAlarm = await Alarm.stop(alarmId);
 
-    debugPrint('→ didStopAlarm: $didStopAlarm');
+      debugPrint('→ didStopAlarm: $didStopAlarm');
 
-    if (didStopAlarm) {
-      debugPrint('✓ ringing study alarm stopped');
-    } else {
-      debugPrint('⚠ ringing study alarm was not found or already stopped');
-    }
+      if (didStopAlarm) {
+        debugPrint('✓ ringing study alarm stopped');
+      } else {
+        debugPrint('⚠ ringing study alarm was not found or already stopped');
+      }
 
-    debugPrint(
-      '=======================================================================',
-    );
+      debugPrint(
+        '=======================================================================',
+      );
+    });
   }
 
   @override
   Future<void> snoozeStudyAlarm({
     required int alarmId,
     Duration duration = const Duration(minutes: 10),
-  }) async {
-    debugPrint(
-      '============ StudyAlarmSchedulerServiceImpl.snoozeStudyAlarm ============',
-    );
+  }) {
+    return _withLock(() async {
+      debugPrint(
+        '============ StudyAlarmSchedulerServiceImpl.snoozeStudyAlarm ============',
+      );
 
-    debugPrint('→ alarmId: $alarmId');
-    debugPrint('→ snoozeMinutes: ${duration.inMinutes}');
+      debugPrint('→ alarmId: $alarmId');
+      debugPrint('→ snoozeMinutes: ${duration.inMinutes}');
 
-    // سننفذها لاحقاً بعد إنشاء شاشة الرنين،
-    // لأنها تحتاج الاحتفاظ بإعدادات المنبه الأصلي
-    // ثم إعادة جدولته بتاريخ جديد.
-    throw UnimplementedError(
-      'snoozeStudyAlarm will be implemented with the alarm ringing screen',
+      if (duration <= Duration.zero) {
+        throw ArgumentError.value(
+          duration,
+          'duration',
+          'يجب أن تكون مدة الغفوة أكبر من صفر.',
+        );
+      }
+
+      final originalSettings = await Alarm.getAlarm(alarmId);
+
+      if (originalSettings == null || !_isStudyAlarm(originalSettings)) {
+        throw StudyAlarmSynchronizationException(
+          'تعذر العثور على إعدادات منبه الدراسة.',
+        );
+      }
+
+      final snoozedAt = DateTime.now().add(duration);
+      final snoozedPayload = _markPayloadAsSnoozed(
+        originalSettings.payload,
+        snoozedAt,
+      );
+
+      final didStopAlarm = await Alarm.stop(alarmId);
+
+      if (!didStopAlarm) {
+        throw StudyAlarmSynchronizationException(
+          'تعذر إيقاف المنبه قبل تفعيل الغفوة.',
+        );
+      }
+
+      final didSetAlarm = await Alarm.set(
+        alarmSettings: originalSettings.copyWith(
+          dateTime: snoozedAt,
+          payload: () => snoozedPayload,
+        ),
+      );
+
+      if (!didSetAlarm) {
+        throw StudyAlarmSynchronizationException(
+          'تعذر إعادة جدولة المنبه بعد الغفوة.',
+        );
+      }
+
+      debugPrint('✓ study alarm snoozed');
+      debugPrint('→ snoozedAt: $snoozedAt');
+      debugPrint(
+        '=======================================================================',
+      );
+    });
+  }
+
+  Future<T> _withLock<T>(Future<T> Function() action) async {
+    if (identical(Zone.current[_lockZoneKey], this)) {
+      return action();
+    }
+
+    final previousOperation = _operationQueue;
+    final currentOperation = Completer<void>();
+    _operationQueue = currentOperation.future;
+
+    try {
+      await previousOperation;
+    } catch (_) {
+      // A failed operation must not block the operations queued after it.
+    }
+
+    try {
+      return await runZoned(
+        action,
+        zoneValues: <Object, Object>{_lockZoneKey: this},
+      );
+    } finally {
+      if (!currentOperation.isCompleted) {
+        currentOperation.complete();
+      }
+    }
+  }
+
+  Future<void> _syncChangedStudyAlarms(
+    StudyAlarmScheduleEntity schedule,
+  ) async {
+    final desiredAlarms = schedule.schedulableAlarms;
+    final snoozableAlarmKeys = schedule.alarms
+        .where((alarm) => alarm.shouldScheduleAlarm)
+        .map((alarm) => alarm.alarmKey)
+        .toSet();
+    final duplicateSeconds = <int, String>{};
+
+    for (final alarm in desiredAlarms) {
+      final second = alarm.alarmAt.millisecondsSinceEpoch ~/ 1000;
+      final previousAlarmKey = duplicateSeconds[second];
+
+      if (previousAlarmKey != null && previousAlarmKey != alarm.alarmKey) {
+        throw StudyAlarmSynchronizationException(
+          'يوجد منبهان دراسيان في الثانية نفسها. يرجى تعديل وقت إحدى المهمتين.',
+        );
+      }
+
+      duplicateSeconds[second] = alarm.alarmKey;
+    }
+
+    final installedAlarms = await Alarm.getAlarms();
+    final installedStudyAlarms = installedAlarms.where(_isStudyAlarm).toList();
+    final installedById = <int, AlarmSettings>{
+      for (final alarm in installedStudyAlarms) alarm.id: alarm,
+    };
+    final desiredIds = desiredAlarms
+        .map((alarm) => _generateAlarmId(alarm.alarmKey))
+        .toSet();
+    final failures = <String>[];
+
+    for (final installed in installedStudyAlarms) {
+      final alarmKey = _alarmKeyFromSettings(installed);
+      final preserveSnooze =
+          _isActiveSnooze(installed) &&
+          alarmKey != null &&
+          snoozableAlarmKeys.contains(alarmKey);
+
+      if (desiredIds.contains(installed.id) || preserveSnooze) {
+        continue;
+      }
+
+      try {
+        if (!await Alarm.stop(installed.id)) {
+          failures.add('إلغاء المنبه ${installed.id}');
+        }
+      } catch (_) {
+        failures.add('إلغاء المنبه ${installed.id}');
+      }
+    }
+
+    for (final alarm in desiredAlarms) {
+      final expected = _buildAlarmSettings(alarm);
+      final installed = installedById[expected.id];
+
+      if (installed != null && _isActiveSnooze(installed)) {
+        continue;
+      }
+
+      if (installed != null && _sameAlarmSettings(installed, expected)) {
+        continue;
+      }
+
+      try {
+        if (!await Alarm.set(alarmSettings: expected)) {
+          failures.add('إعداد منبه المهمة ${alarm.task.title}');
+        }
+      } catch (_) {
+        failures.add('إعداد منبه المهمة ${alarm.task.title}');
+      }
+    }
+
+    if (failures.isNotEmpty) {
+      throw StudyAlarmSynchronizationException(
+        'تعذرت مزامنة بعض منبهات الدراسة: ${failures.join('، ')}.',
+      );
+    }
+  }
+
+  AlarmSettings _buildAlarmSettings(StudyAlarmEntity alarm) {
+    return AlarmSettings(
+      id: _generateAlarmId(alarm.alarmKey),
+      dateTime: alarm.alarmAt,
+      assetAudioPath: null,
+      loopAudio: true,
+      vibrate: true,
+      warningNotificationOnKill: Alarm.iOS,
+      androidFullScreenIntent: true,
+      androidStopAlarmOnTermination: false,
+      allowAlarmOverlap: false,
+      volumeSettings: VolumeSettings.fade(
+        volume: 1.0,
+        fadeDuration: const Duration(seconds: 3),
+        volumeEnforced: true,
+      ),
+      notificationSettings: NotificationSettings(
+        title: alarm.task.title,
+        body: _buildNotificationBody(alarm),
+        stopButton: 'إيقاف',
+      ),
+      payload: jsonEncode({
+        'type': _studyAlarmPayloadType,
+        'alarm_key': alarm.alarmKey,
+        'task_id': alarm.task.id,
+        'occurrence_id': alarm.occurrence.id,
+        'study_plan_id': alarm.studyPlan.id,
+      }),
     );
+  }
+
+  String _buildScheduleFingerprint(StudyAlarmScheduleEntity schedule) {
+    final alarms =
+        schedule.alarms
+            .map(
+              (alarm) => <String, Object?>{
+                'alarm_key': alarm.alarmKey,
+                'alarm_at': alarm.alarmAt.toUtc().microsecondsSinceEpoch,
+                'should_schedule': alarm.shouldScheduleAlarm,
+                'reminder_offset_minutes': alarm.reminderOffsetMinutes,
+                'task_id': alarm.task.id,
+                'task_title': alarm.task.title,
+                'task_description': alarm.task.description,
+                'occurrence_id': alarm.occurrence.id,
+                'study_plan_id': alarm.studyPlan.id,
+                'study_plan_title': alarm.studyPlan.title,
+              },
+            )
+            .toList()
+          ..sort(
+            (first, second) => (first['alarm_key'] as String).compareTo(
+              second['alarm_key'] as String,
+            ),
+          );
+
+    return jsonEncode({
+      'task_reminders_enabled': schedule.taskRemindersEnabled,
+      'should_cancel_existing_alarms': schedule.shouldCancelExistingAlarms,
+      'alarms': alarms,
+    });
+  }
+
+  bool _sameAlarmSettings(AlarmSettings installed, AlarmSettings expected) {
+    return installed.id == expected.id &&
+        installed.dateTime.isAtSameMomentAs(expected.dateTime) &&
+        installed.payload == expected.payload &&
+        installed.notificationSettings.title ==
+            expected.notificationSettings.title &&
+        installed.notificationSettings.body ==
+            expected.notificationSettings.body;
+  }
+
+  bool _isActiveSnooze(AlarmSettings alarmSettings) {
+    if (!alarmSettings.dateTime.isAfter(DateTime.now())) {
+      return false;
+    }
+
+    final payload = _decodePayload(alarmSettings.payload);
+    return payload?['snoozed'] == true;
+  }
+
+  String? _alarmKeyFromSettings(AlarmSettings alarmSettings) {
+    final payload = _decodePayload(alarmSettings.payload);
+    final alarmKey = payload?['alarm_key'];
+    return alarmKey is String && alarmKey.isNotEmpty ? alarmKey : null;
+  }
+
+  String _markPayloadAsSnoozed(String? payload, DateTime snoozedAt) {
+    final decoded = _decodePayload(payload) ?? <String, dynamic>{};
+    decoded['type'] = _studyAlarmPayloadType;
+    decoded['snoozed'] = true;
+    decoded['snoozed_at'] = snoozedAt.toUtc().toIso8601String();
+    return jsonEncode(decoded);
+  }
+
+  Map<String, dynamic>? _decodePayload(String? payload) {
+    if (payload == null || payload.trim().isEmpty) {
+      return null;
+    }
+
+    try {
+      final decoded = jsonDecode(payload);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+      if (decoded is Map) {
+        return decoded.map((key, value) => MapEntry(key.toString(), value));
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
   }
 
   int _generateAlarmId(String alarmKey) {
@@ -346,19 +618,16 @@ class StudyAlarmSchedulerServiceImpl implements StudyAlarmSchedulerService {
   }
 
   bool _isStudyAlarm(AlarmSettings alarmSettings) {
-    final payload = alarmSettings.payload;
-
-    if (payload == null || payload.trim().isEmpty) {
-      return false;
-    }
-
-    try {
-      final decodedPayload = jsonDecode(payload);
-
-      return decodedPayload is Map<String, dynamic> &&
-          decodedPayload['type'] == _studyAlarmPayloadType;
-    } catch (_) {
-      return false;
-    }
+    return _decodePayload(alarmSettings.payload)?['type'] ==
+        _studyAlarmPayloadType;
   }
+}
+
+class StudyAlarmSynchronizationException implements Exception {
+  final String message;
+
+  const StudyAlarmSynchronizationException(this.message);
+
+  @override
+  String toString() => message;
 }

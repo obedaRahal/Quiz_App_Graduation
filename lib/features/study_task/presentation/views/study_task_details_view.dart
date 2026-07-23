@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_confirmation_dialog.dar
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
+import 'package:quiz_app_grad/features/study_alarm/presentation/utils/synchronize_study_alarms_after_task_mutation.dart';
 import 'package:quiz_app_grad/features/study_task/data/models/update_study_task_args.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_cubit.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_state.dart';
@@ -45,7 +46,9 @@ class _StudyTaskDetailsViewState extends State<StudyTaskDetailsView> {
                   previous.changeStatus != current.changeStatus ||
                   previous.toggleSubTaskStatus != current.toggleSubTaskStatus;
             },
-            listener: _handleStateListener,
+            listener: (context, state) async {
+              await _handleStateListener(context, state);
+            },
             child: Column(
               children: [
                 Expanded(
@@ -113,7 +116,10 @@ class _StudyTaskDetailsViewState extends State<StudyTaskDetailsView> {
     );
   }
 
-  void _handleStateListener(BuildContext context, StudyTaskDetailsState state) {
+  Future<void> _handleStateListener(
+    BuildContext context,
+    StudyTaskDetailsState state,
+  ) async {
     if (state.isChangeStatusSuccess) {
       debugPrint(
         '============ StudyTaskDetailsView status success ============',
@@ -128,6 +134,8 @@ class _StudyTaskDetailsViewState extends State<StudyTaskDetailsView> {
       );
 
       context.read<StudyTaskDetailsCubit>().resetChangeStatusState();
+
+      await synchronizeStudyAlarmsAfterTaskMutation(context);
 
       return;
     }
@@ -195,6 +203,14 @@ class _StudyTaskDetailsViewState extends State<StudyTaskDetailsView> {
         message: state.actionMessage ?? 'تم حذف المهمة بنجاح',
         type: AppValidationSnackBarType.success,
       );
+
+      context.read<StudyTaskDetailsCubit>().resetDeleteState();
+
+      await synchronizeStudyAlarmsAfterTaskMutation(context);
+
+      if (!context.mounted) {
+        return;
+      }
 
       _popWithResult(forceChanged: true);
       return;

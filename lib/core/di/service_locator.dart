@@ -198,6 +198,7 @@ import 'package:quiz_app_grad/features/study_alarm/data/repo_impl/study_alarm_re
 import 'package:quiz_app_grad/features/study_alarm/domain/repositories/study_alarm_repository.dart';
 import 'package:quiz_app_grad/features/study_alarm/domain/use_cases/get_study_alarm_schedule_use_case.dart';
 import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_cubit.dart';
+import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_ringing_service.dart';
 import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_scheduler_service.dart';
 import 'package:quiz_app_grad/features/study_plan/data/data_sources/study_plan_remote_data_source.dart';
 import 'package:quiz_app_grad/features/study_plan/data/repo_impl/study_plan_repository_impl.dart';
@@ -1978,6 +1979,10 @@ void _registerStudyAlarmsFeature() {
 
   sl.registerLazySingleton<StudyAlarmSchedulerService>(
     () => StudyAlarmSchedulerServiceImpl(),
+  );
+
+  sl.registerLazySingleton<StudyAlarmRingingService>(
+    () => StudyAlarmRingingService(),
   );
 
   sl.registerFactory<StudyAlarmCubit>(
