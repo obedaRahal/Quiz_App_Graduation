@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:quiz_app_grad/core/services/device/login_device_metadata_service.dart';
 import 'package:quiz_app_grad/core/services/accessibility/test_voice_assistant_service.dart';
 import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/core/services/file_picker_service_impl.dart';
@@ -231,6 +233,7 @@ import 'package:quiz_app_grad/features/study_task/domain/use_cases/update_study_
 import 'package:quiz_app_grad/features/study_task/presentation/manager/create_study_task/create_study_task_cubit.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_cubit.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/update_study_task/update_study_task_cubit.dart';
+import 'package:uuid/uuid.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/data_sources/test_play_modes_remote_data_source.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/repo_impl/test_play_modes_repository_impl.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/services/challenge_result_pdf_service.dart';
@@ -680,6 +683,15 @@ void _registerFilePickerFeature() {
 }
 
 void _registerAuthFeature() {
+  if (!sl.isRegistered<LoginDeviceMetadataService>()) {
+    sl.registerLazySingleton<LoginDeviceMetadataService>(
+      () => LoginDeviceMetadataServiceImpl(
+        secureStorage: const FlutterSecureStorage(),
+        uuid: const Uuid(),
+      ),
+    );
+  }
+
   if (!sl.isRegistered<AuthRemoteDataSource>()) {
     sl.registerLazySingleton<AuthRemoteDataSource>(
       () => AuthRemoteDataSourceImpl(
@@ -691,8 +703,10 @@ void _registerAuthFeature() {
 
   if (!sl.isRegistered<AuthRepository>()) {
     sl.registerLazySingleton<AuthRepository>(
-      () =>
-          AuthRepositoryImpl(authRemoteDataSource: sl<AuthRemoteDataSource>()),
+      () => AuthRepositoryImpl(
+        authRemoteDataSource: sl<AuthRemoteDataSource>(),
+        loginDeviceMetadataService: sl<LoginDeviceMetadataService>(),
+      ),
     );
   }
 

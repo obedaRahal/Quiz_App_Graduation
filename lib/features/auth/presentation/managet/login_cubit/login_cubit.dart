@@ -73,6 +73,7 @@ class LoginCubit extends Cubit<LoginState> {
       );
 
       await UserLocalStorage.saveUserInfo(
+        id: result.user.id,
         name: result.user.name,
         gender: result.user.gender,
       );

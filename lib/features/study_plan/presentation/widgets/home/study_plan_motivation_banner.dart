@@ -40,13 +40,17 @@ class _StudyPlanMotivationBannerState extends State<StudyPlanMotivationBanner> {
       alignment: Alignment.center,
 
       children: [
-        CustomAppImage(path: AppImage.studyplan),
-        CustomTextWidget(
-          _selectedPhrase,
-          maxLines: 3,
-          color: AppPalette.black,
-          fontFamily: AppFont.elMessiriBold,
-          fontSize: SizeConfig.text(0.05),
+        CustomAppImage(path: AppImage.studyplan, ),
+        Padding(
+          padding:  EdgeInsets.symmetric(horizontal: SizeConfig.w(0.02)),
+          child: CustomTextWidget(
+            
+            _selectedPhrase,
+            maxLines: 3,
+            color: AppPalette.black,
+            fontFamily: AppFont.elMessiriBold,
+            fontSize: SizeConfig.text(0.05),
+          ),
         ),
       ],
     );

@@ -19,7 +19,7 @@ class SearchView extends StatelessWidget {
                 onActionTap: () {
                   Navigator.of(context).pop();
                 },
-                actionIcon: Icons.arrow_back_ios,
+                actionIcon: Icons.arrow_back_ios_rounded,
               ),
 
               const Expanded(child: SearchBody()),

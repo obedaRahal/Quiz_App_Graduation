@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
+import 'package:quiz_app_grad/core/services/device/login_device_metadata_service.dart';
 import 'package:quiz_app_grad/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:quiz_app_grad/features/auth/data/models/forgot_password_models/forgot_password_request_otp_request_model.dart';
 import 'package:quiz_app_grad/features/auth/data/models/forgot_password_models/forgot_password_resend_otp_request_model.dart';
@@ -22,8 +23,12 @@ import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource authRemoteDataSource;
+  final LoginDeviceMetadataService loginDeviceMetadataService;
 
-  AuthRepositoryImpl({required this.authRemoteDataSource});
+  AuthRepositoryImpl({
+    required this.authRemoteDataSource,
+    required this.loginDeviceMetadataService,
+  });
 
   @override
   Future<RegisterResponseEntity> register({
@@ -64,8 +69,16 @@ class AuthRepositoryImpl implements AuthRepository {
     debugPrint("============ AuthRepositoryImpl.login ============");
     debugPrint("→ email: $email");
 
+    final deviceMetadata = await loginDeviceMetadataService.getMetadata();
+
     final result = await authRemoteDataSource.login(
-      LoginRequestModel(email: email, password: password),
+      LoginRequestModel(
+        email: email,
+        password: password,
+        fcmToken: deviceMetadata.fcmToken,
+        deviceId: deviceMetadata.deviceId,
+        deviceName: deviceMetadata.deviceName,
+      ),
     );
 
     debugPrint("✓ login API success: ${result.title}");

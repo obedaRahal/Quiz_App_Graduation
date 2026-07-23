@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
@@ -65,15 +66,8 @@ class HomePage extends StatelessWidget {
               textDirection: TextDirection.rtl,
               children: [
                 HomeHeader(
-                  onProfileTap: () {
-                    debugPrint("go to my profile ");
-
-                    context.pushNamed(
-                      AppRouterName.myProfile,
-                      //extra: OtherProfileRouteArgs(userId: 815),
-                      // تمرير userid
-                      extra: OtherProfileRouteArgs(userId: 828),
-                    );
+                  onProfileTap: () async {
+                    await _openMyProfile(context);
                   },
                   onNotificationTap: () async {
                     debugPrint('Open notifications');
@@ -318,13 +312,8 @@ class HomePage extends StatelessWidget {
                       SizedBox(height: 40),
                       Center(
                         child: InkWell(
-                          onTap: () {
-                            //context.pushNamed(AppRouterName.detailsOfTest);
-                            context.pushNamed(
-                              AppRouterName.myProfile,
-                              //extra: OtherProfileRouteArgs(userId: 815),
-                              extra: OtherProfileRouteArgs(userId: 828),
-                            );
+                          onTap: () async {
+                            await _openMyProfile(context);
                           },
                           child: Text(" my profile "),
                         ),
@@ -337,6 +326,31 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _openMyProfile(BuildContext context) async {
+    final userId = await UserLocalStorage.getUserId();
+
+    if (!context.mounted) {
+      return;
+    }
+
+    if (userId == null) {
+      showValidationTopSnackBar(
+        context,
+        title: 'تعذر فتح الملف الشخصي',
+        message: 'لم يتم العثور على معرّف المستخدم. يرجى تسجيل الدخول مجددًا.',
+        type: AppValidationSnackBarType.error,
+      );
+      return;
+    }
+
+    debugPrint('Open my profile for stored user id: $userId');
+
+    await context.pushNamed(
+      AppRouterName.myProfile,
+      extra: OtherProfileRouteArgs(userId: userId),
     );
   }
 }

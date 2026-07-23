@@ -68,7 +68,7 @@ class _StudyPlanDetailsBodyState extends State<StudyPlanDetailsBody> {
               StudyPlanHomeHeader(
                 title: 'تفاصيل خطة',
                 onActionTap: _popWithResult,
-                actionIcon: Icons.arrow_back_ios,
+                actionIcon: Icons.arrow_back_ios_rounded,
               ),
 
               SizedBox(height: SizeConfig.h(0.018)),

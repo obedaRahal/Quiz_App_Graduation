@@ -13,17 +13,17 @@ class LoginUserModel {
 
   factory LoginUserModel.fromJson(Map<String, dynamic> json) {
     return LoginUserModel(
-      id: json['id'] ?? 0,
+      id: _asInt(json['id']),
       name: json['name'] ?? '',
       gender: json['gender'] ?? '',
     );
   }
 
   LoginUserEntity toEntity() {
-    return LoginUserEntity(
-      id: id,
-      name: name,
-      gender: gender,
-    );
+    return LoginUserEntity(id: id, name: name, gender: gender);
   }
+}
+
+int _asInt(dynamic value) {
+  return value is int ? value : int.tryParse(value?.toString() ?? '') ?? 0;
 }

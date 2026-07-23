@@ -25,7 +25,7 @@ void main() async {
 
   await Alarm.init();
 
-  await TokenStorage.clear();
+  //await TokenStorage.clear();
 
   await CacheHelper.init();
   await initSl();
