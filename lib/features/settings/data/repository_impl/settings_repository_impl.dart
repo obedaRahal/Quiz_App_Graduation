@@ -5,7 +5,9 @@ import 'package:quiz_app_grad/core/errors/failure.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/settings_remote_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/models/settings_operation_response_model.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/settings_entity.dart';
+import 'package:quiz_app_grad/features/settings/domain/entity/sold_tests_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/settings_repository.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/params/fetch_sold_tests_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/logout_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/update_date_time_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/update_password_params.dart';
@@ -398,5 +400,56 @@ class SettingsRepositoryImpl implements SettingsRepository {
       message: response.message.isEmpty ? fallbackMessage : response.message,
       statusCode: response.statusCode,
     );
+  }
+
+  @override
+  Future<Either<Failure, SoldTestsEntity>> fetchSoldTests(
+    FetchSoldTestsParams params,
+  ) async {
+    debugPrint(
+      '============ SettingsRepositoryImpl.fetchSoldTests ============',
+    );
+    debugPrint('→ tab: ${params.tab}');
+
+    try {
+      final result = await remoteDataSource.fetchSoldTests(params: params);
+
+      debugPrint('√ totalSalesCount: ${result.stats.totalSalesCount}');
+      debugPrint('√ sales count: ${result.sales.length}');
+      debugPrint('=================================================');
+
+      return Right(result);
+    } on ServerException catch (exception) {
+      debugPrint('✗ ServerException');
+      debugPrint('✗ title: ${exception.errorModel.errorTitle}');
+      debugPrint('✗ message: ${exception.errorModel.errorMessage}');
+      debugPrint('=================================================');
+
+      return Left(
+        ServerFailure(
+          title: exception.errorModel.errorTitle,
+          message: exception.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (exception) {
+      debugPrint('✗ CacheException');
+      debugPrint('✗ title: ${exception.errorMessage}');
+      debugPrint('✗ message: ${exception.errorMessage}');
+      debugPrint('=================================================');
+
+      return Left(
+        CacheFailure(
+          title: exception.errorMessage,
+          message: exception.errorMessage,
+        ),
+      );
+    } catch (exception) {
+      debugPrint('✗ Exception: $exception');
+      debugPrint('=================================================');
+
+      return const Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر جلب الاختبارات المباعة'),
+      );
+    }
   }
 }

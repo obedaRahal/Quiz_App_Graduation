@@ -595,4 +595,6 @@ class EndPoints {
   static const String updatePassword = '$baseUrl/settings/update/password';
 
   static const String logout = '$baseUrl/logout';
+
+  static const String soldTests = '$baseUrl/settings/sold-tests';
 }

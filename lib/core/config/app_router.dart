@@ -66,7 +66,9 @@ import 'package:quiz_app_grad/features/search/presentation/manager/search/search
 import 'package:quiz_app_grad/features/search/presentation/view/search_view.dart';
 import 'package:quiz_app_grad/features/settings/data/models/settings_route_args.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/settings/settings_cubit.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/sold_tests/sold_tests_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/view/settings_view.dart';
+import 'package:quiz_app_grad/features/settings/presentation/view/sold_tests_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_summary_entity.dart';
@@ -870,6 +872,23 @@ class AppRouter {
               child: BlocProvider(
                 create: (_) => sl<SettingsCubit>()..getSettings(),
                 child: SettingsView(args: args),
+              ),
+            );
+          },
+        ),
+
+        ///////// sold tests /////////////
+        GoRoute(
+          path: AppRouterPath.soldTests,
+          name: AppRouterName.soldTests,
+          pageBuilder: (context, state) {
+            debugPrint("============ soldTests Route ============");
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider(
+                create: (_) => sl<SoldTestsCubit>()..fetchInitial(),
+                child: const SoldTestsView(),
               ),
             );
           },

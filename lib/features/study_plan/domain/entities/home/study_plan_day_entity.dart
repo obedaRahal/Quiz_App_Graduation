@@ -7,8 +7,7 @@ enum StudyPlanDayDisplayState {
   unknown,
 }
 
-extension StudyPlanDayDisplayStateX
-    on StudyPlanDayDisplayState {
+extension StudyPlanDayDisplayStateX on StudyPlanDayDisplayState {
   static StudyPlanDayDisplayState fromApi(String value) {
     switch (value.trim().toLowerCase()) {
       case 'today':
@@ -21,6 +20,9 @@ extension StudyPlanDayDisplayStateX
         return StudyPlanDayDisplayState.completed;
 
       case 'incompleted':
+      case 'incomplete':
+      case 'in_completed':
+      case 'not_completed':
         return StudyPlanDayDisplayState.incompleted;
 
       case 'scheduled':
@@ -82,9 +84,7 @@ class StudyPlanDayEntity {
   });
 
   StudyPlanDayDisplayState get parsedDisplayState {
-    return StudyPlanDayDisplayStateX.fromApi(
-      displayState,
-    );
+    return StudyPlanDayDisplayStateX.fromApi(displayState);
   }
 
   bool isSelected(String selectedDate) {
@@ -109,10 +109,8 @@ class StudyPlanDayEntity {
       isToday: isToday ?? this.isToday,
       hasTasks: hasTasks ?? this.hasTasks,
       totalTasks: totalTasks ?? this.totalTasks,
-      completedTasks:
-          completedTasks ?? this.completedTasks,
-      completionState:
-          completionState ?? this.completionState,
+      completedTasks: completedTasks ?? this.completedTasks,
+      completionState: completionState ?? this.completionState,
       displayState: displayState ?? this.displayState,
     );
   }

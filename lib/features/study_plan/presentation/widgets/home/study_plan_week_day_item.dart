@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -9,12 +11,14 @@ import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_pla
 class StudyPlanWeekDayItem extends StatelessWidget {
   final StudyPlanDayEntity day;
   final bool isSelected;
+  final double diameter; 
   final VoidCallback? onTap;
 
   const StudyPlanWeekDayItem({
     super.key,
     required this.day,
     required this.isSelected,
+    required this.diameter,
     required this.onTap,
   });
 
@@ -24,11 +28,9 @@ class StudyPlanWeekDayItem extends StatelessWidget {
 
     final colors = _resolveColors(
       state: day.parsedDisplayState,
-      isSelected: isSelected,
       appColors: appColors,
     );
-
-    final size = SizeConfig.h(0.055);
+    final fontSize = math.min(SizeConfig.text(0.038), diameter * 0.4);
 
     return Semantics(
       button: true,
@@ -43,20 +45,33 @@ class StudyPlanWeekDayItem extends StatelessWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
-            width: size,
-            height: size,
+            width: diameter,
+            height: diameter,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: colors.backgroundColor,
               border: Border.all(
-                color: colors.borderColor,
-                width: colors.borderWidth,
+                color: isSelected
+                    ? appColors.primaryToPrimaryDark
+                    : colors.borderColor,
+                width: isSelected ? 2.5 : colors.borderWidth,
               ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: appColors.primaryToPrimaryDark.withValues(
+                          alpha: 0.18,
+                        ),
+                        blurRadius: 4,
+                        spreadRadius: 1,
+                      ),
+                    ]
+                  : null,
             ),
             child: CustomTextWidget(
               day.dayNumber.toString(),
-              fontSize: SizeConfig.text(0.038),
+              fontSize: fontSize,
               fontWeight: FontWeight.w700,
               color: colors.textColor,
             ),
@@ -68,19 +83,8 @@ class StudyPlanWeekDayItem extends StatelessWidget {
 
   _StudyDayVisualColors _resolveColors({
     required StudyPlanDayDisplayState state,
-    required bool isSelected,
     required AppThemeColors appColors,
   }) {
-    // اليوم المختار دائمًا أزرق، مهما كانت حالته الأصلية.
-    if (isSelected) {
-      return _StudyDayVisualColors(
-        backgroundColor: appColors.primarySoftTogreyLightDark,
-        borderColor: appColors.primaryToPrimaryDark,
-        textColor: appColors.primaryToPrimaryDark,
-        borderWidth: 2,
-      );
-    }
-
     switch (state) {
       case StudyPlanDayDisplayState.completed:
         return _StudyDayVisualColors(
@@ -107,6 +111,13 @@ class StudyPlanWeekDayItem extends StatelessWidget {
         );
 
       case StudyPlanDayDisplayState.today:
+        return _StudyDayVisualColors(
+          backgroundColor: appColors.primarySoftTogreyLightDark,
+          borderColor: appColors.primaryToPrimaryDark,
+          textColor: appColors.primaryToPrimaryDark,
+          borderWidth: 1.5,
+        );
+
       case StudyPlanDayDisplayState.empty:
         return _StudyDayVisualColors(
           backgroundColor: appColors.greyToGreyMediumDark,
@@ -116,10 +127,10 @@ class StudyPlanWeekDayItem extends StatelessWidget {
         );
 
       case StudyPlanDayDisplayState.unknown:
-        return const _StudyDayVisualColors(
-          backgroundColor: Color(0xffFAFAFB),
-          borderColor: Color(0xffE2E2E5),
-          textColor: Color(0xffB9BAC0),
+        return _StudyDayVisualColors(
+          backgroundColor: appColors.greyToGreyMediumDark,
+          borderColor: appColors.borderFieldColorNLightToborderFieldColorNDark,
+          textColor: AppPalette.greyMedium,
           borderWidth: 1.5,
         );
     }

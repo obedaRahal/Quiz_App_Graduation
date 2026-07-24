@@ -194,6 +194,7 @@ import 'package:quiz_app_grad/features/settings/domain/repositories/settings_rep
 import 'package:quiz_app_grad/features/settings/domain/repositories/theme_repository.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/disable_task_reminders_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/enable_task_reminders_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/fetch_sold_tests_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/get_settings_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/get_theme_mode_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/logout_use_case.dart';
@@ -202,6 +203,7 @@ import 'package:quiz_app_grad/features/settings/domain/use_cases/update_date_tim
 import 'package:quiz_app_grad/features/settings/domain/use_cases/update_password_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/update_theme_mode_use_case.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/settings/settings_cubit.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/sold_tests/sold_tests_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
@@ -2053,6 +2055,10 @@ void _registerSettingsFeature() {
 
   sl.registerLazySingleton(() => LogoutUseCase(repository: sl()));
 
+  sl.registerLazySingleton<FetchSoldTestsUseCase>(
+    () => FetchSoldTestsUseCase(settingsRepository: sl()),
+  );
+
   sl.registerFactory<SettingsCubit>(
     () => SettingsCubit(
       getSettingsUseCase: sl(),
@@ -2065,5 +2071,9 @@ void _registerSettingsFeature() {
       getStudyAlarmScheduleUseCase: sl(),
       studyAlarmSchedulerService: sl(),
     ),
+  );
+
+  sl.registerFactory<SoldTestsCubit>(
+    () => SoldTestsCubit(fetchSoldTestsUseCase: sl()),
   );
 }

@@ -448,8 +448,17 @@ class _SettingsViewState extends State<SettingsView> {
                               iconBackgroundColor: Colors.pink.withValues(
                                 alpha: .15,
                               ),
-                              onTap: () =>
-                                  _showComingSoon('الاختبارات المباعة'),
+                              onTap: () {
+                                debugPrint(
+                                  '============ SettingsView.openSoldTests ============',
+                                );
+                                debugPrint(
+                                  '→ route: ${AppRouterName.soldTests}',
+                                );
+
+                                context.pushNamed(AppRouterName.soldTests);
+                              },
+                              //_showComingSoon('الاختبارات المباعة'),
                             ),
 
                             SizedBox(height: SizeConfig.h(0.02)),

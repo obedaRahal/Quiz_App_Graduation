@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:quiz_app_grad/core/errors/failure.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/settings_entity.dart';
+import 'package:quiz_app_grad/features/settings/domain/entity/sold_tests_entity.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/params/fetch_sold_tests_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/logout_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/update_date_time_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/update_password_params.dart';
@@ -23,4 +25,8 @@ abstract class SettingsRepository {
   });
 
   Future<Either<Failure, Unit>> logout({required LogoutParams params});
+
+  Future<Either<Failure, SoldTestsEntity>> fetchSoldTests(
+    FetchSoldTestsParams params,
+  );
 }
