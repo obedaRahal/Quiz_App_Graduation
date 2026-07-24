@@ -1,12 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
+import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/services/device/login_device_metadata_service.dart';
 import 'package:quiz_app_grad/core/services/notification/fcm_token.dart';
+import 'package:quiz_app_grad/core/services/notification/local_votification_service.dart';
+import 'package:quiz_app_grad/core/services/system/app_system_settings_service.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
@@ -26,6 +31,7 @@ import 'package:quiz_app_grad/features/settings/presentation/widget/settings_swi
 import 'package:quiz_app_grad/features/settings/presentation/widget/settings_tile.dart';
 import 'package:quiz_app_grad/features/settings/presentation/widget/social_accounts_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_home_header.dart';
+import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_scheduler_service.dart';
 
 class SettingsView extends StatefulWidget {
   final SettingsRouteArgs args;
@@ -37,6 +43,8 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
+  bool _isCompletingLogout = false;
+
   final TextEditingController currentPasswordController =
       TextEditingController();
 
@@ -48,26 +56,56 @@ class _SettingsViewState extends State<SettingsView> {
   Future<void> _logout() async {
     final settingsCubit = context.read<SettingsCubit>();
 
-    if (settingsCubit.state.isLoggingOut) {
+    if (settingsCubit.state.isLoggingOut || _isCompletingLogout) {
       return;
     }
+
+    setState(() {
+      _isCompletingLogout = true;
+    });
 
     debugPrint('============ SettingsView._logout ============');
 
-    final metadataService = sl<LoginDeviceMetadataService>();
-    final metadata = await metadataService.getMetadata();
+    try {
+      await sl<StudyAlarmSchedulerService>().cancelAllStudyAlarms();
+    } catch (error, stackTrace) {
+      debugPrint('× cancelling study alarms before logout failed: $error');
+      debugPrint('→ stackTrace: $stackTrace');
 
-    final success = await settingsCubit.logout(
-      fcmToken: FcmTokenStorage.getToken(),
-      deviceId: metadata.deviceId,
-    );
-
-    if (!mounted || !success) {
+      if (mounted) {
+        setState(() {
+          _isCompletingLogout = false;
+        });
+        showValidationTopSnackBar(
+          context,
+          title: 'تعذر تسجيل الخروج بأمان',
+          message:
+              'لم نتمكن من إلغاء المنبهات المجدولة. حاول تسجيل الخروج مرة أخرى.',
+          type: AppValidationSnackBarType.error,
+        );
+      }
       return;
     }
 
-    await TokenStorage.clear();
-    await FcmTokenStorage.clear();
+    String? deviceId;
+    try {
+      final metadata = await sl<LoginDeviceMetadataService>().getMetadata();
+      deviceId = metadata.deviceId;
+    } catch (error) {
+      debugPrint('⚠ could not read device metadata during logout: $error');
+    }
+
+    await settingsCubit.logout(
+      fcmToken: FcmTokenStorage.getToken(),
+      deviceId: deviceId,
+      reportFailure: false,
+    );
+
+    await Future.wait([
+      TokenStorage.clear(),
+      FcmTokenStorage.clear(),
+      UserLocalStorage.clear(),
+    ]);
 
     sl<AuthSession>().markUnauthenticated();
 
@@ -76,6 +114,71 @@ class _SettingsViewState extends State<SettingsView> {
     }
 
     context.goNamed(AppRouterName.welcome);
+  }
+
+  Future<void> _openNotificationSettings() async {
+    try {
+      await AppSystemSettingsService.openNotificationSettings();
+    } catch (error) {
+      if (!mounted) return;
+      showValidationTopSnackBar(
+        context,
+        title: 'تعذر فتح الإعدادات',
+        message: 'افتح إعدادات الجهاز ثم اختر إشعارات التطبيق.',
+        type: AppValidationSnackBarType.error,
+      );
+    }
+  }
+
+  Future<void> _testNotification() async {
+    try {
+      await LocalNotificationService.showTestNotification();
+      if (!mounted) return;
+      // showValidationTopSnackBar(
+      //   context,
+      //   title: 'تم إرسال الإشعار',
+      //   message: 'تحقق من مركز إشعارات جهازك لمشاهدة شكله.',
+      //   type: AppValidationSnackBarType.success,
+      // );
+    } catch (error) {
+      if (!mounted) return;
+      showValidationTopSnackBar(
+        context,
+        title: 'تعذر عرض الإشعار',
+        message: 'تأكد من منح التطبيق إذن الإشعارات ثم حاول مجددًا.',
+        type: AppValidationSnackBarType.error,
+      );
+    }
+  }
+
+  Future<void> _testAlarm() async {
+    try {
+      await sl<StudyAlarmSchedulerService>().scheduleTestStudyAlarm();
+      if (!mounted) return;
+      showValidationTopSnackBar(
+        context,
+        title: 'تم إعداد المنبه',
+        message: 'سيرن المنبه التجريبي خلال 3 ثوانٍ.',
+        type: AppValidationSnackBarType.success,
+      );
+    } catch (error) {
+      if (!mounted) return;
+      showValidationTopSnackBar(
+        context,
+        title: 'تعذر إعداد المنبه',
+        message: 'تحقق من أذونات المنبهات في إعدادات الجهاز وحاول مجددًا.',
+        type: AppValidationSnackBarType.error,
+      );
+    }
+  }
+
+  void _showComingSoon(String feature) {
+    showValidationTopSnackBar(
+      context,
+      title: feature,
+      message: 'سيتم ربط هذه الميزة قريبًا.',
+      type: AppValidationSnackBarType.hint,
+    );
   }
 
   @override
@@ -174,20 +277,22 @@ class _SettingsViewState extends State<SettingsView> {
                                             "============ SettingsView.toggleTaskReminders ============",
                                           );
 
-                                          await context
+                                          return context
                                               .read<SettingsCubit>()
-                                              .toggleTaskReminders();
+                                              .setTaskRemindersEnabled(
+                                                enabled: value,
+                                              );
                                         },
                                         onOpenNotificationSettings: () {
-                                          debugPrint(
-                                            'Open notification settings',
+                                          unawaited(
+                                            _openNotificationSettings(),
                                           );
                                         },
                                         onTestNotification: () {
-                                          debugPrint('Test notification');
+                                          unawaited(_testNotification());
                                         },
                                         onTestAlarm: () {
-                                          debugPrint('Test alarm');
+                                          unawaited(_testAlarm());
                                         },
                                       );
                                     },
@@ -225,38 +330,43 @@ class _SettingsViewState extends State<SettingsView> {
                                             selectedWeekStartDay,
                                         selectedTimeFormat: selectedTimeFormat,
                                         onWeekStartDayChanged: (day) async {
-                                          selectedWeekStartDay = day;
-
                                           debugPrint(
-                                            'Selected week start: ${selectedWeekStartDay.apiValue}',
+                                            'Requested week start: ${day.apiValue}',
                                           );
 
-                                          await context
+                                          final success = await context
                                               .read<SettingsCubit>()
                                               .updateDateTime(
-                                                weekStartsOn:
-                                                    selectedWeekStartDay
-                                                        .apiValue,
+                                                weekStartsOn: day.apiValue,
                                                 timeFormat:
                                                     selectedTimeFormat.apiValue,
                                               );
+
+                                          if (success) {
+                                            selectedWeekStartDay = day;
+                                          }
+
+                                          return success;
                                         },
                                         onTimeFormatChanged: (format) async {
-                                          selectedTimeFormat = format;
-
                                           debugPrint(
-                                            'Selected time format: ${selectedTimeFormat.apiValue}',
+                                            'Requested time format: ${format.apiValue}',
                                           );
 
-                                          await context
+                                          final success = await context
                                               .read<SettingsCubit>()
                                               .updateDateTime(
                                                 weekStartsOn:
                                                     selectedWeekStartDay
                                                         .apiValue,
-                                                timeFormat:
-                                                    selectedTimeFormat.apiValue,
+                                                timeFormat: format.apiValue,
                                               );
+
+                                          if (success) {
+                                            selectedTimeFormat = format;
+                                          }
+
+                                          return success;
                                         },
                                       );
                                     },
@@ -322,47 +432,8 @@ class _SettingsViewState extends State<SettingsView> {
                               iconBackgroundColor: Colors.blue.withValues(
                                 alpha: .15,
                               ),
-                              onTap: state.isUpdatingPassword
-                                  ? null
-                                  : () {
-                                      currentPasswordController.clear();
-                                      newPasswordController.clear();
-                                      confirmPasswordController.clear();
-
-                                      showChangePasswordBottomSheet(
-                                        context: context,
-                                        currentPasswordController:
-                                            currentPasswordController,
-                                        newPasswordController:
-                                            newPasswordController,
-                                        confirmPasswordController:
-                                            confirmPasswordController,
-                                        onSubmit: () async {
-                                          final success = await context
-                                              .read<SettingsCubit>()
-                                              .updatePassword(
-                                                oldPassword:
-                                                    currentPasswordController
-                                                        .text,
-                                                newPassword:
-                                                    newPasswordController.text,
-                                                newPasswordConfirmation:
-                                                    confirmPasswordController
-                                                        .text,
-                                              );
-
-                                          if (!context.mounted || !success) {
-                                            return;
-                                          }
-
-                                          Navigator.of(context).pop();
-
-                                          currentPasswordController.clear();
-                                          newPasswordController.clear();
-                                          confirmPasswordController.clear();
-                                        },
-                                      );
-                                    },
+                              onTap: () =>
+                                  _showComingSoon('تأكيد المستوى العلمي'),
                               topRadius: 0,
                             ),
 
@@ -377,7 +448,8 @@ class _SettingsViewState extends State<SettingsView> {
                               iconBackgroundColor: Colors.pink.withValues(
                                 alpha: .15,
                               ),
-                              onTap: () {},
+                              onTap: () =>
+                                  _showComingSoon('الاختبارات المباعة'),
                             ),
 
                             SizedBox(height: SizeConfig.h(0.02)),
@@ -446,10 +518,10 @@ class _SettingsViewState extends State<SettingsView> {
                                 showContactUsBottomSheet(
                                   context: context,
                                   onGmailTap: () {
-                                    debugPrint('Open Gmail');
+                                    _showComingSoon('التواصل عبر Gmail');
                                   },
                                   onOutlookTap: () {
-                                    debugPrint('Open Outlook');
+                                    _showComingSoon('التواصل عبر Outlook');
                                   },
                                 );
                               },
@@ -468,16 +540,16 @@ class _SettingsViewState extends State<SettingsView> {
                                 showSocialAccountsBottomSheet(
                                   context: context,
                                   onFacebookTap: () {
-                                    debugPrint('Open Facebook');
+                                    _showComingSoon('Facebook');
                                   },
                                   onInstagramTap: () {
-                                    debugPrint('Open Instagram');
+                                    _showComingSoon('Instagram');
                                   },
                                   onTelegramTap: () {
-                                    debugPrint('Open Telegram');
+                                    _showComingSoon('Telegram');
                                   },
                                   onYouTubeTap: () {
-                                    debugPrint('Open YouTube');
+                                    _showComingSoon('YouTube');
                                   },
                                 );
                               },
@@ -495,7 +567,9 @@ class _SettingsViewState extends State<SettingsView> {
                               iconBackgroundColor: Colors.red.withValues(
                                 alpha: .15,
                               ),
-                              onTap: state.isLoggingOut ? null : _logout,
+                              onTap: state.isLoggingOut || _isCompletingLogout
+                                  ? null
+                                  : _logout,
                             ),
                           ],
                         ),

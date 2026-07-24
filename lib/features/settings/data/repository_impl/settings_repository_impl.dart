@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/core/errors/exceptions.dart';
 import 'package:quiz_app_grad/core/errors/failure.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/settings_remote_data_source.dart';
+import 'package:quiz_app_grad/features/settings/data/models/settings_operation_response_model.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/settings_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/settings_repository.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/logout_params.dart';
@@ -20,6 +21,18 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
     try {
       final response = await remoteDataSource.getSettings();
+
+      if (!response.success) {
+        return Left(
+          ServerFailure(
+            title: response.title.isEmpty
+                ? 'تعذر جلب الإعدادات'
+                : response.title,
+            message: 'لم يقبل الخادم طلب جلب إعدادات المستخدم.',
+            statusCode: response.statusCode,
+          ),
+        );
+      }
 
       debugPrint('✓ getSettings success');
       debugPrint(
@@ -73,6 +86,15 @@ class SettingsRepositoryImpl implements SettingsRepository {
     try {
       final response = await remoteDataSource.enableTaskReminders();
 
+      if (!response.success) {
+        return Left(
+          _operationFailure(
+            response,
+            fallbackMessage: 'تعذر تفعيل تذكيرات المهام.',
+          ),
+        );
+      }
+
       debugPrint("√ enableTaskReminders success");
       debugPrint("→ message: ${response.message}");
       debugPrint("→ response: $response");
@@ -113,6 +135,15 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
     try {
       final response = await remoteDataSource.disableTaskReminders();
+
+      if (!response.success) {
+        return Left(
+          _operationFailure(
+            response,
+            fallbackMessage: 'تعذر إيقاف تذكيرات المهام.',
+          ),
+        );
+      }
 
       debugPrint("√ disableTaskReminders success");
       debugPrint("→ message: ${response.message}");
@@ -159,6 +190,15 @@ class SettingsRepositoryImpl implements SettingsRepository {
         themeMode: themeMode,
       );
 
+      if (!response.success) {
+        return Left(
+          _operationFailure(
+            response,
+            fallbackMessage: 'تعذر تحديث مظهر التطبيق.',
+          ),
+        );
+      }
+
       debugPrint("√ updateThemeMode success");
       debugPrint("→ themeMode: $themeMode");
       debugPrint("→ message: ${response.message}");
@@ -202,6 +242,15 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
     try {
       final response = await remoteDataSource.updateDateTime(params: params);
+
+      if (!response.success) {
+        return Left(
+          _operationFailure(
+            response,
+            fallbackMessage: 'تعذر تحديث إعدادات التاريخ والوقت.',
+          ),
+        );
+      }
 
       debugPrint("√ updateDateTime success");
       debugPrint("→ weekStartsOn: ${params.weekStartsOn}");
@@ -251,6 +300,15 @@ class SettingsRepositoryImpl implements SettingsRepository {
     try {
       final response = await remoteDataSource.updatePassword(params: params);
 
+      if (!response.success) {
+        return Left(
+          _operationFailure(
+            response,
+            fallbackMessage: 'تعذر تغيير كلمة المرور.',
+          ),
+        );
+      }
+
       debugPrint("√ updatePassword success");
       debugPrint("→ message: ${response.message}");
 
@@ -283,13 +341,21 @@ class SettingsRepositoryImpl implements SettingsRepository {
     }
   }
 
-
   @override
   Future<Either<Failure, Unit>> logout({required LogoutParams params}) async {
     debugPrint("============ SettingsRepositoryImpl.logout ============");
 
     try {
       final response = await remoteDataSource.logout(params: params);
+
+      if (!response.success) {
+        return Left(
+          _operationFailure(
+            response,
+            fallbackMessage: 'تعذر تسجيل الخروج من الخادم.',
+          ),
+        );
+      }
 
       debugPrint("√ logout success");
       debugPrint("→ message: ${response.message}");
@@ -321,5 +387,16 @@ class SettingsRepositoryImpl implements SettingsRepository {
         ServerFailure(title: 'حدث خطأ', message: 'تعذر تسجيل الخروج'),
       );
     }
+  }
+
+  ServerFailure _operationFailure(
+    SettingsOperationResponseModel response, {
+    required String fallbackMessage,
+  }) {
+    return ServerFailure(
+      title: response.title.isEmpty ? 'تعذر تنفيذ العملية' : response.title,
+      message: response.message.isEmpty ? fallbackMessage : response.message,
+      statusCode: response.statusCode,
+    );
   }
 }

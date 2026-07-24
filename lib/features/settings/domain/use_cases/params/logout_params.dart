@@ -5,6 +5,9 @@ class LogoutParams {
   const LogoutParams({this.fcmToken, this.deviceId});
 
   Map<String, dynamic> toJson() {
-    return {'fcm_token': fcmToken, 'device_id': deviceId};
+    return {
+      'fcm_token': fcmToken?.trim() ?? '',
+      'device_id': deviceId?.trim() ?? '',
+    };
   }
 }

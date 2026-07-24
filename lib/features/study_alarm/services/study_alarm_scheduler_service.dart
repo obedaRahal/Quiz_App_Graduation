@@ -16,6 +16,10 @@ abstract class StudyAlarmSchedulerService {
 
   Future<void> cancelAllStudyAlarms();
 
+  Future<void> scheduleTestStudyAlarm({
+    Duration delay = const Duration(seconds: 3),
+  });
+
   Future<void> stopStudyAlarm({required int alarmId});
 
   Future<void> snoozeStudyAlarm({
@@ -26,6 +30,7 @@ abstract class StudyAlarmSchedulerService {
 
 class StudyAlarmSchedulerServiceImpl implements StudyAlarmSchedulerService {
   static const String _studyAlarmPayloadType = 'study_alarm';
+  static const int _testAlarmId = 2147483000;
   static final Object _lockZoneKey = Object();
 
   Future<void> _operationQueue = Future<void>.value();
@@ -276,6 +281,61 @@ class StudyAlarmSchedulerServiceImpl implements StudyAlarmSchedulerService {
       if (failedCount > 0) {
         throw StudyAlarmSynchronizationException(
           'تعذر إلغاء $failedCount منبه دراسة قديم.',
+        );
+      }
+    });
+  }
+
+  @override
+  Future<void> scheduleTestStudyAlarm({
+    Duration delay = const Duration(seconds: 3),
+  }) {
+    return _withLock(() async {
+      if (delay <= Duration.zero) {
+        throw ArgumentError.value(
+          delay,
+          'delay',
+          'يجب أن يكون وقت تجربة المنبه أكبر من صفر.',
+        );
+      }
+
+      await Alarm.stop(_testAlarmId);
+
+      final didSetAlarm = await Alarm.set(
+        alarmSettings: AlarmSettings(
+          id: _testAlarmId,
+          dateTime: DateTime.now().add(delay),
+          assetAudioPath: null,
+          loopAudio: true,
+          vibrate: true,
+          warningNotificationOnKill: Alarm.iOS,
+          androidFullScreenIntent: true,
+          androidStopAlarmOnTermination: false,
+          allowAlarmOverlap: false,
+          volumeSettings: VolumeSettings.fade(
+            volume: 1.0,
+            fadeDuration: const Duration(seconds: 1),
+            volumeEnforced: true,
+          ),
+          notificationSettings: const NotificationSettings(
+            title: 'منبه تجريبي',
+            body: 'هذه تجربة لشكل وصوت منبه المهام الدراسية.',
+            stopButton: 'إيقاف',
+          ),
+          payload: jsonEncode({
+            'type': _studyAlarmPayloadType,
+            'alarm_key': 'settings_test_alarm',
+            'task_id': 0,
+            'occurrence_id': 0,
+            'study_plan_id': 0,
+            'is_test': true,
+          }),
+        ),
+      );
+
+      if (!didSetAlarm) {
+        throw const StudyAlarmSynchronizationException(
+          'تعذر إعداد المنبه التجريبي.',
         );
       }
     });

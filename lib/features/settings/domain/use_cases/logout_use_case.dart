@@ -11,9 +11,6 @@ class LogoutUseCase {
 
   Future<Either<Failure, Unit>> call({required LogoutParams params}) {
     debugPrint("============ LogoutUseCase.call ============");
-    debugPrint(
-      "============ params is ${params.fcmToken} and ${params.deviceId} ============",
-    );
     return repository.logout(params: params);
   }
 }

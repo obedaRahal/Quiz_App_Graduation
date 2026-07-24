@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -41,20 +41,20 @@ class MyProfileInterestCard extends StatelessWidget {
     final backgroundColor = isSelected
         ? appColors.primaryToPrimaryDark
         : isDark
-            ? AppPalette.fieldColorNDark
-            : AppPalette.white;
+        ? AppPalette.fieldColorNDark
+        : AppPalette.white;
 
     final borderColor = isSelected
         ? appColors.primaryToPrimaryDark
         : isDark
-            ? AppPalette.borderFieldColorNDark
-            : const Color(0xFFEDEDED);
+        ? AppPalette.borderFieldColorNDark
+        : const Color(0xFFEDEDED);
 
     final textColor = isSelected
         ? AppPalette.white
         : isDark
-            ? AppPalette.titleWhiteINDark
-            : AppPalette.greyMedium;
+        ? AppPalette.titleWhiteINDark
+        : AppPalette.greyMedium;
 
     return InkWell(
       onTap: onTap,
@@ -70,7 +70,7 @@ class MyProfileInterestCard extends StatelessWidget {
           boxShadow: [
             if (!isDark && !isSelected)
               BoxShadow(
-                color: Colors.black.withOpacity(0.035),
+                color: Colors.black.withValues(alpha: 0.035),
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               ),
@@ -88,13 +88,11 @@ class MyProfileInterestCard extends StatelessWidget {
                       color: iconColor,
                       size: SizeConfig.text(0.055),
                     )
-                  : SvgPicture.network(
-                      iconUrl,
-                      colorFilter: ColorFilter.mode(
-                        iconColor,
-                        BlendMode.srcIn,
-                      ),
-                      placeholderBuilder: (_) => Icon(
+                  : CustomAppImage(
+                      path: iconUrl,
+                      color: iconColor,
+                      showLoadingForSvg: true,
+                      fallback: Icon(
                         Icons.category_rounded,
                         color: iconColor,
                         size: SizeConfig.text(0.055),

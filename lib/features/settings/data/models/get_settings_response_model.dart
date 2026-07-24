@@ -17,7 +17,7 @@ class GetSettingsResponseModel {
     final rawData = json['data'];
 
     return GetSettingsResponseModel(
-      success: json['success'] == true,
+      success: _parseSuccess(json['success']),
       title: json['title']?.toString().trim() ?? '',
       data: SettingsModel.fromJson(
         rawData is Map<String, dynamic> ? rawData : <String, dynamic>{},
@@ -32,5 +32,17 @@ class GetSettingsResponseModel {
     }
 
     return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  static bool _parseSuccess(dynamic value) {
+    if (value is bool) {
+      return value;
+    }
+    if (value is num) {
+      return value != 0;
+    }
+
+    final normalized = value?.toString().trim().toLowerCase();
+    return normalized == 'true' || normalized == '1';
   }
 }

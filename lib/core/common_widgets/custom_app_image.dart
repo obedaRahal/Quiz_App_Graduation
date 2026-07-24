@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 
@@ -67,8 +70,6 @@ class CustomAppImage extends StatelessWidget {
   // }
 
   bool get _isLottie => path.toLowerCase().endsWith('.json');
-
-  bool get _isGif => path.toLowerCase().endsWith('.gif');
 
   String get _resolvedPath => path;
 
@@ -154,8 +155,8 @@ class CustomAppImage extends StatelessWidget {
 
   Widget _buildSvg(BuildContext context) {
     if (_isNetwork) {
-      return SvgPicture.network(
-        _resolvedPath,
+      return _SafeNetworkSvg(
+        url: _resolvedPath,
         width: width,
         height: height,
         fit: fit,
@@ -163,8 +164,8 @@ class CustomAppImage extends StatelessWidget {
         colorFilter: color == null
             ? null
             : ColorFilter.mode(color!, BlendMode.srcIn),
-        placeholderBuilder: (_) => _buildSvgPlaceholder(),
-        errorBuilder: (_, __, ___) => _buildFallback(context),
+        placeholder: _buildSvgPlaceholder(),
+        fallback: _buildFallback(context),
       );
     }
 
@@ -226,4 +227,131 @@ class CustomAppImage extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SafeNetworkSvg extends StatefulWidget {
+  final String url;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+  final Alignment alignment;
+  final ColorFilter? colorFilter;
+  final Widget placeholder;
+  final Widget fallback;
+
+  const _SafeNetworkSvg({
+    required this.url,
+    required this.width,
+    required this.height,
+    required this.fit,
+    required this.alignment,
+    required this.colorFilter,
+    required this.placeholder,
+    required this.fallback,
+  });
+
+  @override
+  State<_SafeNetworkSvg> createState() => _SafeNetworkSvgState();
+}
+
+class _SafeNetworkSvgState extends State<_SafeNetworkSvg> {
+  late Future<Uint8List> _svgBytesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _svgBytesFuture = _loadSvgBytes(widget.url);
+  }
+
+  @override
+  void didUpdateWidget(covariant _SafeNetworkSvg oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.url != widget.url) {
+      _svgBytesFuture = _loadSvgBytes(widget.url);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List>(
+      future: _svgBytesFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return widget.placeholder;
+        }
+
+        final bytes = snapshot.data;
+        if (snapshot.hasError || bytes == null || bytes.isEmpty) {
+          return widget.fallback;
+        }
+
+        return SvgPicture.memory(
+          bytes,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+          alignment: widget.alignment,
+          colorFilter: widget.colorFilter,
+          errorBuilder: (_, __, ___) => widget.fallback,
+        );
+      },
+    );
+  }
+}
+
+Future<Uint8List> _loadSvgBytes(String rawUrl) async {
+  final uri = Uri.tryParse(rawUrl);
+
+  if (uri == null || !uri.hasScheme || !uri.hasAuthority) {
+    throw const FormatException('Invalid network SVG URL.');
+  }
+
+  final data = await NetworkAssetBundle(uri).load(uri.toString());
+  final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+
+  if (!_hasSvgRoot(bytes)) {
+    throw const FormatException('Network response is not an SVG document.');
+  }
+
+  return bytes;
+}
+
+bool _hasSvgRoot(Uint8List bytes) {
+  var content = utf8.decode(bytes, allowMalformed: true).trimLeft();
+
+  if (content.startsWith('\uFEFF')) {
+    content = content.substring(1).trimLeft();
+  }
+
+  while (content.startsWith('<?xml') || content.startsWith('<!--')) {
+    final closingToken = content.startsWith('<?xml') ? '?>' : '-->';
+    final closingIndex = content.indexOf(closingToken);
+
+    if (closingIndex < 0) {
+      return false;
+    }
+
+    content = content.substring(closingIndex + closingToken.length).trimLeft();
+  }
+
+  if (content.toLowerCase().startsWith('<!doctype')) {
+    final closingIndex = content.indexOf('>');
+    if (closingIndex < 0) {
+      return false;
+    }
+    content = content.substring(closingIndex + 1).trimLeft();
+  }
+
+  final normalized = content.toLowerCase();
+  if (!normalized.startsWith('<svg') || normalized.length == 4) {
+    return false;
+  }
+
+  final nextCharacter = normalized[4];
+  return nextCharacter == '>' ||
+      nextCharacter == ' ' ||
+      nextCharacter == '\n' ||
+      nextCharacter == '\r' ||
+      nextCharacter == '\t';
 }

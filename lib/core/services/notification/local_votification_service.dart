@@ -100,6 +100,48 @@ class LocalNotificationService {
 
     debugPrint("✅ LOCAL NOTIFICATION SHOWN");
   }
+
+  static Future<void> showTestNotification() async {
+    await init();
+
+    final androidPlugin = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    final notificationsEnabled = await androidPlugin?.areNotificationsEnabled();
+
+    if (notificationsEnabled == false) {
+      throw StateError('Notification permission is disabled.');
+    }
+
+    final android = AndroidNotificationDetails(
+      _channel.id,
+      _channel.name,
+      channelDescription: _channel.description,
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      ticker: 'Test Notification',
+    );
+
+    const ios = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      id: DateTime.now().millisecondsSinceEpoch.remainder(0x7fffffff),
+      title: 'إشعار تجريبي',
+      body: 'هكذا ستظهر إشعارات تطبيقك على هذا الجهاز.',
+      notificationDetails: NotificationDetails(android: android, iOS: ios),
+      payload: jsonEncode({
+        'type': 'settings_test_notification',
+        'created_at': DateTime.now().toUtc().toIso8601String(),
+      }),
+    );
+  }
 }
 
 String? _textValue(dynamic value) {

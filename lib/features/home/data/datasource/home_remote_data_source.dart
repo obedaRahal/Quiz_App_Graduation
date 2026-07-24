@@ -36,12 +36,11 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
     return RecommendedInterestsResponseModel.fromJson(response);
   }
-  @override
-Future<RecommendedUsersResponseModel> getRecommendedUsers() async {
-  final response = await api.get(
-    EndPoints.recommendedUsers,
-  );
 
-  return RecommendedUsersResponseModel.fromJson(response);
-}
+  @override
+  Future<RecommendedUsersResponseModel> getRecommendedUsers() async {
+    final response = await api.get(EndPoints.recommendedUsers);
+
+    return RecommendedUsersResponseModel.fromJson(response);
+  }
 }

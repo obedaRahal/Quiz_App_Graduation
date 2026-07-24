@@ -129,7 +129,6 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
       "============ SettingsRemoteDataSourceImpl.updatePassword ============",
     );
 
-    debugPrint("→ body: ${params.toJson()}");
     debugPrint("→ end point is: ${EndPoints.updatePassword}");
 
     final response = await apiConsumer.post(
@@ -147,8 +146,6 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
     required LogoutParams params,
   }) async {
     debugPrint("============ SettingsRemoteDataSourceImpl.logout ============");
-
-    debugPrint("→ body: ${params.toJson()}");
 
     final response = await apiConsumer.post(
       EndPoints.logout,

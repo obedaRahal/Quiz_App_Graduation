@@ -24,14 +24,14 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   Future<void> changeTheme(ThemeMode mode) async {
-            debugPrint("============ ThemeCubit.changeTheme ============");
+    debugPrint("============ ThemeCubit.changeTheme ============");
 
     await setThemeModeUseCase(mode);
     emit(state.copyWith(themeMode: mode));
   }
 
   Future<void> toggleTheme() async {
-            debugPrint("============ ThemeCubit.toggleTheme ============");
+    debugPrint("============ ThemeCubit.toggleTheme ============");
 
     final newMode = state.themeMode == ThemeMode.dark
         ? ThemeMode.light

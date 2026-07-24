@@ -11,6 +11,8 @@ import 'package:quiz_app_grad/features/settings/domain/use_cases/update_date_tim
 import 'package:quiz_app_grad/features/settings/domain/use_cases/update_password_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/update_theme_mode_use_case.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/settings/settings_state.dart';
+import 'package:quiz_app_grad/features/study_alarm/domain/use_cases/get_study_alarm_schedule_use_case.dart';
+import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_scheduler_service.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   final GetSettingsUseCase getSettingsUseCase;
@@ -24,6 +26,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   final UpdateDateTimeUseCase updateDateTimeUseCase;
   final UpdatePasswordUseCase updatePasswordUseCase;
   final LogoutUseCase logoutUseCase;
+  final GetStudyAlarmScheduleUseCase getStudyAlarmScheduleUseCase;
+  final StudyAlarmSchedulerService studyAlarmSchedulerService;
 
   SettingsCubit({
     required this.getSettingsUseCase,
@@ -34,6 +38,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this.updateDateTimeUseCase,
     required this.updatePasswordUseCase,
     required this.logoutUseCase,
+    required this.getStudyAlarmScheduleUseCase,
+    required this.studyAlarmSchedulerService,
   }) : super(const SettingsState()) {
     debugPrint('============ SettingsCubit INIT ============');
   }
@@ -109,11 +115,13 @@ class SettingsCubit extends Cubit<SettingsState> {
     debugPrint('==================================================');
   }
 
-  Future<bool> toggleTaskReminders() async {
-    debugPrint("============ SettingsCubit.toggleTaskReminders ============");
+  Future<bool> setTaskRemindersEnabled({required bool enabled}) async {
+    debugPrint(
+      "============ SettingsCubit.setTaskRemindersEnabled ============",
+    );
 
     if (state.isTogglingTaskReminders) {
-      debugPrint("→ toggleTaskReminders skipped: already loading");
+      debugPrint("→ setTaskRemindersEnabled skipped: already loading");
 
       return false;
     }
@@ -121,60 +129,106 @@ class SettingsCubit extends Cubit<SettingsState> {
     final currentSettings = state.settings;
 
     if (currentSettings == null) {
-      debugPrint("→ toggleTaskReminders skipped: settings is null");
+      debugPrint("→ setTaskRemindersEnabled skipped: settings is null");
 
       return false;
     }
 
     final currentValue = currentSettings.taskRemindersEnabled;
 
-    final newValue = !currentValue;
+    if (currentValue == enabled) {
+      return true;
+    }
 
     debugPrint("→ currentValue: $currentValue");
-    debugPrint("→ newValue: $newValue");
+    debugPrint("→ requestedValue: $enabled");
 
     emit(state.copyWith(isTogglingTaskReminders: true, clearError: true));
 
-    final result = newValue
+    final result = enabled
         ? await enableTaskRemindersUseCase()
         : await disableTaskRemindersUseCase();
 
-    return result.fold(
-      (failure) {
-        debugPrint("× toggleTaskReminders failure");
+    final serverSucceeded = result.fold((failure) {
+      debugPrint("× setTaskRemindersEnabled failure");
 
-        if (!isClosed) {
-          emit(
-            state.copyWith(
-              isTogglingTaskReminders: false,
-              errorTitle: failure.title,
-              errorMessage: failure.message,
-            ),
-          );
-        }
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            isTogglingTaskReminders: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      }
 
-        return false;
-      },
-      (_) {
-        debugPrint("√ toggleTaskReminders success");
+      return false;
+    }, (_) => true);
 
-        debugPrint("→ taskRemindersEnabled: $newValue");
+    if (!serverSucceeded || isClosed) {
+      return false;
+    }
 
-        if (!isClosed) {
-          emit(
-            state.copyWith(
-              isTogglingTaskReminders: false,
-              settings: currentSettings.copyWith(
-                taskRemindersEnabled: newValue,
-              ),
-              clearError: true,
-            ),
-          );
-        }
-
-        return true;
-      },
+    final updatedSettings = currentSettings.copyWith(
+      taskRemindersEnabled: enabled,
     );
+
+    try {
+      if (!enabled) {
+        await studyAlarmSchedulerService.cancelAllStudyAlarms();
+      } else {
+        final scheduleResult = await getStudyAlarmScheduleUseCase();
+        final schedule = scheduleResult.fold((failure) {
+          if (!isClosed) {
+            emit(
+              state.copyWith(
+                isTogglingTaskReminders: false,
+                settings: updatedSettings,
+                errorTitle: failure.title,
+                errorMessage:
+                    '${failure.message}\nتم تفعيل التذكيرات على الحساب، لكن تعذرت مزامنة منبهات هذا الجهاز.',
+              ),
+            );
+          }
+          return null;
+        }, (value) => value);
+
+        if (schedule == null || isClosed) {
+          return false;
+        }
+
+        await studyAlarmSchedulerService.syncStudyAlarms(schedule: schedule);
+      }
+    } catch (error, stackTrace) {
+      debugPrint('× local study alarm update failed: $error');
+      debugPrint('→ stackTrace: $stackTrace');
+
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            isTogglingTaskReminders: false,
+            settings: updatedSettings,
+            errorTitle: 'تعذر تحديث منبهات الجهاز',
+            errorMessage: enabled
+                ? 'تم تفعيل التذكيرات على الحساب، لكن تعذر إعداد المنبهات على هذا الجهاز. حاول مرة أخرى.'
+                : 'تم إيقاف التذكيرات على الحساب، لكن تعذر إلغاء بعض المنبهات المجدولة على هذا الجهاز.',
+          ),
+        );
+      }
+      return false;
+    }
+
+    if (!isClosed) {
+      emit(
+        state.copyWith(
+          isTogglingTaskReminders: false,
+          settings: updatedSettings,
+          clearError: true,
+        ),
+      );
+    }
+
+    return true;
   }
 
   Future<bool> updateThemeMode({required String themeMode}) async {
@@ -437,6 +491,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<bool> logout({
     required String? fcmToken,
     required String? deviceId,
+    bool reportFailure = true,
   }) async {
     debugPrint("============ SettingsCubit.logout ============");
 
@@ -457,11 +512,13 @@ class SettingsCubit extends Cubit<SettingsState> {
 
         if (!isClosed) {
           emit(
-            state.copyWith(
-              isLoggingOut: false,
-              errorTitle: failure.title,
-              errorMessage: failure.message,
-            ),
+            reportFailure
+                ? state.copyWith(
+                    isLoggingOut: false,
+                    errorTitle: failure.title,
+                    errorMessage: failure.message,
+                  )
+                : state.copyWith(isLoggingOut: false, clearError: true),
           );
         }
 

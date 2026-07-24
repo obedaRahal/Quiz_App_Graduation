@@ -13,8 +13,8 @@ Future<void> showDateAndTimeBottomSheet({
   required BuildContext context,
   required WeekStartDay selectedWeekStartDay,
   required AppTimeFormat selectedTimeFormat,
-  required ValueChanged<WeekStartDay> onWeekStartDayChanged,
-  required ValueChanged<AppTimeFormat> onTimeFormatChanged,
+  required Future<bool> Function(WeekStartDay) onWeekStartDayChanged,
+  required Future<bool> Function(AppTimeFormat) onTimeFormatChanged,
 }) {
   return showModalBottomSheet<void>(
     context: context,
@@ -35,8 +35,8 @@ Future<void> showDateAndTimeBottomSheet({
 class DateAndTimeBottomSheet extends StatefulWidget {
   final WeekStartDay selectedWeekStartDay;
   final AppTimeFormat selectedTimeFormat;
-  final ValueChanged<WeekStartDay> onWeekStartDayChanged;
-  final ValueChanged<AppTimeFormat> onTimeFormatChanged;
+  final Future<bool> Function(WeekStartDay) onWeekStartDayChanged;
+  final Future<bool> Function(AppTimeFormat) onTimeFormatChanged;
 
   const DateAndTimeBottomSheet({
     super.key,
@@ -53,6 +53,7 @@ class DateAndTimeBottomSheet extends StatefulWidget {
 class _DateAndTimeBottomSheetState extends State<DateAndTimeBottomSheet> {
   late WeekStartDay _selectedWeekStartDay;
   late AppTimeFormat _selectedTimeFormat;
+  bool _isUpdating = false;
 
   @override
   void initState() {
@@ -62,24 +63,52 @@ class _DateAndTimeBottomSheetState extends State<DateAndTimeBottomSheet> {
     _selectedTimeFormat = widget.selectedTimeFormat;
   }
 
-  void _selectWeekStartDay(WeekStartDay day) {
-    if (_selectedWeekStartDay == day) return;
+  Future<void> _selectWeekStartDay(WeekStartDay day) async {
+    if (_selectedWeekStartDay == day || _isUpdating) return;
 
     setState(() {
-      _selectedWeekStartDay = day;
+      _isUpdating = true;
     });
 
-    widget.onWeekStartDayChanged(day);
+    var succeeded = false;
+    try {
+      succeeded = await widget.onWeekStartDayChanged(day);
+    } catch (_) {
+      succeeded = false;
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      if (succeeded) {
+        _selectedWeekStartDay = day;
+      }
+      _isUpdating = false;
+    });
   }
 
-  void _selectTimeFormat(AppTimeFormat format) {
-    if (_selectedTimeFormat == format) return;
+  Future<void> _selectTimeFormat(AppTimeFormat format) async {
+    if (_selectedTimeFormat == format || _isUpdating) return;
 
     setState(() {
-      _selectedTimeFormat = format;
+      _isUpdating = true;
     });
 
-    widget.onTimeFormatChanged(format);
+    var succeeded = false;
+    try {
+      succeeded = await widget.onTimeFormatChanged(format);
+    } catch (_) {
+      succeeded = false;
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      if (succeeded) {
+        _selectedTimeFormat = format;
+      }
+      _isUpdating = false;
+    });
   }
 
   @override
@@ -100,6 +129,12 @@ class _DateAndTimeBottomSheetState extends State<DateAndTimeBottomSheet> {
             children: [
               const SettingsBottomSheetHeader(title: 'التاريخ والوقت'),
 
+              if (_isUpdating)
+                LinearProgressIndicator(
+                  minHeight: 2,
+                  color: appColors.primaryToPrimaryDark,
+                ),
+
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
@@ -112,14 +147,14 @@ class _DateAndTimeBottomSheetState extends State<DateAndTimeBottomSheet> {
                     children: [
                       _WeekStartSection(
                         selectedDay: _selectedWeekStartDay,
-                        onSelected: _selectWeekStartDay,
+                        onSelected: _isUpdating ? null : _selectWeekStartDay,
                       ),
 
                       SizedBox(height: SizeConfig.h(0.035)),
 
                       _TimeFormatSection(
                         selectedFormat: _selectedTimeFormat,
-                        onSelected: _selectTimeFormat,
+                        onSelected: _isUpdating ? null : _selectTimeFormat,
                       ),
 
                       SizedBox(height: SizeConfig.h(0.03)),
@@ -137,7 +172,7 @@ class _DateAndTimeBottomSheetState extends State<DateAndTimeBottomSheet> {
 
 class _WeekStartSection extends StatelessWidget {
   final WeekStartDay selectedDay;
-  final ValueChanged<WeekStartDay> onSelected;
+  final ValueChanged<WeekStartDay>? onSelected;
 
   const _WeekStartSection({
     required this.selectedDay,
@@ -183,7 +218,7 @@ class _WeekStartSection extends StatelessWidget {
                 return InterestChipItem(
                   label: day.apiValue,
                   isSelected: selectedDay == day,
-                  onTap: () => onSelected(day),
+                  onTap: onSelected == null ? null : () => onSelected!(day),
                 );
               }).toList(),
             ),
@@ -196,7 +231,7 @@ class _WeekStartSection extends StatelessWidget {
 
 class _TimeFormatSection extends StatelessWidget {
   final AppTimeFormat selectedFormat;
-  final ValueChanged<AppTimeFormat> onSelected;
+  final ValueChanged<AppTimeFormat>? onSelected;
 
   const _TimeFormatSection({
     required this.selectedFormat,
@@ -238,9 +273,9 @@ class _TimeFormatSection extends StatelessWidget {
                 child: InterestChipItem(
                   label: AppTimeFormat.twelveHours.apiValue,
                   isSelected: selectedFormat == AppTimeFormat.twelveHours,
-                  onTap: () {
-                    onSelected(AppTimeFormat.twelveHours);
-                  },
+                  onTap: onSelected == null
+                      ? null
+                      : () => onSelected!(AppTimeFormat.twelveHours),
                 ),
               ),
 
@@ -250,9 +285,9 @@ class _TimeFormatSection extends StatelessWidget {
                 child: InterestChipItem(
                   label: AppTimeFormat.twentyFourHours.apiValue,
                   isSelected: selectedFormat == AppTimeFormat.twentyFourHours,
-                  onTap: () {
-                    onSelected(AppTimeFormat.twentyFourHours);
-                  },
+                  onTap: onSelected == null
+                      ? null
+                      : () => onSelected!(AppTimeFormat.twentyFourHours),
                 ),
               ),
             ],

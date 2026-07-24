@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -9,11 +9,7 @@ class InterestCard extends StatelessWidget {
   final InterestItemEntity interest;
   final VoidCallback onTap;
 
-  const InterestCard({
-    super.key,
-    required this.interest,
-    required this.onTap,
-  });
+  const InterestCard({super.key, required this.interest, required this.onTap});
 
   Color _parseColor(String hex) {
     try {
@@ -47,7 +43,7 @@ class InterestCard extends StatelessWidget {
           boxShadow: [
             if (!isDark)
               BoxShadow(
-                color: Colors.black.withOpacity(0.035),
+                color: Colors.black.withValues(alpha: 0.035),
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               ),
@@ -65,15 +61,11 @@ class InterestCard extends StatelessWidget {
                       color: iconColor,
                       size: SizeConfig.text(0.055),
                     )
-                  : SvgPicture.network(
-                      iconUrl,
-                      colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
-                      placeholderBuilder: (_) => Icon(
-                        Icons.category_rounded,
-                        color: iconColor,
-                        size: SizeConfig.text(0.055),
-                      ),
-                      errorBuilder: (_, __, ___) => Icon(
+                  : CustomAppImage(
+                      path: iconUrl,
+                      color: iconColor,
+                      showLoadingForSvg: true,
+                      fallback: Icon(
                         Icons.category_rounded,
                         color: iconColor,
                         size: SizeConfig.text(0.055),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -12,7 +11,7 @@ import 'package:quiz_app_grad/features/settings/presentation/widget/settings_bot
 Future<void> showRemindersAndAlertsBottomSheet({
   required BuildContext context,
   required bool taskRemindersEnabled,
-  required ValueChanged<bool> onTaskRemindersChanged,
+  required Future<bool> Function(bool) onTaskRemindersChanged,
   VoidCallback? onOpenNotificationSettings,
   VoidCallback? onTestNotification,
   VoidCallback? onTestAlarm,
@@ -36,7 +35,7 @@ Future<void> showRemindersAndAlertsBottomSheet({
 
 class RemindersAndAlertsBottomSheet extends StatefulWidget {
   final bool taskRemindersEnabled;
-  final ValueChanged<bool> onTaskRemindersChanged;
+  final Future<bool> Function(bool) onTaskRemindersChanged;
   final VoidCallback? onOpenNotificationSettings;
   final VoidCallback? onTestNotification;
   final VoidCallback? onTestAlarm;
@@ -58,6 +57,7 @@ class RemindersAndAlertsBottomSheet extends StatefulWidget {
 class _RemindersAndAlertsBottomSheetState
     extends State<RemindersAndAlertsBottomSheet> {
   late bool _taskRemindersEnabled;
+  bool _isChangingTaskReminders = false;
 
   @override
   void initState() {
@@ -65,19 +65,37 @@ class _RemindersAndAlertsBottomSheetState
     _taskRemindersEnabled = widget.taskRemindersEnabled;
   }
 
-  void _changeTaskReminders(bool value) {
+  Future<void> _changeTaskReminders(bool value) async {
+    if (_isChangingTaskReminders) {
+      return;
+    }
+
     setState(() {
-      _taskRemindersEnabled = value;
+      _isChangingTaskReminders = true;
     });
 
-    widget.onTaskRemindersChanged(value);
+    var succeeded = false;
+    try {
+      succeeded = await widget.onTaskRemindersChanged(value);
+    } catch (_) {
+      succeeded = false;
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      if (succeeded) {
+        _taskRemindersEnabled = value;
+      }
+      _isChangingTaskReminders = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return DraggableScrollableSheet(
       initialChildSize: 0.72,
       minChildSize: 0.55,
@@ -132,7 +150,10 @@ class _RemindersAndAlertsBottomSheetState
 
                       _TaskReminderSwitchTile(
                         value: _taskRemindersEnabled,
-                        onChanged: _changeTaskReminders,
+                        isLoading: _isChangingTaskReminders,
+                        onChanged: _isChangingTaskReminders
+                            ? null
+                            : _changeTaskReminders,
                       ),
 
                       SizedBox(height: SizeConfig.h(0.02)),
@@ -144,24 +165,6 @@ class _RemindersAndAlertsBottomSheetState
           ),
         );
       },
-    );
-  }
-}
-
-class _BottomSheetHandle extends StatelessWidget {
-  final bool isDark;
-
-  const _BottomSheetHandle({required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: SizeConfig.w(0.12),
-      height: 4,
-      decoration: BoxDecoration(
-        color: isDark ? AppPalette.greyLightDark : AppPalette.greyLight,
-        borderRadius: BorderRadius.circular(30),
-      ),
     );
   }
 }
@@ -339,9 +342,14 @@ class _ReminderActionTile extends StatelessWidget {
 
 class _TaskReminderSwitchTile extends StatelessWidget {
   final bool value;
-  final ValueChanged<bool> onChanged;
+  final bool isLoading;
+  final ValueChanged<bool>? onChanged;
 
-  const _TaskReminderSwitchTile({required this.value, required this.onChanged});
+  const _TaskReminderSwitchTile({
+    required this.value,
+    required this.isLoading,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -396,11 +404,21 @@ class _TaskReminderSwitchTile extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Switch.adaptive(
-                value: value,
-                onChanged: onChanged,
-                activeColor: appColors.primaryToPrimaryDark,
-              ),
+              if (isLoading)
+                SizedBox(
+                  width: SizeConfig.w(0.055),
+                  height: SizeConfig.w(0.055),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: appColors.primaryToPrimaryDark,
+                  ),
+                )
+              else
+                Switch.adaptive(
+                  value: value,
+                  onChanged: onChanged,
+                  activeThumbColor: appColors.primaryToPrimaryDark,
+                ),
               CustomTextWidget(
                 value ? 'مفعلة' : 'معطلة',
                 color: value

@@ -81,11 +81,11 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet> {
     try {
       await widget.onSubmit();
     } finally {
-      if (!mounted) return;
-
-      setState(() {
-        _isSubmitting = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 
@@ -258,7 +258,6 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet> {
       return 'يجب أن تحتوي كلمة المرور على رقم واحد على الأقل';
     }
 
-
     if (password == widget.currentPasswordController.text.trim()) {
       return 'يجب أن تختلف كلمة المرور الجديدة عن الحالية';
     }
@@ -288,7 +287,6 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet> {
   bool _containsNumber(String value) {
     return RegExp(r'[0-9]').hasMatch(value);
   }
-
 }
 
 class _PasswordRequirementsMessage extends StatelessWidget {

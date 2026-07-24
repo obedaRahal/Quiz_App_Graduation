@@ -2062,6 +2062,8 @@ void _registerSettingsFeature() {
       updateDateTimeUseCase: sl(),
       updatePasswordUseCase: sl(),
       logoutUseCase: sl(),
+      getStudyAlarmScheduleUseCase: sl(),
+      studyAlarmSchedulerService: sl(),
     ),
   );
 }
