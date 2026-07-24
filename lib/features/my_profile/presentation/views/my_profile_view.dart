@@ -17,6 +17,7 @@ import 'package:quiz_app_grad/features/my_profile/data/models/my_profile_folder_
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_state.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/my_profile_body.dart';
+import 'package:quiz_app_grad/features/settings/data/models/settings_route_args.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -58,12 +59,48 @@ class _MyProfileViewState extends State<MyProfileView> {
         body: SafeArea(
           child: Column(
             children: [
-              TopPageHeader(
-                title: 'الملف الشخصي',
-                onBack: () => safeBackToHome(context),
-                icon: Icons.settings_outlined,
-                onIconTap: () {
-                  debugPrint('settings');
+              // TopPageHeader(
+              //   title: 'الملف الشخصي',
+              //   onBack: () => safeBackToHome(context),
+              //   icon: Icons.settings_outlined,
+              //   onIconTap: () {
+              //     debugPrint('settings');
+              //     context.pushNamed(AppRouterName.settings);
+              //   },
+              // ),
+              BlocBuilder<MyProfileCubit, MyProfileState>(
+                buildWhen: (previous, current) {
+                  return previous.profile != current.profile;
+                },
+                builder: (context, state) {
+                  final profile = state.profile;
+
+                  return TopPageHeader(
+                    title: 'الملف الشخصي',
+                    onBack: () => safeBackToHome(context),
+                    icon: Icons.settings_outlined,
+                    onIconTap: () {
+                      if (profile == null) {
+                        showValidationTopSnackBar(
+                          context,
+                          title: 'تنبيه',
+                          message:
+                              'يرجى الانتظار حتى يكتمل تحميل بيانات الملف الشخصي',
+                          type: AppValidationSnackBarType.hint,
+                        );
+                        return;
+                      }
+
+                      context.pushNamed(
+                        AppRouterName.settings,
+                        extra: SettingsRouteArgs(
+                          name: profile.name ?? '',
+                          email: profile.email ?? '',
+                          imageUrl: profile.avatarUrl,
+                        ),
+                      );
+                    },
+                  );
                 },
               ),
               CustomButtonWidget(

@@ -64,6 +64,9 @@ import 'package:quiz_app_grad/features/other_profile/presentation/views/other_pr
 import 'package:quiz_app_grad/features/other_profile/presentation/views/shared_profile_redirect_view.dart';
 import 'package:quiz_app_grad/features/search/presentation/manager/search/search_cubit.dart';
 import 'package:quiz_app_grad/features/search/presentation/view/search_view.dart';
+import 'package:quiz_app_grad/features/settings/data/models/settings_route_args.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/settings/settings_cubit.dart';
+import 'package:quiz_app_grad/features/settings/presentation/view/settings_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/welcome_view.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_summary_entity.dart';
@@ -840,6 +843,34 @@ class AppRouter {
             return BlocProvider(
               create: (_) => sl<SearchCubit>()..getSearchHistory(),
               child: const SearchView(),
+            );
+          },
+        ),
+
+        ///////// settings /////////////
+        GoRoute(
+          path: AppRouterPath.settings,
+          name: AppRouterName.settings,
+          pageBuilder: (context, state) {
+            debugPrint("============ settings Route ============");
+
+            final args = state.extra;
+
+            if (args is! SettingsRouteArgs) {
+              return _slidePage(
+                state: state,
+                child: const Scaffold(
+                  body: Center(child: Text('تعذر تحميل بيانات الإعدادات')),
+                ),
+              );
+            }
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider(
+                create: (_) => sl<SettingsCubit>()..getSettings(),
+                child: SettingsView(args: args),
+              ),
             );
           },
         ),

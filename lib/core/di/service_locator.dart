@@ -186,11 +186,22 @@ import 'package:quiz_app_grad/features/search/domain/use_cases/delete_search_his
 import 'package:quiz_app_grad/features/search/domain/use_cases/get_search_history_use_case.dart';
 import 'package:quiz_app_grad/features/search/domain/use_cases/search_users_use_case.dart';
 import 'package:quiz_app_grad/features/search/presentation/manager/search/search_cubit.dart';
+import 'package:quiz_app_grad/features/settings/data/data_source/settings_remote_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
+import 'package:quiz_app_grad/features/settings/data/repository_impl/settings_repository_impl.dart';
 import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repository_impl.dart';
+import 'package:quiz_app_grad/features/settings/domain/repositories/settings_repository.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/theme_repository.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/disable_task_reminders_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/enable_task_reminders_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/get_settings_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/get_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/logout_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/set_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/update_date_time_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/update_password_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/update_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/settings/settings_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
@@ -281,6 +292,8 @@ Future<void> initSl() async {
 
   _registerNotificationFeature();
   _registerSearchFeature();
+
+  _registerSettingsFeature();
 }
 
 Future<void> _registerCore() async {
@@ -2003,6 +2016,52 @@ void _registerStudyAlarmsFeature() {
     () => StudyAlarmCubit(
       getStudyAlarmScheduleUseCase: sl<GetStudyAlarmScheduleUseCase>(),
       schedulerService: sl<StudyAlarmSchedulerService>(),
+    ),
+  );
+}
+
+void _registerSettingsFeature() {
+  // ==================== Settings ====================
+
+  sl.registerLazySingleton<SettingsRemoteDataSource>(
+    () => SettingsRemoteDataSourceImpl(apiConsumer: sl()),
+  );
+
+  sl.registerLazySingleton<SettingsRepository>(
+    () => SettingsRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<GetSettingsUseCase>(
+    () => GetSettingsUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton<EnableTaskRemindersUseCase>(
+    () => EnableTaskRemindersUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton<DisableTaskRemindersUseCase>(
+    () => DisableTaskRemindersUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton<UpdateThemeModeUseCase>(
+    () => UpdateThemeModeUseCase(repository: sl()),
+  );
+
+  sl.registerLazySingleton(() => UpdateDateTimeUseCase(repository: sl()));
+
+  sl.registerLazySingleton(() => UpdatePasswordUseCase(repository: sl()));
+
+  sl.registerLazySingleton(() => LogoutUseCase(repository: sl()));
+
+  sl.registerFactory<SettingsCubit>(
+    () => SettingsCubit(
+      getSettingsUseCase: sl(),
+      enableTaskRemindersUseCase: sl(),
+      disableTaskRemindersUseCase: sl(),
+      updateThemeModeUseCase: sl(),
+      updateDateTimeUseCase: sl(),
+      updatePasswordUseCase: sl(),
+      logoutUseCase: sl(),
     ),
   );
 }

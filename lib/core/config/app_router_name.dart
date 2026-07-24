@@ -46,6 +46,8 @@ abstract class AppRouterName {
 
   static const String notifications = 'notifications';
   static const String search = 'search';
+
+  static const String settings = 'settings';
 }
 
 abstract class AppRouterPath {
@@ -102,4 +104,5 @@ abstract class AppRouterPath {
 
   static const String notifications = '/notifications';
   static const String search = '/search';
+  static const String settings = '/settings';
 }

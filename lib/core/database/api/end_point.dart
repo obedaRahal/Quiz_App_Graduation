@@ -578,4 +578,21 @@ class EndPoints {
   //////////////// alarms /////////////////
   static const String studyAlarmReminderSchedule =
       '$baseUrl/study-plans/reminder-schedule';
+
+  /////////////// SETTINGS ///////////
+  static const String getSettings = '$baseUrl/settings/get-setting';
+
+  static const String enableTaskReminders =
+      '$baseUrl/settings/task-reminders/enable';
+
+  static const String disableTaskReminders =
+      '$baseUrl/settings/task-reminders/disable';
+
+  static const String updateThemeMode = '$baseUrl/settings/theme-mode';
+
+  static const String updateDateTime = '$baseUrl/settings/date-time';
+
+  static const String updatePassword = '$baseUrl/settings/update/password';
+
+  static const String logout = '$baseUrl/logout';
 }
