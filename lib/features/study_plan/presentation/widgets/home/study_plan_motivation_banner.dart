@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
@@ -40,16 +41,18 @@ class _StudyPlanMotivationBannerState extends State<StudyPlanMotivationBanner> {
       alignment: Alignment.center,
 
       children: [
-        CustomAppImage(path: AppImage.studyplan, ),
+        ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+          child: CustomAppImage(path: AppImage.studyplan),
+        ),
         Padding(
-          padding:  EdgeInsets.symmetric(horizontal: SizeConfig.w(0.02)),
+          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.02)),
           child: CustomTextWidget(
-            
             _selectedPhrase,
             maxLines: 3,
             color: AppPalette.black,
             fontFamily: AppFont.elMessiriBold,
-            fontSize: SizeConfig.text(0.05),
+            fontSize: SizeConfig.text(0.04),
           ),
         ),
       ],

@@ -224,7 +224,9 @@ class _MyProfileAcademicInfoBottomSheetState
           return Container(
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1F1F1F) : AppPalette.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(22),
+              ),
             ),
             child: Column(
               children: [
@@ -237,18 +239,18 @@ class _MyProfileAcademicInfoBottomSheetState
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-      
+
                 SizedBox(height: SizeConfig.h(0.018)),
-      
+
                 CustomTextWidget(
                   'المعلومات الدراسية',
                   color: context.appColors.blackTogreyMedium,
                   fontFamily: AppFont.elMessiriBold,
                   fontSize: SizeConfig.text(0.04),
                 ),
-      
+
                 CustomDivider(height: 20, thickness: 3, isDashed: true),
-      
+
                 Expanded(
                   child: SingleChildScrollView(
                     controller: scrollController,
@@ -260,17 +262,17 @@ class _MyProfileAcademicInfoBottomSheetState
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         _SectionTitle(title: 'المستوى الدراسي'),
-      
+
                         SizedBox(height: SizeConfig.h(0.012)),
-      
+
                         _EducationLevelGrid(
                           selectedLevel: selectedLevel,
                           onChanged: _onLevelChanged,
                           currentLevel: widget.currentValue.educationLevel,
                         ),
-      
+
                         SizedBox(height: SizeConfig.h(0.025)),
-      
+
                         if (selectedLevel == 'مدرسة')
                           _SchoolStageSection(
                             selectedStage: selectedSchoolStage,
@@ -282,7 +284,7 @@ class _MyProfileAcademicInfoBottomSheetState
                               setState(() => selectedSchoolStage = value);
                             },
                           ),
-      
+
                         if (selectedLevel == 'جامعة')
                           _UniversityFieldsSection(
                             selectedUniversity: selectedUniversity,
@@ -307,7 +309,7 @@ class _MyProfileAcademicInfoBottomSheetState
                               });
                             },
                           ),
-      
+
                         if (AcademicLevelRules.isGraduateLevel(selectedLevel))
                           _GraduateDocumentsSection(
                             selectedUniversity: selectedGraduatedUniversity,
@@ -328,7 +330,7 @@ class _MyProfileAcademicInfoBottomSheetState
                     ),
                   ),
                 ),
-      
+
                 CustomBackgroundWithChild(
                   childVerticalPad: SizeConfig.h(0.01),
                   childHorizontalPad: SizeConfig.w(0.03),
@@ -343,7 +345,7 @@ class _MyProfileAcademicInfoBottomSheetState
                       offset: const Offset(0, -4),
                     ),
                   ],
-      
+
                   child: CustomButtonWidget(
                     width: double.infinity,
                     backgroundColor: canSave
@@ -406,42 +408,33 @@ class _MyProfileAcademicInfoBottomSheetState
   }
 
   String? _validateBeforeSave() {
-    final currentLevel = widget.currentValue.educationLevel;
-    final isLevelTransition = selectedLevel != currentLevel;
-
     if (selectedLevel == AcademicLevelRules.school) {
-      if (isLevelTransition &&
-          (selectedSchoolStage == null ||
-              selectedSchoolStage!.trim().isEmpty)) {
+      if (selectedSchoolStage == null || selectedSchoolStage!.trim().isEmpty) {
         return 'يرجى اختيار المرحلة المدرسية';
       }
     }
 
     if (selectedLevel == AcademicLevelRules.university) {
-      if (isLevelTransition) {
-        if (selectedUniversity == null) {
-          return 'يرجى اختيار الجامعة';
-        }
+      if (selectedUniversity == null) {
+        return 'يرجى اختيار الجامعة';
+      }
 
-        if (selectedDepartment == null) {
-          return 'يرجى اختيار الاختصاص';
-        }
+      if (selectedDepartment == null) {
+        return 'يرجى اختيار الاختصاص';
+      }
 
-        if (selectedUniversityYear == null) {
-          return 'يرجى اختيار السنة الدراسية';
-        }
+      if (selectedUniversityYear == null) {
+        return 'يرجى اختيار السنة الدراسية';
       }
     }
 
     if (AcademicLevelRules.isGraduateLevel(selectedLevel)) {
-      if (isLevelTransition) {
-        if (selectedGraduatedUniversity == null) {
-          return 'يرجى اختيار الجامعة التي تخرجت منها';
-        }
+      if (selectedGraduatedUniversity == null) {
+        return 'يرجى اختيار الجامعة التي تخرجت منها';
+      }
 
-        if (selectedGraduatedDepartment == null) {
-          return 'يرجى اختيار القسم الذي تخرجت منه';
-        }
+      if (selectedGraduatedDepartment == null) {
+        return 'يرجى اختيار القسم الذي تخرجت منه';
       }
     }
 
@@ -849,13 +842,11 @@ class _GraduateDocumentsSection extends StatelessWidget {
   final ValueChanged<UniversityOption?> onUniversityChanged;
   final ValueChanged<DepartmentOption?> onDepartmentChanged;
 
-
   const _GraduateDocumentsSection({
     required this.selectedUniversity,
     required this.selectedDepartment,
     required this.onUniversityChanged,
     required this.onDepartmentChanged,
-
   });
 
   @override
@@ -891,10 +882,7 @@ class _GraduateDocumentsSection extends StatelessWidget {
           isEnabled: selectedUniversity != null,
           onChanged: onDepartmentChanged,
         ),
-
-        
       ],
     );
   }
 }
-

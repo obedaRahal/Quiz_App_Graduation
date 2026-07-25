@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
+import 'package:quiz_app_grad/features/settings/data/models/academic_verification_model.dart';
 import 'package:quiz_app_grad/features/settings/data/models/get_settings_response_model.dart';
 import 'package:quiz_app_grad/features/settings/data/models/settings_operation_response_model.dart';
 import 'package:quiz_app_grad/features/settings/data/models/sold_tests_model.dart';
@@ -31,6 +33,19 @@ abstract class SettingsRemoteDataSource {
   Future<SettingsOperationResponseModel> logout({required LogoutParams params});
 
   Future<SoldTestsModel> fetchSoldTests({required FetchSoldTestsParams params});
+
+  Future<AcademicVerificationModel> fetchAcademicVerificationStatus();
+
+  Future<void> createAcademicVerificationRequest({
+    required String certificateImagePath,
+    required String identityImagePath,
+  });
+
+  Future<void> cancelAcademicVerificationRequest();
+
+  Future<void> updateAcademicVerificationVisibility({
+    required bool showCertificatePublicly,
+  });
 }
 
 class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
@@ -245,5 +260,129 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
     );
 
     return model;
+  }
+
+  @override
+  Future<AcademicVerificationModel> fetchAcademicVerificationStatus() async {
+    debugPrint(
+      '============ SettingsRemoteDataSourceImpl.fetchAcademicVerificationStatus ============',
+    );
+
+    debugPrint('→ endpoint: ${EndPoints.academicVerificationStatus}');
+    debugPrint('→ method: GET');
+
+    final response = await apiConsumer.get(
+      EndPoints.academicVerificationStatus,
+    );
+
+    debugPrint('← response: $response');
+
+    final responseMap = (response as Map).cast<String, dynamic>();
+
+    final dataMap = (responseMap['data'] as Map).cast<String, dynamic>();
+
+    final model = AcademicVerificationModel.fromJson(dataMap);
+
+    debugPrint('✓ academic verification status fetched');
+    debugPrint('→ hasRequest: ${model.hasRequest}');
+    debugPrint('→ status: ${model.status}');
+    debugPrint('→ submittedAt: ${model.submittedAt}');
+    debugPrint('→ approvedAt: ${model.approvedAt}');
+    debugPrint(
+      '→ showCertificatePublicly: '
+      '${model.showCertificatePublicly}',
+    );
+    debugPrint(
+      '→ remainingCancellations: '
+      '${model.remainingCancellations}',
+    );
+    debugPrint(
+      '===============================================================================================',
+    );
+
+    return model;
+  }
+
+  @override
+  Future<void> createAcademicVerificationRequest({
+    required String certificateImagePath,
+    required String identityImagePath,
+  }) async {
+    debugPrint(
+      "============ SettingsRemoteDataSourceImpl.createAcademicVerificationRequest ============",
+    );
+
+    debugPrint(
+      "→ endpoint: ${EndPoints.createAcademicVerificationRequest} "
+      "| data: {"
+      "certificate_image: $certificateImagePath, "
+      "identity_image: $identityImagePath"
+      "}",
+    );
+
+    final Map<String, dynamic> formMap = {
+      'certificate_image': await MultipartFile.fromFile(
+        certificateImagePath,
+        filename: _extractFileName(certificateImagePath),
+      ),
+      'identity_image': await MultipartFile.fromFile(
+        identityImagePath,
+        filename: _extractFileName(identityImagePath),
+      ),
+    };
+
+    final response = await apiConsumer.post(
+      EndPoints.createAcademicVerificationRequest,
+      data: FormData.fromMap(formMap),
+    );
+
+    debugPrint("← response (createAcademicVerificationRequest): $response");
+    debugPrint(
+      "================================================================================",
+    );
+  }
+
+  String _extractFileName(String path) {
+    final normalizedPath = path.replaceAll('\\', '/');
+    return normalizedPath.split('/').last;
+  }
+
+  @override
+  Future<void> cancelAcademicVerificationRequest() async {
+    debugPrint(
+      '============ SettingsRemoteDataSourceImpl.cancelAcademicVerificationRequest ============',
+    );
+    debugPrint('→ endpoint: ${EndPoints.cancelAcademicVerificationRequest}');
+    debugPrint('→ method: DELETE');
+
+    final response = await apiConsumer.delete(
+      EndPoints.cancelAcademicVerificationRequest,
+    );
+
+    debugPrint('← response (cancelAcademicVerificationRequest): $response');
+    debugPrint(
+      '=========================================================================================',
+    );
+  }
+
+  @override
+  Future<void> updateAcademicVerificationVisibility({
+    required bool showCertificatePublicly,
+  }) async {
+    debugPrint(
+      '============ SettingsRemoteDataSourceImpl.updateAcademicVerificationVisibility ============',
+    );
+    debugPrint('→ showCertificatePublicly: $showCertificatePublicly');
+    debugPrint('→ api value: ${showCertificatePublicly ? 1 : 0}');
+
+    final response = await apiConsumer.post(
+      EndPoints.updateAcademicVerificationVisibility,
+      data: {'show_certificate_publicly': showCertificatePublicly ? 1 : 0},
+    );
+
+    debugPrint('← response (updateAcademicVerificationVisibility): $response');
+    debugPrint(
+      '=============================================================================================',
+    );
   }
 }

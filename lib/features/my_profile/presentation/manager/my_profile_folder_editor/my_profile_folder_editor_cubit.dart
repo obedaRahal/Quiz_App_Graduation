@@ -24,6 +24,8 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
   final FetchMyProfilePickerSearchTestsUseCase
   fetchMyProfilePickerSearchTestsUseCase;
   Timer? _pickerSearchDebounce;
+  int _pickerRequestGeneration = 0;
+  final Map<int, MyProfileFolderSelectedTestEntity> _pickerTestsCache = {};
 
   final CreateMyProfileFolderUseCase createMyProfileFolderUseCase;
 
@@ -384,6 +386,13 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
     );
     debugPrint("→ folderId: $folderId");
 
+    emit(
+      state.copyWith(
+        initialTestsStatus: MyProfileFolderInitialTestsStatus.loading,
+        clearInitialTestsError: true,
+      ),
+    );
+
     final result = await fetchMyProfileFolderContentUseCase(
       FetchMyProfileFolderContentParams(folderId: folderId),
     );
@@ -396,8 +405,9 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
 
         emit(
           state.copyWith(
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            initialTestsStatus: MyProfileFolderInitialTestsStatus.failure,
+            initialTestsErrorTitle: failure.title,
+            initialTestsErrorMessage: failure.message,
           ),
         );
       },
@@ -410,7 +420,8 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
           state.copyWith(
             selectedTests: selectedTests,
             originalTestIds: selectedTests.map((e) => e.id).toList(),
-            clearError: true,
+            initialTestsStatus: MyProfileFolderInitialTestsStatus.success,
+            clearInitialTestsError: true,
           ),
         );
 
@@ -445,14 +456,22 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
     );
     debugPrint("→ userId: $userId");
 
+    _pickerSearchDebounce?.cancel();
+    _pickerRequestGeneration++;
+    _pickerTestsCache
+      ..clear()
+      ..addEntries(state.selectedTests.map((test) => MapEntry(test.id, test)));
+
     emit(
       state.copyWith(
         tempSelectedTestIds: state.selectedTestIds,
         selectedPickerTestsTab: MyProfilePickerTestsTab.public,
+        pickerSearchQuery: '',
+        clearPickerSearchResponse: true,
         pickerTestsStatus: MyProfilePickerTestsStatus.loading,
         pickerTestsLoadMoreStatus: MyProfilePickerTestsLoadMoreStatus.initial,
         clearPickerTestsResponse: true,
-        clearError: true,
+        clearPickerError: true,
       ),
     );
 
@@ -466,6 +485,8 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
     required MyProfilePickerTestsTab tab,
   }) async {
     if (state.selectedPickerTestsTab == tab) return;
+    _pickerSearchDebounce?.cancel();
+    _pickerRequestGeneration++;
 
     debugPrint(
       "============ MyProfileFolderEditorCubit.changePickerTestsTab ============",
@@ -481,7 +502,7 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
         pickerTestsStatus: MyProfilePickerTestsStatus.loading,
         pickerTestsLoadMoreStatus: MyProfilePickerTestsLoadMoreStatus.initial,
         clearPickerTestsResponse: true,
-        clearError: true,
+        clearPickerError: true,
       ),
     );
 
@@ -498,21 +519,30 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
       "→ params: {userId: $userId, tab: ${state.selectedPickerTestsTab.apiValue}}",
     );
 
+    final requestGeneration = ++_pickerRequestGeneration;
+    final requestedTab = state.selectedPickerTestsTab;
+
     emit(
       state.copyWith(
         pickerTestsStatus: MyProfilePickerTestsStatus.loading,
         pickerTestsLoadMoreStatus: MyProfilePickerTestsLoadMoreStatus.initial,
         clearPickerTestsResponse: true,
-        clearError: true,
+        clearPickerError: true,
       ),
     );
 
     final result = await fetchMyProfilePickerTestsUseCase(
       FetchMyProfilePickerTestsParams(
         userId: userId,
-        tab: state.selectedPickerTestsTab.apiValue,
+        tab: requestedTab.apiValue,
       ),
     );
+
+    if (requestGeneration != _pickerRequestGeneration ||
+        state.selectedPickerTestsTab != requestedTab ||
+        state.hasPickerSearchQuery) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -523,12 +553,16 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
         emit(
           state.copyWith(
             pickerTestsStatus: MyProfilePickerTestsStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            pickerErrorTitle: failure.title,
+            pickerErrorMessage: failure.message,
           ),
         );
       },
       (response) {
+        for (final test in response.data) {
+          final mapped = _mapPickerTestToSelectedTest(test);
+          _pickerTestsCache[mapped.id] = mapped;
+        }
         debugPrint("✓ fetchPickerTestsInitial success");
         debugPrint("→ tests count: ${response.data.length}");
         debugPrint("→ hasMorePages: ${response.meta.hasMorePages}");
@@ -538,7 +572,7 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
           state.copyWith(
             pickerTestsStatus: MyProfilePickerTestsStatus.success,
             pickerTestsResponse: response,
-            clearError: true,
+            clearPickerError: true,
           ),
         );
       },
@@ -559,6 +593,8 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
 
     final cursor = response.meta.nextCursor;
     if (cursor == null || cursor.trim().isEmpty) return;
+    final requestGeneration = _pickerRequestGeneration;
+    final requestedTab = state.selectedPickerTestsTab;
 
     debugPrint(
       "============ MyProfileFolderEditorCubit.fetchMorePickerTestsIfNeeded ============",
@@ -569,17 +605,23 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
     emit(
       state.copyWith(
         pickerTestsLoadMoreStatus: MyProfilePickerTestsLoadMoreStatus.loading,
-        clearError: true,
+        clearPickerError: true,
       ),
     );
 
     final result = await fetchMyProfilePickerTestsUseCase(
       FetchMyProfilePickerTestsParams(
         userId: userId,
-        tab: state.selectedPickerTestsTab.apiValue,
+        tab: requestedTab.apiValue,
         cursor: cursor,
       ),
     );
+
+    if (requestGeneration != _pickerRequestGeneration ||
+        state.selectedPickerTestsTab != requestedTab ||
+        state.hasPickerSearchQuery) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -591,12 +633,16 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
           state.copyWith(
             pickerTestsLoadMoreStatus:
                 MyProfilePickerTestsLoadMoreStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            pickerErrorTitle: failure.title,
+            pickerErrorMessage: failure.message,
           ),
         );
       },
       (newResponse) {
+        for (final test in newResponse.data) {
+          final mapped = _mapPickerTestToSelectedTest(test);
+          _pickerTestsCache[mapped.id] = mapped;
+        }
         final updatedResponse = MyProfilePickerTestsEntity(
           success: newResponse.success,
           message: newResponse.message,
@@ -615,7 +661,7 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
             pickerTestsLoadMoreStatus:
                 MyProfilePickerTestsLoadMoreStatus.success,
             pickerTestsResponse: updatedResponse,
-            clearError: true,
+            clearPickerError: true,
           ),
         );
       },
@@ -643,33 +689,25 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
       selectedIds.add(testId);
     }
 
-    emit(state.copyWith(tempSelectedTestIds: selectedIds, clearError: true));
+    emit(
+      state.copyWith(tempSelectedTestIds: selectedIds, clearPickerError: true),
+    );
   }
 
   void applyPickerSelection() {
-    final tests = state.pickerTestsResponse?.data ?? [];
-
-    final selectedFromCurrentLoadedTests = tests
-        .where((item) => state.tempSelectedTestIds.contains(item.id))
-        .map(_mapPickerTestToSelectedTest)
+    final previousById = {
+      for (final test in state.selectedTests) test.id: test,
+    };
+    final merged = state.tempSelectedTestIds
+        .map((id) => _pickerTestsCache[id] ?? previousById[id])
+        .whereType<MyProfileFolderSelectedTestEntity>()
         .toList();
-
-    final oldSelectedStillKept = state.selectedTests
-        .where((item) => state.tempSelectedTestIds.contains(item.id))
-        .toList();
-
-    final merged = [
-      ...oldSelectedStillKept,
-      ...selectedFromCurrentLoadedTests.where(
-        (newItem) => !oldSelectedStillKept.any((old) => old.id == newItem.id),
-      ),
-    ];
 
     emit(
       state.copyWith(
         selectedTests: merged,
         submitStatus: MyProfileFolderEditorSubmitStatus.initial,
-        clearError: true,
+        clearPickerError: true,
       ),
     );
   }
@@ -692,8 +730,9 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
 
   void changePickerSearchQuery({required int userId, required String value}) {
     final query = value.trim();
+    _pickerRequestGeneration++;
 
-    emit(state.copyWith(pickerSearchQuery: value, clearError: true));
+    emit(state.copyWith(pickerSearchQuery: value, clearPickerError: true));
 
     _pickerSearchDebounce?.cancel();
 
@@ -703,7 +742,7 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
           state.copyWith(
             clearPickerSearchResponse: true,
             pickerTestsStatus: MyProfilePickerTestsStatus.loading,
-            clearError: true,
+            clearPickerError: true,
           ),
         );
 
@@ -721,36 +760,48 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
     );
     debugPrint("→ query: $query");
 
+    final requestGeneration = ++_pickerRequestGeneration;
+    final cleanQuery = query.trim();
+
     emit(
       state.copyWith(
         pickerTestsStatus: MyProfilePickerTestsStatus.loading,
         pickerTestsLoadMoreStatus: MyProfilePickerTestsLoadMoreStatus.initial,
         clearPickerTestsResponse: true,
         clearPickerSearchResponse: true,
-        clearError: true,
+        clearPickerError: true,
       ),
     );
 
     final result = await fetchMyProfilePickerSearchTestsUseCase(
-      FetchMyProfilePickerSearchTestsParams(query: query, page: 1),
+      FetchMyProfilePickerSearchTestsParams(query: cleanQuery, page: 1),
     );
+
+    if (requestGeneration != _pickerRequestGeneration ||
+        state.pickerSearchQuery.trim() != cleanQuery) {
+      return;
+    }
 
     result.fold(
       (failure) {
         emit(
           state.copyWith(
             pickerTestsStatus: MyProfilePickerTestsStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            pickerErrorTitle: failure.title,
+            pickerErrorMessage: failure.message,
           ),
         );
       },
       (response) {
+        for (final test in response.data) {
+          final mapped = _mapPickerTestToSelectedTest(test);
+          _pickerTestsCache[mapped.id] = mapped;
+        }
         emit(
           state.copyWith(
             pickerTestsStatus: MyProfilePickerTestsStatus.success,
             pickerSearchResponse: response,
-            clearError: true,
+            clearPickerError: true,
           ),
         );
       },
@@ -772,6 +823,7 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
     }
 
     final nextPage = response.meta.nextPage;
+    final requestGeneration = _pickerRequestGeneration;
 
     debugPrint(
       "============ MyProfileFolderEditorCubit.fetchMorePickerSearchIfNeeded ============",
@@ -782,7 +834,7 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
     emit(
       state.copyWith(
         pickerTestsLoadMoreStatus: MyProfilePickerTestsLoadMoreStatus.loading,
-        clearError: true,
+        clearPickerError: true,
       ),
     );
 
@@ -790,18 +842,27 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
       FetchMyProfilePickerSearchTestsParams(query: query, page: nextPage),
     );
 
+    if (requestGeneration != _pickerRequestGeneration ||
+        state.pickerSearchQuery.trim() != query) {
+      return;
+    }
+
     result.fold(
       (failure) {
         emit(
           state.copyWith(
             pickerTestsLoadMoreStatus:
                 MyProfilePickerTestsLoadMoreStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            pickerErrorTitle: failure.title,
+            pickerErrorMessage: failure.message,
           ),
         );
       },
       (newResponse) {
+        for (final test in newResponse.data) {
+          final mapped = _mapPickerTestToSelectedTest(test);
+          _pickerTestsCache[mapped.id] = mapped;
+        }
         final updatedResponse = MyProfilePickerSearchTestsEntity(
           success: newResponse.success,
           message: newResponse.message,
@@ -815,7 +876,7 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
             pickerTestsLoadMoreStatus:
                 MyProfilePickerTestsLoadMoreStatus.success,
             pickerSearchResponse: updatedResponse,
-            clearError: true,
+            clearPickerError: true,
           ),
         );
       },

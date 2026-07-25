@@ -58,7 +58,7 @@ class _StudyPlanDetailsBodyState extends State<StudyPlanDetailsBody> {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.fromLTRB(
             SizeConfig.w(0.03),
-            SizeConfig.h(0.014),
+            SizeConfig.h(0.03),
             SizeConfig.w(0.03),
             SizeConfig.h(0.04),
           ),

@@ -56,16 +56,20 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
   final SearchMyProfileLibraryUseCase searchMyProfileLibraryUseCase;
   Timer? _librarySearchDebounce;
+  int _libraryRequestGeneration = 0;
 
   final FetchMyProfileFoldersUseCase fetchMyProfileFoldersUseCase;
+  int _foldersRequestGeneration = 0;
 
   final FetchMyProfileFolderContentUseCase fetchMyProfileFolderContentUseCase;
+  int _folderContentRequestGeneration = 0;
 
   final DeleteMyProfileFolderUseCase deleteMyProfileFolderUseCase;
 
   final FetchMyProfilePickerTestsUseCase fetchMyProfileTestsUseCase;
   final FetchMyProfilePickerSearchTestsUseCase searchMyProfileTestsUseCase;
   Timer? _testsSearchDebounce;
+  int _testsRequestGeneration = 0;
 
   final FilterMyProfileTestsUseCase filterMyProfileTestsUseCase;
   final GetAllInterestsUseCase getAllInterestsUseCase;
@@ -104,7 +108,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         fetchStatus: FetchMyProfileStatus.loading,
-        clearError: true,
+        clearProfileError: true,
       ),
     );
 
@@ -146,7 +150,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         fetchStatus: FetchMyProfileStatus.success,
         profile: profile,
         editableProfile: profile,
-        clearError: true,
+        clearProfileError: true,
       ),
     );
 
@@ -160,7 +164,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     debugPrint("============ MyProfileCubit.changeSelectedTab ============");
     debugPrint("→ selected tab: $tab");
 
-    emit(state.copyWith(selectedTab: tab, clearError: true));
+    emit(state.copyWith(selectedTab: tab));
 
     switch (tab) {
       case MyProfileTab.content:
@@ -317,7 +321,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         updateStatus: UpdateMyProfileStatus.initial,
-        clearError: true,
+        clearUpdateError: true,
       ),
     );
   }
@@ -366,7 +370,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         fetchStatus: FetchMyProfileStatus.loading,
-        clearError: true,
+        clearProfileError: true,
       ),
     );
 
@@ -383,8 +387,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             fetchStatus: FetchMyProfileStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            profileError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -396,7 +402,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             fetchStatus: FetchMyProfileStatus.success,
             profile: response,
             editableProfile: response,
-            clearError: true,
+            clearProfileError: true,
           ),
         );
       },
@@ -436,8 +442,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       emit(
         state.copyWith(
           updateStatus: UpdateMyProfileStatus.failure,
-          errorTitle: "تنبيه",
-          errorMessage: validationMessage,
+          updateError: MyProfileOperationError(
+            title: "تنبيه",
+            message: validationMessage,
+          ),
         ),
       );
       return;
@@ -446,7 +454,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         updateStatus: UpdateMyProfileStatus.loading,
-        clearError: true,
+        clearUpdateError: true,
       ),
     );
 
@@ -466,8 +474,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             updateStatus: UpdateMyProfileStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            updateError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -480,7 +490,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             updateStatus: UpdateMyProfileStatus.success,
             profile: edited,
             editableProfile: edited,
-            clearError: true,
+            clearUpdateError: true,
           ),
         );
       },
@@ -581,7 +591,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         updateStatus: UpdateMyProfileStatus.loading,
-        clearError: true,
+        clearUpdateError: true,
       ),
     );
 
@@ -594,8 +604,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             updateStatus: UpdateMyProfileStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            updateError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
         return false;
@@ -610,7 +622,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             updateStatus: UpdateMyProfileStatus.success,
             profile: updatedProfile,
             editableProfile: updatedProfile,
-            clearError: true,
+            clearUpdateError: true,
           ),
         );
         return true;
@@ -676,7 +688,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         updateStatus: UpdateMyProfileStatus.loading,
-        clearError: true,
+        clearUpdateError: true,
       ),
     );
 
@@ -696,8 +708,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             updateStatus: UpdateMyProfileStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            updateError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
 
@@ -723,7 +737,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             updateStatus: UpdateMyProfileStatus.success,
             profile: updatedProfile,
             editableProfile: updatedProfile,
-            clearError: true,
+            clearUpdateError: true,
           ),
         );
 
@@ -756,7 +770,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         updateStatus: UpdateMyProfileStatus.loading,
-        clearError: true,
+        clearUpdateError: true,
       ),
     );
 
@@ -773,8 +787,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             updateStatus: UpdateMyProfileStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            updateError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
 
@@ -790,7 +806,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             updateStatus: UpdateMyProfileStatus.success,
             profile: updatedProfile,
             editableProfile: updatedProfile,
-            clearError: true,
+            clearUpdateError: true,
           ),
         );
 
@@ -823,7 +839,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         updateStatus: UpdateMyProfileStatus.loading,
-        clearError: true,
+        clearUpdateError: true,
       ),
     );
 
@@ -836,8 +852,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             updateStatus: UpdateMyProfileStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            updateError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
 
@@ -855,7 +873,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             updateStatus: UpdateMyProfileStatus.success,
             profile: updatedProfile,
             editableProfile: updatedProfile,
-            clearError: true,
+            clearUpdateError: true,
           ),
         );
 
@@ -873,7 +891,8 @@ class MyProfileCubit extends Cubit<MyProfileState> {
   Future<void> changeMyProfileLibraryTab(MyProfileLibraryTab tab) async {
     if (state.selectedLibraryTab == tab) return;
 
-    clearMyProfileLibrarySearch();
+    _librarySearchDebounce?.cancel();
+    _libraryRequestGeneration++;
 
     debugPrint(
       "============ MyProfileCubit.changeMyProfileLibraryTab ============",
@@ -886,46 +905,13 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         selectedLibraryTab: tab,
         libraryStatus: FetchMyProfileStatus.loading,
         isLibraryLoadingMore: false,
-        libraryResponse: null,
+        clearLibraryResponse: true,
         librarySearchText: '',
-        clearError: true,
+        clearLibraryError: true,
       ),
     );
 
-    final profile = state.profile;
-
-    if (profile == null) {
-      debugPrint("✗ profile is null");
-      debugPrint("=================================================");
-      return;
-    }
-
-    final result = await fetchMyProfileLibraryUseCase(
-      FetchMyProfileLibraryParams(userId: profile.userId, tab: tab.apiValue),
-    );
-
-    result.fold(
-      (failure) {
-        emit(
-          state.copyWith(
-            libraryStatus: FetchMyProfileStatus.failure,
-            isLibraryLoadingMore: false,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
-          ),
-        );
-      },
-      (response) {
-        emit(
-          state.copyWith(
-            libraryStatus: FetchMyProfileStatus.success,
-            libraryResponse: response,
-            isLibraryLoadingMore: false,
-            clearError: true,
-          ),
-        );
-      },
-    );
+    await fetchMyProfileLibraryInitial();
 
     debugPrint("=================================================");
   }
@@ -943,22 +929,31 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       return;
     }
 
+    final requestGeneration = ++_libraryRequestGeneration;
+    final requestedTab = state.selectedLibraryTab;
+
     emit(
       state.copyWith(
         libraryStatus: FetchMyProfileStatus.loading,
         isLibraryLoadingMore: false,
-        libraryResponse: null,
+        clearLibraryResponse: true,
         librarySearchText: '',
-        clearError: true,
+        clearLibraryError: true,
       ),
     );
 
     final result = await fetchMyProfileLibraryUseCase(
       FetchMyProfileLibraryParams(
         userId: profile.userId,
-        tab: state.selectedLibraryTab.apiValue,
+        tab: requestedTab.apiValue,
       ),
     );
+
+    if (requestGeneration != _libraryRequestGeneration ||
+        state.selectedLibraryTab != requestedTab ||
+        state.librarySearchText.trim().isNotEmpty) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -966,8 +961,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             libraryStatus: FetchMyProfileStatus.failure,
             isLibraryLoadingMore: false,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            libraryError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -977,7 +974,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             libraryStatus: FetchMyProfileStatus.success,
             isLibraryLoadingMore: false,
             libraryResponse: response,
-            clearError: true,
+            clearLibraryError: true,
           ),
         );
       },
@@ -1003,6 +1000,8 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
     final cursor = meta.nextCursor;
     if (cursor == null || cursor.trim().isEmpty) return;
+    final requestGeneration = _libraryRequestGeneration;
+    final requestedTab = state.selectedLibraryTab;
 
     debugPrint(
       "============ MyProfileCubit.fetchMoreMyProfileLibraryIfNeeded ============",
@@ -1010,23 +1009,31 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     debugPrint("→ tab: ${state.selectedLibraryTab.apiValue}");
     debugPrint("→ cursor: $cursor");
 
-    emit(state.copyWith(isLibraryLoadingMore: true, clearError: true));
+    emit(state.copyWith(isLibraryLoadingMore: true, clearLibraryError: true));
 
     final result = await fetchMyProfileLibraryUseCase(
       FetchMyProfileLibraryParams(
         userId: profile.userId,
-        tab: state.selectedLibraryTab.apiValue,
+        tab: requestedTab.apiValue,
         cursor: cursor,
       ),
     );
+
+    if (requestGeneration != _libraryRequestGeneration ||
+        state.selectedLibraryTab != requestedTab ||
+        state.librarySearchText.trim().isNotEmpty) {
+      return;
+    }
 
     result.fold(
       (failure) {
         emit(
           state.copyWith(
             isLibraryLoadingMore: false,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            libraryError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1043,7 +1050,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             isLibraryLoadingMore: false,
             libraryResponse: updatedResponse,
-            clearError: true,
+            clearLibraryError: true,
           ),
         );
       },
@@ -1055,7 +1062,8 @@ class MyProfileCubit extends Cubit<MyProfileState> {
   void changeMyProfileLibrarySearchText(String value) {
     final query = value.trim();
 
-    emit(state.copyWith(librarySearchText: value, clearError: true));
+    _libraryRequestGeneration++;
+    emit(state.copyWith(librarySearchText: value, clearLibraryError: true));
 
     _librarySearchDebounce?.cancel();
 
@@ -1075,12 +1083,14 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     );
     debugPrint("→ query: $query");
 
+    final requestGeneration = ++_libraryRequestGeneration;
+
     emit(
       state.copyWith(
         libraryStatus: FetchMyProfileStatus.loading,
         isLibraryLoadingMore: false,
-        libraryResponse: null,
-        clearError: true,
+        clearLibraryResponse: true,
+        clearLibraryError: true,
       ),
     );
 
@@ -1088,14 +1098,21 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       SearchMyProfileLibraryParams(query: query, mode: 'user_owned'),
     );
 
+    if (requestGeneration != _libraryRequestGeneration ||
+        state.librarySearchText.trim() != query) {
+      return;
+    }
+
     result.fold(
       (failure) {
         emit(
           state.copyWith(
             libraryStatus: FetchMyProfileStatus.failure,
             isLibraryLoadingMore: false,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            libraryError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1105,7 +1122,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             libraryStatus: FetchMyProfileStatus.success,
             isLibraryLoadingMore: false,
             libraryResponse: response,
-            clearError: true,
+            clearLibraryError: true,
           ),
         );
       },
@@ -1129,6 +1146,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
     final cursor = response.meta.nextCursor;
     if (cursor == null || cursor.trim().isEmpty) return;
+    final requestGeneration = _libraryRequestGeneration;
 
     debugPrint(
       "============ MyProfileCubit.fetchMoreMyProfileLibrarySearchIfNeeded ============",
@@ -1136,7 +1154,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     debugPrint("→ query: $query");
     debugPrint("→ cursor: $cursor");
 
-    emit(state.copyWith(isLibraryLoadingMore: true, clearError: true));
+    emit(state.copyWith(isLibraryLoadingMore: true, clearLibraryError: true));
 
     final result = await searchMyProfileLibraryUseCase(
       SearchMyProfileLibraryParams(
@@ -1146,13 +1164,20 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       ),
     );
 
+    if (requestGeneration != _libraryRequestGeneration ||
+        state.librarySearchText.trim() != query) {
+      return;
+    }
+
     result.fold(
       (failure) {
         emit(
           state.copyWith(
             isLibraryLoadingMore: false,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            libraryError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1169,7 +1194,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             isLibraryLoadingMore: false,
             libraryResponse: updatedResponse,
-            clearError: true,
+            clearLibraryError: true,
           ),
         );
       },
@@ -1178,10 +1203,21 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     debugPrint("=================================================");
   }
 
+  Future<void> retryMyProfileLibraryInitial() async {
+    final query = state.librarySearchText.trim();
+    if (query.isEmpty) {
+      await fetchMyProfileLibraryInitial();
+      return;
+    }
+
+    await _searchMyProfileLibraryInitial(query: query);
+  }
+
   void clearMyProfileLibrarySearch() {
     _librarySearchDebounce?.cancel();
+    _libraryRequestGeneration++;
 
-    emit(state.copyWith(librarySearchText: '', clearError: true));
+    emit(state.copyWith(librarySearchText: '', clearLibraryError: true));
 
     fetchMyProfileLibraryInitial();
   }
@@ -1193,6 +1229,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
   ///////////////////////// folder Api /////////////////
   Future<void> changeMyProfileFoldersTab(MyProfileFoldersTabEnum tab) async {
     if (state.selectedFoldersTab == tab) return;
+    _foldersRequestGeneration++;
 
     debugPrint(
       "============ MyProfileCubit.changeMyProfileFoldersTab ============",
@@ -1206,7 +1243,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         foldersStatus: FetchMyProfileStatus.loading,
         isFoldersLoadingMore: false,
         clearFoldersResponse: true,
-        clearError: true,
+        clearFoldersError: true,
       ),
     );
 
@@ -1228,21 +1265,29 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       return;
     }
 
+    final requestGeneration = ++_foldersRequestGeneration;
+    final requestedTab = state.selectedFoldersTab;
+
     emit(
       state.copyWith(
         foldersStatus: FetchMyProfileStatus.loading,
         isFoldersLoadingMore: false,
         clearFoldersResponse: true,
-        clearError: true,
+        clearFoldersError: true,
       ),
     );
 
     final result = await fetchMyProfileFoldersUseCase(
       FetchMyProfileFoldersParams(
         userId: profile.userId,
-        tab: state.selectedFoldersTab.apiValue,
+        tab: requestedTab.apiValue,
       ),
     );
+
+    if (requestGeneration != _foldersRequestGeneration ||
+        state.selectedFoldersTab != requestedTab) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -1254,8 +1299,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             foldersStatus: FetchMyProfileStatus.failure,
             isFoldersLoadingMore: false,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            foldersError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1270,7 +1317,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             foldersStatus: FetchMyProfileStatus.success,
             foldersResponse: response,
             isFoldersLoadingMore: false,
-            clearError: true,
+            clearFoldersError: true,
           ),
         );
       },
@@ -1294,6 +1341,8 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
     final cursor = response.meta.nextCursor;
     if (cursor == null || cursor.trim().isEmpty) return;
+    final requestGeneration = _foldersRequestGeneration;
+    final requestedTab = state.selectedFoldersTab;
 
     debugPrint(
       "============ MyProfileCubit.fetchMoreMyProfileFoldersIfNeeded ============",
@@ -1301,15 +1350,20 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     debugPrint("→ tab: ${state.selectedFoldersTab.apiValue}");
     debugPrint("→ cursor: $cursor");
 
-    emit(state.copyWith(isFoldersLoadingMore: true, clearError: true));
+    emit(state.copyWith(isFoldersLoadingMore: true, clearFoldersError: true));
 
     final result = await fetchMyProfileFoldersUseCase(
       FetchMyProfileFoldersParams(
         userId: profile.userId,
-        tab: state.selectedFoldersTab.apiValue,
+        tab: requestedTab.apiValue,
         cursor: cursor,
       ),
     );
+
+    if (requestGeneration != _foldersRequestGeneration ||
+        state.selectedFoldersTab != requestedTab) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -1320,8 +1374,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             isFoldersLoadingMore: false,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            foldersError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1345,7 +1401,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             isFoldersLoadingMore: false,
             foldersResponse: updatedResponse,
-            clearError: true,
+            clearFoldersError: true,
           ),
         );
       },
@@ -1367,18 +1423,25 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       return;
     }
 
+    final requestGeneration = ++_folderContentRequestGeneration;
+
     emit(
       state.copyWith(
         folderContentStatus: FetchMyProfileFolderContentStatus.loading,
         activeFolderContentId: folderId,
         clearFolderContentResponse: true,
-        clearError: true,
+        clearFolderContentError: true,
       ),
     );
 
     final result = await fetchMyProfileFolderContentUseCase(
       FetchMyProfileFolderContentParams(folderId: folderId),
     );
+
+    if (requestGeneration != _folderContentRequestGeneration ||
+        state.activeFolderContentId != folderId) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -1389,8 +1452,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             folderContentStatus: FetchMyProfileFolderContentStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            folderContentError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1402,7 +1467,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             folderContentStatus: FetchMyProfileFolderContentStatus.success,
             folderContentResponse: response,
-            clearError: true,
+            clearFolderContentError: true,
           ),
         );
       },
@@ -1412,12 +1477,13 @@ class MyProfileCubit extends Cubit<MyProfileState> {
   }
 
   void resetMyProfileFolderContentState() {
+    _folderContentRequestGeneration++;
     emit(
       state.copyWith(
         folderContentStatus: FetchMyProfileFolderContentStatus.initial,
         clearFolderContentResponse: true,
         clearActiveFolderContentId: true,
-        clearError: true,
+        clearFolderContentError: true,
       ),
     );
   }
@@ -1457,7 +1523,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         deleteFolderStatus: DeleteMyProfileFolderStatus.loading,
         activeDeletingFolderId: folderId,
         clearFolderActionMessage: true,
-        clearError: true,
+        clearDeleteFolderError: true,
       ),
     );
 
@@ -1474,8 +1540,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             deleteFolderStatus: DeleteMyProfileFolderStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            deleteFolderError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
             clearActiveDeletingFolderId: true,
             clearFolderActionMessage: true,
           ),
@@ -1509,7 +1577,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
                 ? response.message
                 : 'تم حذف المجلد بنجاح',
             clearActiveDeletingFolderId: true,
-            clearError: true,
+            clearDeleteFolderError: true,
           ),
         );
       },
@@ -1524,7 +1592,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         deleteFolderStatus: DeleteMyProfileFolderStatus.initial,
         clearActiveDeletingFolderId: true,
         clearFolderActionMessage: true,
-        clearError: true,
+        clearDeleteFolderError: true,
       ),
     );
   }
@@ -1548,6 +1616,9 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       return;
     }
 
+    final requestGeneration = ++_testsRequestGeneration;
+    final requestedTab = state.selectedTestsTab;
+
     debugPrint(
       "→ params: "
       "{userId: ${profile.userId}, "
@@ -1559,16 +1630,23 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         testsStatus: MyProfileTestsStatus.loading,
         testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.initial,
         clearTestsResponse: true,
-        clearError: true,
+        clearTestsError: true,
       ),
     );
 
     final result = await fetchMyProfileTestsUseCase(
       FetchMyProfilePickerTestsParams(
         userId: profile.userId,
-        tab: state.selectedTestsTab.name,
+        tab: requestedTab.apiValue,
       ),
     );
+
+    if (requestGeneration != _testsRequestGeneration ||
+        state.selectedTestsTab != requestedTab ||
+        state.hasTestsSearchQuery ||
+        state.isTestsFilterMode) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -1579,8 +1657,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             testsStatus: MyProfileTestsStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            testsError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1594,7 +1674,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             testsStatus: MyProfileTestsStatus.success,
             testsResponse: response,
-            clearError: true,
+            clearTestsError: true,
           ),
         );
       },
@@ -1605,6 +1685,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
   Future<void> changeMyProfileTestsTab(MyProfilePickerTestsTab tab) async {
     if (state.selectedTestsTab == tab) return;
+    _testsRequestGeneration++;
 
     debugPrint(
       "============ MyProfileCubit.changeMyProfileTestsTab ============",
@@ -1629,7 +1710,9 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.initial,
         clearTestsResponse: true,
 
-        clearError: true,
+        clearTestsError: true,
+        clearTestsSearchError: true,
+        clearTestsFilterError: true,
         isTestsFilterMode: false,
         testsFilterStatus: MyProfileTestsFilterStatus.initial,
         testsFilterLoadMoreStatus: MyProfileTestsFilterLoadMoreStatus.initial,
@@ -1661,6 +1744,8 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     if (cursor == null || cursor.trim().isEmpty) {
       return;
     }
+    final requestGeneration = _testsRequestGeneration;
+    final requestedTab = state.selectedTestsTab;
 
     debugPrint(
       "============ MyProfileCubit.fetchMoreMyProfileTestsIfNeeded ============",
@@ -1671,17 +1756,24 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.loading,
-        clearError: true,
+        clearTestsError: true,
       ),
     );
 
     final result = await fetchMyProfileTestsUseCase(
       FetchMyProfilePickerTestsParams(
         userId: profile.userId,
-        tab: state.selectedTestsTab.apiValue,
+        tab: requestedTab.apiValue,
         cursor: cursor,
       ),
     );
+
+    if (requestGeneration != _testsRequestGeneration ||
+        state.selectedTestsTab != requestedTab ||
+        state.hasTestsSearchQuery ||
+        state.isTestsFilterMode) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -1692,8 +1784,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            testsError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1715,7 +1809,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             testsLoadMoreStatus: MyProfileTestsLoadMoreStatus.success,
             testsResponse: updatedResponse,
-            clearError: true,
+            clearTestsError: true,
 
             isTestsFilterMode: false,
 
@@ -1739,8 +1833,9 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       clearMyProfileTestsFilter();
     }
     final query = value.trim();
+    _testsRequestGeneration++;
 
-    emit(state.copyWith(testsSearchQuery: value, clearError: true));
+    emit(state.copyWith(testsSearchQuery: value, clearTestsSearchError: true));
 
     _testsSearchDebounce?.cancel();
 
@@ -1758,6 +1853,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     final cleanQuery = query.trim();
 
     if (cleanQuery.isEmpty) return;
+    final requestGeneration = ++_testsRequestGeneration;
 
     debugPrint(
       "============ MyProfileCubit.searchMyProfileTestsInitial ============",
@@ -1772,13 +1868,19 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         clearTestsSearchResponse: true,
         testsSearchPage: 1,
         testsSearchHasMorePages: true,
-        clearError: true,
+        clearTestsSearchError: true,
       ),
     );
 
     final result = await searchMyProfileTestsUseCase(
       FetchMyProfilePickerSearchTestsParams(query: cleanQuery, page: 1),
     );
+
+    if (requestGeneration != _testsRequestGeneration ||
+        state.testsSearchQuery.trim() != cleanQuery ||
+        state.isTestsFilterMode) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -1789,8 +1891,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             testsSearchStatus: MyProfileTestsSearchStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            testsSearchError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1806,7 +1910,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
             testsSearchHasMorePages: response.data.isNotEmpty,
 
-            clearError: true,
+            clearTestsSearchError: true,
           ),
         );
       },
@@ -1828,6 +1932,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     }
 
     final nextPage = state.testsSearchPage + 1;
+    final requestGeneration = _testsRequestGeneration;
 
     debugPrint(
       "============ MyProfileCubit.fetchMoreMyProfileTestsSearchIfNeeded ============",
@@ -1838,13 +1943,19 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         testsSearchLoadMoreStatus: MyProfileTestsSearchLoadMoreStatus.loading,
-        clearError: true,
+        clearTestsSearchError: true,
       ),
     );
 
     final result = await searchMyProfileTestsUseCase(
       FetchMyProfilePickerSearchTestsParams(query: query, page: nextPage),
     );
+
+    if (requestGeneration != _testsRequestGeneration ||
+        state.testsSearchQuery.trim() != query ||
+        state.isTestsFilterMode) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -1856,8 +1967,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             testsSearchLoadMoreStatus:
                 MyProfileTestsSearchLoadMoreStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            testsSearchError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -1891,7 +2004,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             testsSearchResponse: updatedResponse,
             testsSearchPage: nextPage,
             testsSearchHasMorePages: hasMorePages,
-            clearError: true,
+            clearTestsSearchError: true,
           ),
         );
       },
@@ -1902,6 +2015,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
   void clearMyProfileTestsSearch() {
     _testsSearchDebounce?.cancel();
+    _testsRequestGeneration++;
 
     emit(
       state.copyWith(
@@ -1911,7 +2025,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         clearTestsSearchResponse: true,
         testsSearchPage: 1,
         testsSearchHasMorePages: true,
-        clearError: true,
+        clearTestsSearchError: true,
       ),
     );
   }
@@ -1987,6 +2101,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     }
 
     _testsSearchDebounce?.cancel();
+    final requestGeneration = ++_testsRequestGeneration;
 
     emit(
       state.copyWith(
@@ -2007,11 +2122,18 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         testsSearchPage: 1,
         testsSearchHasMorePages: true,
 
-        clearError: true,
+        clearTestsFilterError: true,
+        clearTestsSearchError: true,
       ),
     );
 
     final result = await filterMyProfileTestsUseCase(params);
+
+    if (requestGeneration != _testsRequestGeneration ||
+        !state.isTestsFilterMode ||
+        state.activeTestsFilterParams != params) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -2022,8 +2144,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             testsFilterStatus: MyProfileTestsFilterStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            testsFilterError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -2037,7 +2161,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             testsFilterStatus: MyProfileTestsFilterStatus.success,
             filteredTestsResponse: response,
             clearFilteredTestsResponse: false,
-            clearError: true,
+            clearTestsFilterError: true,
           ),
         );
 
@@ -2077,6 +2201,8 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     }
 
     _isFetchingFilteredTestsMore = true;
+    final requestGeneration = _testsRequestGeneration;
+    final activeParams = state.activeTestsFilterParams!;
 
     debugPrint(
       "============ MyProfileCubit.fetchMoreMyProfileFilteredTestsIfNeeded ============",
@@ -2086,14 +2212,20 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     emit(
       state.copyWith(
         testsFilterLoadMoreStatus: MyProfileTestsFilterLoadMoreStatus.loading,
-        clearError: true,
+        clearTestsFilterError: true,
       ),
     );
 
     try {
-      final params = state.activeTestsFilterParams!.copyWith(cursor: cursor);
+      final params = activeParams.copyWith(cursor: cursor);
 
       final result = await filterMyProfileTestsUseCase(params);
+
+      if (requestGeneration != _testsRequestGeneration ||
+          !state.isTestsFilterMode ||
+          state.activeTestsFilterParams != activeParams) {
+        return;
+      }
 
       result.fold(
         (failure) {
@@ -2105,8 +2237,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
             state.copyWith(
               testsFilterLoadMoreStatus:
                   MyProfileTestsFilterLoadMoreStatus.failure,
-              errorTitle: failure.title,
-              errorMessage: failure.message,
+              testsFilterError: MyProfileOperationError(
+                title: failure.title,
+                message: failure.message,
+              ),
             ),
           );
         },
@@ -2137,7 +2271,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
               testsFilterLoadMoreStatus:
                   MyProfileTestsFilterLoadMoreStatus.success,
               filteredTestsResponse: updatedResponse,
-              clearError: true,
+              clearTestsFilterError: true,
             ),
           );
         },
@@ -2155,6 +2289,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     );
 
     _isFetchingFilteredTestsMore = false;
+    _testsRequestGeneration++;
 
     emit(
       state.copyWith(
@@ -2166,7 +2301,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
         clearFilteredTestsResponse: true,
         clearActiveTestsFilterParams: true,
-        clearError: true,
+        clearTestsFilterError: true,
       ),
     );
 
@@ -2187,8 +2322,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       emit(
         state.copyWith(
           shareLinkStatus: MyProfileShareLinkStatus.failure,
-          errorTitle: 'خطأ',
-          errorMessage: 'تعذر تحديد الملف الشخصي المراد مشاركته',
+          shareError: const MyProfileOperationError(
+            title: 'خطأ',
+            message: 'تعذر تحديد الملف الشخصي المراد مشاركته',
+          ),
           clearShareUrl: true,
         ),
       );
@@ -2201,7 +2338,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       state.copyWith(
         shareLinkStatus: MyProfileShareLinkStatus.loading,
         clearShareUrl: true,
-        clearError: true,
+        clearShareError: true,
       ),
     );
 
@@ -2218,8 +2355,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
         emit(
           state.copyWith(
             shareLinkStatus: MyProfileShareLinkStatus.failure,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            shareError: MyProfileOperationError(
+              title: failure.title,
+              message: failure.message,
+            ),
             clearShareUrl: true,
           ),
         );
@@ -2234,8 +2373,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           emit(
             state.copyWith(
               shareLinkStatus: MyProfileShareLinkStatus.failure,
-              errorTitle: 'خطأ',
-              errorMessage: 'تعذر تجهيز رابط مشاركة الملف الشخصي',
+              shareError: const MyProfileOperationError(
+                title: 'خطأ',
+                message: 'تعذر تجهيز رابط مشاركة الملف الشخصي',
+              ),
               clearShareUrl: true,
             ),
           );
@@ -2246,7 +2387,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           state.copyWith(
             shareLinkStatus: MyProfileShareLinkStatus.success,
             shareUrl: shareUrl,
-            clearError: true,
+            clearShareError: true,
           ),
         );
       },
@@ -2260,11 +2401,10 @@ class MyProfileCubit extends Cubit<MyProfileState> {
       state.copyWith(
         shareLinkStatus: MyProfileShareLinkStatus.initial,
         clearShareUrl: true,
-        clearError: true,
+        clearShareError: true,
       ),
     );
   }
-  
 
   @override
   Future<void> close() {

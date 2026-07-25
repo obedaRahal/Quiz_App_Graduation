@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:quiz_app_grad/core/errors/failure.dart';
+import 'package:quiz_app_grad/features/settings/domain/entity/academic_verification_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/settings_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/sold_tests_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/fetch_sold_tests_params.dart';
@@ -29,4 +30,18 @@ abstract class SettingsRepository {
   Future<Either<Failure, SoldTestsEntity>> fetchSoldTests(
     FetchSoldTestsParams params,
   );
+
+  Future<Either<Failure, AcademicVerificationEntity>>
+  fetchAcademicVerificationStatus();
+
+  Future<Either<Failure, Unit>> createAcademicVerificationRequest({
+    required String certificateImagePath,
+    required String identityImagePath,
+  });
+
+  Future<Either<Failure, Unit>> cancelAcademicVerificationRequest();
+
+  Future<Either<Failure, Unit>> updateAcademicVerificationVisibility({
+    required bool showCertificatePublicly,
+  });
 }

@@ -60,6 +60,11 @@ class MyProfileTestsTab extends StatelessWidget {
         final isEmpty = isFilterMode
             ? filteredTests.isEmpty
             : normalTests.isEmpty;
+        final visibleError = isFilterMode
+            ? state.testsFilterError
+            : state.hasTestsSearchQuery
+            ? state.testsSearchError
+            : state.testsError;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -99,10 +104,21 @@ class MyProfileTestsTab extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
                 child: Center(
-                  child: CustomTextWidget(
-                    state.errorMessage ?? 'حدث خطأ أثناء جلب الاختبارات',
-                    color: AppPalette.red,
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomTextWidget(
+                        visibleError?.message ?? 'حدث خطأ أثناء جلب الاختبارات',
+                        color: AppPalette.red,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: SizeConfig.h(0.014)),
+                      ElevatedButton.icon(
+                        onPressed: () => _retryInitial(context, state),
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('إعادة المحاولة'),
+                      ),
+                    ],
                   ),
                 ),
               )
@@ -122,12 +138,38 @@ class MyProfileTestsTab extends StatelessWidget {
               _FilteredTestsList(
                 tests: filteredTests,
                 isLoadingMore: isLoadingMore,
+                selectedTab: state.selectedTestsTab,
+                loadMoreErrorMessage:
+                    state.testsFilterLoadMoreStatus ==
+                        MyProfileTestsFilterLoadMoreStatus.failure
+                    ? state.testsFilterError?.message
+                    : null,
+                onRetryLoadMore: context
+                    .read<MyProfileCubit>()
+                    .fetchMoreMyProfileFilteredTestsIfNeeded,
               )
             else
               _NormalTestsList(
                 tests: normalTests,
                 isLoadingMore: isLoadingMore,
                 selectedTab: state.selectedTestsTab,
+                loadMoreErrorMessage: state.hasTestsSearchQuery
+                    ? state.testsSearchLoadMoreStatus ==
+                              MyProfileTestsSearchLoadMoreStatus.failure
+                          ? state.testsSearchError?.message
+                          : null
+                    : state.testsLoadMoreStatus ==
+                          MyProfileTestsLoadMoreStatus.failure
+                    ? state.testsError?.message
+                    : null,
+                onRetryLoadMore: () {
+                  final cubit = context.read<MyProfileCubit>();
+                  if (state.hasTestsSearchQuery) {
+                    cubit.fetchMoreMyProfileTestsSearchIfNeeded();
+                  } else {
+                    cubit.fetchMoreMyProfileTestsIfNeeded();
+                  }
+                },
               ),
           ],
         );
@@ -146,17 +188,39 @@ class MyProfileTestsTab extends StatelessWidget {
 
     return 'لا توجد اختبارات ضمن هذا التصنيف';
   }
+
+  void _retryInitial(BuildContext context, MyProfileState state) {
+    final cubit = context.read<MyProfileCubit>();
+    if (state.isTestsFilterMode) {
+      final params = state.activeTestsFilterParams;
+      if (params != null) {
+        cubit.applyMyProfileTestsFilter(params);
+      }
+      return;
+    }
+
+    if (state.hasTestsSearchQuery) {
+      cubit.searchMyProfileTestsInitial(query: state.testsSearchQuery);
+      return;
+    }
+
+    cubit.fetchMyProfileTestsInitial();
+  }
 }
 
 class _NormalTestsList extends StatelessWidget {
   final List<MyProfilePickerTestItemEntity> tests;
   final bool isLoadingMore;
   final MyProfilePickerTestsTab selectedTab;
+  final String? loadMoreErrorMessage;
+  final VoidCallback onRetryLoadMore;
 
   const _NormalTestsList({
     required this.tests,
     required this.isLoadingMore,
     required this.selectedTab,
+    required this.loadMoreErrorMessage,
+    required this.onRetryLoadMore,
   });
 
   @override
@@ -164,10 +228,18 @@ class _NormalTestsList extends StatelessWidget {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: tests.length + (isLoadingMore ? 1 : 0),
+      itemCount:
+          tests.length +
+          (isLoadingMore || loadMoreErrorMessage != null ? 1 : 0),
       separatorBuilder: (_, __) => SizedBox(height: SizeConfig.h(0.014)),
       itemBuilder: (context, index) {
         if (index >= tests.length) {
+          if (loadMoreErrorMessage != null) {
+            return _LoadMoreError(
+              message: loadMoreErrorMessage!,
+              onRetry: onRetryLoadMore,
+            );
+          }
           return Padding(
             padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
             child: const Center(child: CircularProgressIndicator()),
@@ -266,18 +338,35 @@ String _formatPrice(num price) {
 class _FilteredTestsList extends StatelessWidget {
   final List<MyProfileFilteredTestItemEntity> tests;
   final bool isLoadingMore;
+  final MyProfilePickerTestsTab selectedTab;
+  final String? loadMoreErrorMessage;
+  final VoidCallback onRetryLoadMore;
 
-  const _FilteredTestsList({required this.tests, required this.isLoadingMore});
+  const _FilteredTestsList({
+    required this.tests,
+    required this.isLoadingMore,
+    required this.selectedTab,
+    required this.loadMoreErrorMessage,
+    required this.onRetryLoadMore,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: tests.length + (isLoadingMore ? 1 : 0),
+      itemCount:
+          tests.length +
+          (isLoadingMore || loadMoreErrorMessage != null ? 1 : 0),
       separatorBuilder: (_, __) => SizedBox(height: SizeConfig.h(0.014)),
       itemBuilder: (context, index) {
         if (index >= tests.length) {
+          if (loadMoreErrorMessage != null) {
+            return _LoadMoreError(
+              message: loadMoreErrorMessage!,
+              onRetry: onRetryLoadMore,
+            );
+          }
           return Padding(
             padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
             child: const Center(child: CircularProgressIndicator()),
@@ -299,8 +388,45 @@ class _FilteredTestsList extends StatelessWidget {
             publishedAt: test.publishedAt,
             questionCount: test.questionCount,
           ),
+          onTestTap: () {
+            final routeName = selectedTab == MyProfilePickerTestsTab.private
+                ? AppRouterName.myPrivateTestDetails
+                : AppRouterName.myTestDetails;
+            context.pushNamed(
+              routeName,
+              extra: DetailsOfTestRouteArgs(testId: test.id),
+            );
+          },
         );
       },
+    );
+  }
+}
+
+class _LoadMoreError extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _LoadMoreError({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.014)),
+      child: Column(
+        children: [
+          CustomTextWidget(
+            message,
+            color: AppPalette.red,
+            textAlign: TextAlign.center,
+          ),
+          TextButton.icon(
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh_rounded),
+            label: const Text('إعادة المحاولة'),
+          ),
+        ],
+      ),
     );
   }
 }

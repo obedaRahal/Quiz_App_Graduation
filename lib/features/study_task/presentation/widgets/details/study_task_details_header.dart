@@ -20,7 +20,7 @@ class StudyTaskDetailsHeader extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: SizeConfig.w(0.04),
-        vertical: SizeConfig.h(0.018),
+        vertical: SizeConfig.h(0.03),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -84,6 +84,13 @@ enum MyProfileTestsFilterLoadMoreStatus { initial, loading, success, failure }
 
 enum MyProfileShareLinkStatus { initial, loading, success, failure }
 
+class MyProfileOperationError {
+  final String title;
+  final String message;
+
+  const MyProfileOperationError({required this.title, required this.message});
+}
+
 class MyProfileState {
   final MyProfileTab selectedTab;
 
@@ -93,8 +100,19 @@ class MyProfileState {
   final FetchMyProfileStatus fetchStatus;
   final UpdateMyProfileStatus updateStatus;
 
-  final String? errorTitle;
-  final String? errorMessage;
+  // The former shared errorTitle/errorMessage fields were intentionally
+  // replaced so an unrelated request cannot clear or display another
+  // operation's error.
+  final MyProfileOperationError? profileError;
+  final MyProfileOperationError? updateError;
+  final MyProfileOperationError? libraryError;
+  final MyProfileOperationError? foldersError;
+  final MyProfileOperationError? folderContentError;
+  final MyProfileOperationError? deleteFolderError;
+  final MyProfileOperationError? testsError;
+  final MyProfileOperationError? testsSearchError;
+  final MyProfileOperationError? testsFilterError;
+  final MyProfileOperationError? shareError;
 
   final MyProfileLibraryTab selectedLibraryTab;
   final FetchMyProfileStatus libraryStatus;
@@ -146,8 +164,16 @@ class MyProfileState {
     this.editableProfile,
     this.fetchStatus = FetchMyProfileStatus.initial,
     this.updateStatus = UpdateMyProfileStatus.initial,
-    this.errorTitle,
-    this.errorMessage,
+    this.profileError,
+    this.updateError,
+    this.libraryError,
+    this.foldersError,
+    this.folderContentError,
+    this.deleteFolderError,
+    this.testsError,
+    this.testsSearchError,
+    this.testsFilterError,
+    this.shareError,
 
     this.selectedLibraryTab = MyProfileLibraryTab.latest,
     this.libraryStatus = FetchMyProfileStatus.initial,
@@ -330,13 +356,31 @@ class MyProfileState {
     MyProfileEntity? editableProfile,
     FetchMyProfileStatus? fetchStatus,
     UpdateMyProfileStatus? updateStatus,
-    String? errorTitle,
-    String? errorMessage,
-    bool clearError = false,
+    MyProfileOperationError? profileError,
+    bool clearProfileError = false,
+    MyProfileOperationError? updateError,
+    bool clearUpdateError = false,
+    MyProfileOperationError? libraryError,
+    bool clearLibraryError = false,
+    MyProfileOperationError? foldersError,
+    bool clearFoldersError = false,
+    MyProfileOperationError? folderContentError,
+    bool clearFolderContentError = false,
+    MyProfileOperationError? deleteFolderError,
+    bool clearDeleteFolderError = false,
+    MyProfileOperationError? testsError,
+    bool clearTestsError = false,
+    MyProfileOperationError? testsSearchError,
+    bool clearTestsSearchError = false,
+    MyProfileOperationError? testsFilterError,
+    bool clearTestsFilterError = false,
+    MyProfileOperationError? shareError,
+    bool clearShareError = false,
 
     MyProfileLibraryTab? selectedLibraryTab,
     FetchMyProfileStatus? libraryStatus,
     MyProfileLibraryEntity? libraryResponse,
+    bool clearLibraryResponse = false,
     String? librarySearchText,
     bool? isLibraryLoadingMore,
 
@@ -395,12 +439,36 @@ class MyProfileState {
       editableProfile: editableProfile ?? this.editableProfile,
       fetchStatus: fetchStatus ?? this.fetchStatus,
       updateStatus: updateStatus ?? this.updateStatus,
-      errorTitle: clearError ? null : errorTitle ?? this.errorTitle,
-      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      profileError: clearProfileError
+          ? null
+          : profileError ?? this.profileError,
+      updateError: clearUpdateError ? null : updateError ?? this.updateError,
+      libraryError: clearLibraryError
+          ? null
+          : libraryError ?? this.libraryError,
+      foldersError: clearFoldersError
+          ? null
+          : foldersError ?? this.foldersError,
+      folderContentError: clearFolderContentError
+          ? null
+          : folderContentError ?? this.folderContentError,
+      deleteFolderError: clearDeleteFolderError
+          ? null
+          : deleteFolderError ?? this.deleteFolderError,
+      testsError: clearTestsError ? null : testsError ?? this.testsError,
+      testsSearchError: clearTestsSearchError
+          ? null
+          : testsSearchError ?? this.testsSearchError,
+      testsFilterError: clearTestsFilterError
+          ? null
+          : testsFilterError ?? this.testsFilterError,
+      shareError: clearShareError ? null : shareError ?? this.shareError,
 
       selectedLibraryTab: selectedLibraryTab ?? this.selectedLibraryTab,
       libraryStatus: libraryStatus ?? this.libraryStatus,
-      libraryResponse: libraryResponse ?? this.libraryResponse,
+      libraryResponse: clearLibraryResponse
+          ? null
+          : libraryResponse ?? this.libraryResponse,
       librarySearchText: librarySearchText ?? this.librarySearchText,
       isLibraryLoadingMore: isLibraryLoadingMore ?? this.isLibraryLoadingMore,
 

@@ -21,7 +21,9 @@ class MyProfileSelectedTestsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MyProfileFolderEditorCubit, MyProfileFolderEditorState>(
       buildWhen: (previous, current) =>
-          previous.selectedTests != current.selectedTests,
+          previous.selectedTests != current.selectedTests ||
+          previous.initialTestsStatus != current.initialTestsStatus ||
+          previous.initialTestsErrorMessage != current.initialTestsErrorMessage,
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -61,7 +63,35 @@ class MyProfileSelectedTestsSection extends StatelessWidget {
 
             SizedBox(height: SizeConfig.h(0.012)),
 
-            if (state.selectedTests.isEmpty)
+            if (state.isInitialTestsLoading)
+              const Center(child: CircularProgressIndicator())
+            else if (state.isInitialTestsFailure)
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomTextWidget(
+                      state.initialTestsErrorMessage ??
+                          'تعذر تحميل اختبارات المجلد',
+                      color: AppPalette.red,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: SizeConfig.h(0.012)),
+                    ElevatedButton.icon(
+                      onPressed: state.folderId == null
+                          ? null
+                          : () {
+                              context
+                                  .read<MyProfileFolderEditorCubit>()
+                                  .fetchFolderTestsForEdit(state.folderId!);
+                            },
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text('إعادة المحاولة'),
+                    ),
+                  ],
+                ),
+              )
+            else if (state.selectedTests.isEmpty)
               EmptyActionBox(
                 title: 'إضافة اختبارات إلى المجلد',
                 description: 'اضغط هنا لاختيار الاختبارات التي تريد إضافتها',
@@ -135,4 +165,3 @@ class MyProfileSelectedTestsSection extends StatelessWidget {
     );
   }
 }
-

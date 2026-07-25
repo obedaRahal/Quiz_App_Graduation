@@ -9,6 +9,8 @@ enum MyProfilePickerTestsStatus { initial, loading, success, failure }
 
 enum MyProfilePickerTestsLoadMoreStatus { initial, loading, success, failure }
 
+enum MyProfileFolderInitialTestsStatus { initial, loading, success, failure }
+
 enum MyProfilePickerTestsTab { public, private, paid }
 
 extension MyProfilePickerTestsTabX on MyProfilePickerTestsTab {
@@ -52,6 +54,11 @@ class MyProfileFolderEditorState {
   final MyProfileFolderEditorSubmitStatus submitStatus;
   final String? errorTitle;
   final String? errorMessage;
+  final MyProfileFolderInitialTestsStatus initialTestsStatus;
+  final String? initialTestsErrorTitle;
+  final String? initialTestsErrorMessage;
+  final String? pickerErrorTitle;
+  final String? pickerErrorMessage;
 
   final MyProfilePickerTestsTab selectedPickerTestsTab;
   final MyProfilePickerTestsStatus pickerTestsStatus;
@@ -76,6 +83,11 @@ class MyProfileFolderEditorState {
     this.submitStatus = MyProfileFolderEditorSubmitStatus.initial,
     this.errorTitle,
     this.errorMessage,
+    this.initialTestsStatus = MyProfileFolderInitialTestsStatus.initial,
+    this.initialTestsErrorTitle,
+    this.initialTestsErrorMessage,
+    this.pickerErrorTitle,
+    this.pickerErrorMessage,
 
     this.selectedPickerTestsTab = MyProfilePickerTestsTab.public,
     this.pickerTestsStatus = MyProfilePickerTestsStatus.initial,
@@ -107,6 +119,10 @@ class MyProfileFolderEditorState {
 
   bool get isSubmitFailure =>
       submitStatus == MyProfileFolderEditorSubmitStatus.failure;
+  bool get isInitialTestsLoading =>
+      initialTestsStatus == MyProfileFolderInitialTestsStatus.loading;
+  bool get isInitialTestsFailure =>
+      initialTestsStatus == MyProfileFolderInitialTestsStatus.failure;
 
   bool get canSubmit {
     return name.trim().isNotEmpty && selectedTests.isNotEmpty;
@@ -154,7 +170,7 @@ class MyProfileFolderEditorState {
   bool get shouldSendVisibilityType {
     if (isCreateMode) return true;
 
-    return (originalIsPublic ?? false) != isPublic;
+    return originalIsPublic != isPublic;
   }
 
   MyProfileFolderEditorState copyWith({
@@ -172,6 +188,13 @@ class MyProfileFolderEditorState {
     String? errorTitle,
     String? errorMessage,
     bool clearError = false,
+    MyProfileFolderInitialTestsStatus? initialTestsStatus,
+    String? initialTestsErrorTitle,
+    String? initialTestsErrorMessage,
+    bool clearInitialTestsError = false,
+    String? pickerErrorTitle,
+    String? pickerErrorMessage,
+    bool clearPickerError = false,
 
     MyProfilePickerTestsTab? selectedPickerTestsTab,
     MyProfilePickerTestsStatus? pickerTestsStatus,
@@ -198,6 +221,19 @@ class MyProfileFolderEditorState {
       submitStatus: submitStatus ?? this.submitStatus,
       errorTitle: clearError ? null : errorTitle ?? this.errorTitle,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      initialTestsStatus: initialTestsStatus ?? this.initialTestsStatus,
+      initialTestsErrorTitle: clearInitialTestsError
+          ? null
+          : initialTestsErrorTitle ?? this.initialTestsErrorTitle,
+      initialTestsErrorMessage: clearInitialTestsError
+          ? null
+          : initialTestsErrorMessage ?? this.initialTestsErrorMessage,
+      pickerErrorTitle: clearPickerError
+          ? null
+          : pickerErrorTitle ?? this.pickerErrorTitle,
+      pickerErrorMessage: clearPickerError
+          ? null
+          : pickerErrorMessage ?? this.pickerErrorMessage,
 
       selectedPickerTestsTab:
           selectedPickerTestsTab ?? this.selectedPickerTestsTab,

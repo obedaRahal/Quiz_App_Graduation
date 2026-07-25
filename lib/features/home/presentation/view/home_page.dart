@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
       child: Scaffold(
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(top: 46),
+            padding:  EdgeInsets.only(top: SizeConfig.h(0.03)),
             child: Column(
               textDirection: TextDirection.rtl,
               children: [

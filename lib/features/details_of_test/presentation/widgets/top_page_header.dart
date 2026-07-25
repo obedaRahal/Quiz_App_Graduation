@@ -27,14 +27,15 @@ class TopPageHeader extends StatelessWidget {
     final resolvedTitleColor = titleColor ?? appColors.blackTogreyMedium;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+      padding: EdgeInsets.only(
+              left: SizeConfig.w(0.03),
+              right: SizeConfig.w(0.03),
+              top: SizeConfig.h(0.03),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          HeaderActionButton(
-            icon: Icons.arrow_back_ios_rounded,
-            onTap: onBack,
-          ),
+          HeaderActionButton(icon: Icons.arrow_back_ios_rounded, onTap: onBack),
           Expanded(
             child: Center(
               child: CustomTextWidget(
@@ -55,7 +56,11 @@ class HeaderActionButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const HeaderActionButton({super.key, required this.icon, required this.onTap});
+  const HeaderActionButton({
+    super.key,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -47,8 +47,8 @@ class MyProfileBody extends StatelessWidget {
         if (state.isUpdateFailure) {
           showValidationTopSnackBar(
             context,
-            title: state.errorTitle ?? 'خطأ',
-            message: state.errorMessage ?? 'تعذر حفظ التعديلات',
+            title: state.updateError?.title ?? 'خطأ',
+            message: state.updateError?.message ?? 'تعذر حفظ التعديلات',
             type: AppValidationSnackBarType.error,
           );
 
@@ -74,16 +74,26 @@ class MyProfileBody extends StatelessWidget {
                   ),
                   SizedBox(height: SizeConfig.h(0.02)),
                   CustomTextWidget(
-                    state.errorTitle ?? 'حدث خطأ غير متوقع',
+                    state.profileError?.title ?? 'حدث خطأ غير متوقع',
                     fontFamily: AppFont.elMessiriBold,
                     fontSize: SizeConfig.text(0.045),
                   ),
                   SizedBox(height: SizeConfig.h(0.01)),
                   CustomTextWidget(
-                    state.errorMessage ??
+                    state.profileError?.message ??
                         'يرجى التحقق من الاتصال والمحاولة مرة أخرى',
                     color: AppPalette.greyMedium,
                     textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: SizeConfig.h(0.018)),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      context.read<MyProfileCubit>().getMyProfilePersonalInfo(
+                        userId: userId,
+                      );
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('إعادة المحاولة'),
                   ),
                 ],
               ),
@@ -109,57 +119,45 @@ class MyProfileBody extends StatelessWidget {
 
             final cubit = context.read<MyProfileCubit>();
 
-            if (state.selectedTab == MyProfileTab.content &&
-                state.libraryResponse?.meta.hasMorePages == true &&
-                !state.isLibraryLoadingMore &&
-                !state.isLibraryLoading) {
-              cubit.fetchMoreMyProfileLibraryIfNeeded();
-            }
-
-            if (state.selectedTab == MyProfileTab.content &&
-                state.libraryResponse?.meta.hasMorePages == true &&
-                !state.isLibraryLoadingMore &&
-                !state.isLibraryLoading) {
-              if (state.librarySearchText.trim().isEmpty) {
-                cubit.fetchMoreMyProfileLibraryIfNeeded();
-              } else {
-                cubit.fetchMoreMyProfileLibrarySearchIfNeeded();
-              }
-            }
-
-            if (state.selectedTab == MyProfileTab.folders &&
-                state.hasMoreFoldersPages &&
-                !state.isFoldersLoadingMore &&
-                !state.isFoldersLoading) {
-              cubit.fetchMoreMyProfileFoldersIfNeeded();
-            }
-
-            if (state.selectedTab == MyProfileTab.tests &&
-                !state.isVisibleTestsLoading &&
-                !state.isVisibleTestsLoadingMore) {
-              if (state.hasTestsSearchQuery) {
-                cubit.fetchMoreMyProfileTestsSearchIfNeeded();
-              } else if (state.hasMoreTestsPages) {
-                cubit.fetchMoreMyProfileTestsIfNeeded();
-              }
-            }
-
-            if (state.selectedTab == MyProfileTab.tests) {
-              if (state.isTestsFilterMode &&
-                  !state.isTestsFilterLoading &&
-                  !state.isTestsFilterLoadingMore &&
-                  state.hasMoreFilteredTestsPages) {
-                cubit.fetchMoreMyProfileFilteredTestsIfNeeded();
-              } else if (state.hasTestsSearchQuery &&
-                  !state.isTestsSearchLoading &&
-                  !state.isTestsSearchLoadingMore) {
-                cubit.fetchMoreMyProfileTestsSearchIfNeeded();
-              } else if (!state.hasTestsSearchQuery &&
-                  !state.isTestsLoading &&
-                  !state.isTestsLoadingMore &&
-                  state.hasMoreTestsPages) {
-                cubit.fetchMoreMyProfileTestsIfNeeded();
-              }
+            switch (state.selectedTab) {
+              case MyProfileTab.content:
+                if (state.libraryResponse?.meta.hasMorePages == true &&
+                    !state.isLibraryLoadingMore &&
+                    !state.isLibraryLoading) {
+                  if (state.librarySearchText.trim().isEmpty) {
+                    cubit.fetchMoreMyProfileLibraryIfNeeded();
+                  } else {
+                    cubit.fetchMoreMyProfileLibrarySearchIfNeeded();
+                  }
+                }
+                break;
+              case MyProfileTab.folders:
+                if (state.hasMoreFoldersPages &&
+                    !state.isFoldersLoadingMore &&
+                    !state.isFoldersLoading) {
+                  cubit.fetchMoreMyProfileFoldersIfNeeded();
+                }
+                break;
+              case MyProfileTab.tests:
+                if (state.isTestsFilterMode) {
+                  if (!state.isTestsFilterLoading &&
+                      !state.isTestsFilterLoadingMore &&
+                      state.hasMoreFilteredTestsPages) {
+                    cubit.fetchMoreMyProfileFilteredTestsIfNeeded();
+                  }
+                } else if (state.hasTestsSearchQuery) {
+                  if (!state.isTestsSearchLoading &&
+                      !state.isTestsSearchLoadingMore) {
+                    cubit.fetchMoreMyProfileTestsSearchIfNeeded();
+                  }
+                } else if (!state.isTestsLoading &&
+                    !state.isTestsLoadingMore &&
+                    state.hasMoreTestsPages) {
+                  cubit.fetchMoreMyProfileTestsIfNeeded();
+                }
+                break;
+              case MyProfileTab.personalInfo:
+                break;
             }
 
             return false;
@@ -208,7 +206,7 @@ class MyProfileBody extends StatelessWidget {
                             },
                           );
                         },
-                        
+
                         onView: () {
                           debugPrint('cover view');
                           showMyProfileImageViewer(

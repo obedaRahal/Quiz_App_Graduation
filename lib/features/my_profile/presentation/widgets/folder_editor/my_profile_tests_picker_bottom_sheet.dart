@@ -58,7 +58,7 @@ class MyProfileTestsPickerBottomSheet extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: SizeConfig.h(0.012)),
-      
+
                 Container(
                   width: SizeConfig.w(0.12),
                   height: 4,
@@ -69,11 +69,13 @@ class MyProfileTestsPickerBottomSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-      
+
                 SizedBox(height: SizeConfig.h(0.014)),
-      
+
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.045)),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.w(0.045),
+                  ),
                   child:
                       BlocBuilder<
                         MyProfileFolderEditorCubit,
@@ -112,35 +114,37 @@ class MyProfileTestsPickerBottomSheet extends StatelessWidget {
                         },
                       ),
                 ),
-      
+
                 SizedBox(height: SizeConfig.h(0.01)),
-      
+
                 const CustomDivider(height: 10, thickness: 2, isDashed: true),
-      
+
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.035)),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.w(0.035),
+                  ),
                   child: Column(
                     children: [
                       SizedBox(height: SizeConfig.h(0.012)),
-      
+
                       _PickerSearchField(userId: userId),
-      
+
                       SizedBox(height: SizeConfig.h(0.012)),
-      
+
                       _PickerFilterSection(userId: userId),
                     ],
                   ),
                 ),
-      
+
                 SizedBox(height: SizeConfig.h(0.01)),
-      
+
                 Expanded(
                   child: _PickerTestsList(
                     userId: userId,
                     scrollController: scrollController,
                   ),
                 ),
-      
+
                 _PickerSaveButton(),
               ],
             ),
@@ -154,9 +158,7 @@ class MyProfileTestsPickerBottomSheet extends StatelessWidget {
 class _PickerSearchField extends StatefulWidget {
   final int userId;
 
-  const _PickerSearchField({
-    required this.userId,
-  });
+  const _PickerSearchField({required this.userId});
 
   @override
   State<_PickerSearchField> createState() => _PickerSearchFieldState();
@@ -189,9 +191,9 @@ class _PickerSearchFieldState extends State<_PickerSearchField> {
     _controller.clear();
 
     context.read<MyProfileFolderEditorCubit>().changePickerSearchQuery(
-          userId: widget.userId,
-          value: '',
-        );
+      userId: widget.userId,
+      value: '',
+    );
 
     setState(() {});
   }
@@ -209,9 +211,9 @@ class _PickerSearchFieldState extends State<_PickerSearchField> {
         textDirection: TextDirection.rtl,
         onChanged: (value) {
           context.read<MyProfileFolderEditorCubit>().changePickerSearchQuery(
-                userId: widget.userId,
-                value: value,
-              );
+            userId: widget.userId,
+            value: value,
+          );
 
           setState(() {});
         },
@@ -239,8 +241,7 @@ class _PickerSearchFieldState extends State<_PickerSearchField> {
             fontSize: SizeConfig.text(0.03),
           ),
           filled: true,
-          fillColor:
-              isDark ? Colors.white.withOpacity(0.05) : AppPalette.grey,
+          fillColor: isDark ? Colors.white.withOpacity(0.05) : AppPalette.grey,
           contentPadding: EdgeInsets.symmetric(
             horizontal: SizeConfig.w(0.03),
             vertical: SizeConfig.h(0.012),
@@ -326,7 +327,7 @@ class _PickerTestsList extends StatelessWidget {
               current.pickerTestsLoadMoreStatus ||
           previous.pickerTestsResponse != current.pickerTestsResponse ||
           previous.tempSelectedTestIds != current.tempSelectedTestIds ||
-          previous.errorMessage != current.errorMessage,
+          previous.pickerErrorMessage != current.pickerErrorMessage,
       builder: (context, state) {
         if (state.isPickerTestsLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -336,24 +337,37 @@ class _PickerTestsList extends StatelessWidget {
           return Center(
             child: Padding(
               padding: EdgeInsets.all(SizeConfig.w(0.05)),
-              child: CustomTextWidget(
-                state.errorMessage ?? 'حدث خطأ أثناء جلب الاختبارات',
-                color: AppPalette.red,
-                textAlign: TextAlign.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomTextWidget(
+                    state.pickerErrorMessage ?? 'حدث خطأ أثناء جلب الاختبارات',
+                    color: AppPalette.red,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: SizeConfig.h(0.014)),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      final cubit = context.read<MyProfileFolderEditorCubit>();
+                      if (state.hasPickerSearchQuery) {
+                        cubit.fetchPickerSearchInitial(
+                          query: state.pickerSearchQuery,
+                        );
+                      } else {
+                        cubit.fetchPickerTestsInitial(userId: userId);
+                      }
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('إعادة المحاولة'),
+                  ),
+                ],
               ),
             ),
           );
         }
 
-        if (state.hasPickerSearchQuery) {
-          context
-              .read<MyProfileFolderEditorCubit>()
-              .fetchMorePickerSearchIfNeeded();
-        } else {
-          context
-              .read<MyProfileFolderEditorCubit>()
-              .fetchMorePickerTestsIfNeeded(userId: userId);
-        }
+        // كان التحميل الإضافي يُستدعى هنا أثناء build، وتم نقله إلى
+        // ScrollNotification أدناه كي لا تُحمّل جميع الصفحات تلقائيًا.
 
         final tests = state.hasPickerSearchQuery
             ? state.pickerSearchResponse?.data ?? []
@@ -377,9 +391,12 @@ class _PickerTestsList extends StatelessWidget {
             final ratio = metrics.pixels / metrics.maxScrollExtent;
             if (ratio < 0.8) return false;
 
-            context
-                .read<MyProfileFolderEditorCubit>()
-                .fetchMorePickerTestsIfNeeded(userId: userId);
+            final cubit = context.read<MyProfileFolderEditorCubit>();
+            if (state.hasPickerSearchQuery) {
+              cubit.fetchMorePickerSearchIfNeeded();
+            } else {
+              cubit.fetchMorePickerTestsIfNeeded(userId: userId);
+            }
 
             return false;
           },
@@ -389,10 +406,43 @@ class _PickerTestsList extends StatelessWidget {
               horizontal: SizeConfig.w(0.035),
               vertical: SizeConfig.h(0.012),
             ),
-            itemCount: tests.length + (state.isPickerTestsLoadingMore ? 1 : 0),
+            itemCount:
+                tests.length +
+                (state.isPickerTestsLoadingMore ||
+                        (state.pickerTestsLoadMoreStatus ==
+                                MyProfilePickerTestsLoadMoreStatus.failure &&
+                            state.pickerErrorMessage != null)
+                    ? 1
+                    : 0),
             separatorBuilder: (_, __) => SizedBox(height: SizeConfig.h(0.012)),
             itemBuilder: (context, index) {
               if (index >= tests.length) {
+                if (state.pickerTestsLoadMoreStatus ==
+                        MyProfilePickerTestsLoadMoreStatus.failure &&
+                    state.pickerErrorMessage != null) {
+                  return Column(
+                    children: [
+                      CustomTextWidget(
+                        state.pickerErrorMessage!,
+                        color: AppPalette.red,
+                        textAlign: TextAlign.center,
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          final cubit = context
+                              .read<MyProfileFolderEditorCubit>();
+                          if (state.hasPickerSearchQuery) {
+                            cubit.fetchMorePickerSearchIfNeeded();
+                          } else {
+                            cubit.fetchMorePickerTestsIfNeeded(userId: userId);
+                          }
+                        },
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('إعادة المحاولة'),
+                      ),
+                    ],
+                  );
+                }
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
                   child: const Center(child: CircularProgressIndicator()),

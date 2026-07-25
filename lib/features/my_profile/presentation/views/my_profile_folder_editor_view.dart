@@ -29,6 +29,7 @@ class _MyProfileFolderEditorViewState extends State<MyProfileFolderEditorView> {
     super.initState();
 
     Future.microtask(() {
+      if (!mounted) return;
       context.read<MyProfileFolderEditorCubit>().init(widget.args);
     });
   }

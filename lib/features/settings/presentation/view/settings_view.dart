@@ -210,7 +210,11 @@ class _SettingsViewState extends State<SettingsView> {
       child: Scaffold(
         body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
+            padding: EdgeInsets.only(
+              left: SizeConfig.w(0.03),
+              right: SizeConfig.w(0.03),
+              top: SizeConfig.h(0.03),
+            ),
             child: Column(
               children: [
                 StudyPlanHomeHeader(
@@ -432,8 +436,14 @@ class _SettingsViewState extends State<SettingsView> {
                               iconBackgroundColor: Colors.blue.withValues(
                                 alpha: .15,
                               ),
-                              onTap: () =>
-                                  _showComingSoon('تأكيد المستوى العلمي'),
+                              onTap: () {
+                                debugPrint("go to  verify academic ");
+                                context.pushNamed(
+                                  AppRouterName.academicVerification,
+                                );
+                              },
+                              // =>
+                              // _showComingSoon('تأكيد المستوى العلمي'),
                               topRadius: 0,
                             ),
 

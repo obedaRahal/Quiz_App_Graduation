@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
@@ -10,6 +12,7 @@ import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profil
 import 'package:quiz_app_grad/features/my_profile/presentation/mappers/my_profile_library_mapper.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/content_tab/my_profile_content_filter_section.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/content_tab/my_profile_content_search_field.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_content_card_shimmer.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/content_tab/other_profile_content_card.dart';
 
@@ -78,10 +81,25 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
                 child: Center(
-                  child: CustomTextWidget(
-                    state.errorMessage ?? 'تعذر جلب المحتوى',
-                    color: AppPalette.greyMedium,
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomTextWidget(
+                        state.libraryError?.message ?? 'تعذر جلب المحتوى',
+                        color: AppPalette.greyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: SizeConfig.h(0.014)),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          context
+                              .read<MyProfileCubit>()
+                              .retryMyProfileLibraryInitial();
+                        },
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('إعادة المحاولة'),
+                      ),
+                    ],
                   ),
                 ),
               )
@@ -100,10 +118,44 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: items.length + (state.isLibraryLoadingMore ? 1 : 0),
+                itemCount:
+                    items.length +
+                    (state.isLibraryLoadingMore || state.libraryError != null
+                        ? 1
+                        : 0),
                 itemBuilder: (context, index) {
                   if (index >= items.length) {
-                    return OtherProfileContentCardShimmer();
+                    if (state.isLibraryLoadingMore) {
+                      return OtherProfileContentCardShimmer();
+                    }
+
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: SizeConfig.h(0.014),
+                      ),
+                      child: Column(
+                        children: [
+                          CustomTextWidget(
+                            state.libraryError?.message ??
+                                'تعذر تحميل المزيد من المحتوى',
+                            color: AppPalette.red,
+                            textAlign: TextAlign.center,
+                          ),
+                          TextButton.icon(
+                            onPressed: () {
+                              final cubit = context.read<MyProfileCubit>();
+                              if (state.librarySearchText.trim().isEmpty) {
+                                cubit.fetchMoreMyProfileLibraryIfNeeded();
+                              } else {
+                                cubit.fetchMoreMyProfileLibrarySearchIfNeeded();
+                              }
+                            },
+                            icon: const Icon(Icons.refresh_rounded),
+                            label: const Text('إعادة المحاولة'),
+                          ),
+                        ],
+                      ),
+                    );
                   }
 
                   final item = items[index];
@@ -114,11 +166,19 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
                         padding: EdgeInsets.only(bottom: SizeConfig.h(0.014)),
                         child: OtherProfileContentCard(
                           content: item.toOtherProfileContentEntity(),
-                          onSaveTap: () {
-                            debugPrint(
-                              "im at MyProfileContentTab and id is ${item.id}",
+                          showSaveButton: false,
+                          showLikeButton: false,
+                          onContentTap: () {
+                            context.pushNamed(
+                              AppRouterName.otherContentDetails,
+                              extra: ContentDetailsRouteArgs(
+                                contentId: item.id,
+                                isMyContent: true,
+                              ),
                             );
                           },
+                          // لا توجد عمليتا حفظ أو إعجاب ضمن تبويب «محتواي».
+                          onSaveTap: () {},
                           onLikeTap: () {},
                         ),
                       ),

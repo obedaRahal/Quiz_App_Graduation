@@ -117,13 +117,6 @@ class GraduatedUniversityStep extends StatelessWidget {
                     },
                   );
                 },
-                // onTap: () async {
-                //   final path = await _pickImagePath();
-                //   if (path == null || !context.mounted) return;
-                //   context.read<OnboardingCubit>().personalIdentityImageChanged(
-                //     path,
-                //   );
-                // },
               ),
             ],
           ),

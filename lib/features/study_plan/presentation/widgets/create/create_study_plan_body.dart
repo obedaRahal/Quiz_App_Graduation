@@ -21,7 +21,7 @@ class CreateStudyPlanBody extends StatelessWidget {
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
         SizeConfig.w(0.03),
-        SizeConfig.h(0.015),
+        SizeConfig.h(0.03),
         SizeConfig.w(0.03),
         SizeConfig.h(0.03),
       ),

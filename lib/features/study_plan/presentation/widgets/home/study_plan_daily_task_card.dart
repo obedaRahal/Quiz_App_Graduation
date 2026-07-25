@@ -13,6 +13,7 @@ class StudyPlanDailyTaskCard extends StatelessWidget {
   final bool isUpdating;
   final VoidCallback onStatusToggle;
   final VoidCallback? onTap;
+  final bool showStatusCheckBox;
 
   const StudyPlanDailyTaskCard({
     super.key,
@@ -20,6 +21,7 @@ class StudyPlanDailyTaskCard extends StatelessWidget {
     required this.isUpdating,
     required this.onStatusToggle,
     this.onTap,
+    this.showStatusCheckBox = true,
   });
 
   @override
@@ -61,6 +63,7 @@ class StudyPlanDailyTaskCard extends StatelessWidget {
                   statusStyle: statusStyle,
                   isUpdating: isUpdating,
                   onStatusToggle: onStatusToggle,
+                  showStatusCheckBox: showStatusCheckBox,
                 ),
                 SizedBox(height: SizeConfig.h(0.012)),
                 CustomDivider(height: 1, thickness: 2),
@@ -141,12 +144,14 @@ class _TaskHeader extends StatelessWidget {
   final _TaskStatusStyle statusStyle;
   final bool isUpdating;
   final VoidCallback onStatusToggle;
+  final bool showStatusCheckBox;
 
   const _TaskHeader({
     required this.task,
     required this.statusStyle,
     required this.isUpdating,
     required this.onStatusToggle,
+    required this.showStatusCheckBox,
   });
 
   @override
@@ -172,13 +177,15 @@ class _TaskHeader extends StatelessWidget {
 
         _TaskStatusBadge(style: statusStyle),
 
-        SizedBox(width: SizeConfig.w(0.018)),
+        if (showStatusCheckBox) ...[
+          SizedBox(width: SizeConfig.w(0.018)),
 
-        _TaskStatusCheckBox(
-          value: task.isCompleted,
-          isLoading: isUpdating,
-          onTap: onStatusToggle,
-        ),
+          _TaskStatusCheckBox(
+            value: task.isCompleted,
+            isLoading: isUpdating,
+            onTap: onStatusToggle,
+          ),
+        ],
       ],
     );
   }

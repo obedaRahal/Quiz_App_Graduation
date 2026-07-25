@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/errors/exceptions.dart';
 import 'package:quiz_app_grad/core/errors/failure.dart';
 import 'package:quiz_app_grad/features/settings/data/data_source/settings_remote_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/models/settings_operation_response_model.dart';
+import 'package:quiz_app_grad/features/settings/domain/entity/academic_verification_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/settings_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/sold_tests_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/settings_repository.dart';
@@ -449,6 +450,242 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
       return const Left(
         ServerFailure(title: 'حدث خطأ', message: 'تعذر جلب الاختبارات المباعة'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, AcademicVerificationEntity>>
+  fetchAcademicVerificationStatus() async {
+    debugPrint(
+      '============ SettingsRepositoryImpl.fetchAcademicVerificationStatus ============',
+    );
+
+    try {
+      final response = await remoteDataSource.fetchAcademicVerificationStatus();
+
+      debugPrint('✓ fetchAcademicVerificationStatus success');
+      debugPrint('→ hasRequest: ${response.hasRequest}');
+      debugPrint('→ status: ${response.status}');
+      debugPrint(
+        '→ remainingCancellations: '
+        '${response.remainingCancellations}',
+      );
+      debugPrint(
+        '==========================================================================================',
+      );
+
+      return Right(response);
+    } on ServerException catch (e) {
+      debugPrint('✗ fetchAcademicVerificationStatus ServerException');
+      debugPrint('→ title: ${e.errorModel.errorTitle}');
+      debugPrint('→ message: ${e.errorModel.errorMessage}');
+      debugPrint(
+        '==========================================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint('✗ fetchAcademicVerificationStatus CacheException');
+      debugPrint('→ message: ${e.errorMessage}');
+      debugPrint(
+        '==========================================================================================',
+      );
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e, stackTrace) {
+      debugPrint('✗ fetchAcademicVerificationStatus Unexpected error: $e');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '==========================================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'تعذر جلب حالة تأكيد المستوى العلمي',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> createAcademicVerificationRequest({
+    required String certificateImagePath,
+    required String identityImagePath,
+  }) async {
+    debugPrint(
+      '============ SettingsRepositoryImpl.createAcademicVerificationRequest ============',
+    );
+    debugPrint('→ certificateImagePath: $certificateImagePath');
+    debugPrint('→ identityImagePath: $identityImagePath');
+
+    try {
+      await remoteDataSource.createAcademicVerificationRequest(
+        certificateImagePath: certificateImagePath,
+        identityImagePath: identityImagePath,
+      );
+
+      debugPrint('√ createAcademicVerificationRequest success');
+      debugPrint(
+        '===============================================================================',
+      );
+
+      return const Right(unit);
+    } on ServerException catch (exception) {
+      debugPrint('✗ ServerException in createAcademicVerificationRequest');
+      debugPrint('→ title: ${exception.errorModel.errorTitle}');
+      debugPrint('→ message: ${exception.errorModel.errorMessage}');
+      debugPrint(
+        '===============================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: exception.errorModel.errorTitle,
+          message: exception.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      debugPrint('✗ fetchAcademicVerificationStatus CacheException');
+      debugPrint('→ message: ${e.errorMessage}');
+      debugPrint(
+        '==========================================================================================',
+      );
+
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (e, stackTrace) {
+      debugPrint('✗ fetchAcademicVerificationStatus Unexpected error: $e');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '==========================================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'تعذر ارسال حالة تأكيد المستوى العلمي',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> cancelAcademicVerificationRequest() async {
+    debugPrint(
+      '============ SettingsRepositoryImpl.cancelAcademicVerificationRequest ============',
+    );
+
+    try {
+      await remoteDataSource.cancelAcademicVerificationRequest();
+
+      debugPrint('✓ cancelAcademicVerificationRequest success');
+      debugPrint(
+        '===============================================================================',
+      );
+
+      return const Right(unit);
+    } on ServerException catch (exception) {
+      debugPrint('✗ ServerException in cancelAcademicVerificationRequest');
+      debugPrint('→ title: ${exception.errorModel.errorTitle}');
+      debugPrint('→ message: ${exception.errorModel.errorMessage}');
+      debugPrint(
+        '===============================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: exception.errorModel.errorTitle,
+          message: exception.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (exception) {
+      debugPrint('✗ CacheException in cancelAcademicVerificationRequest');
+      debugPrint('→ exception: $exception');
+      debugPrint(
+        '===============================================================================',
+      );
+
+      return Left(
+        CacheFailure(title: 'خطأ محلي', message: exception.errorMessage),
+      );
+    } catch (e, stackTrace) {
+      debugPrint('✗ fetchAcademicVerificationStatus Unexpected error: $e');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '==========================================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'تعذر الغاء طلب تأكيد المستوى العلمي',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateAcademicVerificationVisibility({
+    required bool showCertificatePublicly,
+  }) async {
+    debugPrint(
+      '============ SettingsRepositoryImpl.updateAcademicVerificationVisibility ============',
+    );
+    debugPrint('→ showCertificatePublicly: $showCertificatePublicly');
+
+    try {
+      await remoteDataSource.updateAcademicVerificationVisibility(
+        showCertificatePublicly: showCertificatePublicly,
+      );
+
+      debugPrint('✓ updateAcademicVerificationVisibility success');
+      debugPrint(
+        '======================================================================================',
+      );
+
+      return const Right(unit);
+    } on ServerException catch (exception) {
+      debugPrint('✗ ServerException in updateAcademicVerificationVisibility');
+      debugPrint('→ title: ${exception.errorModel.errorTitle}');
+      debugPrint('→ message: ${exception.errorModel.errorMessage}');
+      debugPrint(
+        '======================================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: exception.errorModel.errorTitle,
+          message: exception.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (exception) {
+      debugPrint('✗ CacheException in cancelAcademicVerificationRequest');
+      debugPrint('→ exception: $exception');
+      debugPrint(
+        '===============================================================================',
+      );
+
+      return Left(
+        CacheFailure(title: 'خطأ محلي', message: exception.errorMessage),
+      );
+    } catch (e, stackTrace) {
+      debugPrint('✗ fetchAcademicVerificationStatus Unexpected error: $e');
+      debugPrint('→ stackTrace: $stackTrace');
+      debugPrint(
+        '==========================================================================================',
+      );
+
+      return Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'تعذر  طلب  المستوى العلمي',
+        ),
       );
     }
   }

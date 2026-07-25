@@ -47,11 +47,11 @@ class StudyPlanHomeBody extends StatelessWidget {
               //physics: const BouncingScrollPhysics(),
               padding: EdgeInsets.only(
                 left: SizeConfig.w(0.03),
-                top: SizeConfig.h(0.01),
+                top: SizeConfig.h(0.03),
                 right: SizeConfig.w(0.03),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   StudyPlanHomeHeader(
                     onActionTap: () async {
@@ -225,6 +225,7 @@ class StudyPlanHomeBody extends StatelessWidget {
                         child: StudyPlanDailyTaskCard(
                           task: task,
                           isUpdating: state.isUpdatingTask(task.id),
+                          showStatusCheckBox: task.status.trim() != 'فائتة',
                           onStatusToggle: () {
                             context.read<StudyPlanHomeCubit>().toggleTaskStatus(
                               taskId: task.id,

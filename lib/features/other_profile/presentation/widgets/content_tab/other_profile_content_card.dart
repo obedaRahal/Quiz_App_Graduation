@@ -13,67 +13,82 @@ class OtherProfileContentCard extends StatelessWidget {
   final OtherProfileContentItemEntity content;
   final VoidCallback onSaveTap;
   final VoidCallback onLikeTap;
+  final VoidCallback? onContentTap;
+  final bool showSaveButton;
+  final bool showLikeButton;
 
   const OtherProfileContentCard({
     super.key,
     required this.content,
     required this.onSaveTap,
     required this.onLikeTap,
+    this.onContentTap,
+    this.showSaveButton = true,
+    this.showLikeButton = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: CustomBackgroundWithChild(
-        width: double.infinity,
-        backgroundColor: appColors.whiteToblack,
-        borderRadius: BorderRadius.circular(0),
-        padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.012)),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _ContentThumbnail(imageUrl: content.urlContent, type: content.type),
-
-            SizedBox(width: SizeConfig.w(0.025)),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _ContentHeaderRow(
-                    title: content.title,
-                    type: content.type,
-                    isSaved: content.viewerHasBookmarked,
-                    onSaveTap: onSaveTap,
-                  ),
-
-                  //SizedBox(height: SizeConfig.h(0.004)),
-                  CustomTextWidget(
-                    content.description,
-                    color: AppPalette.greyMedium,
-                    fontSize: SizeConfig.text(0.025),
-                    textAlign: TextAlign.right,
-                    textDirection: TextDirection.rtl,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  SizedBox(height: SizeConfig.h(0.008)),
-
-                  _ContentFooterRow(
-                    tags: content.interests,
-                    likesCount: content.likeCount,
-                    isLiked: false,
-                    publishedAt: content.publishedAt,
-                    onLikeTap: onLikeTap,
-                  ),
-                ],
+    return InkWell(
+      onTap: onContentTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: CustomBackgroundWithChild(
+          width: double.infinity,
+          backgroundColor: appColors.whiteToblack,
+          borderRadius: BorderRadius.circular(0),
+          padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.012)),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _ContentThumbnail(
+                imageUrl: content.urlContent,
+                type: content.type,
               ),
-            ),
-          ],
+
+              SizedBox(width: SizeConfig.w(0.025)),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _ContentHeaderRow(
+                      title: content.title,
+                      type: content.type,
+                      isSaved: content.viewerHasBookmarked,
+                      onSaveTap: onSaveTap,
+                      showSaveButton: showSaveButton,
+                    ),
+
+                    //SizedBox(height: SizeConfig.h(0.004)),
+                    CustomTextWidget(
+                      content.description,
+                      color: AppPalette.greyMedium,
+                      fontSize: SizeConfig.text(0.025),
+                      textAlign: TextAlign.right,
+                      textDirection: TextDirection.rtl,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+
+                    SizedBox(height: SizeConfig.h(0.008)),
+
+                    _ContentFooterRow(
+                      tags: content.interests,
+                      likesCount: content.likeCount,
+                      isLiked: false,
+                      publishedAt: content.publishedAt,
+                      onLikeTap: onLikeTap,
+                      showLikeButton: showLikeButton,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -117,12 +132,14 @@ class _ContentHeaderRow extends StatelessWidget {
   final String type;
   final bool isSaved;
   final VoidCallback onSaveTap;
+  final bool showSaveButton;
 
   const _ContentHeaderRow({
     required this.title,
     required this.type,
     required this.isSaved,
     required this.onSaveTap,
+    required this.showSaveButton,
   });
 
   @override
@@ -150,9 +167,10 @@ class _ContentHeaderRow extends StatelessWidget {
 
         _ContentTypeBadge(type: type),
 
-        SizedBox(width: SizeConfig.w(0.02)),
-
-        _SaveButton(isSaved: isSaved, onTap: onSaveTap),
+        if (showSaveButton) ...[
+          SizedBox(width: SizeConfig.w(0.02)),
+          _SaveButton(isSaved: isSaved, onTap: onSaveTap),
+        ],
       ],
     );
   }
@@ -223,6 +241,7 @@ class _ContentFooterRow extends StatelessWidget {
   final bool isLiked;
   final String publishedAt;
   final VoidCallback onLikeTap;
+  final bool showLikeButton;
 
   const _ContentFooterRow({
     required this.tags,
@@ -230,6 +249,7 @@ class _ContentFooterRow extends StatelessWidget {
     required this.isLiked,
     required this.publishedAt,
     required this.onLikeTap,
+    required this.showLikeButton,
   });
 
   @override
@@ -259,15 +279,15 @@ class _ContentFooterRow extends StatelessWidget {
           ),
         ),
 
-        SizedBox(width: SizeConfig.w(0.012)),
-
-        _LikeIconText(
-          isLiked: isLiked,
-          text: formatCompactCount(likesCount),
-          onTap: onLikeTap,
-        ),
-
-        SizedBox(width: SizeConfig.w(0.018)),
+        if (showLikeButton) ...[
+          SizedBox(width: SizeConfig.w(0.012)),
+          _LikeIconText(
+            isLiked: isLiked,
+            text: formatCompactCount(likesCount),
+            onTap: onLikeTap,
+          ),
+          SizedBox(width: SizeConfig.w(0.018)),
+        ],
 
         _SmallIconText(icon: Icons.access_time_rounded, text: publishedAt),
       ],

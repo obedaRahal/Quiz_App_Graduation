@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -13,6 +15,7 @@ import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_fol
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_cubit.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_state.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/mappers/my_profile_folder_content_mapper.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/test_tab/other_profile_test_card.dart';
 
 void showMyProfileFolderContentBottomSheet({
@@ -33,7 +36,7 @@ void showMyProfileFolderContentBottomSheet({
         child: MyProfileFolderContentBottomSheet(folder: folder),
       );
     },
-  );
+  ).whenComplete(cubit.resetMyProfileFolderContentState);
 }
 
 class MyProfileFolderContentBottomSheet extends StatelessWidget {
@@ -60,7 +63,7 @@ class MyProfileFolderContentBottomSheet extends StatelessWidget {
                     current.folderContentResponse ||
                 previous.activeFolderContentId !=
                     current.activeFolderContentId ||
-                previous.errorMessage != current.errorMessage,
+                previous.folderContentError != current.folderContentError,
             builder: (context, state) {
               return Column(
                 children: [
@@ -128,7 +131,7 @@ class _FolderContentBody extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.folderContentStatus != current.folderContentStatus ||
           previous.folderContentResponse != current.folderContentResponse ||
-          previous.errorMessage != current.errorMessage,
+          previous.folderContentError != current.folderContentError,
       builder: (context, state) {
         if (state.isFolderContentLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -142,7 +145,8 @@ class _FolderContentBody extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CustomTextWidget(
-                    state.errorMessage ?? 'حدث خطأ أثناء جلب محتوى المجلد',
+                    state.folderContentError?.message ??
+                        'حدث خطأ أثناء جلب محتوى المجلد',
                     color: AppPalette.red,
                     textAlign: TextAlign.center,
                   ),
@@ -190,6 +194,20 @@ class _FolderContentBody extends StatelessWidget {
                     child: OtherProfileTestCard(
                       item: mapMyFolderContentTestToOtherProfileTest(test),
                       showSaveButton: false,
+                      onTestTap: () {
+                        final normalizedType = test.testType
+                            .trim()
+                            .toLowerCase();
+                        final isPrivate =
+                            normalizedType == 'private' ||
+                            normalizedType.contains('خاص');
+                        context.pushNamed(
+                          isPrivate
+                              ? AppRouterName.myPrivateTestDetails
+                              : AppRouterName.myTestDetails,
+                          extra: DetailsOfTestRouteArgs(testId: test.id),
+                        );
+                      },
                     ),
                   );
                 }),
@@ -265,7 +283,7 @@ class MyProfileFolderInfoCard extends StatelessWidget {
               ),
             ),
             SizedBox(width: SizeConfig.w(0.03)),
-            CustomAppImage(path: AppImage.emptyFolder)
+            CustomAppImage(path: AppImage.emptyFolder),
           ],
         ),
       ),

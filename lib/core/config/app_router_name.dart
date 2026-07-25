@@ -49,6 +49,7 @@ abstract class AppRouterName {
 
   static const String settings = 'settings';
   static const String soldTests = 'soldTests';
+  static const String academicVerification = 'academicVerification';
 }
 
 abstract class AppRouterPath {
@@ -108,4 +109,5 @@ abstract class AppRouterPath {
 
   static const String settings = '/settings';
   static const String soldTests = '/soldTests';
+  static const String academicVerification = '/academicVerification';
 }

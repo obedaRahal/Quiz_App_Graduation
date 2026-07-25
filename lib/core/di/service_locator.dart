@@ -193,16 +193,21 @@ import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repos
 import 'package:quiz_app_grad/features/settings/data/services/sold_tests_pdf_service.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/settings_repository.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/theme_repository.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/cancel_academic_verification_request_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/create_academic_verification_request_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/disable_task_reminders_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/enable_task_reminders_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/fetch_academic_verification_status_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/fetch_sold_tests_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/get_settings_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/get_theme_mode_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/logout_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/set_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/update_academic_verification_visibility_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/update_date_time_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/update_password_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/update_theme_mode_use_case.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/academic_verification/academic_verification_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/settings/settings_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/sold_tests/sold_tests_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
@@ -2061,6 +2066,31 @@ void _registerSettingsFeature() {
   );
 
   sl.registerLazySingleton<SoldTestsPdfService>(() => SoldTestsPdfService());
+
+  sl.registerLazySingleton<FetchAcademicVerificationStatusUseCase>(
+    () => FetchAcademicVerificationStatusUseCase(sl()),
+  );
+
+  sl.registerLazySingleton<CreateAcademicVerificationRequestUseCase>(
+    () => CreateAcademicVerificationRequestUseCase(sl()),
+  );
+
+  sl.registerLazySingleton<CancelAcademicVerificationRequestUseCase>(
+    () => CancelAcademicVerificationRequestUseCase(sl()),
+  );
+
+  sl.registerLazySingleton<UpdateAcademicVerificationVisibilityUseCase>(
+    () => UpdateAcademicVerificationVisibilityUseCase(sl()),
+  );
+
+  sl.registerFactory<AcademicVerificationCubit>(
+    () => AcademicVerificationCubit(
+      fetchAcademicVerificationStatusUseCase: sl(),
+      createAcademicVerificationRequestUseCase: sl(),
+      cancelAcademicVerificationRequestUseCase: sl(),
+      updateAcademicVerificationVisibilityUseCase: sl(),
+    ),
+  );
 
   sl.registerFactory<SettingsCubit>(
     () => SettingsCubit(

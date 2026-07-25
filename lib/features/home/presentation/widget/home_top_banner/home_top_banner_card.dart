@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
 
 class HomeTopBannerCard extends StatelessWidget {
   final int index;
@@ -51,9 +53,7 @@ class HomeTopBannerCard extends StatelessWidget {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(
-                            top: SizeConfig.h(
-                              0.012,
-                            ).clamp(8.0, 12.0).toDouble(),
+                            top: SizeConfig.h(0.01).clamp(8.0, 12.0).toDouble(),
                             bottom: SizeConfig.h(
                               0.008,
                             ).clamp(5.0, 8.0).toDouble(),
@@ -81,10 +81,15 @@ class HomeTopBannerCard extends StatelessWidget {
                             onTap: () {
                               if (index == 0) {
                                 // context.push("/route1");
+                                debugPrint("go to create new  test");
+                                context.read<BottomNavCubit>().changeTab(2);
                               } else if (index == 1) {
                                 // context.push("/route2");
+                                debugPrint("go to create new  plan");
+                                context.read<BottomNavCubit>().changeTab(3);
                               } else {
-                                // context.push("/route3");
+                                debugPrint("go to create new  content");
+                                context.read<BottomNavCubit>().changeTab(1);
                               }
                             },
                             child: Padding(

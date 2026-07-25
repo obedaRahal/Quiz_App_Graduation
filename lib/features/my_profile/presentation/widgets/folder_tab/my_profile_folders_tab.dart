@@ -40,8 +40,8 @@ class MyProfileFoldersTab extends StatelessWidget {
         if (state.isDeleteFolderFailure) {
           showValidationTopSnackBar(
             context,
-            title: state.errorTitle ?? 'خطأ',
-            message: state.errorMessage ?? 'تعذر حذف المجلد',
+            title: state.deleteFolderError?.title ?? 'خطأ',
+            message: state.deleteFolderError?.message ?? 'تعذر حذف المجلد',
             type: AppValidationSnackBarType.error,
           );
 
@@ -76,10 +76,24 @@ class MyProfileFoldersTab extends StatelessWidget {
               Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.05)),
-                  child: CustomTextWidget(
-                    state.errorMessage ?? 'حدث خطأ أثناء جلب المجلدات',
-                    color: AppPalette.red,
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomTextWidget(
+                        state.foldersError?.message ??
+                            'حدث خطأ أثناء جلب المجلدات',
+                        color: AppPalette.red,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: SizeConfig.h(0.014)),
+                      ElevatedButton.icon(
+                        onPressed: context
+                            .read<MyProfileCubit>()
+                            .fetchMyProfileFoldersInitial,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('إعادة المحاولة'),
+                      ),
+                    ],
                   ),
                 ),
               )
@@ -167,6 +181,28 @@ class MyProfileFoldersTab extends StatelessWidget {
                         vertical: SizeConfig.h(0.018),
                       ),
                       child: const Center(child: CircularProgressIndicator()),
+                    ),
+                  if (!state.isFoldersLoadingMore && state.foldersError != null)
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: SizeConfig.h(0.014),
+                      ),
+                      child: Column(
+                        children: [
+                          CustomTextWidget(
+                            state.foldersError!.message,
+                            color: AppPalette.red,
+                            textAlign: TextAlign.center,
+                          ),
+                          TextButton.icon(
+                            onPressed: context
+                                .read<MyProfileCubit>()
+                                .fetchMoreMyProfileFoldersIfNeeded,
+                            icon: const Icon(Icons.refresh_rounded),
+                            label: const Text('إعادة المحاولة'),
+                          ),
+                        ],
+                      ),
                     ),
                 ],
               ),

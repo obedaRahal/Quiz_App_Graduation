@@ -29,14 +29,15 @@ class LaboratoryHeader extends StatelessWidget {
 
         return Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: SizeConfig.w(0.04),
-            vertical: SizeConfig.h(0.01),
+            horizontal: SizeConfig.w(0.03),
+            vertical: SizeConfig.h(0.03),
           ),
           child: Directionality(
             textDirection: TextDirection.rtl,
             child: SizedBox(
               height: SizeConfig.h(0.055),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 textDirection: TextDirection.rtl,
                 children: [
                   Expanded(

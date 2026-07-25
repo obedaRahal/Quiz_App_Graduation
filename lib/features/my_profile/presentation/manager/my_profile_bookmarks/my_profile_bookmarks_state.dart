@@ -26,6 +26,13 @@ extension MyProfileBookmarksTabX on MyProfileBookmarksTab {
   }
 }
 
+class MyProfileBookmarksError {
+  final String title;
+  final String message;
+
+  const MyProfileBookmarksError({required this.title, required this.message});
+}
+
 class MyProfileBookmarksState {
   final MyProfileBookmarksTab selectedTab;
 
@@ -37,8 +44,9 @@ class MyProfileBookmarksState {
   final String? nextCursor;
   final bool hasMorePages;
 
-  final String? errorTitle;
-  final String? errorMessage;
+  final MyProfileBookmarksError? fetchError;
+  final MyProfileBookmarksError? loadMoreError;
+  final MyProfileBookmarksError? actionError;
 
   final int? activeBookmarkItemId;
 
@@ -49,12 +57,13 @@ class MyProfileBookmarksState {
     this.items = const [],
     this.nextCursor,
     this.hasMorePages = false,
-    this.errorTitle,
-    this.errorMessage,
+    this.fetchError,
+    this.loadMoreError,
+    this.actionError,
     this.activeBookmarkItemId,
   });
 
-  bool get hasError => errorMessage != null && errorMessage!.trim().isNotEmpty;
+  bool get hasFetchError => fetchError != null;
 
   bool isBookmarkItemLoading(int id) {
     return isLoadingMore == false && activeBookmarkItemId == id;
@@ -68,9 +77,12 @@ class MyProfileBookmarksState {
     String? nextCursor,
     bool clearNextCursor = false,
     bool? hasMorePages,
-    String? errorTitle,
-    String? errorMessage,
-    bool clearError = false,
+    MyProfileBookmarksError? fetchError,
+    bool clearFetchError = false,
+    MyProfileBookmarksError? loadMoreError,
+    bool clearLoadMoreError = false,
+    MyProfileBookmarksError? actionError,
+    bool clearActionError = false,
     int? activeBookmarkItemId,
     bool clearActiveBookmarkItemId = false,
   }) {
@@ -81,8 +93,11 @@ class MyProfileBookmarksState {
       items: items ?? this.items,
       nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
       hasMorePages: hasMorePages ?? this.hasMorePages,
-      errorTitle: clearError ? null : errorTitle ?? this.errorTitle,
-      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      fetchError: clearFetchError ? null : fetchError ?? this.fetchError,
+      loadMoreError: clearLoadMoreError
+          ? null
+          : loadMoreError ?? this.loadMoreError,
+      actionError: clearActionError ? null : actionError ?? this.actionError,
       activeBookmarkItemId: clearActiveBookmarkItemId
           ? null
           : activeBookmarkItemId ?? this.activeBookmarkItemId,

@@ -16,6 +16,7 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
   final UnbookmarkTestUseCase unbookmarkTestUseCase;
   final RemoveContentBookmarkUseCase removeContentBookmarkUseCase;
   final RemoveFolderBookmarkUseCase removeFolderBookmarkUseCase;
+  int _requestGeneration = 0;
 
   MyProfileBookmarksCubit({
     required this.fetchMyProfileBookmarksUseCase,
@@ -27,6 +28,9 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
   }
 
   Future<void> fetchInitial() async {
+    final requestGeneration = ++_requestGeneration;
+    final requestedTab = state.selectedTab;
+
     debugPrint(
       "============ MyProfileBookmarksCubit.fetchInitial ============",
     );
@@ -39,21 +43,30 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
         items: const [],
         hasMorePages: false,
         clearNextCursor: true,
-        clearError: true,
+        clearFetchError: true,
+        clearLoadMoreError: true,
       ),
     );
 
     final result = await fetchMyProfileBookmarksUseCase(
-      FetchMyProfileBookmarksParams(tab: state.selectedTab.apiValue),
+      FetchMyProfileBookmarksParams(tab: requestedTab.apiValue),
     );
+
+    if (isClosed ||
+        requestGeneration != _requestGeneration ||
+        state.selectedTab != requestedTab) {
+      return;
+    }
 
     result.fold(
       (failure) {
         emit(
           state.copyWith(
             isLoading: false,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            fetchError: MyProfileBookmarksError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -64,7 +77,7 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
             items: response.data.items,
             nextCursor: response.data.meta.nextCursor,
             hasMorePages: response.data.meta.hasMorePages,
-            clearError: true,
+            clearFetchError: true,
           ),
         );
       },
@@ -75,6 +88,7 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
 
   Future<void> changeTab(MyProfileBookmarksTab tab) async {
     if (state.selectedTab == tab) return;
+    _requestGeneration++;
 
     debugPrint("============ MyProfileBookmarksCubit.changeTab ============");
     debugPrint("→ from: ${state.selectedTab.apiValue}");
@@ -88,7 +102,8 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
         isLoadingMore: false,
         hasMorePages: false,
         clearNextCursor: true,
-        clearError: true,
+        clearFetchError: true,
+        clearLoadMoreError: true,
       ),
     );
 
@@ -100,6 +115,9 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
 
     final cursor = state.nextCursor;
     if (cursor == null || cursor.trim().isEmpty) return;
+    final requestGeneration = _requestGeneration;
+    final requestedTab = state.selectedTab;
+    final currentItems = state.items;
 
     debugPrint(
       "============ MyProfileBookmarksCubit.fetchMoreIfNeeded ============",
@@ -107,22 +125,27 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
     debugPrint("→ tab: ${state.selectedTab.apiValue}");
     debugPrint("→ cursor: $cursor");
 
-    emit(state.copyWith(isLoadingMore: true, clearError: true));
+    emit(state.copyWith(isLoadingMore: true, clearLoadMoreError: true));
 
     final result = await fetchMyProfileBookmarksUseCase(
-      FetchMyProfileBookmarksParams(
-        tab: state.selectedTab.apiValue,
-        cursor: cursor,
-      ),
+      FetchMyProfileBookmarksParams(tab: requestedTab.apiValue, cursor: cursor),
     );
+
+    if (isClosed ||
+        requestGeneration != _requestGeneration ||
+        state.selectedTab != requestedTab) {
+      return;
+    }
 
     result.fold(
       (failure) {
         emit(
           state.copyWith(
             isLoadingMore: false,
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            loadMoreError: MyProfileBookmarksError(
+              title: failure.title,
+              message: failure.message,
+            ),
           ),
         );
       },
@@ -130,10 +153,10 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
         emit(
           state.copyWith(
             isLoadingMore: false,
-            items: [...state.items, ...response.data.items],
+            items: [...currentItems, ...response.data.items],
             nextCursor: response.data.meta.nextCursor,
             hasMorePages: response.data.meta.hasMorePages,
-            clearError: true,
+            clearLoadMoreError: true,
           ),
         );
       },
@@ -149,7 +172,7 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
   Future<void> removeTestBookmark({required int testId}) async {
     if (state.activeBookmarkItemId == testId) return;
 
-    emit(state.copyWith(activeBookmarkItemId: testId, clearError: true));
+    emit(state.copyWith(activeBookmarkItemId: testId, clearActionError: true));
 
     final result = await unbookmarkTestUseCase(
       TestBookmarkActionParams(testId: testId),
@@ -159,8 +182,10 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
       (failure) {
         emit(
           state.copyWith(
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            actionError: MyProfileBookmarksError(
+              title: failure.title,
+              message: failure.message,
+            ),
             clearActiveBookmarkItemId: true,
           ),
         );
@@ -177,7 +202,7 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
           state.copyWith(
             items: updatedItems,
             clearActiveBookmarkItemId: true,
-            clearError: true,
+            clearActionError: true,
           ),
         );
       },
@@ -187,7 +212,9 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
   Future<void> removeMaterialBookmark({required int contentId}) async {
     if (state.activeBookmarkItemId == contentId) return;
 
-    emit(state.copyWith(activeBookmarkItemId: contentId, clearError: true));
+    emit(
+      state.copyWith(activeBookmarkItemId: contentId, clearActionError: true),
+    );
 
     final result = await removeContentBookmarkUseCase(
       ContentBookmarkActionParams(contentId: contentId),
@@ -197,8 +224,10 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
       (failure) {
         emit(
           state.copyWith(
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            actionError: MyProfileBookmarksError(
+              title: failure.title,
+              message: failure.message,
+            ),
             clearActiveBookmarkItemId: true,
           ),
         );
@@ -216,7 +245,7 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
           state.copyWith(
             items: updatedItems,
             clearActiveBookmarkItemId: true,
-            clearError: true,
+            clearActionError: true,
           ),
         );
       },
@@ -226,7 +255,9 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
   Future<void> removeFolderBookmark({required int folderId}) async {
     if (state.activeBookmarkItemId == folderId) return;
 
-    emit(state.copyWith(activeBookmarkItemId: folderId, clearError: true));
+    emit(
+      state.copyWith(activeBookmarkItemId: folderId, clearActionError: true),
+    );
 
     final result = await removeFolderBookmarkUseCase(
       FolderBookmarkActionParams(folderId: folderId),
@@ -236,8 +267,10 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
       (failure) {
         emit(
           state.copyWith(
-            errorTitle: failure.title,
-            errorMessage: failure.message,
+            actionError: MyProfileBookmarksError(
+              title: failure.title,
+              message: failure.message,
+            ),
             clearActiveBookmarkItemId: true,
           ),
         );
@@ -255,10 +288,15 @@ class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
           state.copyWith(
             items: updatedItems,
             clearActiveBookmarkItemId: true,
-            clearError: true,
+            clearActionError: true,
           ),
         );
       },
     );
+  }
+
+  void clearActionError() {
+    if (state.actionError == null) return;
+    emit(state.copyWith(clearActionError: true));
   }
 }
