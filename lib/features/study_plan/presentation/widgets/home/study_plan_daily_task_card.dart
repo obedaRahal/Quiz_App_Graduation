@@ -292,12 +292,10 @@ class _TaskDetailsRow extends StatelessWidget {
             child: _TaskTimeColumn(start: task.time.start, end: task.time.end),
           ),
 
-        Expanded(
-          child: _TaskInfoColumn(
-            title: 'الأولوية',
-            value: task.priority,
-            valueColor: priorityColor,
-          ),
+        _TaskInfoColumn(
+          title: 'الأولوية',
+          value: task.priority,
+          valueColor: priorityColor,
         ),
       ],
     );

@@ -3,6 +3,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.d
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class SettingsSwitchTile extends StatelessWidget {
@@ -37,7 +38,7 @@ class SettingsSwitchTile extends StatelessWidget {
       padding: EdgeInsets.only(bottom: SizeConfig.h(0.01)),
       child: CustomBackgroundWithChild(
         width: double.infinity,
-        backgroundColor: AppPalette.grey,
+        backgroundColor: context.appColors.greyToGreyMediumDark,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(topRadius),
           topRight: Radius.circular(topRadius),
@@ -65,7 +66,7 @@ class SettingsSwitchTile extends StatelessWidget {
                   title,
                   fontFamily: AppFont.elMessiriBold,
                   fontSize: SizeConfig.text(0.038),
-                  color: AppPalette.black,
+                  color: context.appColors.blackToGrey2Dark,
                   textAlign: TextAlign.right,
                 ),
 

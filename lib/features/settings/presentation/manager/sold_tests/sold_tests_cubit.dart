@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/features/settings/data/services/sold_tests_pdf_service.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/sold_tests_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/fetch_sold_tests_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/fetch_sold_tests_params.dart';
@@ -8,8 +9,12 @@ import 'package:quiz_app_grad/features/settings/presentation/manager/sold_tests/
 class SoldTestsCubit extends Cubit<SoldTestsState> {
   final FetchSoldTestsUseCase fetchSoldTestsUseCase;
 
-  SoldTestsCubit({required this.fetchSoldTestsUseCase})
-    : super(const SoldTestsState()) {
+  final SoldTestsPdfService soldTestsPdfService;
+
+  SoldTestsCubit({
+    required this.fetchSoldTestsUseCase,
+    required this.soldTestsPdfService,
+  }) : super(const SoldTestsState()) {
     debugPrint('============ SoldTestsCubit INIT ============');
   }
 
@@ -140,5 +145,98 @@ class SoldTestsCubit extends Cubit<SoldTestsState> {
           targetLevel.contains(normalizedQuery) ||
           interests.contains(normalizedQuery);
     }).toList();
+  }
+
+  ////////////////// download sold test
+  Future<void> downloadSoldTestsPdf() async {
+    debugPrint('============ SoldTestsCubit.downloadSoldTestsPdf ============');
+
+    if (state.isPdfLoading) {
+      debugPrint('→ PDF generation already in progress');
+      debugPrint('=================================================');
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        pdfStatus: SoldTestsPdfStatus.loading,
+        clearGeneratedSoldTestsPdfPath: true,
+        clearPdfError: true,
+      ),
+    );
+
+    debugPrint('→ fetching all sold tests');
+    debugPrint('→ tab: ${SoldTestsTab.all.apiValue}');
+
+    final result = await fetchSoldTestsUseCase(
+      FetchSoldTestsParams(tab: SoldTestsTab.all.apiValue),
+    );
+
+    await result.fold(
+      (failure) async {
+        debugPrint('✗ title: ${failure.title}');
+        debugPrint('✗ message: ${failure.message}');
+
+        emit(
+          state.copyWith(
+            pdfStatus: SoldTestsPdfStatus.failure,
+            pdfErrorTitle: failure.title,
+            pdfErrorMessage: failure.message,
+            clearGeneratedSoldTestsPdfPath: true,
+          ),
+        );
+      },
+      (response) async {
+        debugPrint('√ all sales fetched: ${response.sales.length}');
+
+        try {
+          final filePath = await soldTestsPdfService.generateSoldTestsPdf(
+            report: response,
+          );
+
+          debugPrint('√ PDF generated successfully');
+          debugPrint('√ filePath: $filePath');
+
+          emit(
+            state.copyWith(
+              pdfStatus: SoldTestsPdfStatus.success,
+              generatedSoldTestsPdfPath: filePath,
+              clearPdfError: true,
+            ),
+          );
+        } catch (error, stackTrace) {
+          debugPrint('✗ generateSoldTestsPdf error: $error');
+          debugPrint('✗ stackTrace: $stackTrace');
+
+          emit(
+            state.copyWith(
+              pdfStatus: SoldTestsPdfStatus.failure,
+              pdfErrorTitle: 'خطأ',
+              pdfErrorMessage: 'تعذر إنشاء تقرير المبيعات',
+              clearGeneratedSoldTestsPdfPath: true,
+            ),
+          );
+        }
+      },
+    );
+
+    debugPrint('=================================================');
+  }
+
+  void resetSoldTestsPdfState() {
+    debugPrint(
+      '============ SoldTestsCubit.resetSoldTestsPdfState ============',
+    );
+
+    emit(
+      state.copyWith(
+        pdfStatus: SoldTestsPdfStatus.initial,
+        clearGeneratedSoldTestsPdfPath: true,
+        clearPdfError: true,
+      ),
+    );
+
+    debugPrint('√ PDF state reset');
+    debugPrint('=================================================');
   }
 }

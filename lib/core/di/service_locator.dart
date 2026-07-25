@@ -190,6 +190,7 @@ import 'package:quiz_app_grad/features/settings/data/data_source/settings_remote
 import 'package:quiz_app_grad/features/settings/data/data_source/theme_local_data_source.dart';
 import 'package:quiz_app_grad/features/settings/data/repository_impl/settings_repository_impl.dart';
 import 'package:quiz_app_grad/features/settings/data/repository_impl/theme_repository_impl.dart';
+import 'package:quiz_app_grad/features/settings/data/services/sold_tests_pdf_service.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/settings_repository.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/theme_repository.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/disable_task_reminders_use_case.dart';
@@ -2059,6 +2060,8 @@ void _registerSettingsFeature() {
     () => FetchSoldTestsUseCase(settingsRepository: sl()),
   );
 
+  sl.registerLazySingleton<SoldTestsPdfService>(() => SoldTestsPdfService());
+
   sl.registerFactory<SettingsCubit>(
     () => SettingsCubit(
       getSettingsUseCase: sl(),
@@ -2074,6 +2077,7 @@ void _registerSettingsFeature() {
   );
 
   sl.registerFactory<SoldTestsCubit>(
-    () => SoldTestsCubit(fetchSoldTestsUseCase: sl()),
+    () =>
+        SoldTestsCubit(fetchSoldTestsUseCase: sl(), soldTestsPdfService: sl()),
   );
 }

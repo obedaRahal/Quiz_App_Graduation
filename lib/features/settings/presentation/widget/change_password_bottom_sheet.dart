@@ -209,7 +209,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet> {
                                   )
                                 : CustomTextWidget(
                                     'حفظ كلمة المرور',
-                                    color: Colors.white,
+                                    color: appColors.whiteToblack,
                                     fontFamily: AppFont.elMessiriBold,
                                     fontSize: SizeConfig.text(0.03),
                                   ),

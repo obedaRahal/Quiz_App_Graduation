@@ -186,7 +186,9 @@ class _NotificationPermissionCard extends StatelessWidget {
         horizontal: SizeConfig.w(0.035),
         vertical: SizeConfig.h(0.018),
       ),
-      border: Border.all(color: AppPalette.greyBorderCart),
+      border: Border.all(
+        color: context.appColors.borderFieldColorNLightToborderFieldColorNDark,
+      ),
       child: Column(
         children: [
           Stack(
@@ -195,7 +197,7 @@ class _NotificationPermissionCard extends StatelessWidget {
               Icon(
                 Icons.notifications_none_rounded,
                 size: SizeConfig.w(0.095),
-                color: const Color(0xFF5C86FF),
+                color: context.appColors.primaryToPrimaryDark,
               ),
               Transform.rotate(
                 angle: -0.7,
@@ -228,7 +230,7 @@ class _NotificationPermissionCard extends StatelessWidget {
             childVerticalPad: SizeConfig.h(0.007),
             child: CustomTextWidget(
               'فتحها من الإعدادات',
-              color: Colors.white,
+              color: appColors.whiteToblack,
               fontSize: SizeConfig.text(0.027),
             ),
           ),
@@ -269,7 +271,9 @@ class _ReminderActionTile extends StatelessWidget {
         horizontal: SizeConfig.w(0.025),
         vertical: SizeConfig.h(0.012),
       ),
-      border: Border.all(color: AppPalette.greyBorderCart),
+      border: Border.all(
+        color: context.appColors.borderFieldColorNLightToborderFieldColorNDark,
+      ),
       child: Row(
         textDirection: TextDirection.rtl,
         children: [
@@ -363,7 +367,9 @@ class _TaskReminderSwitchTile extends StatelessWidget {
         horizontal: SizeConfig.w(0.025),
         vertical: SizeConfig.h(0.01),
       ),
-      border: Border.all(color: AppPalette.greyBorderCart),
+      border: Border.all(
+        color: appColors.borderFieldColorNLightToborderFieldColorNDark,
+      ),
       child: Row(
         textDirection: TextDirection.rtl,
         children: [
