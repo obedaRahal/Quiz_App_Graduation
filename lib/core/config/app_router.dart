@@ -50,6 +50,7 @@ import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboardin
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_current_university_profile_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_discovery_source_use_case.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
+import 'package:quiz_app_grad/features/main_layout/presentation/models/main_layout_route_args.dart';
 import 'package:quiz_app_grad/features/main_layout/presentation/view/main_layout.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_education_level_use_case.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/submit_graduate_academic_profile_use_case.dart';
@@ -280,7 +281,7 @@ class AppRouter {
           builder: (context, state) {
             return BlocProvider(
               create: (_) => sl<ForgetPasswordCubit>(),
-              child:  ForgotPasswordEmailPage(),
+              child: ForgotPasswordEmailPage(),
             );
           },
         ),
@@ -322,9 +323,16 @@ class AppRouter {
           path: AppRouterPath.mainLayout,
           name: AppRouterName.mainLayout,
           builder: (context, state) {
+            final args = state.extra as MainLayoutRouteArgs?;
+
             return MultiBlocProvider(
               providers: [
-                BlocProvider(create: (_) => BottomNavCubit()),
+                BlocProvider(
+                  create: (_) => BottomNavCubit(
+                    initialIndex:
+                        args?.initialTab.index ?? MainLayoutTab.home.index,
+                  ),
+                ),
                 BlocProvider<StudyAlarmCubit>(
                   lazy: false,
                   create: (_) =>

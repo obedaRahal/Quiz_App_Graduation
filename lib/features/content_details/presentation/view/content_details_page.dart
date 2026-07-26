@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
-import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_state.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/mapper/content_details_mapper.dart';
@@ -54,10 +53,28 @@ class ContentDetailsPage extends StatelessWidget {
         listenWhen: (previous, current) =>
             (previous.successMessage != current.successMessage &&
                 current.successMessage != null) ||
+            (current.status != OtherContentDetailsStatus.failure &&
+                previous.errorMessage != current.errorMessage &&
+                current.errorMessage != null) ||
             previous.showOpenDownloadedFileDialog !=
                 current.showOpenDownloadedFileDialog,
 
         listener: (context, state) {
+          final errorMessage = state.errorMessage?.trim();
+
+          if (state.status != OtherContentDetailsStatus.failure &&
+              errorMessage != null &&
+              errorMessage.isNotEmpty) {
+            showValidationTopSnackBar(
+              context,
+              title: 'تعذر إكمال العملية',
+              message: errorMessage,
+              type: AppValidationSnackBarType.error,
+            );
+            context.read<OtherContentDetailsCubit>().clearErrorMessage();
+            return;
+          }
+
           if (state.isDeleted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -69,10 +86,11 @@ class ContentDetailsPage extends StatelessWidget {
             Navigator.maybePop(context);
             return;
           }
-         
+
           if (state.showOpenDownloadedFileDialog) {
             showDialog(
               context: context,
+              barrierDismissible: false,
               builder: (_) {
                 return AlertDialog(
                   title: const Text('تم التحميل بنجاح'),
@@ -99,7 +117,21 @@ class ContentDetailsPage extends StatelessWidget {
 
                         if (filePath == null || filePath.isEmpty) return;
 
-                        await OpenFilex.open(filePath);
+                        final result = await OpenFilex.open(filePath);
+
+                        if (!context.mounted ||
+                            result.type == ResultType.done) {
+                          return;
+                        }
+
+                        showValidationTopSnackBar(
+                          context,
+                          title: 'تعذر فتح الملف',
+                          message: result.message.trim().isNotEmpty
+                              ? result.message
+                              : 'لا يوجد تطبيق مناسب لفتح هذا النوع من الملفات',
+                          type: AppValidationSnackBarType.error,
+                        );
                       },
                       child: const Text('نعم'),
                     ),
@@ -131,18 +163,56 @@ class ContentDetailsPage extends StatelessWidget {
 
           if (state.status == OtherContentDetailsStatus.failure) {
             return Scaffold(
-              body: Center(
-                child: CustomTextWidget(state.errorMessage ?? 'حدث خطأ'),
+              appBar: AppBar(),
+              body: SafeArea(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.cloud_off_rounded,
+                          size: 54,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextWidget(
+                          state.errorMessage ?? 'تعذر تحميل تفاصيل المحتوى',
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        FilledButton.icon(
+                          onPressed: () {
+                            final cubit = context
+                                .read<OtherContentDetailsCubit>();
+                            if (isMyContent) {
+                              cubit.getMyContentDetails(contentId);
+                            } else {
+                              cubit.getContentDetails(contentId);
+                            }
+                          },
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('إعادة المحاولة'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             );
           }
 
           if (!isMyContent && state.details == null) {
-            return const SizedBox();
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
 
           if (isMyContent && state.myDetails == null) {
-            return const SizedBox();
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
 
           return ContentDetailsScaffold(

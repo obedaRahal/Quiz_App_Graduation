@@ -1,26 +1,35 @@
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
+import 'package:quiz_app_grad/features/main_layout/presentation/models/main_layout_route_args.dart';
 import 'package:quiz_app_grad/features/notification/domain/entities/notification_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
+import 'package:quiz_app_grad/features/study_task/data/models/study_task_details_args.dart';
 
 class NotificationNavigationDecision {
   final String? routeName;
   final Object? extra;
   final String? message;
   final bool isBlocked;
+  final bool clearNavigationStack;
 
   const NotificationNavigationDecision._({
     this.routeName,
     this.extra,
     this.message,
     this.isBlocked = false,
+    this.clearNavigationStack = false,
   });
 
   const NotificationNavigationDecision.navigate({
     required String routeName,
-    required Object extra,
-  }) : this._(routeName: routeName, extra: extra);
+    Object? extra,
+    bool clearNavigationStack = false,
+  }) : this._(
+         routeName: routeName,
+         extra: extra,
+         clearNavigationStack: clearNavigationStack,
+       );
 
   const NotificationNavigationDecision.blocked(String message)
     : this._(message: message, isBlocked: true);
@@ -97,11 +106,41 @@ class NotificationNavigationResolver {
           extra: OtherProfileRouteArgs(userId: userId),
         );
 
+      case 'study_task_details':
+        return _studyTaskDetailsDecision(metadata);
+
+      case 'study_plan_today':
+        return const NotificationNavigationDecision.navigate(
+          routeName: AppRouterName.mainLayout,
+          extra: MainLayoutRouteArgs.studyPlan,
+          clearNavigationStack: true,
+        );
+
       default:
         return const NotificationNavigationDecision.invalid(
           'الوجهة المرتبطة بهذا الإشعار غير مدعومة حالياً.',
         );
     }
+  }
+
+  NotificationNavigationDecision _studyTaskDetailsDecision(
+    NotificationMetadataEntity metadata,
+  ) {
+    final planId = metadata.studyPlanId;
+    final taskId = metadata.studyTaskId;
+
+    if (planId == null) {
+      return _missingParameter('study_plan_id');
+    }
+
+    if (taskId == null) {
+      return _missingParameter('task_id');
+    }
+
+    return NotificationNavigationDecision.navigate(
+      routeName: AppRouterName.studyTaskDetails,
+      extra: StudyTaskDetailsArgs(planId: planId, taskId: taskId),
+    );
   }
 
   NotificationNavigationDecision _testDetailsDecision({

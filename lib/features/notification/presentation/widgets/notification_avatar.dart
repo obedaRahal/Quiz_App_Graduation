@@ -37,7 +37,7 @@ class NotificationAvatar extends StatelessWidget {
     return Container(
       width: avatarSize,
       height: avatarSize,
-      padding: EdgeInsets.all(SizeConfig.w(0.025)),
+      padding: EdgeInsets.all(SizeConfig.w(0.033)),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: _parseColor(notification.floorColor) ?? AppPalette.primarySoft,

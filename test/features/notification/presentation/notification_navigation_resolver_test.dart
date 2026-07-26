@@ -2,9 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
+import 'package:quiz_app_grad/features/main_layout/presentation/models/main_layout_route_args.dart';
 import 'package:quiz_app_grad/features/notification/domain/entities/notification_entity.dart';
 import 'package:quiz_app_grad/features/notification/presentation/navigation/notification_navigation_resolver.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
+import 'package:quiz_app_grad/features/study_task/data/models/study_task_details_args.dart';
 
 void main() {
   const resolver = NotificationNavigationResolver();
@@ -123,6 +125,50 @@ void main() {
 
       expect(decision.routeName, AppRouterName.myProfile);
       expect((decision.extra as OtherProfileRouteArgs).userId, 7);
+    });
+
+    test('opens study task details with its plan and task identifiers', () {
+      final decision = resolver.resolve(
+        _notification(
+          type: 'study_task_reminder',
+          screen: 'study_task_details',
+          params: {'study_plan_id': '8', 'task_id': 15},
+        ),
+      );
+
+      expect(decision.routeName, AppRouterName.studyTaskDetails);
+      final args = decision.extra as StudyTaskDetailsArgs;
+      expect(args.planId, 8);
+      expect(args.taskId, 15);
+    });
+
+    test('accepts plan_id and study_task_id aliases', () {
+      final decision = resolver.resolve(
+        _notification(
+          type: 'study_task_reminder',
+          screen: 'study_task_details',
+          params: {'plan_id': 9, 'study_task_id': '16'},
+        ),
+      );
+
+      final args = decision.extra as StudyTaskDetailsArgs;
+      expect(args.planId, 9);
+      expect(args.taskId, 16);
+    });
+
+    test('opens today study plan screen', () {
+      final decision = resolver.resolve(
+        _notification(
+          type: 'study_plan_today',
+          screen: 'study_plan_today',
+          params: const {},
+        ),
+      );
+
+      expect(decision.routeName, AppRouterName.mainLayout);
+      expect(decision.clearNavigationStack, isTrue);
+      final args = decision.extra as MainLayoutRouteArgs;
+      expect(args.initialTab, MainLayoutTab.studyPlan);
     });
 
     test('rejects missing required identifiers', () {

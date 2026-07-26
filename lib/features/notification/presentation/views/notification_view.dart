@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -65,9 +67,29 @@ class _NotificationBodyState extends State<_NotificationBody> {
 
   void _navigateToNotificationPage(NotificationEntity notification) {
     final decision = _navigationResolver.resolve(notification);
+    final metadata = notification.metadata;
+
+    debugPrint('============ Notification Navigation ============');
+    debugPrint('→ notification id: ${notification.id}');
+    debugPrint(
+      '→ navigation: ${jsonEncode({'screen': metadata.screen, 'action': metadata.action})}',
+    );
+    debugPrint('→ received params: ${jsonEncode(metadata.params)}');
+    debugPrint(
+      '→ resolved values: ${jsonEncode(_resolvedNavigationValues(metadata))}',
+    );
+    debugPrint('→ resolved route: ${decision.routeName}');
+    debugPrint('→ can navigate: ${decision.canNavigate}');
+    debugPrint('→ clear navigation stack: ${decision.clearNavigationStack}');
+    debugPrint('→ route extra type: ${decision.extra.runtimeType}');
+    debugPrint('=================================================');
 
     if (decision.canNavigate) {
-      context.pushNamed(decision.routeName!, extra: decision.extra);
+      if (decision.clearNavigationStack) {
+        context.goNamed(decision.routeName!, extra: decision.extra);
+      } else {
+        context.pushNamed(decision.routeName!, extra: decision.extra);
+      }
       return;
     }
 
@@ -79,6 +101,45 @@ class _NotificationBodyState extends State<_NotificationBody> {
           ? AppValidationSnackBarType.hint
           : AppValidationSnackBarType.error,
     );
+  }
+
+  Map<String, dynamic> _resolvedNavigationValues(
+    NotificationMetadataEntity metadata,
+  ) {
+    switch (metadata.screen?.trim().toLowerCase()) {
+      case 'public_test_details':
+      case 'my_test_details':
+      case 'my_tests_details':
+        return {
+          'test_id': metadata.testId,
+          if (metadata.buyerUserId != null)
+            'buyer_user_id': metadata.buyerUserId,
+        };
+
+      case 'my_library_material_details':
+      case 'library_material_details':
+        return {
+          'material_id': metadata.materialId,
+          if (metadata.actorUserId != null)
+            'actor_user_id': metadata.actorUserId,
+        };
+
+      case 'study_task_details':
+        return {
+          'study_plan_id': metadata.studyPlanId,
+          'task_id': metadata.studyTaskId,
+        };
+
+      case 'study_plan_today':
+        return {
+          if (metadata.params['date'] != null) 'date': metadata.params['date'],
+          if (metadata.studyPlanId != null)
+            'study_plan_id': metadata.studyPlanId,
+        };
+
+      default:
+        return metadata.params;
+    }
   }
 
   @override

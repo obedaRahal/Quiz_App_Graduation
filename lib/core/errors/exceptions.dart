@@ -93,19 +93,10 @@ ErrorModel _buildErrorModel(DioException e) {
   final statusCode = e.response?.statusCode ?? 0;
   final data = e.response?.data;
 
-  if (data is Map<String, dynamic>) {
-    return ErrorModel.fromJson(
-      data,
-      fallbackStatusCode: statusCode,
-      fallbackMessage: e.message,
-    );
-  }
-
-  return ErrorModel(
-    status: statusCode,
-    errorMessage: data?.toString() ?? e.message ?? 'Unexpected error occurred',
-    errorTitle: data?.toString() ?? e.message ?? 'Unexpected error occurred',
-    meta: const {},
+  return ErrorModel.fromResponseData(
+    data,
+    fallbackStatusCode: statusCode,
+    fallbackMessage: e.message,
   );
 }
 
@@ -181,5 +172,4 @@ Never handleDioException(DioException e) {
         ),
       );
   }
-  
 }

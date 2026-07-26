@@ -207,10 +207,10 @@ class _LibraryContentCard extends StatelessWidget {
                           SizedBox(width: SizeConfig.w(0.018)),
                           _TypeBadge(title: item.type),
                           SizedBox(width: SizeConfig.w(0.014)),
-                          _BookmarkButton(
-                            isDark: isDark,
-                            isBookmarked: item.isBookmarked,
-                          ),
+                          // _BookmarkButton(
+                          //   isDark: isDark,
+                          //   isBookmarked: item.isBookmarked,
+                          // ),
                         ],
                       ),
                       SizedBox(height: SizeConfig.h(0.004)),

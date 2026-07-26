@@ -312,55 +312,56 @@ class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
     emit(state.copyWith(clearSuccess: true));
   }
 
- Future<void> downloadContent() async {
-  final contentId =
-      state.details?.basicInfo.id ?? state.myDetails?.basicInfo.id;
+  void clearErrorMessage() {
+    emit(state.copyWith(clearError: true));
+  }
 
-  debugPrint('=========== downloadContent ===========');
-  debugPrint('contentId: $contentId');
+  Future<void> downloadContent() async {
+    final contentId =
+        state.details?.basicInfo.id ?? state.myDetails?.basicInfo.id;
 
-  if (contentId == null) return;
-  if (state.isDownloadLoading) return;
+    debugPrint('=========== downloadContent ===========');
+    debugPrint('contentId: $contentId');
 
-  emit(
-    state.copyWith(
-      isDownloadLoading: true,
-      clearError: true,
-      clearSuccess: true,
-    ),
-  );
-
-  try {
-   
-final filePath = await downloadOtherContentUseCase(contentId);
-   emit(
-  state.copyWith(
-    isDownloadLoading: false,
-    successMessage: 'تم تحميل المحتوى بنجاح',
-    showOpenDownloadedFileDialog: true,
-    downloadedFilePath: filePath,
-  ),
-);
-  } catch (e) {
-    debugPrint('downloadContent error: $e');
+    if (contentId == null || state.isDownloadLoading) return;
 
     emit(
       state.copyWith(
-        isDownloadLoading: false,
-        errorMessage: e.toString(),
+        isDownloadLoading: true,
+        clearError: true,
+        clearSuccess: true,
+      ),
+    );
+
+    try {
+      final filePath = await downloadOtherContentUseCase(contentId);
+
+      emit(
+        state.copyWith(
+          isDownloadLoading: false,
+          successMessage: 'تم تحميل المحتوى بنجاح',
+          showOpenDownloadedFileDialog: true,
+          downloadedFilePath: filePath,
+        ),
+      );
+    } catch (e) {
+      debugPrint('downloadContent error: $e');
+
+      emit(
+        state.copyWith(isDownloadLoading: false, errorMessage: e.toString()),
+      );
+    }
+  }
+
+  void clearDownloadDialog() {
+    emit(
+      state.copyWith(
+        showOpenDownloadedFileDialog: false,
+        clearSuccess: true,
+        clearDownloadedFilePath: true,
       ),
     );
   }
-}
-  void clearDownloadDialog() {
-  emit(
-    state.copyWith(
-      showOpenDownloadedFileDialog: false,
-      clearSuccess: true,
-      clearDownloadedFilePath: true,
-    ),
-  );
-}
 
   Future<void> toggleSimilarBookmark(int contentId) async {
     if (state.similarBookmarkLoadingIds.contains(contentId)) return;
@@ -449,13 +450,12 @@ final filePath = await downloadOtherContentUseCase(contentId);
   Future<void> followPublisher() async {
     final details = state.details;
     if (details == null) return;
-    if (details.publisher == null) return;
     if (state.isFollowLoading) return;
 
     emit(state.copyWith(isFollowLoading: true, clearError: true));
 
     try {
-      final response = await followPublisherUseCase(details.publisher!.id);
+      await followPublisherUseCase(details.publisher.id);
 
       emit(
         state.copyWith(
@@ -473,13 +473,12 @@ final filePath = await downloadOtherContentUseCase(contentId);
   Future<void> unfollowPublisher() async {
     final details = state.details;
     if (details == null) return;
-    if (details.publisher == null) return;
     if (state.isUnfollowLoading || state.isFollowLoading) return;
 
     emit(state.copyWith(isUnfollowLoading: true, clearError: true));
 
     try {
-      await unfollowPublisherUseCase(details.publisher!.id);
+      await unfollowPublisherUseCase(details.publisher.id);
 
       emit(
         state.copyWith(
@@ -495,79 +494,76 @@ final filePath = await downloadOtherContentUseCase(contentId);
       );
     }
   }
+
   //            My Content Details
   Future<void> getMyContentDetails(int id) async {
-  debugPrint('=========== MyContentDetailsCubit Method ===========');
-
-  emit(
-    state.copyWith(
-      status: OtherContentDetailsStatus.loading,
-      clearError: true,
-      clearMyDetails: true,
-    ),
-  );
-
-  try {
-    final response = await getMyPublicContentDetailsUseCase(
-      MyContentDetailsParams(contentId: id),
-    );
+    debugPrint('=========== MyContentDetailsCubit Method ===========');
 
     emit(
       state.copyWith(
-        status: OtherContentDetailsStatus.success,
-        myDetails: response,
+        status: OtherContentDetailsStatus.loading,
         clearError: true,
+        clearMyDetails: true,
       ),
     );
-  } catch (e) {
-    debugPrint('getMyContentDetails error: $e');
 
-    emit(
-      state.copyWith(
-        status: OtherContentDetailsStatus.failure,
-        errorMessage: e.toString(),
-      ),
-    );
+    try {
+      final response = await getMyPublicContentDetailsUseCase(
+        MyContentDetailsParams(contentId: id),
+      );
+
+      emit(
+        state.copyWith(
+          status: OtherContentDetailsStatus.success,
+          myDetails: response,
+          clearError: true,
+        ),
+      );
+    } catch (e) {
+      debugPrint('getMyContentDetails error: $e');
+
+      emit(
+        state.copyWith(
+          status: OtherContentDetailsStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
   }
-}
-// Delete Content
-Future<void> deleteMyContent() async {
-  final contentId =
-      state.myDetails?.basicInfo.id ?? state.details?.basicInfo.id;
 
-  if (contentId == null) return;
-  if (state.isDeleteLoading) return;
+  // Delete Content
+  Future<void> deleteMyContent() async {
+    final contentId =
+        state.myDetails?.basicInfo.id ?? state.details?.basicInfo.id;
 
-  debugPrint('=========== deleteMyContent ===========');
-  debugPrint('contentId: $contentId');
+    if (contentId == null) return;
+    if (state.isDeleteLoading) return;
 
-  emit(
-    state.copyWith(
-      isDeleteLoading: true,
-      clearError: true,
-      clearSuccess: true,
-    ),
-  );
-
-  try {
-    final response = await deleteMyContentUseCase(contentId);
+    debugPrint('=========== deleteMyContent ===========');
+    debugPrint('contentId: $contentId');
 
     emit(
       state.copyWith(
-        isDeleteLoading: false,
-        isDeleted: true,
-        successMessage: response.message,
+        isDeleteLoading: true,
+        clearError: true,
+        clearSuccess: true,
       ),
     );
-  } catch (e) {
-    debugPrint('deleteMyContent error: $e');
 
-    emit(
-      state.copyWith(
-        isDeleteLoading: false,
-        errorMessage: e.toString(),
-      ),
-    );
+    try {
+      final response = await deleteMyContentUseCase(contentId);
+
+      emit(
+        state.copyWith(
+          isDeleteLoading: false,
+          isDeleted: true,
+          successMessage: response.message,
+        ),
+      );
+    } catch (e) {
+      debugPrint('deleteMyContent error: $e');
+
+      emit(state.copyWith(isDeleteLoading: false, errorMessage: e.toString()));
+    }
   }
-}
 }

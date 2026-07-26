@@ -49,7 +49,6 @@ class OtherContentDetailsRemoteDataSourceImpl
     return OtherContentDetailsModel.fromJson(response);
   }
 
-
   @override
   Future<SimilarContentResponseModel> getSimilarContent(
     SimilarContentParams params,
@@ -113,6 +112,7 @@ class OtherContentDetailsRemoteDataSourceImpl
 
     return UnfollowPublisherResponseModel.fromJson(response);
   }
+
   //    Download Content
   @override
   Future<String> downloadContent(int contentId) async {
@@ -164,7 +164,10 @@ class OtherContentDetailsRemoteDataSourceImpl
       ).firstMatch(contentDisposition);
 
       if (utf8Match != null) {
-        return Uri.decodeComponent(utf8Match.group(1)!);
+        return _sanitizeFileName(
+          _decodeFileName(utf8Match.group(1)!),
+          contentId: contentId,
+        );
       }
 
       final normalMatch = RegExp(
@@ -173,7 +176,7 @@ class OtherContentDetailsRemoteDataSourceImpl
       ).firstMatch(contentDisposition);
 
       if (normalMatch != null) {
-        return normalMatch.group(1)!;
+        return _sanitizeFileName(normalMatch.group(1)!, contentId: contentId);
       }
     }
 
@@ -190,5 +193,28 @@ class OtherContentDetailsRemoteDataSourceImpl
         : 'bin';
 
     return 'library_content_$contentId.$extension';
+  }
+
+  String _decodeFileName(String value) {
+    try {
+      return Uri.decodeComponent(value);
+    } on FormatException {
+      return value;
+    }
+  }
+
+  String _sanitizeFileName(String value, {required int contentId}) {
+    final fileName = value
+        .replaceAll('\\', '/')
+        .split('/')
+        .last
+        .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
+        .trim();
+
+    if (fileName.isEmpty || fileName == '.' || fileName == '..') {
+      return 'library_content_$contentId.bin';
+    }
+
+    return fileName;
   }
 }

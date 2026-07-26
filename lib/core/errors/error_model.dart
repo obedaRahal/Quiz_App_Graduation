@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class ErrorModel {
   final int status;
   final String errorMessage;
@@ -22,6 +24,36 @@ class ErrorModel {
       meta: json['meta'] is Map<String, dynamic>
           ? Map<String, dynamic>.from(json['meta'])
           : const {},
+    );
+  }
+
+  factory ErrorModel.fromResponseData(
+    dynamic data, {
+    int fallbackStatusCode = 0,
+    String? fallbackMessage,
+  }) {
+    final decodedData = _decodeResponseData(data);
+
+    if (decodedData is Map) {
+      return ErrorModel.fromJson(
+        Map<String, dynamic>.from(decodedData),
+        fallbackStatusCode: fallbackStatusCode,
+        fallbackMessage: fallbackMessage,
+      );
+    }
+
+    final responseMessage = _stringifyErrorValue(decodedData);
+    final message = responseMessage.isNotEmpty
+        ? responseMessage
+        : fallbackMessage?.trim().isNotEmpty == true
+        ? fallbackMessage!.trim()
+        : 'Unexpected error occurred';
+
+    return ErrorModel(
+      status: fallbackStatusCode,
+      errorMessage: message,
+      errorTitle: message,
+      meta: const {},
     );
   }
   String? get reason {
@@ -79,6 +111,12 @@ class ErrorModel {
     Map<String, dynamic> json,
     String? fallbackMessage,
   ) {
+    final validationMessage = _stringifyErrorValue(json['errors']);
+
+    if (validationMessage.isNotEmpty) {
+      return validationMessage;
+    }
+
     final value =
         json['errorMessage'] ??
         json['message'] ??
@@ -100,5 +138,53 @@ class ErrorModel {
     if (value is int) return value;
     if (value == null) return null;
     return int.tryParse(value.toString());
+  }
+
+  static dynamic _decodeResponseData(dynamic data) {
+    if (data is! List<int>) {
+      return data;
+    }
+
+    final decodedText = utf8.decode(data, allowMalformed: true).trim();
+
+    if (decodedText.isEmpty) {
+      return null;
+    }
+
+    try {
+      return jsonDecode(decodedText);
+    } on FormatException {
+      return decodedText;
+    }
+  }
+
+  static String _stringifyErrorValue(dynamic value) {
+    final messages = <String>[];
+
+    void collect(dynamic current) {
+      if (current == null) return;
+
+      if (current is Map) {
+        for (final entry in current.entries) {
+          collect(entry.value);
+        }
+        return;
+      }
+
+      if (current is Iterable && current is! String) {
+        for (final item in current) {
+          collect(item);
+        }
+        return;
+      }
+
+      final message = current.toString().trim();
+      if (message.isNotEmpty && !messages.contains(message)) {
+        messages.add(message);
+      }
+    }
+
+    collect(value);
+    return messages.join('\n');
   }
 }

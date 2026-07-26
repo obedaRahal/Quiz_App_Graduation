@@ -120,16 +120,20 @@ class NotificationMetadataEntity {
 
   int? get materialId => _notificationPositiveInt(params['material_id']);
 
-  int? get creatorUserId =>
-      _notificationPositiveInt(params['creator_user_id']);
+  int? get studyPlanId =>
+      _notificationPositiveInt(params['study_plan_id'] ?? params['plan_id']);
+
+  int? get studyTaskId =>
+      _notificationPositiveInt(params['study_task_id'] ?? params['task_id']);
+
+  int? get creatorUserId => _notificationPositiveInt(params['creator_user_id']);
 
   int? get userId => _notificationPositiveInt(params['user_id']);
 
   int? get banId => _notificationPositiveInt(params['ban_id']);
 
-  String? get deletionType => _notificationNullableString(
-    params['deletion_type'],
-  );
+  String? get deletionType =>
+      _notificationNullableString(params['deletion_type']);
 
   String? get banType => _notificationNullableString(params['ban_type']);
 
@@ -152,11 +156,7 @@ class NotificationPresentationEntity {
   final String? floorColor;
   final String? icon;
 
-  const NotificationPresentationEntity({
-    this.mode,
-    this.floorColor,
-    this.icon,
-  });
+  const NotificationPresentationEntity({this.mode, this.floorColor, this.icon});
 }
 
 class NotificationActorEntity {
