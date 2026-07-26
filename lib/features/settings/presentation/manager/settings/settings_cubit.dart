@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/services/app_date_time_settings.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/disable_task_reminders_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/enable_task_reminders_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/get_settings_use_case.dart';
@@ -62,8 +63,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       return;
     }
 
-    result.fold(
-      (failure) {
+    await result.fold<Future<void>>(
+      (failure) async {
         debugPrint('✗ getSettings failed');
         debugPrint('→ title: ${failure.title}');
         debugPrint('→ message: ${failure.message}');
@@ -76,7 +77,7 @@ class SettingsCubit extends Cubit<SettingsState> {
           ),
         );
       },
-      (settings) {
+      (settings) async {
         debugPrint('✓ getSettings success');
 
         debugPrint(
@@ -89,6 +90,15 @@ class SettingsCubit extends Cubit<SettingsState> {
         debugPrint('→ timeFormat: ${settings.timeFormat}');
 
         debugPrint('→ themeMode: ${settings.themeMode}');
+
+        await AppDateTimeSettings.save(
+          weekStartsOn: settings.weekStartsOn,
+          timeFormat: settings.timeFormat,
+        );
+
+        if (isClosed) {
+          return;
+        }
 
         emit(
           state.copyWith(
@@ -357,6 +367,10 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     if (hasSameValues) {
       debugPrint("→ skipped: same date/time settings");
+      await AppDateTimeSettings.save(
+        weekStartsOn: normalizedWeekStartsOn,
+        timeFormat: normalizedTimeFormat,
+      );
       return true;
     }
 
@@ -369,8 +383,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       ),
     );
 
-    return result.fold(
-      (failure) {
+    return result.fold<Future<bool>>(
+      (failure) async {
         debugPrint("× updateDateTime failure");
 
         if (!isClosed) {
@@ -385,8 +399,13 @@ class SettingsCubit extends Cubit<SettingsState> {
 
         return false;
       },
-      (_) {
+      (_) async {
         debugPrint("√ updateDateTime success");
+
+        await AppDateTimeSettings.save(
+          weekStartsOn: normalizedWeekStartsOn,
+          timeFormat: normalizedTimeFormat,
+        );
 
         if (!isClosed) {
           emit(

@@ -88,9 +88,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<LoginResponseModel> login(LoginRequestModel request) async {
+    final requestData = request.toJson();
+
+    debugPrint('================ LOGIN API REQUEST ================');
+    debugPrint('→ method: POST');
+    debugPrint('→ url: ${EndPoints.baseUrl}${EndPoints.login}');
+    debugPrint('→ isFormData: true');
+    debugPrint('→ fcm_token sent: ${requestData.containsKey('fcm_token')}');
+    debugPrint('→ device_id sent: ${requestData.containsKey('device_id')}');
+    debugPrint('→ device_name sent: ${requestData.containsKey('device_name')}');
+    debugPrint('→ safe request body: ${request.toSafeLogJson()}');
+    debugPrint('==================================================');
+
     final response = await apiConsumer.post(
       EndPoints.login,
-      data: request.toJson(),
+      data: requestData,
       isFormData: true,
       options: Options(extra: {'requiresAuth': false}),
     );

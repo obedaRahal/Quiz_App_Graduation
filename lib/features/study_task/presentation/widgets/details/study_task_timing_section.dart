@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/core/utils/app_time_formatter.dart';
 import 'package:quiz_app_grad/features/study_task/domain/entities/study_task_details_entity.dart';
 
 class TaskTimingSession extends StatelessWidget {
@@ -32,7 +33,7 @@ class TaskTimingSession extends StatelessWidget {
             Expanded(
               child: _MetaInfoItem(
                 title: 'الوقت',
-                value: timingInfo.startTime,
+                value: AppTimeFormatter.format(timingInfo.startTime),
                 icon: FontAwesomeIcons.clockRotateLeft,
               ),
             ),

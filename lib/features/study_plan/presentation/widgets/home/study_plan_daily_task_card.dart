@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/app_time_formatter.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_daily_task_entity.dart';
 
@@ -398,6 +399,7 @@ class _TaskDetailsRow extends StatelessWidget {
     return Row(
       textDirection: TextDirection.rtl,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: _TaskInfoColumn(
@@ -487,11 +489,11 @@ class _TaskTimeColumn extends StatelessWidget {
           color: AppPalette.greyMedium,
         ),
         SizedBox(height: SizeConfig.h(0.004)),
-        Row(
+        Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             CustomTextWidget(
-              end,
+              AppTimeFormatter.format(end),
               maxLines: 1,
               fontSize: SizeConfig.text(0.028),
               fontFamily: AppFont.elMessiriBold,
@@ -500,13 +502,13 @@ class _TaskTimeColumn extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.008)),
               child: Icon(
-                Icons.arrow_back_rounded,
+                Icons.arrow_downward,
                 size: SizeConfig.h(0.016),
                 color: AppPalette.greyMedium,
               ),
             ),
             CustomTextWidget(
-              start,
+              AppTimeFormatter.format(start),
               maxLines: 1,
               fontSize: SizeConfig.text(0.028),
               fontFamily: AppFont.elMessiriBold,

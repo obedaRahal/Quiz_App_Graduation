@@ -7,7 +7,8 @@ class CacheHelper {
   static const String appLocaleKey = 'app_locale';
   static const String themeModeKey = 'theme_mode';
   static const String hasSeenIntroKey = 'has_seen_intro';
-
+  static const String weekStartsOnKey = 'settings_week_starts_on';
+  static const String timeFormatKey = 'settings_time_format';
 
   static Future<void> init() async {
     _sharedPreferences ??= await SharedPreferences.getInstance();
@@ -94,9 +95,7 @@ class CacheHelper {
     try {
       return await _prefs.clear();
     } catch (e) {
-      throw CacheException(
-        errorMessage: 'Failed to clear cache data: $e',
-      );
+      throw CacheException(errorMessage: 'Failed to clear cache data: $e');
     }
   }
 
@@ -115,10 +114,7 @@ class CacheHelper {
       await _prefs.clear();
 
       for (final entry in preservedValues.entries) {
-        await saveData(
-          key: entry.key,
-          value: entry.value,
-        );
+        await saveData(key: entry.key, value: entry.value);
       }
     } on CacheException {
       rethrow;
@@ -134,6 +130,8 @@ class CacheHelper {
       keysToKeep: const [
         appLocaleKey,
         themeModeKey,
+        weekStartsOnKey,
+        timeFormatKey,
       ],
     );
   }

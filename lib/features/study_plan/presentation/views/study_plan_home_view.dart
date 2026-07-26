@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/services/app_date_time_settings.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_state.dart';
@@ -62,7 +63,7 @@ class StudyPlanHomeView extends StatelessWidget {
               message: state.errorMessage,
               onRetry: () {
                 context.read<StudyPlanHomeCubit>().initialize(
-                  weekStartsOn: 'السبت',
+                  weekStartsOn: AppDateTimeSettings.weekStartsOn,
                 );
               },
             );

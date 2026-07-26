@@ -71,6 +71,23 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final deviceMetadata = await loginDeviceMetadataService.getMetadata();
 
+    debugPrint("============ Login Device Metadata ============");
+    debugPrint(
+      "→ fcm_token resolved: "
+      "${deviceMetadata.fcmToken?.trim().isNotEmpty == true}",
+    );
+    debugPrint(
+      "→ fcm_token length: ${deviceMetadata.fcmToken?.trim().length ?? 0}",
+    );
+    debugPrint(
+      "→ device_id resolved: "
+      "${deviceMetadata.deviceId?.trim().isNotEmpty == true}",
+    );
+    debugPrint(
+      "→ device_name: ${deviceMetadata.deviceName ?? 'not available'}",
+    );
+    debugPrint("================================================");
+
     final result = await authRemoteDataSource.login(
       LoginRequestModel(
         email: email,

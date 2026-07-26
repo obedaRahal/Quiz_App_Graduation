@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/services/app_date_time_settings.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_daily_task_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_day_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_overview_entity.dart';
@@ -445,21 +446,25 @@ class StudyPlanHomeCubit extends Cubit<StudyPlanHomeState> {
 
     final date = StudyPlanDateUtils.tryParseApiDate(data.selectedDate);
 
-    final rangeStart = StudyPlanDateUtils.tryParseApiDate(data.range.start);
-
-    final rangeEnd = StudyPlanDateUtils.tryParseApiDate(data.range.end);
-
-    if (date == null || rangeStart == null || rangeEnd == null) {
+    if (date == null) {
       debugPrint('✗ refreshOverview failed: invalid dates');
       debugPrint('→ date: ${data.selectedDate}');
-      debugPrint('→ rangeStart: ${data.range.start}');
-      debugPrint('→ rangeEnd: ${data.range.end}');
       debugPrint('===========================================================');
       return;
     }
 
+    final rangeStart = StudyPlanDateUtils.calculateWeekStart(
+      date: date,
+      weekStartsOn: AppDateTimeSettings.weekStartsOn,
+    );
+    final rangeEnd = StudyPlanDateUtils.calculateWeekEnd(weekStart: rangeStart);
+
     debugPrint('→ refreshing date: ${data.selectedDate}');
-    debugPrint('→ refreshing range: ${data.range.start} → ${data.range.end}');
+    debugPrint(
+      '→ refreshing range: '
+      '${StudyPlanDateUtils.formatApiDate(rangeStart)} → '
+      '${StudyPlanDateUtils.formatApiDate(rangeEnd)}',
+    );
     debugPrint('===========================================================');
 
     await getDailyOverview(
@@ -589,11 +594,20 @@ class StudyPlanHomeCubit extends Cubit<StudyPlanHomeState> {
           debugPrint('→ days count: ${response.data.days.length}');
           debugPrint('→ tasks count: ${response.data.tasks.length}');
 
-          final resolvedOverview = _resolveOverviewDays(response);
+          final resolvedOverview = _resolveOverviewForRequestedRange(
+            response,
+            rangeStart: rangeStart,
+            rangeEnd: rangeEnd,
+          );
 
           debugPrint(
             '→ resolved days count: '
             '${resolvedOverview.data.days.length}',
+          );
+          debugPrint(
+            '→ resolved range: '
+            '${resolvedOverview.data.range.start} → '
+            '${resolvedOverview.data.range.end}',
           );
 
           emit(
@@ -612,36 +626,40 @@ class StudyPlanHomeCubit extends Cubit<StudyPlanHomeState> {
     }
   }
 
-  StudyPlanOverviewEntity _resolveOverviewDays(
-    StudyPlanOverviewEntity overview,
-  ) {
+  StudyPlanOverviewEntity _resolveOverviewForRequestedRange(
+    StudyPlanOverviewEntity overview, {
+    required DateTime rangeStart,
+    required DateTime rangeEnd,
+  }) {
     final data = overview.data;
-
-    if (data.days.isNotEmpty) {
-      debugPrint('→ using days returned by API');
-
-      return overview;
-    }
-
-    debugPrint('→ API returned empty days, building week locally');
-
-    final rangeStart = StudyPlanDateUtils.tryParseApiDate(data.range.start);
-
-    if (rangeStart == null) {
-      debugPrint(
-        '✗ cannot build local week: invalid range start '
-        '${data.range.start}',
-      );
-
-      return overview;
-    }
-
-    final localDays = _buildLocalWeekDays(
+    final requestedDays = _buildLocalWeekDays(
       weekStart: rangeStart,
       serverToday: data.serverToday,
     );
+    final apiDaysByDate = <String, StudyPlanDayEntity>{
+      for (final day in data.days) day.date: day,
+    };
+    final resolvedDays = requestedDays
+        .map((localDay) => apiDaysByDate[localDay.date] ?? localDay)
+        .toList(growable: false);
 
-    final updatedData = data.copyWith(days: localDays);
+    if (data.days.isEmpty) {
+      debugPrint('→ API returned empty days, using requested week locally');
+    } else {
+      debugPrint('→ merging API days into the locally requested week range');
+    }
+
+    final updatedData = data.copyWith(
+      userSettings: data.userSettings.copyWith(
+        weekStartsOn: AppDateTimeSettings.weekStartsOn,
+        timeFormat: AppDateTimeSettings.timeFormat,
+      ),
+      range: data.range.copyWith(
+        start: StudyPlanDateUtils.formatApiDate(rangeStart),
+        end: StudyPlanDateUtils.formatApiDate(rangeEnd),
+      ),
+      days: resolvedDays,
+    );
 
     return overview.copyWith(data: updatedData);
   }
@@ -755,7 +773,7 @@ class StudyPlanHomeCubit extends Cubit<StudyPlanHomeState> {
     // نحافظ على نفس اليوم داخل الأسبوع.
     final newDate = currentDate.add(Duration(days: daysOffset));
 
-    final weekStartsOn = data.userSettings.weekStartsOn;
+    final weekStartsOn = AppDateTimeSettings.weekStartsOn;
 
     final newRangeStart = StudyPlanDateUtils.calculateWeekStart(
       date: newDate,

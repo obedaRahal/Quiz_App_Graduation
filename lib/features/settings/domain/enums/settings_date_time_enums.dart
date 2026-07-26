@@ -87,6 +87,6 @@ AppTimeFormat appTimeFormatFromApi(String value) {
       return AppTimeFormat.twentyFourHours;
 
     default:
-      return AppTimeFormat.twentyFourHours;
+      return AppTimeFormat.twelveHours;
   }
 }

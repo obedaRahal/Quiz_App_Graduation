@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app_grad/core/services/app_date_time_settings.dart';
+import 'package:quiz_app_grad/core/utils/app_time_formatter.dart';
 
 Future<String?> showStudyTaskTimePicker({
   required BuildContext context,
@@ -12,63 +14,27 @@ Future<String?> showStudyTaskTimePicker({
     helpText: 'اختر وقت بداية المهمة',
     cancelText: 'إلغاء',
     confirmText: 'اختيار',
+    builder: (context, child) {
+      return MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(alwaysUse24HourFormat: AppDateTimeSettings.use24HourFormat),
+        child: child ?? const SizedBox.shrink(),
+      );
+    },
   );
 
   if (selectedTime == null) {
     return null;
   }
 
-  final hour = selectedTime.hour.toString().padLeft(2, '0');
-
-  final minute = selectedTime.minute.toString().padLeft(2, '0');
-
-  return '$hour:$minute';
+  return AppTimeFormatter.toApiValue(selectedTime);
 }
 
 TimeOfDay? parseStudyTaskTime(String value) {
-  final normalizedValue = value.trim();
-
-  if (normalizedValue.isEmpty) {
-    return null;
-  }
-
-  final parts = normalizedValue.split(':');
-
-  if (parts.length < 2) {
-    return null;
-  }
-
-  final hour = int.tryParse(parts[0]);
-  final minute = int.tryParse(parts[1]);
-
-  if (hour == null ||
-      minute == null ||
-      hour < 0 ||
-      hour > 23 ||
-      minute < 0 ||
-      minute > 59) {
-    return null;
-  }
-
-  return TimeOfDay(hour: hour, minute: minute);
+  return AppTimeFormatter.tryParse(value);
 }
 
 String formatStudyTaskTime(String value) {
-  final time = parseStudyTaskTime(value);
-
-  if (time == null) {
-    return value;
-  }
-
-  final period = time.hour >= 12 ? 'م' : 'ص';
-
-  var displayedHour = time.hour % 12;
-
-  if (displayedHour == 0) {
-    displayedHour = 12;
-  }
-
-  final minute = time.minute.toString().padLeft(2, '0');
-
-  return '$displayedHour:$minute $period';
+  return AppTimeFormatter.format(value);
 }

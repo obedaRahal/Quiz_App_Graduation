@@ -20,6 +20,14 @@ void main() {
         'device_id': 'installation-id',
         'device_name': 'ASUS Phone',
       });
+
+      expect(request.toSafeLogJson(), {
+        'email': 'user@example.com',
+        'password': '***',
+        'fcm_token': 'fcm-…oken (length: 9)',
+        'device_id': 'inst…n-id (length: 15)',
+        'device_name': 'ASUS Phone',
+      });
     });
 
     test('omits unavailable optional device metadata', () {

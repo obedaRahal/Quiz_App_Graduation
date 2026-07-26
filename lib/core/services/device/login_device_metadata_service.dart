@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:quiz_app_grad/core/services/notification/fcm_token.dart';
+import 'package:quiz_app_grad/core/services/notification/push_notification_service.dart';
 import 'package:uuid/uuid.dart';
 
 class LoginDeviceMetadata {
@@ -30,7 +30,7 @@ class LoginDeviceMetadataServiceImpl implements LoginDeviceMetadataService {
 
   @override
   Future<LoginDeviceMetadata> getMetadata() async {
-    final fcmToken = _getFcmToken();
+    final fcmToken = await _getFcmToken();
     final deviceId = await _getOrCreateInstallationId();
     final deviceName = await _getDeviceName();
 
@@ -41,12 +41,12 @@ class LoginDeviceMetadataServiceImpl implements LoginDeviceMetadataService {
     );
   }
 
-  String? _getFcmToken() {
+  Future<String?> _getFcmToken() async {
     try {
-      return _nonEmpty(FcmTokenStorage.getToken());
+      return _nonEmpty(await PushNotificationService.getTokenForLogin());
     } catch (error, stackTrace) {
       debugPrint('Failed to resolve FCM token for login: $error');
-      debugPrint('$stackTrace');
+      debugPrintStack(stackTrace: stackTrace);
       return null;
     }
   }

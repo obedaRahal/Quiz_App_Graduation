@@ -39,7 +39,7 @@ class StudyPlanOverviewDataModel extends StudyPlanOverviewDataEntity {
   });
 
   factory StudyPlanOverviewDataModel.fromJson(Map<String, dynamic> json) {
-    final rawSettings = json['userSettings'];
+    final rawSettings = json['userSettings'] ?? json['user_settings'];
     final rawRange = json['range'];
     final rawPlan = json['plan'];
     final rawDays = json['days'];

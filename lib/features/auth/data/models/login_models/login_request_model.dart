@@ -22,6 +22,22 @@ class LoginRequestModel {
 
     return json;
   }
+
+  Map<String, dynamic> toSafeLogJson() {
+    final json = toJson();
+
+    json['password'] = '***';
+
+    if (json['fcm_token'] case final String value) {
+      json['fcm_token'] = _maskSensitiveValue(value);
+    }
+
+    if (json['device_id'] case final String value) {
+      json['device_id'] = _maskSensitiveValue(value);
+    }
+
+    return json;
+  }
 }
 
 void _addOptionalValue(
@@ -33,4 +49,14 @@ void _addOptionalValue(
   if (normalized != null && normalized.isNotEmpty) {
     json[key] = normalized;
   }
+}
+
+String _maskSensitiveValue(String value) {
+  if (value.length <= 8) {
+    return '*** (length: ${value.length})';
+  }
+
+  return '${value.substring(0, 4)}…'
+      '${value.substring(value.length - 4)} '
+      '(length: ${value.length})';
 }

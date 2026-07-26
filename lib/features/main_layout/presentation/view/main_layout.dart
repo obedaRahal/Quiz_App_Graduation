@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/core/services/app_date_time_settings.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommanded_test_use_case.dart';
 import 'package:quiz_app_grad/features/home/domain/use_cases/get_recommended_interests_use_case.dart';
@@ -109,7 +110,7 @@ class MainLayoutBody extends StatelessWidget {
       create: (_) => sl<StudyPlanHomeCubit>()
         ..initialize(
           mockScenario: StudyPlanHomeMockScenario.planWithTasks,
-          weekStartsOn: 'السبت',
+          weekStartsOn: AppDateTimeSettings.weekStartsOn,
         ),
       child: const StudyPlanHomeView(),
     );
