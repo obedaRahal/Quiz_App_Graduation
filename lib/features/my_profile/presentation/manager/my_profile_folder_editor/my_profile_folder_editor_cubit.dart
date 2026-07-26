@@ -26,6 +26,8 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
   Timer? _pickerSearchDebounce;
   int _pickerRequestGeneration = 0;
   final Map<int, MyProfileFolderSelectedTestEntity> _pickerTestsCache = {};
+  final Map<int, String> _reviewStatusesByTestId = {};
+  int _editorUserId = 0;
 
   final CreateMyProfileFolderUseCase createMyProfileFolderUseCase;
 
@@ -46,6 +48,9 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
     debugPrint("============ MyProfileFolderEditorCubit.init ============");
     debugPrint("→ mode: ${args.mode}");
     debugPrint("→ folderId: ${args.folder?.id}");
+
+    _editorUserId = args.userId;
+    _reviewStatusesByTestId.clear();
 
     final folder = args.folder;
 
@@ -261,6 +266,8 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
       ),
     );
 
+    if (!await _validatePublicFolderTests()) return;
+
     final result = await createMyProfileFolderUseCase(
       CreateMyProfileFolderParams(
         name: name,
@@ -346,6 +353,8 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
         clearError: true,
       ),
     );
+
+    if (!await _validatePublicFolderTests()) return;
 
     final result = await updateMyProfileFolderUseCase(
       UpdateMyProfileFolderParams(
@@ -436,6 +445,10 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
   MyProfileFolderSelectedTestEntity _mapFolderContentToSelectedTest(
     MyProfileFolderContentTestEntity item,
   ) {
+    if (item.reviewStatus.trim().isNotEmpty) {
+      _reviewStatusesByTestId[item.id] = item.reviewStatus;
+    }
+
     return MyProfileFolderSelectedTestEntity(
       id: item.id,
       title: item.title,
@@ -446,6 +459,7 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
       averageRating: item.averageRating,
       price: item.price,
       publishedAt: item.publishedAt,
+      reviewStatus: item.reviewStatus,
     );
   }
 
@@ -715,6 +729,10 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
   MyProfileFolderSelectedTestEntity _mapPickerTestToSelectedTest(
     MyProfilePickerTestItemEntity item,
   ) {
+    if (item.reviewStatus.trim().isNotEmpty) {
+      _reviewStatusesByTestId[item.id] = item.reviewStatus;
+    }
+
     return MyProfileFolderSelectedTestEntity(
       id: item.id,
       title: item.title,
@@ -725,7 +743,111 @@ class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
       averageRating: item.averageRating,
       price: item.price,
       publishedAt: item.publishedAt,
+      reviewStatus: item.reviewStatus,
     );
+  }
+
+  Future<bool> _validatePublicFolderTests() async {
+    if (!state.isPublic) return true;
+
+    final selectedTestIds = state.selectedTestIds.toSet();
+    final reviewStatuses = <int, String>{
+      for (final test in state.selectedTests)
+        if (test.reviewStatus.trim().isNotEmpty) test.id: test.reviewStatus,
+      for (final entry in _reviewStatusesByTestId.entries)
+        if (selectedTestIds.contains(entry.key)) entry.key: entry.value,
+    };
+    final unresolvedTestIds = selectedTestIds.difference(
+      reviewStatuses.keys.toSet(),
+    );
+
+    if (unresolvedTestIds.isNotEmpty) {
+      final fetchedStatuses = await _fetchReviewStatuses(unresolvedTestIds);
+
+      if (fetchedStatuses == null) {
+        emit(
+          state.copyWith(
+            submitStatus: MyProfileFolderEditorSubmitStatus.failure,
+            errorTitle: 'تعذر التحقق',
+            errorMessage:
+                'تعذر التحقق من حالة مراجعة الاختبارات المختارة. تحقق من الاتصال ثم حاول مجددًا.',
+          ),
+        );
+        return false;
+      }
+
+      reviewStatuses.addAll(fetchedStatuses);
+      _reviewStatusesByTestId.addAll(fetchedStatuses);
+    }
+
+    final hasUnapprovedTests = state.selectedTests.any(
+      (test) => reviewStatuses[test.id]?.trim() != 'تم الموافقة عليه',
+    );
+
+    if (!hasUnapprovedTests) return true;
+
+    emit(
+      state.copyWith(
+        submitStatus: MyProfileFolderEditorSubmitStatus.failure,
+        errorTitle: 'تنبيه',
+        errorMessage:
+            'توجد اختبارات مختارة لم تتم الموافقة عليها، لذلك لا يمكن نشر المجلد للعامة. أزل هذه الاختبارات أو اجعل المجلد خاصًا.',
+      ),
+    );
+
+    return false;
+  }
+
+  Future<Map<int, String>?> _fetchReviewStatuses(
+    Set<int> requiredTestIds,
+  ) async {
+    if (_editorUserId <= 0) return null;
+
+    final foundStatuses = <int, String>{};
+
+    for (final tab in MyProfilePickerTestsTab.values) {
+      String? cursor;
+      final visitedCursors = <String>{};
+
+      while (true) {
+        final result = await fetchMyProfilePickerTestsUseCase(
+          FetchMyProfilePickerTestsParams(
+            userId: _editorUserId,
+            tab: tab.apiValue,
+            cursor: cursor,
+          ),
+        );
+
+        MyProfilePickerTestsEntity? response;
+        var requestFailed = false;
+
+        result.fold((_) => requestFailed = true, (value) => response = value);
+
+        if (requestFailed || response == null) return null;
+
+        for (final test in response!.data) {
+          if (requiredTestIds.contains(test.id)) {
+            foundStatuses[test.id] = test.reviewStatus;
+          }
+        }
+
+        if (foundStatuses.keys.toSet().containsAll(requiredTestIds)) {
+          return foundStatuses;
+        }
+
+        final nextCursor = response!.meta.nextCursor?.trim();
+        if (!response!.meta.hasMorePages ||
+            nextCursor == null ||
+            nextCursor.isEmpty ||
+            !visitedCursors.add(nextCursor)) {
+          break;
+        }
+
+        cursor = nextCursor;
+      }
+    }
+
+    return foundStatuses;
   }
 
   void changePickerSearchQuery({required int userId, required String value}) {

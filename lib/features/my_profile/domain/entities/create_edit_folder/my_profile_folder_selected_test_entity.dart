@@ -8,6 +8,7 @@ class MyProfileFolderSelectedTestEntity {
   final double averageRating;
   final double price;
   final String publishedAt;
+  final String reviewStatus;
 
   const MyProfileFolderSelectedTestEntity({
     required this.id,
@@ -19,5 +20,9 @@ class MyProfileFolderSelectedTestEntity {
     required this.averageRating,
     required this.price,
     required this.publishedAt,
+    this.reviewStatus = '',
   });
+
+  bool get isApprovedForPublicFolder =>
+      reviewStatus.trim() == 'تم الموافقة عليه';
 }

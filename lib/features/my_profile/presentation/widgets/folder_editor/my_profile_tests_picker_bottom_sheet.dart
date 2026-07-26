@@ -241,7 +241,9 @@ class _PickerSearchFieldState extends State<_PickerSearchField> {
             fontSize: SizeConfig.text(0.03),
           ),
           filled: true,
-          fillColor: isDark ? Colors.white.withOpacity(0.05) : AppPalette.grey,
+          fillColor: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : AppPalette.grey,
           contentPadding: EdgeInsets.symmetric(
             horizontal: SizeConfig.w(0.03),
             vertical: SizeConfig.h(0.012),
@@ -327,7 +329,9 @@ class _PickerTestsList extends StatelessWidget {
               current.pickerTestsLoadMoreStatus ||
           previous.pickerTestsResponse != current.pickerTestsResponse ||
           previous.tempSelectedTestIds != current.tempSelectedTestIds ||
-          previous.pickerErrorMessage != current.pickerErrorMessage,
+          previous.pickerErrorMessage != current.pickerErrorMessage ||
+          previous.selectedPickerTestsTab != current.selectedPickerTestsTab ||
+          previous.isPublic != current.isPublic,
       builder: (context, state) {
         if (state.isPickerTestsLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -369,11 +373,36 @@ class _PickerTestsList extends StatelessWidget {
         // كان التحميل الإضافي يُستدعى هنا أثناء build، وتم نقله إلى
         // ScrollNotification أدناه كي لا تُحمّل جميع الصفحات تلقائيًا.
 
-        final tests = state.hasPickerSearchQuery
+        final sourceTests = state.hasPickerSearchQuery
             ? state.pickerSearchResponse?.data ?? []
             : state.pickerTestsResponse?.data ?? [];
+        final shouldFilterApprovedTests = state.isPublic;
+        final tests = shouldFilterApprovedTests
+            ? sourceTests
+                  .where(
+                    (test) => test.reviewStatus.trim() == 'تم الموافقة عليه',
+                  )
+                  .toList(growable: false)
+            : sourceTests;
+        final hasMorePages = state.hasPickerSearchQuery
+            ? state.hasMorePickerSearchPages
+            : state.hasMorePickerTestsPages;
+        final canLoadMoreFilteredTests =
+            shouldFilterApprovedTests &&
+            hasMorePages &&
+            !state.isPickerTestsLoadingMore &&
+            state.pickerTestsLoadMoreStatus !=
+                MyProfilePickerTestsLoadMoreStatus.failure;
+        final hasLoadMoreFailure =
+            state.pickerTestsLoadMoreStatus ==
+                MyProfilePickerTestsLoadMoreStatus.failure &&
+            state.pickerErrorMessage != null;
+        final hasListFooter =
+            state.isPickerTestsLoadingMore ||
+            hasLoadMoreFailure ||
+            canLoadMoreFilteredTests;
 
-        if (tests.isEmpty) {
+        if (tests.isEmpty && !hasListFooter) {
           return Center(
             child: CustomTextWidget(
               'لا توجد اختبارات ضمن هذا التصنيف',
@@ -406,20 +435,11 @@ class _PickerTestsList extends StatelessWidget {
               horizontal: SizeConfig.w(0.035),
               vertical: SizeConfig.h(0.012),
             ),
-            itemCount:
-                tests.length +
-                (state.isPickerTestsLoadingMore ||
-                        (state.pickerTestsLoadMoreStatus ==
-                                MyProfilePickerTestsLoadMoreStatus.failure &&
-                            state.pickerErrorMessage != null)
-                    ? 1
-                    : 0),
+            itemCount: tests.length + (hasListFooter ? 1 : 0),
             separatorBuilder: (_, __) => SizedBox(height: SizeConfig.h(0.012)),
             itemBuilder: (context, index) {
               if (index >= tests.length) {
-                if (state.pickerTestsLoadMoreStatus ==
-                        MyProfilePickerTestsLoadMoreStatus.failure &&
-                    state.pickerErrorMessage != null) {
+                if (hasLoadMoreFailure) {
                   return Column(
                     children: [
                       CustomTextWidget(
@@ -443,6 +463,25 @@ class _PickerTestsList extends StatelessWidget {
                     ],
                   );
                 }
+
+                if (canLoadMoreFilteredTests) {
+                  return Center(
+                    child: TextButton.icon(
+                      onPressed: () {
+                        final cubit = context
+                            .read<MyProfileFolderEditorCubit>();
+                        if (state.hasPickerSearchQuery) {
+                          cubit.fetchMorePickerSearchIfNeeded();
+                        } else {
+                          cubit.fetchMorePickerTestsIfNeeded(userId: userId);
+                        }
+                      },
+                      icon: const Icon(Icons.expand_more_rounded),
+                      label: const Text('تحميل المزيد'),
+                    ),
+                  );
+                }
+
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
                   child: const Center(child: CircularProgressIndicator()),

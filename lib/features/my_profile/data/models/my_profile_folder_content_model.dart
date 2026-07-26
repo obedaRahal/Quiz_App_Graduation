@@ -17,9 +17,9 @@ class MyProfileFolderContentModel {
     return MyProfileFolderContentModel(
       success: json['success'] == true,
       title: json['title']?.toString() ?? '',
-      data: _asMapList(json['data'])
-          .map((item) => MyProfileFolderContentTestModel.fromJson(item))
-          .toList(),
+      data: _asMapList(
+        json['data'],
+      ).map((item) => MyProfileFolderContentTestModel.fromJson(item)).toList(),
       statusCode: _asInt(json['status_code']),
     );
   }
@@ -45,6 +45,7 @@ class MyProfileFolderContentTestModel {
   final double price;
   final String publishedAt;
   final String testType;
+  final String reviewStatus;
 
   const MyProfileFolderContentTestModel({
     required this.id,
@@ -57,6 +58,7 @@ class MyProfileFolderContentTestModel {
     required this.price,
     required this.publishedAt,
     required this.testType,
+    this.reviewStatus = '',
   });
 
   factory MyProfileFolderContentTestModel.fromJson(Map<String, dynamic> json) {
@@ -64,15 +66,16 @@ class MyProfileFolderContentTestModel {
       id: _asInt(json['id']),
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
-      interests: _asDynamicList(json['interests'])
-          .map((item) => item.toString())
-          .toList(),
+      interests: _asDynamicList(
+        json['interests'],
+      ).map((item) => item.toString()).toList(),
       difficultyLevel: json['difficulty_level']?.toString() ?? '',
       questionCount: _asInt(json['question_count']),
       averageRating: _asDouble(json['average_rating']),
       price: _asDouble(json['price']),
       publishedAt: json['published_at']?.toString() ?? '',
       testType: json['test_type']?.toString() ?? '',
+      reviewStatus: json['review_status']?.toString() ?? '',
     );
   }
 
@@ -88,6 +91,7 @@ class MyProfileFolderContentTestModel {
       price: price,
       publishedAt: publishedAt,
       testType: testType,
+      reviewStatus: reviewStatus,
     );
   }
 }

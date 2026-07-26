@@ -24,6 +24,7 @@ class MyProfilePickerTestItemEntity {
   final double price;
   final String publishedAt;
   final int questionCount;
+  final String reviewStatus;
 
   const MyProfilePickerTestItemEntity({
     required this.id,
@@ -35,6 +36,7 @@ class MyProfilePickerTestItemEntity {
     required this.price,
     required this.publishedAt,
     required this.questionCount,
+    this.reviewStatus = '',
   });
 
   List<String> get interestNames => interests.map((item) => item.name).toList();

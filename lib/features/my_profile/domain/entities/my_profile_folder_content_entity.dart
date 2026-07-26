@@ -23,6 +23,7 @@ class MyProfileFolderContentTestEntity {
   final double price;
   final String publishedAt;
   final String testType;
+  final String reviewStatus;
 
   const MyProfileFolderContentTestEntity({
     required this.id,
@@ -35,5 +36,6 @@ class MyProfileFolderContentTestEntity {
     required this.price,
     required this.publishedAt,
     required this.testType,
+    this.reviewStatus = '',
   });
 }

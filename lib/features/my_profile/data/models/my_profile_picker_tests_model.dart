@@ -50,6 +50,7 @@ class MyProfilePickerTestItemModel {
   final double price;
   final String publishedAt;
   final int questionCount;
+  final String reviewStatus;
 
   const MyProfilePickerTestItemModel({
     required this.id,
@@ -61,6 +62,7 @@ class MyProfilePickerTestItemModel {
     required this.price,
     required this.publishedAt,
     required this.questionCount,
+    this.reviewStatus = '',
   });
 
   factory MyProfilePickerTestItemModel.fromJson(Map<String, dynamic> json) {
@@ -76,6 +78,7 @@ class MyProfilePickerTestItemModel {
       price: _asDouble(json['price']),
       publishedAt: json['published_at']?.toString() ?? '',
       questionCount: _asInt(json['question_count']),
+      reviewStatus: json['review_status']?.toString() ?? '',
     );
   }
 
@@ -90,6 +93,7 @@ class MyProfilePickerTestItemModel {
       price: price,
       publishedAt: publishedAt,
       questionCount: questionCount,
+      reviewStatus: reviewStatus,
     );
   }
 }
