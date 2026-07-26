@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
 import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
@@ -265,8 +267,8 @@ class _SettingsViewState extends State<SettingsView> {
                               subtitle:
                                   'مركز الإشعارات - المنبه - التحكم بالتذكير للخطة الدراسية',
                               icon: Icons.notifications_outlined,
-                              iconColor: AppPalette.green,
-                              iconBackgroundColor: AppPalette.green.withValues(
+                              iconColor: Colors.green,
+                              iconBackgroundColor: Colors.green.withValues(
                                 alpha: .15,
                               ),
                               onTap: settings == null
@@ -385,8 +387,8 @@ class _SettingsViewState extends State<SettingsView> {
                                   ? 'يمكنك التبديل بين الخيار الليلي والنهاري'
                                   : _themeSubtitle(settings.themeMode),
                               icon: _themeIcon(settings?.themeMode),
-                              iconColor: Colors.lightBlue,
-                              iconBackgroundColor: Colors.lightBlue.withValues(
+                              iconColor: Colors.blue,
+                              iconBackgroundColor: Colors.blue.withValues(
                                 alpha: .15,
                               ),
                               value: _isDarkTheme(settings?.themeMode),
@@ -590,6 +592,48 @@ class _SettingsViewState extends State<SettingsView> {
                                   ? null
                                   : _logout,
                             ),
+
+                            SizedBox(height: SizeConfig.h(0.01)),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                bottom: SizeConfig.h(0.025),
+                              ),
+                              child: Row(
+                                textDirection: TextDirection.rtl,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Flexible(
+                                    child: SettingsFooterActionButton(
+                                      title: 'سياسة الخصوصية',
+                                      icon: Icons.privacy_tip_outlined,
+                                      onTap: () {
+                                        debugPrint(
+                                          '============ SettingsView.openPrivacyPolicy ============',
+                                        );
+
+                                        _showComingSoon('سياسة الخصوصية');
+                                      },
+                                    ),
+                                  ),
+
+                                  SizedBox(width: SizeConfig.w(0.025)),
+
+                                  Flexible(
+                                    child: SettingsFooterActionButton(
+                                      title: 'من نحن',
+                                      icon: Icons.info_outline_rounded,
+                                      onTap: () {
+                                        debugPrint(
+                                          '============ SettingsView.openAboutUs ============',
+                                        );
+
+                                        _showComingSoon('من نحن');
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -624,5 +668,60 @@ class _SettingsViewState extends State<SettingsView> {
     }
 
     return 'المظهر النهاري مفعل حالياً';
+  }
+}
+
+class SettingsFooterActionButton extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  const SettingsFooterActionButton({
+    super.key,
+    required this.title,
+    required this.icon,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Ink(
+          padding: EdgeInsets.symmetric(
+            horizontal: SizeConfig.w(0.025),
+            vertical: SizeConfig.h(0.005),
+          ),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppPalette.greyLight , width: 2),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            textDirection: TextDirection.rtl,
+            children: [
+              Icon(
+                icon,
+                color: appColors.primaryToPrimaryDark,
+                size: SizeConfig.text(0.047).clamp(18.0, 23.0).toDouble(),
+              ),
+              SizedBox(width: SizeConfig.w(0.015)),
+              CustomTextWidget(
+                title,
+                color: appColors.blackToGrey2Dark,
+                fontSize: SizeConfig.text(0.031).clamp(11.0, 14.0).toDouble(),
+                fontWeight: FontWeight.w600,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

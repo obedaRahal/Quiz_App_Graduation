@@ -76,7 +76,7 @@ class WelcomeViewBody extends StatelessWidget {
         SizedBox(height: SizeConfig.h(.03),),
     
         CustomTextWidget(
-          "اختباراتي",
+          "نيرد",
           fontSize: SizeConfig.text(0.065),
           fontFamily: AppFont.elMessiriBold,
           color: appColors.primaryToPrimaryDark,

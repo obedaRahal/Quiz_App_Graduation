@@ -143,7 +143,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                       ),
                       PlayModeCard(
                         title: "اختيارات متعددة",
-                        iconPath: "assets/icons/layers.svg",
+                        iconPath: AppImage.contentFileIcon,
                         backgroundColor: AppPalette.homeContainer3,
                         shadowColor: isDark
                             ? AppPalette.black

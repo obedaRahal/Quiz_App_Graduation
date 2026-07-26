@@ -29,7 +29,7 @@ class ChallengePlayersScoreSection extends StatelessWidget {
         children: [
           _ChallengeReactionAvatar(
             name: 'أنت',
-            imagePath: AppImage.carmen,
+            imagePath: state.content!.data.viewer.avatarUrl ?? '',
             score: state.challengeUserScore,
             reaction: _userReaction(state),
           ),

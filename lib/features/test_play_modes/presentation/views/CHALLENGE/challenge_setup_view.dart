@@ -253,7 +253,7 @@ class _ChallengeSetupLoadedBody extends StatelessWidget {
           SizedBox(height: SizeConfig.h(0.018)),
 
           SizedBox(
-            height: SizeConfig.h(0.2),
+            height: SizeConfig.h(0.18),
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 600),
               switchInCurve: Curves.easeOutCubic,

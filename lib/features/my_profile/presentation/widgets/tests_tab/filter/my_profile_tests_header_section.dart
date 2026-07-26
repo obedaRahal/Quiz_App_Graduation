@@ -9,142 +9,113 @@ import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profil
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/tests_tab/filter/my_profile_tests_filter_dialog.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/tests_tab/my_profile_tests_filter_section.dart';
 
-class MyProfileTestsHeaderSection
-    extends StatelessWidget {
-  const MyProfileTestsHeaderSection({
-    super.key,
-  });
+class MyProfileTestsHeaderSection extends StatelessWidget {
+  const MyProfileTestsHeaderSection({super.key});
 
-  Future<void> _openFilter(
-    BuildContext context,
-  ) async {
-    final cubit =
-        context.read<MyProfileCubit>();
+  Future<void> _openFilter(BuildContext context) async {
+    final cubit = context.read<MyProfileCubit>();
 
-    await cubit
-        .getMyProfileTestsFilterInterests();
+    await cubit.getMyProfileTestsFilterInterests();
 
     if (!context.mounted) return;
 
     final state = cubit.state;
 
-    if (state.testsFilterInterestsError !=
-        null) {
+    if (state.testsFilterInterestsError != null) {
       showValidationTopSnackBar(
         context,
         title: 'خطأ',
-        message:
-            'حدث خطأ أثناء جلب التصنيفات العلمية',
+        message: 'حدث خطأ أثناء جلب التصنيفات العلمية',
         type: AppValidationSnackBarType.error,
       );
 
       return;
     }
 
-    final result =
-        await showMyProfileTestsFilterDialog(
+    final result = await showMyProfileTestsFilterDialog(
       context: context,
-      interestCategories:
-          state.testsFilterInterestCategories,
+      interestCategories: state.testsFilterInterestCategories,
     );
 
-    if (result == null ||
-        !result.hasAnyFilter) {
+    if (result == null || !result.hasAnyFilter) {
       return;
     }
 
-    await cubit.applyMyProfileTestsFilter(
-      result.toParams(),
-    );
+    await cubit.applyMyProfileTestsFilter(result.toParams());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<
-        MyProfileCubit,
-        MyProfileState>(
+    return BlocBuilder<MyProfileCubit, MyProfileState>(
       buildWhen: (previous, current) =>
-          previous.selectedTestsTab !=
-              current.selectedTestsTab ||
-          previous.isTestsFilterMode !=
-              current.isTestsFilterMode ||
-          previous
-                  .isTestsFilterInterestsLoading !=
-              current
-                  .isTestsFilterInterestsLoading,
+          previous.selectedTestsTab != current.selectedTestsTab ||
+          previous.isTestsFilterMode != current.isTestsFilterMode ||
+          previous.isTestsFilterInterestsLoading !=
+              current.isTestsFilterInterestsLoading,
       builder: (context, state) {
-        final isDark =
-            Theme.of(context).brightness ==
-            Brightness.dark;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
 
         return Row(
           textDirection: TextDirection.rtl,
-          crossAxisAlignment:
-              CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child:
-                  MyProfileTestsFilterSection(
-                selectedTab:
-                    state.selectedTestsTab,
+              child: MyProfileTestsFilterSection(
+                selectedTab: state.selectedTestsTab,
                 onTabSelected: context
                     .read<MyProfileCubit>()
                     .changeMyProfileTestsTab,
               ),
             ),
 
-            SizedBox(
-              width: SizeConfig.w(0.02),
-            ),
+            SizedBox(width: SizeConfig.w(0.02)),
 
-            InkWell(
-              onTap: state
-                      .isTestsFilterInterestsLoading
-                  ? null
-                  : () => _openFilter(context),
-              borderRadius:
-                  BorderRadius.circular(12),
-              child: AnimatedContainer(
-                duration: const Duration(
-                  milliseconds: 180,
-                ),
-                width: SizeConfig.w(0.085),
-                height: SizeConfig.w(0.085),
-                decoration: BoxDecoration(
-                  color: state.isTestsFilterMode
-                      ? context
-                          .appColors
-                          .primaryToPrimaryDark
-                      : isDark
-                          ? AppPalette
-                              .fieldColorNDark
-                          : AppPalette
-                              .whiteToGrey,
-                  borderRadius:
-                      BorderRadius.circular(12),
-                ),
-                child: state
-                        .isTestsFilterInterestsLoading
-                    ? Padding(
-                        padding: EdgeInsets.all(
-                          SizeConfig.w(0.022),
+            Tooltip(
+              message: state.isTestsFilterMode
+                  ? 'إلغاء الفلتر'
+                  : 'فلترة الاختبارات',
+              child: InkWell(
+                onTap: state.isTestsFilterMode
+                    ? context.read<MyProfileCubit>().clearMyProfileTestsFilter
+                    : state.isTestsFilterInterestsLoading
+                    ? null
+                    : () => _openFilter(context),
+                borderRadius: BorderRadius.circular(12),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: SizeConfig.w(0.085),
+                  height: SizeConfig.w(0.085),
+                  decoration: BoxDecoration(
+                    color: state.isTestsFilterMode
+                        ? context.appColors.primaryToPrimaryDark
+                        : isDark
+                        ? AppPalette.fieldColorNDark
+                        : AppPalette.whiteToGrey,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child:
+                      state.isTestsFilterInterestsLoading &&
+                          !state.isTestsFilterMode
+                      ? Padding(
+                          padding: EdgeInsets.all(SizeConfig.w(0.022)),
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 180),
+                          child: Icon(
+                            state.isTestsFilterMode
+                                ? Icons.close_rounded
+                                : Icons.filter_alt_outlined,
+                            key: ValueKey(state.isTestsFilterMode),
+                            size: SizeConfig.text(0.045),
+                            color: state.isTestsFilterMode
+                                ? AppPalette.white
+                                : AppPalette.greyMedium,
+                          ),
                         ),
-                        child:
-                            const CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Icon(
-                        Icons
-                            .filter_alt_outlined,
-                        size:
-                            SizeConfig.text(0.045),
-                        color: state
-                                .isTestsFilterMode
-                            ? AppPalette.white
-                            : AppPalette
-                                .greyMedium,
-                      ),
+                ),
               ),
             ),
           ],

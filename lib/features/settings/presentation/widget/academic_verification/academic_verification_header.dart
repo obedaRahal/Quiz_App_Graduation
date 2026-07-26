@@ -20,7 +20,7 @@ class AcademicVerificationHeader extends StatelessWidget {
 
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(0),
+          padding:  EdgeInsets.all(SizeConfig.w(0.03)),
           decoration: BoxDecoration(
             color: theme.colorScheme.primaryContainer.withValues(alpha: 0.45),
             borderRadius: BorderRadius.circular(18),

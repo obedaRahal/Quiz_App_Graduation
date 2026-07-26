@@ -65,6 +65,9 @@ class MyProfileTestsTab extends StatelessWidget {
             : state.hasTestsSearchQuery
             ? state.testsSearchError
             : state.testsError;
+        final shouldShowEmptyState =
+            isEmpty &&
+            (!isFailure || _isEmptyFilterFailure(state, visibleError));
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -81,25 +84,22 @@ class MyProfileTestsTab extends StatelessWidget {
 
             const MyProfileTestsHeaderSection(),
 
-            if (isFilterMode) ...[
-              SizedBox(height: SizeConfig.h(0.008)),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  onPressed: context
-                      .read<MyProfileCubit>()
-                      .clearMyProfileTestsFilter,
-                  icon: const Icon(Icons.close_rounded),
-                  label: const Text('إلغاء الفلتر'),
-                ),
-              ),
-            ],
-
             SizedBox(height: SizeConfig.h(0.018)),
 
             if (isLoading)
               OtherProfileTestsTabShimmer()
+            else if (shouldShowEmptyState)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
+                child: Center(
+                  child: CustomTextWidget(
+                    _emptyMessage(state),
+                    color: AppPalette.greyMedium,
+                    fontSize: SizeConfig.text(0.034),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
             else if (isFailure)
               Padding(
                 padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
@@ -119,18 +119,6 @@ class MyProfileTestsTab extends StatelessWidget {
                         label: const Text('إعادة المحاولة'),
                       ),
                     ],
-                  ),
-                ),
-              )
-            else if (isEmpty)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
-                child: Center(
-                  child: CustomTextWidget(
-                    _emptyMessage(state),
-                    color: AppPalette.greyMedium,
-                    fontSize: SizeConfig.text(0.034),
-                    textAlign: TextAlign.center,
                   ),
                 ),
               )
@@ -187,6 +175,27 @@ class MyProfileTestsTab extends StatelessWidget {
     }
 
     return 'لا توجد اختبارات ضمن هذا التصنيف';
+  }
+
+  bool _isEmptyFilterFailure(
+    MyProfileState state,
+    MyProfileOperationError? error,
+  ) {
+    if (!state.isTestsFilterMode || !state.isTestsFilterFailure) {
+      return false;
+    }
+
+    final message = '${error?.title ?? ''} ${error?.message ?? ''}'
+        .trim()
+        .toLowerCase();
+
+    return message.contains('لا توجد اختبارات') ||
+        message.contains('لا يوجد اختبارات') ||
+        message.contains('لا توجد نتائج') ||
+        message.contains('لا يوجد نتائج') ||
+        message.contains('لم يتم العثور على اختبارات') ||
+        message.contains('no tests') ||
+        message.contains('no results');
   }
 
   void _retryInitial(BuildContext context, MyProfileState state) {

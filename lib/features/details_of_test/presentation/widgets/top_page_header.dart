@@ -83,7 +83,7 @@ class HeaderActionButton extends StatelessWidget {
         icon,
         color: appColors.blackTogreyMedium,
         size: SizeConfig.h(0.03),
-        fontWeight: FontWeight.bold,
+        //fontWeight: FontWeight.bold,
       ),
     );
   }

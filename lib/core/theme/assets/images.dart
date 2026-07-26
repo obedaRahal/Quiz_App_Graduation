@@ -41,6 +41,7 @@ class AppImage {
   //////////////// details of test
   static String get layersIcon => '$_baseIcon/layers.svg';
   static String get muscleIcon => '$_baseIcon/muscle.svg';
+  static String get contentFileIcon => '$_baseIcon/file-content.svg';
   static String get verifyCheck => '$_baseIcon/verifyCheck.svg';
   static String get downmark => '$_baseIcon/downmark.svg';
   static String get numberofquestion => '$_baseIcon/numberofquestion.svg';

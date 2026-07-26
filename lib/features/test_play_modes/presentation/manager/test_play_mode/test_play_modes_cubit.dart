@@ -230,6 +230,7 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     _stopSessionTimer();
     _stopChallengeBotTimer();
     _stopChallengeQuestionTimer();
+    unawaited(voiceAssistantService.stop());
 
     emit(const TestPlayModesState());
 
@@ -341,12 +342,70 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     debugPrint("=================================================");
   }
 
+  Future<void> toggleVoiceAssistantForCurrentFlashcard() async {
+    debugPrint(
+      "============ TestPlayModesCubit.toggleVoiceAssistantForCurrentFlashcard ============",
+    );
+
+    if (isClosed) return;
+
+    if (state.isVoiceSpeaking) {
+      await stopVoiceAssistant();
+      debugPrint("✓ flashcard voice stopped");
+      debugPrint("=================================================");
+      return;
+    }
+
+    await speakCurrentFlashcardQuestion();
+  }
+
+  Future<void> speakCurrentFlashcardQuestion() async {
+    debugPrint(
+      "============ TestPlayModesCubit.speakCurrentFlashcardQuestion ============",
+    );
+
+    if (isClosed) return;
+
+    final question = state.currentFlashcardQuestion;
+    if (question == null) {
+      debugPrint("✗ currentFlashcardQuestion is null");
+      debugPrint("=================================================");
+      return;
+    }
+
+    try {
+      emit(
+        state.copyWith(
+          voiceStatus: TestVoiceAssistantStatus.speaking,
+          clearVoiceError: true,
+        ),
+      );
+
+      await voiceAssistantService.speak(question.questionText);
+      debugPrint("✓ current flashcard question sent to TTS");
+    } catch (error) {
+      debugPrint("✗ speakCurrentFlashcardQuestion error: $error");
+      if (isClosed) return;
+
+      emit(
+        state.copyWith(
+          voiceStatus: TestVoiceAssistantStatus.failure,
+          voiceErrorMessage: "تعذر تشغيل المساعد الصوتي",
+        ),
+      );
+    }
+
+    debugPrint("=================================================");
+  }
+
   Future<void> stopVoiceAssistant() async {
     debugPrint(
       "============ TestPlayModesCubit.stopVoiceAssistant ============",
     );
     try {
       await voiceAssistantService.stop();
+
+      if (isClosed) return;
 
       emit(
         state.copyWith(
@@ -356,6 +415,7 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
       );
     } catch (error) {
       debugPrint("✗ stopVoiceAssistant error: $error");
+      if (isClosed) return;
 
       emit(
         state.copyWith(
@@ -474,7 +534,9 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     emit(
       state.copyWith(
         voiceStatus: TestVoiceAssistantStatus.failure,
-        voiceErrorMessage: 'تعذر تشغيل المساعد الصوتي',
+        voiceErrorMessage:
+            voiceAssistantService.lastErrorMessage ??
+            'تعذر تشغيل المساعد الصوتي',
       ),
     );
   }
@@ -568,12 +630,16 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     );
     debugPrint("→ params: {testId: $testId}");
 
+    if (isClosed) return;
+
     _resetAttemptInteractionRegisterGuard(
       source: 'getTestPlayContent - mcq session start',
     );
 
     _stopSessionTimer();
     await stopVoiceAssistant();
+
+    if (isClosed) return;
 
     emit(
       state.copyWith(
@@ -591,6 +657,8 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
     final result = await getTestPlayContentUseCase(
       GetTestPlayContentParams(testId: testId),
     );
+
+    if (isClosed) return;
 
     result.fold(
       (failure) {
@@ -1390,9 +1458,12 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
   }
 
   void startFlashcardSession() {
+    if (isClosed || !state.hasPlayableContent) return;
+
     _stopSessionTimer();
     _stopChallengeBotTimer();
     _stopChallengeQuestionTimer();
+    unawaited(voiceAssistantService.stop());
     _resetAttemptInteractionRegisterGuard(source: 'startFlashcardSession');
 
     final queue = state.questions.map((e) => e.questionId).toList();
@@ -1410,6 +1481,8 @@ class TestPlayModesCubit extends Cubit<TestPlayModesState> {
         flashcardReviewedQuestionIds: {},
 
         isFlashcardFlipped: false,
+        voiceStatus: TestVoiceAssistantStatus.stopped,
+        clearVoiceError: true,
       ),
     );
 

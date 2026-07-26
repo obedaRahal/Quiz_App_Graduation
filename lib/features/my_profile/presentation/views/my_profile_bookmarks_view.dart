@@ -98,9 +98,11 @@ class _MyProfileBookmarksBodyState extends State<_MyProfileBookmarksBody> {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.w(0.03),
-                  vertical: SizeConfig.h(0.03),
+                padding: EdgeInsets.only(
+                  left: SizeConfig.w(0.03),
+                  right: SizeConfig.w(0.03),
+                  top: SizeConfig.h(0.03),
+                  bottom: SizeConfig.h(0.01),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

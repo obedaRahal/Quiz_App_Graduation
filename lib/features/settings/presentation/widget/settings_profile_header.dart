@@ -65,7 +65,7 @@ class SettingsProfileHeader extends StatelessWidget {
                 profileName.isEmpty ? 'مستخدم Nerd' : profileName,
                 color: context.appColors.blackToGrey2Dark,
                 fontFamily: AppFont.elMessiriBold,
-                fontSize: SizeConfig.text(0.038),
+                fontSize: SizeConfig.text(0.05),
                 textAlign: TextAlign.right,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -76,7 +76,7 @@ class SettingsProfileHeader extends StatelessWidget {
                 CustomTextWidget(
                   profileEmail,
                   color: AppPalette.greyMedium,
-                  fontSize: SizeConfig.text(0.027),
+                  fontSize: SizeConfig.text(0.04),
                   textAlign: TextAlign.right,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

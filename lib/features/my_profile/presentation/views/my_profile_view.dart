@@ -106,7 +106,7 @@ class _MyProfileViewState extends State<MyProfileView> {
                   }
 
                   return CustomBackgroundWithChild(
-                    childVerticalPad: SizeConfig.h(0.01),
+                    childVerticalPad: SizeConfig.h(0.015),
                     childHorizontalPad: SizeConfig.w(0.03),
                     backgroundColor: appColors.whiteToblack,
                     width: double.infinity,
@@ -123,7 +123,7 @@ class _MyProfileViewState extends State<MyProfileView> {
                       width: double.infinity,
                       backgroundColor: context.appColors.primaryToPrimaryDark,
                       childHorizontalPad: SizeConfig.w(0.04),
-                      childVerticalPad: SizeConfig.w(0.013),
+                      childVerticalPad: SizeConfig.w(0.025),
                       borderRadius: 6,
                       onTap: () async {
                         final result = await context.pushNamed(

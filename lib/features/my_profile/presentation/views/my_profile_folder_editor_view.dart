@@ -124,7 +124,7 @@ class _MyProfileFolderEditorViewState extends State<MyProfileFolderEditorView> {
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(
                         horizontal: SizeConfig.w(0.035),
-                        vertical: SizeConfig.h(0.012),
+                        vertical: SizeConfig.h(0.02),
                       ),
                       decoration: BoxDecoration(
                         color: appColors.whiteToblack,
@@ -144,7 +144,7 @@ class _MyProfileFolderEditorViewState extends State<MyProfileFolderEditorView> {
                             ? appColors.primaryToPrimaryDark
                             : appColors.greyToGreyMediumDark,
                         childHorizontalPad: SizeConfig.w(0.04),
-                        childVerticalPad: SizeConfig.w(0.013),
+                        childVerticalPad: SizeConfig.h(0.013),
                         borderRadius: 6,
                         onTap: isButtonEnabled
                             ? () {
