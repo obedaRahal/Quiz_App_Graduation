@@ -154,11 +154,7 @@ class AppRouter {
               child: BlocProvider(
                 create: (_) {
                   final cubit = sl<OtherProfileCubit>();
-
-                  if (slug.trim().isNotEmpty) {
-                    cubit.getOtherProfileReceive(slug: slug);
-                  }
-
+                  cubit.getOtherProfileReceive(slug: slug);
                   return cubit;
                 },
                 child: SharedProfileRedirectView(slug: slug),
@@ -571,6 +567,9 @@ class AppRouter {
 
             debugPrint("→ received userId: $userId");
             debugPrint("=================================================");
+            if (userId <= 0) {
+              return _slidePage(state: state, child: const MainLayoutBody());
+            }
 
             return _slidePage(
               state: state,

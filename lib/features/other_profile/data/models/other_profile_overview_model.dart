@@ -169,11 +169,13 @@ class OtherProfileBasicInfoModel {
 class OtherProfileReviewsModel {
   final double averageRating;
   final int totalReviewsCount;
+  final int commentsCount;
   final List<OtherProfileRatingDistributionModel> ratingDistribution;
 
   const OtherProfileReviewsModel({
     required this.averageRating,
     required this.totalReviewsCount,
+    required this.commentsCount,
     required this.ratingDistribution,
   });
 
@@ -181,9 +183,8 @@ class OtherProfileReviewsModel {
     return OtherProfileReviewsModel(
       averageRating: _asDouble(json['average_rating']),
       totalReviewsCount: parseCompactCount(json['total_reviews_count']),
-      ratingDistribution: _asMapList(json['rating_distribution'])
-          .map((item) => OtherProfileRatingDistributionModel.fromJson(item))
-          .toList(),
+      commentsCount: parseCompactCount(json['comments_count']),
+      ratingDistribution: _parseRatingDistribution(json['rating_distribution']),
     );
   }
 
@@ -191,6 +192,7 @@ class OtherProfileReviewsModel {
     return OtherProfileReviewsEntity(
       averageRating: averageRating,
       totalReviewsCount: totalReviewsCount,
+      commentsCount: commentsCount,
       ratingDistribution: ratingDistribution
           .map((item) => item.toEntity())
           .toList(),
@@ -199,29 +201,52 @@ class OtherProfileReviewsModel {
 }
 
 class OtherProfileRatingDistributionModel {
+  final int stars;
   final int count;
-  final int percentage;
+  final double percentage;
 
   const OtherProfileRatingDistributionModel({
+    required this.stars,
     required this.count,
     required this.percentage,
   });
 
-  factory OtherProfileRatingDistributionModel.fromJson(
-    Map<String, dynamic> json,
-  ) {
-    return OtherProfileRatingDistributionModel(
-      count: parseCompactCount(json['count']),
-      percentage: parseCompactCount(json['percentage']),
-    );
-  }
-
   OtherProfileRatingDistributionEntity toEntity() {
     return OtherProfileRatingDistributionEntity(
+      stars: stars,
       count: count,
       percentage: percentage,
     );
   }
+}
+
+List<OtherProfileRatingDistributionModel> _parseRatingDistribution(
+  dynamic value,
+) {
+  if (value is List) {
+    return value.asMap().entries.map((entry) {
+      final item =
+          (entry.value as Map?)?.cast<String, dynamic>() ??
+          const <String, dynamic>{};
+      return OtherProfileRatingDistributionModel(
+        stars: parseCompactCount(item['stars'] ?? item['rating']) != 0
+            ? parseCompactCount(item['stars'] ?? item['rating'])
+            : (5 - entry.key).clamp(1, 5).toInt(),
+        count: parseCompactCount(item['count']),
+        percentage: _asDouble(item['percentage']),
+      );
+    }).toList();
+  }
+
+  final map = (value as Map?)?.cast<String, dynamic>() ?? {};
+  return [5, 4, 3, 2, 1].map((stars) {
+    final item = (map['$stars'] as Map?)?.cast<String, dynamic>() ?? {};
+    return OtherProfileRatingDistributionModel(
+      stars: stars,
+      count: parseCompactCount(item['count']),
+      percentage: _asDouble(item['percentage']),
+    );
+  }).toList();
 }
 
 class OtherProfileGeneralStatsModel {
@@ -252,7 +277,6 @@ class OtherProfileGeneralStatsModel {
   }
 }
 
-
 double _asDouble(dynamic value) {
   if (value is double) return value;
   if (value is int) return value.toDouble();
@@ -265,10 +289,5 @@ List<dynamic> _asList(dynamic value) {
   return [];
 }
 
-List<Map<String, dynamic>> _asMapList(dynamic value) {
-  if (value is! List) return [];
-  return value
-      .whereType<Map>()
-      .map((item) => item.cast<String, dynamic>())
-      .toList();
-}
+// أزيل استخدام _asMapList لأن rating_distribution أصبح يُقرأ كخريطة
+// مع إبقاء دعم القائمة داخل _parseRatingDistribution للتوافق الخلفي.

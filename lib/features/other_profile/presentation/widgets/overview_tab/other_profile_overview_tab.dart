@@ -35,21 +35,21 @@ class _OtherProfileOverviewTabState extends State<OtherProfileOverviewTab> {
           joinedAt: widget.dataEntity.basicInfo.joinedAt,
           interestsList: interestsList,
           isThereCertificate: true,
-          onCertificateTap:widget.onAcademicCertificateTap ,
+          onCertificateTap: widget.onAcademicCertificateTap,
         ),
 
         CustomDivider(height: 30, thickness: 3),
         TestRatingSummarySection(
           averageRating: widget.dataEntity.reviews.averageRating,
           totalReviewsCount: widget.dataEntity.reviews.totalReviewsCount,
-          commentsCount: widget.dataEntity.reviews.totalReviewsCount,
+          commentsCount: widget.dataEntity.reviews.commentsCount,
           ratingDistribution: widget.dataEntity.reviews.ratingDistribution.map((
             item,
           ) {
             return RatingDistributionEntity(
-              stars: item.count,
+              stars: item.stars,
               count: item.count,
-              percentage: item.percentage.toDouble(),
+              percentage: item.percentage,
             );
           }).toList(),
         ),

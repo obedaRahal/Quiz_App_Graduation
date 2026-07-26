@@ -57,7 +57,11 @@ class MyProfileHeaderCard extends StatelessWidget {
                           ),
                           child: profile.coverUrl.trim().isEmpty
                               ? Container(
-                                  color: AppPalette.greyLight,
+                                  decoration: BoxDecoration(
+                                    color: appColors.greyToGreyMediumDark,
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(color: appColors.borderFieldColorNLightToborderFieldColorNDark , width: 3 , )
+                                  ),
                                   child: Center(
                                     child: CustomTextWidget(
                                       'أضف صورة غلاف خاصة بك +',

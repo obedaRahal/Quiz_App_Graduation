@@ -42,7 +42,7 @@ class OtherProfileGeneralStatsSection extends StatelessWidget {
               child: OtherProfileStatCard(
                 backgroundColor: isDark
                     ? AppPalette.greyLightDark
-                    : AppPalette.greyLight,
+                    : AppPalette.grey,
                 icon: FontAwesomeIcons.solidBookmark,
 
                 value: bookMarksCount,
@@ -59,7 +59,7 @@ class OtherProfileGeneralStatsSection extends StatelessWidget {
                 description: 'تعليقًا للاختبارات',
                 backgroundColor: isDark
                     ? AppPalette.greyLightDark
-                    : AppPalette.greyLight,
+                    : AppPalette.grey,
               ),
             ),
 
@@ -72,7 +72,7 @@ class OtherProfileGeneralStatsSection extends StatelessWidget {
                 description: 'إعجابًا للاختبارات',
                 backgroundColor: isDark
                     ? AppPalette.greyLightDark
-                    : AppPalette.greyLight,
+                    : AppPalette.grey,
               ),
             ),
           ],

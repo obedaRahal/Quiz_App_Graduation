@@ -48,7 +48,6 @@ class OtherProfileFolderDetailsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return DraggableScrollableSheet(
@@ -162,6 +161,19 @@ class OtherProfileFolderDetailsBottomSheet extends StatelessWidget {
                   SizedBox(height: SizeConfig.h(0.01)),
                   const CustomDivider(height: 10, thickness: 2, isDashed: true),
 
+                  if (state.isFolderBookmarkFailure)
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.w(0.045),
+                        vertical: SizeConfig.h(0.008),
+                      ),
+                      child: CustomTextWidget(
+                        state.errorMessage ?? 'تعذر تحديث حالة حفظ القائمة',
+                        color: AppPalette.red,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
                   Expanded(
                     child: SingleChildScrollView(
                       controller: scrollController,
@@ -244,7 +256,7 @@ class _FolderDetailsSaveButton extends StatelessWidget {
       child: Icon(
         isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
         color: isSaved
-            ? AppPalette.red.withOpacity(0.7)
+            ? AppPalette.red.withValues(alpha: 0.7)
             : AppPalette.greyMedium,
         size: SizeConfig.w(0.075),
       ),
@@ -265,7 +277,7 @@ class OtherProfileFolderDetailsInfoCard extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: CustomBackgroundWithChild(
         width: double.infinity,
-        backgroundColor: appColors.primaryToPrimaryDark.withOpacity(0.85),
+        backgroundColor: appColors.primaryToPrimaryDark.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(8),
         padding: EdgeInsets.symmetric(
           horizontal: SizeConfig.w(0.035),

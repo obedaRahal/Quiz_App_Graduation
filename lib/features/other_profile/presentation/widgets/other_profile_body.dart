@@ -30,6 +30,7 @@ class _OtherProfileBodyState extends State<OtherProfileBody> {
     super.initState();
 
     Future.microtask(() {
+      if (!mounted || widget.userId <= 0) return;
       context.read<OtherProfileCubit>().getOtherProfileOverview(
         userId: widget.userId,
       );
@@ -125,6 +126,15 @@ class _OtherProfileBodyState extends State<OtherProfileBody> {
                     color: Colors.grey,
                     textAlign: TextAlign.center,
                   ),
+                  SizedBox(height: SizeConfig.h(0.02)),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<OtherProfileCubit>().getOtherProfileOverview(
+                        userId: widget.userId,
+                      );
+                    },
+                    child: const Text('إعادة المحاولة'),
+                  ),
                 ],
               ),
             ),
@@ -157,6 +167,7 @@ class _OtherProfileBodyState extends State<OtherProfileBody> {
             if (state.selectedTab == OtherProfileTab.tests &&
                 state.hasMoreTestsPages &&
                 !state.isGetMoreTestsLoading &&
+                !state.isGetMoreTestsFailure &&
                 !state.isGetTestsLoading) {
               cubit.loadMoreOtherProfileTests(userId: widget.userId);
             }
@@ -164,6 +175,7 @@ class _OtherProfileBodyState extends State<OtherProfileBody> {
             if (state.selectedTab == OtherProfileTab.folder &&
                 state.hasMoreFoldersPages &&
                 !state.isGetMoreFoldersLoading &&
+                !state.isGetMoreFoldersFailure &&
                 !state.isGetFoldersLoading) {
               cubit.loadMoreOtherProfileFolders(userId: widget.userId);
             }
@@ -171,6 +183,7 @@ class _OtherProfileBodyState extends State<OtherProfileBody> {
             if (state.selectedTab == OtherProfileTab.content &&
                 state.hasMoreContentPages &&
                 !state.isGetMoreContentLoading &&
+                !state.isGetMoreContentFailure &&
                 !state.isGetContentLoading) {
               cubit.loadMoreOtherProfileContent(userId: widget.userId);
             }

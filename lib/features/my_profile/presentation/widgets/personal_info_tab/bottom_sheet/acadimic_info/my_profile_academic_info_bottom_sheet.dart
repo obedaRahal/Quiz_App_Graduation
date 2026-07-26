@@ -332,7 +332,7 @@ class _MyProfileAcademicInfoBottomSheetState
                 ),
 
                 CustomBackgroundWithChild(
-                  childVerticalPad: SizeConfig.h(0.01),
+                  childVerticalPad: SizeConfig.h(0.02),
                   childHorizontalPad: SizeConfig.w(0.03),
                   backgroundColor: context.appColors.whiteToblack,
                   width: double.infinity,
@@ -364,11 +364,14 @@ class _MyProfileAcademicInfoBottomSheetState
                               color: AppPalette.white,
                             ),
                           )
-                        : CustomTextWidget(
-                            'حفظ',
-                            fontSize: SizeConfig.text(0.03),
-                            color: AppPalette.white,
-                          ),
+                        : Padding(
+                          padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.004)),
+                          child: CustomTextWidget(
+                              'حفظ',
+                              fontSize: SizeConfig.text(0.03),
+                              color: AppPalette.white,
+                            ),
+                        ),
                   ),
                 ),
               ],

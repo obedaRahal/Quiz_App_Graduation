@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
-import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
-import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/builed_filter_item.dart';
@@ -23,7 +18,6 @@ import 'package:quiz_app_grad/features/home/presentation/widget/home_top_banner/
 import 'package:quiz_app_grad/features/main_layout/presentation/manager/cubit/bottom_nav_cubit.dart';
 import 'package:quiz_app_grad/features/notification/presentation/manager/notification_unread_count/notification_unread_count_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
-import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_cubit.dart';
 import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_state.dart';
 
@@ -74,10 +68,6 @@ class HomePage extends StatelessWidget {
 
                     final unreadCountCubit = context
                         .read<NotificationUnreadCountCubit>();
-
-                    // The notifications screen marks the loaded unread items as
-                    // read. Hide the stale badge immediately, then confirm the
-                    // real value with the API when the user comes back.
                     unreadCountCubit.clearUnreadCount();
 
                     await context.pushNamed(AppRouterName.notifications);
@@ -215,7 +205,7 @@ class HomePage extends StatelessWidget {
                 ),
 
                 SizedBox(height: SizeConfig.h(0.03)),
-                
+
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
                     return Directionality(

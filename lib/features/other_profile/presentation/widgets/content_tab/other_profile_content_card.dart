@@ -81,7 +81,6 @@ class OtherProfileContentCard extends StatelessWidget {
                       likesCount: content.likeCount,
                       isLiked: false,
                       publishedAt: content.publishedAt,
-                      onLikeTap: onLikeTap,
                       showLikeButton: showLikeButton,
                     ),
                   ],
@@ -219,7 +218,7 @@ class _SaveButton extends StatelessWidget {
         padding: EdgeInsets.all(SizeConfig.w(0.007)),
         decoration: BoxDecoration(
           color: isSaved
-              ? AppPalette.red.withOpacity(0.7)
+              ? AppPalette.red.withValues(alpha: 0.7)
               : isDark
               ? AppPalette.greyLightDark
               : AppPalette.greyLight,
@@ -240,7 +239,6 @@ class _ContentFooterRow extends StatelessWidget {
   final int likesCount;
   final bool isLiked;
   final String publishedAt;
-  final VoidCallback onLikeTap;
   final bool showLikeButton;
 
   const _ContentFooterRow({
@@ -248,7 +246,6 @@ class _ContentFooterRow extends StatelessWidget {
     required this.likesCount,
     required this.isLiked,
     required this.publishedAt,
-    required this.onLikeTap,
     required this.showLikeButton,
   });
 
@@ -281,11 +278,7 @@ class _ContentFooterRow extends StatelessWidget {
 
         if (showLikeButton) ...[
           SizedBox(width: SizeConfig.w(0.012)),
-          _LikeIconText(
-            isLiked: isLiked,
-            text: formatCompactCount(likesCount),
-            onTap: onLikeTap,
-          ),
+          _LikeIconText(isLiked: isLiked, text: formatCompactCount(likesCount)),
           SizedBox(width: SizeConfig.w(0.018)),
         ],
 
@@ -298,47 +291,39 @@ class _ContentFooterRow extends StatelessWidget {
 class _LikeIconText extends StatelessWidget {
   final bool isLiked;
   final String text;
-  final VoidCallback onTap;
 
-  const _LikeIconText({
-    required this.isLiked,
-    required this.text,
-    required this.onTap,
-  });
+  const _LikeIconText({required this.isLiked, required this.text});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.w(0.006),
-          vertical: SizeConfig.h(0.002),
-        ),
-        child: Row(
-          //crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          textDirection: TextDirection.rtl,
-          children: [
-            Icon(
-              isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: isLiked ? AppPalette.red : AppPalette.greyMedium,
-              size: SizeConfig.h(0.02),
-            ),
+    // عدد الإعجابات للعرض فقط في بطاقات المحتوى.
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.w(0.006),
+        vertical: SizeConfig.h(0.002),
+      ),
+      child: Row(
+        //crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        textDirection: TextDirection.rtl,
+        children: [
+          Icon(
+            isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+            color: isLiked ? AppPalette.red : AppPalette.greyMedium,
+            size: SizeConfig.h(0.02),
+          ),
 
-            SizedBox(width: SizeConfig.w(0.006)),
+          SizedBox(width: SizeConfig.w(0.006)),
 
-            CustomTextWidget(
-              text,
-              color: isLiked ? AppPalette.red : AppPalette.greyMedium,
-              fontSize: SizeConfig.text(0.026),
-              maxLines: 1,
-              fontFamily: AppFont.elMessiriBold,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+          CustomTextWidget(
+            text,
+            color: isLiked ? AppPalette.red : AppPalette.greyMedium,
+            fontSize: SizeConfig.text(0.026),
+            maxLines: 1,
+            fontFamily: AppFont.elMessiriBold,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

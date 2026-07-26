@@ -18,6 +18,8 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
 
   Timer? _searchDebounce;
   bool _isFetchingMore = false;
+  bool _isDisposed = false;
+  int _requestGeneration = 0;
 
   OtherProfileConnectionsCubit({
     required this.getOtherProfileConnectionsUseCase,
@@ -29,7 +31,9 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
 
   @override
   Future<void> close() {
+    _isDisposed = true;
     _searchDebounce?.cancel();
+    _requestGeneration++;
     return super.close();
   }
 
@@ -37,6 +41,11 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
     required int userId,
     required OtherProfileConnectionsType type,
   }) async {
+    if (_isDisposed || isClosed) return;
+
+    final requestGeneration = ++_requestGeneration;
+    _isFetchingMore = false;
+
     debugPrint(
       "============ OtherProfileConnectionsCubit.getInitialUsers ============",
     );
@@ -56,11 +65,12 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
     );
 
     final result = await getOtherProfileConnectionsUseCase(
-      GetOtherProfileConnectionsParams(
-        userId: userId,
-        type: type,
-      ),
+      GetOtherProfileConnectionsParams(userId: userId, type: type),
     );
+
+    if (_isDisposed || isClosed || requestGeneration != _requestGeneration) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -101,7 +111,11 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
     required String value,
     required OtherProfileConnectionsType type,
   }) {
+    if (_isDisposed || isClosed) return;
+
     final query = value.trim();
+    _requestGeneration++;
+    _isFetchingMore = false;
 
     debugPrint(
       "============ OtherProfileConnectionsCubit.onSearchChanged ============",
@@ -113,16 +127,14 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
     _searchDebounce?.cancel();
 
     _searchDebounce = Timer(const Duration(milliseconds: 450), () {
+      if (_isDisposed || isClosed) return;
+
       if (query.isEmpty) {
         getInitialUsers(userId: userId, type: type);
         return;
       }
 
-      searchUsers(
-        userId: userId,
-        type: type,
-        query: query,
-      );
+      searchUsers(userId: userId, type: type, query: query);
     });
 
     debugPrint("=================================================");
@@ -133,6 +145,12 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
     required OtherProfileConnectionsType type,
     required String query,
   }) async {
+    if (_isDisposed || isClosed) return;
+
+    final cleanQuery = query.trim();
+    final requestGeneration = ++_requestGeneration;
+    _isFetchingMore = false;
+
     debugPrint(
       "============ OtherProfileConnectionsCubit.searchUsers ============",
     );
@@ -144,7 +162,7 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
         loadMoreStatus: OtherProfileConnectionsLoadMoreStatus.initial,
         users: [],
         clearMeta: true,
-        searchQuery: query,
+        searchQuery: cleanQuery,
         clearError: true,
       ),
     );
@@ -153,9 +171,16 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
       GetOtherProfileConnectionsParams(
         userId: userId,
         type: type,
-        search: query,
+        search: cleanQuery,
       ),
     );
+
+    if (_isDisposed ||
+        isClosed ||
+        requestGeneration != _requestGeneration ||
+        state.searchQuery != cleanQuery) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -195,6 +220,8 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
     required int userId,
     required OtherProfileConnectionsType type,
   }) async {
+    if (_isDisposed || isClosed) return;
+
     debugPrint(
       "============ OtherProfileConnectionsCubit.loadMoreUsers ============",
     );
@@ -218,6 +245,8 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
     }
 
     final cursor = state.nextCursor;
+    final requestedQuery = state.searchQuery;
+    final requestGeneration = _requestGeneration;
 
     if (cursor == null || cursor.trim().isEmpty) {
       debugPrint("✗ next cursor is empty");
@@ -238,10 +267,20 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
       GetOtherProfileConnectionsParams(
         userId: userId,
         type: type,
-        search: state.searchQuery,
+        search: requestedQuery,
         cursor: cursor,
       ),
     );
+
+    if (_isDisposed ||
+        isClosed ||
+        requestGeneration != _requestGeneration ||
+        state.searchQuery != requestedQuery) {
+      if (requestGeneration == _requestGeneration) {
+        _isFetchingMore = false;
+      }
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -258,7 +297,10 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
         );
       },
       (response) {
-        final mergedUsers = [...state.users, ...response.users];
+        final mergedUsers = <int, OtherProfileConnectionUserEntity>{
+          for (final user in state.users) user.userId: user,
+          for (final user in response.users) user.userId: user,
+        }.values.toList();
 
         debugPrint("✓ loadMoreUsers success");
         debugPrint("→ old users count: ${state.users.length}");
@@ -285,12 +327,14 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
   }
 
   Future<void> toggleFollowUser({required int userId}) async {
+    if (_isDisposed || isClosed) return;
+
     debugPrint(
       "============ OtherProfileConnectionsCubit.toggleFollowUser ============",
     );
     debugPrint("→ params: {userId: $userId}");
 
-    if (state.isFollowLoading && state.activeFollowUserId == userId) {
+    if (state.isFollowLoading) {
       debugPrint("✗ follow action already loading for this user");
       debugPrint("=================================================");
       return;
@@ -319,9 +363,9 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
         ? await unfollowCreatorUseCase(
             TestFollowActionParams(creatorId: userId),
           )
-        : await followCreatorUseCase(
-            TestFollowActionParams(creatorId: userId),
-          );
+        : await followCreatorUseCase(TestFollowActionParams(creatorId: userId));
+
+    if (_isDisposed || isClosed) return;
 
     result.fold(
       (failure) {
@@ -339,11 +383,26 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
         );
       },
       (_) {
+        final currentIndex = state.users.indexWhere(
+          (item) => item.userId == userId,
+        );
+
+        if (currentIndex == -1) {
+          emit(
+            state.copyWith(
+              followStatus: OtherProfileConnectionFollowStatus.success,
+              clearError: true,
+              clearActiveFollowUserId: true,
+            ),
+          );
+          return;
+        }
+
         final updatedUsers = List<OtherProfileConnectionUserEntity>.from(
           state.users,
         );
 
-        updatedUsers[index] = user.copyWith(
+        updatedUsers[currentIndex] = updatedUsers[currentIndex].copyWith(
           viewerIsFollowing: !currentIsFollowing,
         );
 
@@ -365,6 +424,8 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
   }
 
   void resetLoadMoreState() {
+    if (_isDisposed || isClosed) return;
+
     emit(
       state.copyWith(
         loadMoreStatus: OtherProfileConnectionsLoadMoreStatus.initial,
@@ -374,6 +435,8 @@ class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
   }
 
   void resetFollowState() {
+    if (_isDisposed || isClosed) return;
+
     emit(
       state.copyWith(
         followStatus: OtherProfileConnectionFollowStatus.initial,

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_overview_entity.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/content_tab/other_profile_content_tab.dart';
@@ -96,9 +99,6 @@ class _TestsTabBlocContentState extends State<_TestsTabBlocContent> {
           previous.errorMessage != current.errorMessage,
       builder: (context, state) {
         // 1. تمرير حالة التحميل (Loading) للتاب لعرض المؤشر أو الـ Shimmer الخاص به
-        final bool isLoading = state.isGetTestsLoading;
-        
-        
         if (state.isGetTestsFailure) {
           return Center(
             child: Padding(
@@ -129,6 +129,13 @@ class _TestsTabBlocContentState extends State<_TestsTabBlocContent> {
           selectedFilter: state.selectedTestsFilter,
           isLoading: state.isGetTestsLoading,
           isLoadingMore: state.isGetMoreTestsLoading,
+          hasLoadMoreError: state.isGetMoreTestsFailure,
+          loadMoreErrorMessage: state.errorMessage,
+          onRetryLoadMore: () {
+            context.read<OtherProfileCubit>().loadMoreOtherProfileTests(
+              userId: widget.userId,
+            );
+          },
           tests: state.tests,
           onFilterSelected: (filter) {
             context.read<OtherProfileCubit>().changeSelectedTestsFilter(
@@ -174,8 +181,6 @@ class _FoldersTabBlocContentState extends State<_FoldersTabBlocContent> {
           previous.foldersResponse != current.foldersResponse ||
           previous.errorMessage != current.errorMessage,
       builder: (context, state) {
-        final isLoading = state.isGetFoldersLoading;
-
         if (state.isGetFoldersFailure) {
           return Center(
             child: Padding(
@@ -205,6 +210,8 @@ class _FoldersTabBlocContentState extends State<_FoldersTabBlocContent> {
           folders: state.profileFolders,
           isLoading: state.isGetFoldersLoading,
           isLoadingMore: state.isGetMoreFoldersLoading,
+          hasLoadMoreError: state.isGetMoreFoldersFailure,
+          loadMoreErrorMessage: state.errorMessage,
           //shimmerLoader: const Center(child: CircularProgressIndicator()),
           onSaveTap: (id) {
             // context.read<OtherProfileCubit>().toggleFolderSaveLocally(
@@ -297,6 +304,8 @@ class _ContentTabBlocContentState extends State<_ContentTabBlocContent> {
           contents: state.profileContents,
           isLoading: state.isGetContentLoading,
           isLoadingMore: state.isGetMoreContentLoading,
+          hasLoadMoreError: state.isGetMoreContentFailure,
+          loadMoreErrorMessage: state.errorMessage,
           onFilterSelected: (filter) {
             context.read<OtherProfileCubit>().changeSelectedContentFilter(
               filter,
@@ -310,6 +319,20 @@ class _ContentTabBlocContentState extends State<_ContentTabBlocContent> {
             );
           },
           onLikeTap: (contentId) {},
+          onContentTap: (contentId) {
+            context.pushNamed(
+              AppRouterName.otherContentDetails,
+              extra: ContentDetailsRouteArgs(
+                contentId: contentId,
+                isMyContent: false,
+              ),
+            );
+          },
+          onRetryLoadMore: () {
+            context.read<OtherProfileCubit>().loadMoreOtherProfileContent(
+              userId: widget.userId,
+            );
+          },
         );
       },
     );

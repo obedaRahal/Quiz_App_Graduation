@@ -59,15 +59,6 @@ class _MyProfileViewState extends State<MyProfileView> {
         body: SafeArea(
           child: Column(
             children: [
-              // TopPageHeader(
-              //   title: 'الملف الشخصي',
-              //   onBack: () => safeBackToHome(context),
-              //   icon: Icons.settings_outlined,
-              //   onIconTap: () {
-              //     debugPrint('settings');
-              //     context.pushNamed(AppRouterName.settings);
-              //   },
-              // ),
               BlocBuilder<MyProfileCubit, MyProfileState>(
                 buildWhen: (previous, current) {
                   return previous.profile != current.profile;
@@ -104,17 +95,6 @@ class _MyProfileViewState extends State<MyProfileView> {
                 },
               ),
 
-              // زر تبديل الثيم التجريبي أزيل من واجهة بروفايلي.
-              // CustomButtonWidget(
-              //   onTap: () {
-              //     debugPrint("change mode ");
-              //     context.read<ThemeCubit>().toggleTheme();
-              //   },
-              //   child: ThemedAppImage(
-              //     darkPath: AppImage.logoDark,
-              //     lightPath: AppImage.logoLight,
-              //   ),
-              // ),
               Expanded(child: MyProfileBody(userId: widget.userId)),
 
               BlocBuilder<MyProfileCubit, MyProfileState>(

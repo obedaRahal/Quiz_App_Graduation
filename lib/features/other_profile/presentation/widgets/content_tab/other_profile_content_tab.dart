@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
@@ -7,14 +6,19 @@ import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_
 import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/other_profile_content_card_shimmer.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/content_tab/other_profile_content_card.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/content_tab/other_profile_content_filter_section.dart';
+
 class OtherProfileContentTab extends StatelessWidget {
   final OtherProfileContentFilter selectedFilter;
   final ValueChanged<OtherProfileContentFilter> onFilterSelected;
   final List<OtherProfileContentItemEntity> contents;
   final bool isLoading;
   final bool isLoadingMore;
+  final bool hasLoadMoreError;
+  final String? loadMoreErrorMessage;
   final void Function(int contentId) onSaveTap;
   final void Function(int contentId) onLikeTap;
+  final void Function(int contentId) onContentTap;
+  final VoidCallback onRetryLoadMore;
   final Widget? shimmerLoader;
 
   const OtherProfileContentTab({
@@ -24,8 +28,12 @@ class OtherProfileContentTab extends StatelessWidget {
     required this.contents,
     required this.isLoading,
     required this.isLoadingMore,
+    required this.hasLoadMoreError,
+    required this.loadMoreErrorMessage,
     required this.onSaveTap,
     required this.onLikeTap,
+    required this.onContentTap,
+    required this.onRetryLoadMore,
     this.shimmerLoader,
   });
 
@@ -63,6 +71,7 @@ class OtherProfileContentTab extends StatelessWidget {
                       padding: EdgeInsets.only(bottom: SizeConfig.h(0.012)),
                       child: OtherProfileContentCard(
                         content: content,
+                        onContentTap: () => onContentTap(content.id),
                         onSaveTap: () => onSaveTap(content.id),
                         onLikeTap: () => onLikeTap(content.id),
                       ),
@@ -76,6 +85,24 @@ class OtherProfileContentTab extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
                   child: const Center(child: OtherProfileContentCardShimmer()),
+                )
+              else if (hasLoadMoreError)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
+                  child: Column(
+                    children: [
+                      Text(
+                        loadMoreErrorMessage ?? 'تعذر تحميل المزيد من المحتوى',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton(
+                        onPressed: onRetryLoadMore,
+                        child: const Text('إعادة المحاولة'),
+                      ),
+                    ],
+                  ),
                 ),
             ],
           ),

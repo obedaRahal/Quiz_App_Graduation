@@ -60,6 +60,28 @@ class SharedProfileRedirectView extends StatelessWidget {
             }
           },
           builder: (context, state) {
+            if (state.isReceiveFailure) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomTextWidget(
+                        state.errorMessage ?? "رابط الملف الشخصي غير صالح",
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: () => context.go(AppRouterPath.mainLayout),
+                        child: const Text('العودة إلى الرئيسية'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
             return Center(
               child: state.isReceiveLoading
                   ? const CircularProgressIndicator()

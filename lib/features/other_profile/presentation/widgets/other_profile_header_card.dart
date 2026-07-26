@@ -30,13 +30,7 @@ class OtherProfileHeaderCard extends StatelessWidget {
       width: double.infinity,
       backgroundColor: appColors.whiteToblack,
       borderRadius: BorderRadius.circular(14),
-      // boxShadow: [
-      //   BoxShadow(
-      //     color: AppPalette.greyBorderCart.withOpacity(0.7),
-      //     blurRadius: 5,
-      //     offset: const Offset(0, 2),
-      //   ),
-      // ],
+
       child: Column(
         children: [
           _OtherProfileCoverAndAvatar(
@@ -57,11 +51,6 @@ class OtherProfileHeaderCard extends StatelessWidget {
 
                 SizedBox(height: SizeConfig.h(0.004)),
 
-                // _OtherProfileStatsText(
-                //   testsCount: profile.testsCount,
-                //   listsCount: profile.followingCount,
-                //   followersCount: profile.followersCount,
-                // ),
                 Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
                   spacing: 6,
@@ -101,9 +90,77 @@ class OtherProfileHeaderCard extends StatelessWidget {
   }
 }
 
+// class _OtherProfileCoverAndAvatar extends StatelessWidget {
+//   final String avatarUrl;
+//   final String coverUrl;
+
+//   const _OtherProfileCoverAndAvatar({
+//     required this.avatarUrl,
+//     required this.coverUrl,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//         final appColors = context.appColors;
+
+//     return SizedBox(
+//       height: SizeConfig.h(0.16),
+//       child: Stack(
+//         clipBehavior: Clip.none,
+//         children: [
+//           Positioned.fill(
+//             child: ClipRRect(
+//               borderRadius: const BorderRadius.vertical(
+//                 top: Radius.circular(14),
+//                 bottom: Radius.circular(14),
+//               ),
+//               child:
+//                   // coverUrl.trim().isEmpty
+//                   //     ? CustomPaint(painter: _OtherProfileCoverPainter())
+//                   //     :
+//                   CustomAppImage(
+//                     width: double.infinity,
+//                     fit: BoxFit.cover,
+//                     path: coverUrl,
+//                   ),
+//             ),
+//           ),
+
+//           Positioned(
+//             right: SizeConfig.w(0.04),
+//             bottom: -SizeConfig.w(0.095),
+//             child: Container(
+//               width: SizeConfig.w(0.19),
+//               height: SizeConfig.w(0.19),
+//               decoration: BoxDecoration(
+//                 shape: BoxShape.circle,
+//                 color: AppPalette.grey,
+//                 border: Border.all(color: appColors.whiteToblack, width: 3),
+//               ),
+//               child: ClipOval(
+//                 child: avatarUrl.trim().isEmpty
+//                     ? Icon(
+//                         Icons.person,
+//                         size: SizeConfig.w(0.09),
+//                         color: AppPalette.greyMedium,
+//                       )
+//                     : CustomAppImage(
+//                         width: double.infinity,
+//                         fit: BoxFit.cover,
+//                         path: avatarUrl,
+//                       ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
 class _OtherProfileCoverAndAvatar extends StatelessWidget {
   final String avatarUrl;
-  final String coverUrl;
+  final String? coverUrl;
 
   const _OtherProfileCoverAndAvatar({
     required this.avatarUrl,
@@ -112,7 +169,9 @@ class _OtherProfileCoverAndAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        final appColors = context.appColors;
+    final appColors = context.appColors;
+
+    final hasCoverImage = coverUrl != null && coverUrl!.trim().isNotEmpty;
 
     return SizedBox(
       height: SizeConfig.h(0.16),
@@ -125,15 +184,39 @@ class _OtherProfileCoverAndAvatar extends StatelessWidget {
                 top: Radius.circular(14),
                 bottom: Radius.circular(14),
               ),
-              child:
-                  // coverUrl.trim().isEmpty
-                  //     ? CustomPaint(painter: _OtherProfileCoverPainter())
-                  //     :
-                  CustomAppImage(
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    path: coverUrl,
-                  ),
+              child: hasCoverImage
+                  ? CustomAppImage(
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      path: coverUrl!,
+                    )
+                  : Container(
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        color: appColors.greyToGreyMediumDark,
+                        border: Border.all(
+                          color: appColors.borderFieldColorNLightToborderFieldColorNDark,
+                          width: 3,
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.w(0.04),
+                      ),
+                      child: CustomTextWidget(
+                        'لا توجد صورة غلاف للمستخدم',
+                        color: appColors.blackToGrey2Dark,
+                        fontFamily: AppFont.elMessiriRegular,
+                        fontSize: SizeConfig.text(
+                          0.032,
+                        ).clamp(12.0, 15.0).toDouble(),
+                        fontWeight: FontWeight.w600,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
             ),
           ),
 
@@ -143,6 +226,7 @@ class _OtherProfileCoverAndAvatar extends StatelessWidget {
             child: Container(
               width: SizeConfig.w(0.19),
               height: SizeConfig.w(0.19),
+
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppPalette.grey,
@@ -244,14 +328,15 @@ class _OtherProfileFollowButton extends StatelessWidget {
       childVerticalPad: SizeConfig.h(0.0055),
       child: CustomTextWidget(
         isFollowing ? 'إلغاء المتابعة' : 'متابعة',
-        color: isFollowing ? appColors.blackToGrey2Dark :appColors.whiteToblack,
+        color: isFollowing
+            ? appColors.blackToGrey2Dark
+            : appColors.whiteToblack,
         fontFamily: AppFont.elMessiriBold,
         fontSize: SizeConfig.text(0.026),
       ),
     );
   }
 }
-
 
 class _PublisherStat extends StatelessWidget {
   final String label;

@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_connections/other_profile_connections_cubit.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_connections/other_profile_connections_state.dart';
 
-void showOtherProfileConnectionsBottomSheet({
+Future<void> showOtherProfileConnectionsBottomSheet({
   required BuildContext context,
   required int userId,
   required OtherProfileConnectionsCubit cubit,
@@ -22,7 +25,7 @@ void showOtherProfileConnectionsBottomSheet({
   required String title,
   String searchHint = 'ابحث عن مستخدم',
 }) {
-  showModalBottomSheet(
+  return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
@@ -38,7 +41,11 @@ void showOtherProfileConnectionsBottomSheet({
         ),
       );
     },
-  );
+  ).whenComplete(() async {
+    if (!cubit.isClosed) {
+      await cubit.close();
+    }
+  });
 }
 
 class OtherProfileConnectionsBottomSheet extends StatelessWidget {
@@ -60,22 +67,13 @@ class OtherProfileConnectionsBottomSheet extends StatelessWidget {
     final appColors = context.appColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return BlocConsumer<OtherProfileConnectionsCubit, OtherProfileConnectionsState>(
+    return BlocConsumer<
+      OtherProfileConnectionsCubit,
+      OtherProfileConnectionsState
+    >(
       listenWhen: (previous, current) =>
-          previous.loadMoreStatus != current.loadMoreStatus ||
           previous.followStatus != current.followStatus,
       listener: (context, state) {
-        if (state.isLoadMoreFailure) {
-          showValidationTopSnackBar(
-            context,
-            title: state.errorTitle ?? 'خطأ',
-            message: state.errorMessage ?? 'تعذر تحميل المزيد من المستخدمين',
-            type: AppValidationSnackBarType.error,
-          );
-
-          context.read<OtherProfileConnectionsCubit>().resetLoadMoreState();
-        }
-
         if (state.isFollowFailure) {
           showValidationTopSnackBar(
             context,
@@ -111,7 +109,7 @@ class OtherProfileConnectionsBottomSheet extends StatelessWidget {
                       width: SizeConfig.w(0.12),
                       height: 5,
                       decoration: BoxDecoration(
-                        color: AppPalette.greyMedium.withOpacity(0.45),
+                        color: AppPalette.greyMedium.withValues(alpha: 0.45),
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
@@ -171,7 +169,6 @@ class OtherProfileConnectionsBottomSheet extends StatelessWidget {
   }
 }
 
-
 class _ConnectionsSearchField extends StatelessWidget {
   final String hintText;
   final ValueChanged<String> onChanged;
@@ -206,7 +203,9 @@ class _ConnectionsSearchField extends StatelessWidget {
             fontSize: SizeConfig.text(0.036),
           ),
           filled: true,
-          fillColor: isDark ? Colors.white.withOpacity(0.05) : AppPalette.grey,
+          fillColor: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : AppPalette.grey,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: BorderSide(
@@ -242,7 +241,10 @@ class _ConnectionsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OtherProfileConnectionsCubit, OtherProfileConnectionsState>(
+    return BlocBuilder<
+      OtherProfileConnectionsCubit,
+      OtherProfileConnectionsState
+    >(
       buildWhen: (previous, current) =>
           previous.status != current.status ||
           previous.loadMoreStatus != current.loadMoreStatus ||
@@ -259,11 +261,33 @@ class _ConnectionsContent extends StatelessWidget {
           return Center(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.08)),
-              child: CustomTextWidget(
-                state.errorMessage ?? 'تعذر جلب المستخدمين',
-                color: AppPalette.red,
-                textAlign: TextAlign.center,
-                fontSize: SizeConfig.text(0.034),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomTextWidget(
+                    state.errorMessage ?? 'تعذر جلب المستخدمين',
+                    color: AppPalette.red,
+                    textAlign: TextAlign.center,
+                    fontSize: SizeConfig.text(0.034),
+                  ),
+                  SizedBox(height: SizeConfig.h(0.012)),
+                  OutlinedButton(
+                    onPressed: () {
+                      final cubit = context
+                          .read<OtherProfileConnectionsCubit>();
+                      if (state.hasSearchQuery) {
+                        cubit.searchUsers(
+                          userId: userId,
+                          type: type,
+                          query: state.searchQuery,
+                        );
+                      } else {
+                        cubit.getInitialUsers(userId: userId, type: type);
+                      }
+                    },
+                    child: const Text('إعادة المحاولة'),
+                  ),
+                ],
               ),
             ),
           );
@@ -288,10 +312,36 @@ class _ConnectionsContent extends StatelessWidget {
             horizontal: SizeConfig.w(0.045),
             vertical: SizeConfig.h(0.018),
           ),
-          itemCount: state.users.length + (state.isLoadMoreLoading ? 1 : 0),
+          itemCount:
+              state.users.length +
+              (state.isLoadMoreLoading || state.isLoadMoreFailure ? 1 : 0),
           separatorBuilder: (_, __) => SizedBox(height: SizeConfig.h(0.014)),
           itemBuilder: (context, index) {
             if (index >= state.users.length) {
+              if (state.isLoadMoreFailure) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.015)),
+                  child: Column(
+                    children: [
+                      CustomTextWidget(
+                        state.errorMessage ?? 'تعذر تحميل المزيد من المستخدمين',
+                        color: AppPalette.red,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton(
+                        onPressed: () {
+                          context
+                              .read<OtherProfileConnectionsCubit>()
+                              .loadMoreUsers(userId: userId, type: type);
+                        },
+                        child: const Text('إعادة المحاولة'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               return Padding(
                 padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.015)),
                 child: const Center(child: CircularProgressIndicator()),
@@ -302,13 +352,17 @@ class _ConnectionsContent extends StatelessWidget {
                 index >= state.users.length - 4 &&
                 state.hasMorePages &&
                 !state.isLoadMoreLoading &&
+                !state.isLoadMoreFailure &&
                 !state.isInitialLoading;
 
             if (shouldLoadMore) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+
                 final cubit = context.read<OtherProfileConnectionsCubit>();
 
-                if (!cubit.state.isLoadMoreLoading &&
+                if (!cubit.isClosed &&
+                    !cubit.state.isLoadMoreLoading &&
                     cubit.state.hasMorePages) {
                   cubit.loadMoreUsers(userId: userId, type: type);
                 }
@@ -325,13 +379,20 @@ class _ConnectionsContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 OtherProfileConnectionUserTile(
-
                   userName: user.name,
                   avatarUrl: user.avatarUrl,
                   educationLevel: user.educationLevel,
                   isVerified: user.isAcademicallyVerified,
                   isFollowing: user.viewerIsFollowing,
                   isFollowLoading: isThisFollowLoading,
+                  onUserTap: () {
+                    final router = GoRouter.of(context);
+                    Navigator.of(context).pop();
+                    router.pushNamed(
+                      AppRouterName.otherProfile,
+                      extra: OtherProfileRouteArgs(userId: user.userId),
+                    );
+                  },
                   onFollowTap: () {
                     context
                         .read<OtherProfileConnectionsCubit>()
@@ -348,8 +409,6 @@ class _ConnectionsContent extends StatelessWidget {
   }
 }
 
-
-
 class OtherProfileConnectionUserTile extends StatelessWidget {
   final String userName;
   final String avatarUrl;
@@ -357,6 +416,7 @@ class OtherProfileConnectionUserTile extends StatelessWidget {
   final bool isVerified;
   final bool isFollowing;
   final bool isFollowLoading;
+  final VoidCallback? onUserTap;
   final VoidCallback onFollowTap;
 
   const OtherProfileConnectionUserTile({
@@ -367,6 +427,7 @@ class OtherProfileConnectionUserTile extends StatelessWidget {
     required this.isVerified,
     required this.isFollowing,
     required this.isFollowLoading,
+    this.onUserTap,
     required this.onFollowTap,
   });
 
@@ -375,74 +436,80 @@ class OtherProfileConnectionUserTile extends StatelessWidget {
     final appColors = context.appColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.012)),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.04) : AppPalette.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        textDirection: TextDirection.ltr,
-        
-        children: [
-          _FollowButton(
-            isFollowing: isFollowing,
-            isLoading: isFollowLoading,
-            onTap: onFollowTap,
-          ),
+    return InkWell(
+      onTap: onUserTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.012)),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.04)
+              : AppPalette.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          textDirection: TextDirection.ltr,
 
-          SizedBox(width: SizeConfig.w(0.03)),
+          children: [
+            _FollowButton(
+              isFollowing: isFollowing,
+              isLoading: isFollowLoading,
+              onTap: onFollowTap,
+            ),
 
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
+            SizedBox(width: SizeConfig.w(0.03)),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: CustomTextWidget(
+                          userName,
+                          color: appColors.blackToGrey2Dark,
+                          fontFamily: AppFont.elMessiriSemiBold,
+                          fontSize: SizeConfig.text(0.034),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      if (isVerified) ...[
+                        SizedBox(width: SizeConfig.w(0.01)),
+                        Icon(
+                          Icons.verified_rounded,
+                          color: appColors.primaryToPrimaryDark,
+                          size: SizeConfig.text(0.04),
+                        ),
+                      ],
+                    ],
+                  ),
+                  SizedBox(height: SizeConfig.h(0.004)),
+                  if (educationLevel.isNotEmpty)
+                    CustomBackgroundWithChild(
+                      childHorizontalPad: SizeConfig.w(0.015),
+                      childVerticalPad: SizeConfig.h(0.005),
+                      borderRadius: BorderRadius.circular(5),
+                      backgroundColor: appColors.primarySoftTogreyLightDark,
                       child: CustomTextWidget(
-                        userName,
-                        color: appColors.blackToGrey2Dark,
-                        fontFamily: AppFont.elMessiriSemiBold,
-                        fontSize: SizeConfig.text(0.034),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        educationLevel,
+                        color: appColors.primaryToPrimaryDark,
+                        fontFamily: AppFont.elMessiriRegular,
+                        fontSize: SizeConfig.text(0.025),
                         textAlign: TextAlign.right,
                       ),
                     ),
-                    if (isVerified) ...[
-                      SizedBox(width: SizeConfig.w(0.01)),
-                      Icon(
-                        Icons.verified_rounded,
-                        color: appColors.primaryToPrimaryDark,
-                        size: SizeConfig.text(0.04),
-                      ),
-                    ],
-                  ],
-                ),
-                SizedBox(height: SizeConfig.h(0.004)),
-                if(educationLevel.isNotEmpty)
-                CustomBackgroundWithChild(
-                  childHorizontalPad: SizeConfig.w(0.015),
-                  childVerticalPad: SizeConfig.h(0.005),
-                  borderRadius: BorderRadius.circular(5),
-                  backgroundColor: appColors.primarySoftTogreyLightDark,
-                  child: CustomTextWidget(
-                    educationLevel,
-                    color: appColors.primaryToPrimaryDark,
-                    fontFamily: AppFont.elMessiriRegular,
-                    fontSize: SizeConfig.text(0.025),
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          SizedBox(width: SizeConfig.w(0.03)),
+            SizedBox(width: SizeConfig.w(0.03)),
 
-          _UserAvatar(avatarUrl: avatarUrl),
-        ],
+            _UserAvatar(avatarUrl: avatarUrl),
+          ],
+        ),
       ),
     );
   }

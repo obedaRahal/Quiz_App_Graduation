@@ -122,20 +122,24 @@ class OtherProfileBasicInfoEntity {
 class OtherProfileReviewsEntity {
   final double averageRating;
   final int totalReviewsCount;
+  final int commentsCount;
   final List<OtherProfileRatingDistributionEntity> ratingDistribution;
 
   const OtherProfileReviewsEntity({
     required this.averageRating,
     required this.totalReviewsCount,
+    required this.commentsCount,
     required this.ratingDistribution,
   });
 }
 
 class OtherProfileRatingDistributionEntity {
+  final int stars;
   final int count;
-  final int percentage;
+  final double percentage;
 
   const OtherProfileRatingDistributionEntity({
+    required this.stars,
     required this.count,
     required this.percentage,
   });

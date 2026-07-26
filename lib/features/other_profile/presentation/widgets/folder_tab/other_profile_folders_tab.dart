@@ -9,6 +9,8 @@ class OtherProfileFoldersTab extends StatelessWidget {
   final List<OtherProfileFolderItemEntity> folders;
   final bool isLoading;
   final bool isLoadingMore;
+  final bool hasLoadMoreError;
+  final String? loadMoreErrorMessage;
   final Widget? shimmerLoader;
   final VoidCallback onLoadMore;
   final Function(int folderId) onSaveTap;
@@ -19,6 +21,8 @@ class OtherProfileFoldersTab extends StatelessWidget {
     required this.folders,
     required this.isLoading,
     required this.isLoadingMore,
+    required this.hasLoadMoreError,
+    required this.loadMoreErrorMessage,
     required this.onLoadMore,
     required this.onSaveTap,
     required this.onFolderTap,
@@ -33,7 +37,7 @@ class OtherProfileFoldersTab extends StatelessWidget {
         SizedBox(height: SizeConfig.h(0.018)),
 
         if (isLoading)
-          shimmerLoader ??   const MyProfileFoldersShimmerList()
+          shimmerLoader ?? const MyProfileFoldersShimmerList()
         else if (folders.isEmpty)
           Center(
             child: Padding(
@@ -66,6 +70,24 @@ class OtherProfileFoldersTab extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
                   child: const Center(child: MyProfileFolderCardShimmer()),
+                )
+              else if (hasLoadMoreError)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
+                  child: Column(
+                    children: [
+                      Text(
+                        loadMoreErrorMessage ?? 'تعذر تحميل المزيد من المجلدات',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton(
+                        onPressed: onLoadMore,
+                        child: const Text('إعادة المحاولة'),
+                      ),
+                    ],
+                  ),
                 ),
             ],
           ),

@@ -168,7 +168,7 @@ class _MyProfileTestsFilterDialogState
         textDirection: TextDirection.rtl,
         child: Container(
           width: SizeConfig.w(0.85),
-          height: SizeConfig.h(0.76),
+          height: SizeConfig.h(0.7),
           constraints: BoxConstraints(maxHeight: SizeConfig.h(0.86)),
           decoration: BoxDecoration(
             color: isDark ? AppPalette.black : AppPalette.white,
@@ -740,6 +740,7 @@ class _ApplyFilterButton extends StatelessWidget {
           ),
           child: CustomTextWidget(
             'تطبيق الفلتر',
+            fontSize: SizeConfig.text(0.04),
             color: isEnabled ? AppPalette.white : AppPalette.greyMedium,
           ),
         ),

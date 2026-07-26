@@ -7,6 +7,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folder_details_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folders_entity.dart';
+import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_tests_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_content_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folder_details_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/fetch_other_profile_folders_use_case.dart';
@@ -35,12 +36,15 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
   final FetchOtherProfileOverviewUseCase fetchOtherProfileOverviewUseCase;
   final FetchOtherProfileTestsUseCase fetchOtherProfileTestsUseCase;
   bool _isFetchingMoreTests = false;
+  int _testsRequestGeneration = 0;
 
   final FetchOtherProfileFoldersUseCase fetchOtherProfileFoldersUseCase;
   bool _isFetchingMoreFolders = false;
+  int _foldersRequestGeneration = 0;
 
   final FetchOtherProfileContentUseCase fetchOtherProfileContentUseCase;
   bool _isFetchingMoreContent = false;
+  int _contentRequestGeneration = 0;
 
   final FollowCreatorUseCase followCreatorUseCase;
   final UnfollowCreatorUseCase unfollowCreatorUseCase;
@@ -186,6 +190,7 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
       return;
     }
 
+    _testsRequestGeneration++;
     emit(state.copyWith(selectedTestsFilter: filter));
 
     debugPrint("✓ selected tests filter changed -> fetching data");
@@ -195,6 +200,10 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
   }
 
   Future<void> getOtherProfileTests({required int userId}) async {
+    final requestGeneration = ++_testsRequestGeneration;
+    final requestedFilter = state.selectedTestsFilter;
+    _isFetchingMoreTests = false;
+
     debugPrint(
       "============ OtherProfileCubit.getOtherProfileTests ============",
     );
@@ -215,10 +224,16 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     final result = await fetchOtherProfileTestsUseCase(
       FetchOtherProfileTestsParams(
         userId: userId,
-        tab: state.selectedTestsFilter.name,
+        tab: requestedFilter.name,
         cursor: null,
       ),
     );
+
+    if (isClosed ||
+        requestGeneration != _testsRequestGeneration ||
+        state.selectedTestsFilter != requestedFilter) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -277,6 +292,8 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     }
 
     final cursor = state.nextTestsCursor;
+    final requestedFilter = state.selectedTestsFilter;
+    final requestGeneration = _testsRequestGeneration;
 
     if (cursor == null || cursor.trim().isEmpty) {
       debugPrint("✗ next tests cursor is empty");
@@ -296,10 +313,19 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     final result = await fetchOtherProfileTestsUseCase(
       FetchOtherProfileTestsParams(
         userId: userId,
-        tab: state.selectedTestsFilter.name,
+        tab: requestedFilter.name,
         cursor: cursor,
       ),
     );
+
+    if (isClosed ||
+        requestGeneration != _testsRequestGeneration ||
+        state.selectedTestsFilter != requestedFilter) {
+      if (requestGeneration == _testsRequestGeneration) {
+        _isFetchingMoreTests = false;
+      }
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -316,7 +342,10 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
         );
       },
       (response) {
-        final mergedTests = [...state.tests, ...response.data];
+        final mergedTests = <int, OtherProfileTestItemEntity>{
+          for (final test in state.tests) test.id: test,
+          for (final test in response.data) test.id: test,
+        }.values.toList();
 
         debugPrint("✓ loadMoreOtherProfileTests success");
         debugPrint("→ old tests count: ${state.tests.length}");
@@ -357,6 +386,9 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
 
   ///////////////////////////// folders /////////////////////
   Future<void> getOtherProfileFolders({required int userId}) async {
+    final requestGeneration = ++_foldersRequestGeneration;
+    _isFetchingMoreFolders = false;
+
     debugPrint(
       "============ OtherProfileCubit.getOtherProfileFolders ============",
     );
@@ -374,6 +406,10 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     final result = await fetchOtherProfileFoldersUseCase(
       FetchOtherProfileFoldersParams(userId: userId, cursor: null),
     );
+
+    if (isClosed || requestGeneration != _foldersRequestGeneration) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -431,6 +467,7 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     }
 
     final cursor = state.nextFoldersCursor;
+    final requestGeneration = _foldersRequestGeneration;
 
     if (cursor == null || cursor.trim().isEmpty) {
       debugPrint("✗ next folders cursor is empty");
@@ -451,6 +488,13 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
       FetchOtherProfileFoldersParams(userId: userId, cursor: cursor),
     );
 
+    if (isClosed || requestGeneration != _foldersRequestGeneration) {
+      if (requestGeneration == _foldersRequestGeneration) {
+        _isFetchingMoreFolders = false;
+      }
+      return;
+    }
+
     result.fold(
       (failure) {
         debugPrint("✗ loadMoreOtherProfileFolders failure");
@@ -467,11 +511,15 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
       },
       (response) {
         final oldFolders = state.foldersResponse?.data ?? [];
+        final mergedFolders = <int, OtherProfileFolderItemEntity>{
+          for (final folder in oldFolders) folder.id: folder,
+          for (final folder in response.data) folder.id: folder,
+        }.values.toList();
 
         final mergedResponse = OtherProfileFoldersResponseEntity(
           success: response.success,
           message: response.message,
-          data: [...oldFolders, ...response.data],
+          data: mergedFolders,
           meta: response.meta,
           statusCode: response.statusCode,
         );
@@ -516,6 +564,7 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
       return;
     }
 
+    _contentRequestGeneration++;
     emit(state.copyWith(selectedContentFilter: filter));
 
     debugPrint("✓ selected content filter changed -> fetching data");
@@ -525,6 +574,10 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
   }
 
   Future<void> getOtherProfileContent({required int userId}) async {
+    final requestGeneration = ++_contentRequestGeneration;
+    final requestedFilter = state.selectedContentFilter;
+    _isFetchingMoreContent = false;
+
     debugPrint(
       "============ OtherProfileCubit.getOtherProfileContent ============",
     );
@@ -544,10 +597,16 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     final result = await fetchOtherProfileContentUseCase(
       FetchOtherProfileContentParams(
         userId: userId,
-        tab: state.selectedContentFilter.name,
+        tab: requestedFilter.name,
         cursor: null,
       ),
     );
+
+    if (isClosed ||
+        requestGeneration != _contentRequestGeneration ||
+        state.selectedContentFilter != requestedFilter) {
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -605,6 +664,8 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     }
 
     final cursor = state.nextContentCursor;
+    final requestedFilter = state.selectedContentFilter;
+    final requestGeneration = _contentRequestGeneration;
 
     if (cursor == null || cursor.trim().isEmpty) {
       debugPrint("✗ next content cursor is empty");
@@ -624,10 +685,19 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     final result = await fetchOtherProfileContentUseCase(
       FetchOtherProfileContentParams(
         userId: userId,
-        tab: state.selectedContentFilter.name,
+        tab: requestedFilter.name,
         cursor: cursor,
       ),
     );
+
+    if (isClosed ||
+        requestGeneration != _contentRequestGeneration ||
+        state.selectedContentFilter != requestedFilter) {
+      if (requestGeneration == _contentRequestGeneration) {
+        _isFetchingMoreContent = false;
+      }
+      return;
+    }
 
     result.fold(
       (failure) {
@@ -645,11 +715,15 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
       },
       (response) {
         final oldContent = state.contentResponse?.data ?? [];
+        final mergedContent = <int, OtherProfileContentItemEntity>{
+          for (final content in oldContent) content.id: content,
+          for (final content in response.data) content.id: content,
+        }.values.toList();
 
         final mergedResponse = OtherProfileContentResponseEntity(
           success: response.success,
           message: response.message,
-          data: [...oldContent, ...response.data],
+          data: mergedContent,
           meta: response.meta,
           statusCode: response.statusCode,
         );
@@ -783,8 +857,7 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     );
     debugPrint("→ params: {folderId: $folderId}");
 
-    if (state.isFolderBookmarkLoading &&
-        state.activeBookmarkFolderId == folderId) {
+    if (state.isFolderBookmarkLoading) {
       debugPrint("✗ bookmark action already loading for this folder");
       debugPrint("=================================================");
       return;
@@ -792,8 +865,7 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
 
     final foldersResponse = state.foldersResponse;
     if (foldersResponse == null) {
-      debugPrint("✗ foldersResponse is null");
-      debugPrint("=================================================");
+      await _toggleFolderDetailsBookmark(folderId: folderId);
       return;
     }
 
@@ -802,8 +874,7 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     );
 
     if (index == -1) {
-      debugPrint("✗ folder not found");
-      debugPrint("=================================================");
+      await _toggleFolderDetailsBookmark(folderId: folderId);
       return;
     }
 
@@ -829,6 +900,8 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
             FolderBookmarkActionParams(folderId: folderId),
           );
 
+    if (isClosed) return;
+
     result.fold(
       (failure) {
         debugPrint("✗ toggleFolderBookmark failure");
@@ -845,20 +918,46 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
         );
       },
       (response) {
+        final currentFoldersResponse = state.foldersResponse;
+        if (currentFoldersResponse == null) {
+          emit(
+            state.copyWith(
+              folderBookmarkActionStatus: FolderBookmarkActionStatus.success,
+              clearError: true,
+              clearActiveBookmarkFolderId: true,
+            ),
+          );
+          return;
+        }
+
+        final currentIndex = currentFoldersResponse.data.indexWhere(
+          (item) => item.id == folderId,
+        );
+        if (currentIndex == -1) {
+          emit(
+            state.copyWith(
+              folderBookmarkActionStatus: FolderBookmarkActionStatus.success,
+              clearError: true,
+              clearActiveBookmarkFolderId: true,
+            ),
+          );
+          return;
+        }
+
         final updatedFolders = List<OtherProfileFolderItemEntity>.from(
-          foldersResponse.data,
+          currentFoldersResponse.data,
         );
 
-        updatedFolders[index] = folder.copyWith(
+        updatedFolders[currentIndex] = updatedFolders[currentIndex].copyWith(
           viewerHasBookmarked: newIsBookmarked,
         );
 
         final updatedResponse = OtherProfileFoldersResponseEntity(
-          success: foldersResponse.success,
-          message: foldersResponse.message,
+          success: currentFoldersResponse.success,
+          message: currentFoldersResponse.message,
           data: updatedFolders,
-          meta: foldersResponse.meta,
-          statusCode: foldersResponse.statusCode,
+          meta: currentFoldersResponse.meta,
+          statusCode: currentFoldersResponse.statusCode,
         );
 
         OtherProfileFolderDetailsEntity? updatedFolderDetails =
@@ -898,6 +997,88 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     debugPrint("=================================================");
   }
 
+  Future<void> _toggleFolderDetailsBookmark({required int folderId}) async {
+    final details = state.folderDetails;
+    if (details == null || details.data.folder.id != folderId) {
+      emit(
+        state.copyWith(
+          folderBookmarkActionStatus: FolderBookmarkActionStatus.failure,
+          errorTitle: "خطأ",
+          errorMessage: "تعذر تحديد حالة حفظ القائمة",
+          clearActiveBookmarkFolderId: true,
+        ),
+      );
+      return;
+    }
+
+    final currentIsBookmarked = details.data.folder.viewerHasBookmarked;
+    final newIsBookmarked = !currentIsBookmarked;
+
+    emit(
+      state.copyWith(
+        folderBookmarkActionStatus: FolderBookmarkActionStatus.loading,
+        activeBookmarkFolderId: folderId,
+        clearError: true,
+      ),
+    );
+
+    final result = currentIsBookmarked
+        ? await removeFolderBookmarkUseCase(
+            FolderBookmarkActionParams(folderId: folderId),
+          )
+        : await saveFolderBookmarkUseCase(
+            FolderBookmarkActionParams(folderId: folderId),
+          );
+
+    if (isClosed) return;
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            folderBookmarkActionStatus: FolderBookmarkActionStatus.failure,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+            clearActiveBookmarkFolderId: true,
+          ),
+        );
+      },
+      (_) {
+        final currentDetails = state.folderDetails;
+        if (currentDetails == null ||
+            currentDetails.data.folder.id != folderId) {
+          emit(
+            state.copyWith(
+              folderBookmarkActionStatus: FolderBookmarkActionStatus.success,
+              clearActiveBookmarkFolderId: true,
+              clearError: true,
+            ),
+          );
+          return;
+        }
+
+        emit(
+          state.copyWith(
+            folderBookmarkActionStatus: FolderBookmarkActionStatus.success,
+            folderDetails: OtherProfileFolderDetailsEntity(
+              success: currentDetails.success,
+              title: currentDetails.title,
+              statusCode: currentDetails.statusCode,
+              data: OtherProfileFolderDetailsDataEntity(
+                folder: currentDetails.data.folder.copyWith(
+                  viewerHasBookmarked: newIsBookmarked,
+                ),
+                items: currentDetails.data.items,
+              ),
+            ),
+            clearActiveBookmarkFolderId: true,
+            clearError: true,
+          ),
+        );
+      },
+    );
+  }
+
   void resetFolderBookmarkActionState() {
     emit(
       state.copyWith(
@@ -914,8 +1095,7 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
     );
     debugPrint("→ params: {contentId: $contentId}");
 
-    if (state.isContentBookmarkLoading &&
-        state.activeBookmarkContentId == contentId) {
+    if (state.isContentBookmarkLoading) {
       debugPrint("✗ bookmark action already loading for this content");
       debugPrint("=================================================");
       return;
@@ -958,6 +1138,8 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
             ContentBookmarkActionParams(contentId: contentId),
           );
 
+    if (isClosed) return;
+
     result.fold(
       (failure) {
         debugPrint("✗ toggleContentBookmark failure");
@@ -974,20 +1156,46 @@ class OtherProfileCubit extends Cubit<OtherProfileState> {
         );
       },
       (response) {
+        final currentContentResponse = state.contentResponse;
+        if (currentContentResponse == null) {
+          emit(
+            state.copyWith(
+              contentBookmarkActionStatus: ContentBookmarkActionStatus.success,
+              clearError: true,
+              clearActiveBookmarkContentId: true,
+            ),
+          );
+          return;
+        }
+
+        final currentIndex = currentContentResponse.data.indexWhere(
+          (item) => item.id == contentId,
+        );
+        if (currentIndex == -1) {
+          emit(
+            state.copyWith(
+              contentBookmarkActionStatus: ContentBookmarkActionStatus.success,
+              clearError: true,
+              clearActiveBookmarkContentId: true,
+            ),
+          );
+          return;
+        }
+
         final updatedContents = List<OtherProfileContentItemEntity>.from(
-          contentResponse.data,
+          currentContentResponse.data,
         );
 
-        updatedContents[index] = content.copyWith(
+        updatedContents[currentIndex] = updatedContents[currentIndex].copyWith(
           viewerHasBookmarked: !currentIsBookmarked,
         );
 
         final updatedResponse = OtherProfileContentResponseEntity(
-          success: contentResponse.success,
-          message: contentResponse.message,
+          success: currentContentResponse.success,
+          message: currentContentResponse.message,
           data: updatedContents,
-          meta: contentResponse.meta,
-          statusCode: contentResponse.statusCode,
+          meta: currentContentResponse.meta,
+          statusCode: currentContentResponse.statusCode,
         );
 
         debugPrint("✓ toggleContentBookmark success");
