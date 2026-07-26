@@ -77,15 +77,18 @@ class _BottomActionButton extends StatelessWidget {
       backgroundColor: backgroundColor,
       borderRadius: 6,
       childHorizontalPad: SizeConfig.w(0.025),
-      childVerticalPad: SizeConfig.w(0.013),
+      childVerticalPad: SizeConfig.h(0.01),
       onTap: onTap,
-      child: CustomTextWidget(
-        title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        color: context.appColors.whiteToblack,
-        fontFamily: AppFont.elMessiriSemiBold,
-        fontSize: SizeConfig.text(0.03),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.004)),
+        child: CustomTextWidget(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          color: context.appColors.whiteToblack,
+          fontFamily: AppFont.elMessiriSemiBold,
+          fontSize: SizeConfig.text(0.03),
+        ),
       ),
     );
   }

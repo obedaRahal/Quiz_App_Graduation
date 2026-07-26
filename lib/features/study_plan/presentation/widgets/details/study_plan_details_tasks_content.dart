@@ -91,45 +91,6 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
                 ),
               )
             else ...[
-              // StudyPlanTasksGroupSection(
-              //   title: 'مهام قديمة',
-              //   count: tasks.old.count,
-              //   tasks: state.filteredOldTasks,
-              //   isExpanded: state.isOldExpanded,
-              //   onToggle: context.read<StudyPlanDetailsCubit>().toggleOldTasks,
-              // ),
-
-              // SizedBox(height: SizeConfig.h(0.016)),
-
-              // CustomDivider(height: 1, thickness: 1),
-
-              // SizedBox(height: SizeConfig.h(0.016)),
-
-              // StudyPlanTasksGroupSection(
-              //   title: 'مهام قادمة',
-              //   count: tasks.upcoming.count,
-              //   tasks: state.filteredUpcomingTasks,
-              //   isExpanded: state.isUpcomingExpanded,
-              //   onToggle: context
-              //       .read<StudyPlanDetailsCubit>()
-              //       .toggleUpcomingTasks,
-              // ),
-
-              // SizedBox(height: SizeConfig.h(0.016)),
-
-              // CustomDivider(height: 1, thickness: 1),
-
-              // SizedBox(height: SizeConfig.h(0.016)),
-
-              // StudyPlanTasksGroupSection(
-              //   title: 'مهام مكتملة',
-              //   count: tasks.completed.count,
-              //   tasks: state.filteredCompletedTasks,
-              //   isExpanded: state.isCompletedExpanded,
-              //   onToggle: context
-              //       .read<StudyPlanDetailsCubit>()
-              //       .toggleCompletedTasks,
-              // ),
               StudyPlanTasksGroupSection(
                 title: 'مهام قديمة',
                 count: tasks.old.count,

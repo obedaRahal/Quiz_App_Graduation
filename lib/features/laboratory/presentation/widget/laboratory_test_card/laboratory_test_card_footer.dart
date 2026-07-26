@@ -31,7 +31,7 @@ class LaboratoryTestCardFooter extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: SizeConfig.w(0.03),
-        vertical: SizeConfig.h(0.006),
+        //vertical: SizeConfig.h(0.006),
       ),
       child: Row(
         children: [

@@ -85,9 +85,8 @@ class _StudyPlansFilterChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 220),
-          constraints: BoxConstraints(minWidth: SizeConfig.w(0.22)),
           padding: EdgeInsets.symmetric(
-            horizontal: SizeConfig.w(0.035),
+            horizontal: SizeConfig.w(0.05),
             vertical: SizeConfig.h(0.006),
           ),
           decoration: BoxDecoration(

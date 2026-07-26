@@ -28,9 +28,10 @@ class LaboratoryHeader extends StatelessWidget {
             : state.aiAttemptsLabel;
 
         return Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: SizeConfig.w(0.03),
-            vertical: SizeConfig.h(0.03),
+          padding: EdgeInsets.only(
+            left: SizeConfig.w(0.03),
+            right: SizeConfig.w(0.03),
+            top: SizeConfig.h(0.03),
           ),
           child: Directionality(
             textDirection: TextDirection.rtl,

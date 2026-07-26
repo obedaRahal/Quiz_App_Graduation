@@ -124,6 +124,7 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_daily_task_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_daily_task_card.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/widgets/manage/managed_study_plans_empty_state.dart';
 
 class StudyPlanTasksGroupSection extends StatelessWidget {
   final String title;
@@ -201,15 +202,10 @@ class StudyPlanTasksGroupSection extends StatelessWidget {
               : Padding(
                   padding: EdgeInsets.only(top: SizeConfig.h(0.01)),
                   child: tasks.isEmpty
-                      ? Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: SizeConfig.h(0.02),
-                          ),
-                          child: CustomTextWidget(
-                            'لا توجد مهام في هذا القسم',
-                            color: AppPalette.greyMedium,
-                            textAlign: TextAlign.center,
-                          ),
+                      ? EmptyStateCardPlanAndTask(
+                          icon: Icons.task_alt_rounded,
+                          title: 'لا توجد مهام',
+                          description: 'لا توجد مهام لعرضها حاليًا.',
                         )
                       : Column(
                           children: tasks.map((task) {
@@ -222,6 +218,9 @@ class StudyPlanTasksGroupSection extends StatelessWidget {
                               ),
                               child: StudyPlanDailyTaskCard(
                                 task: task,
+                                showStatusCheckBox:
+                                    task.status.trim() != 'فائتة',
+
                                 isUpdating: isUpdating,
                                 onTap: () {
                                   onTaskTap(task);

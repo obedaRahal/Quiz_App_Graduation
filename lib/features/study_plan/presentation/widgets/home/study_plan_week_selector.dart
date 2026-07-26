@@ -43,11 +43,11 @@ class StudyPlanWeekSelector extends StatelessWidget {
       height: selectorHeight,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final navigationWidth = (constraints.maxWidth * 0.08).clamp(
+          final navigationWidth = (constraints.maxWidth * 0.05).clamp(
             24.0,
             36.0,
           );
-          final horizontalGap = (constraints.maxWidth * 0.01).clamp(2.0, 6.0);
+          final horizontalGap = (constraints.maxWidth * 0.003).clamp(2.0, 6.0);
           final daysWidth = math.max(
             0.0,
             constraints.maxWidth - (navigationWidth * 2) - (horizontalGap * 2),

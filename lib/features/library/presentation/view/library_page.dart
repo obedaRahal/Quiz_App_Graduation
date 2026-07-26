@@ -18,204 +18,288 @@ import 'package:quiz_app_grad/features/library/presentation/widget/library_heade
 import 'package:quiz_app_grad/features/library/presentation/widget/library_media_carousel.dart';
 import 'package:quiz_app_grad/features/library/presentation/widget/library_search_field.dart';
 
-class LibraryPage extends StatelessWidget {
+class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
 
   @override
+  State<LibraryPage> createState() => _LibraryPageState();
+}
+
+class _LibraryPageState extends State<LibraryPage> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    debugPrint('============ LibraryPage.initState ============');
+
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    debugPrint('============ LibraryPage.dispose ============');
+
+    _searchController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final searchController = TextEditingController();
-
     return BlocProvider(
-      create: (_) => sl<LibraryCubit>()..getInitialLibraryContent(),
-      child: Builder(
-        builder: (context) {
-          return Scaffold(
-            body: SafeArea(
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: LibraryHeader(),
-                  ),
+      create: (_) {
+        debugPrint('============ LibraryPage.createLibraryCubit ============');
 
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.w(0.045),
-                      vertical: SizeConfig.h(0.012),
-                    ),
-                    child: LibrarySearchField(
-                      controller: searchController,
+        return sl<LibraryCubit>()..getInitialLibraryContent();
+      },
+      child: Scaffold(
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: SizeConfig.h(0.008)),
+                child: const LibraryHeader(),
+              ),
+
+              Padding(
+                padding: EdgeInsets.only(
+                  left: SizeConfig.w(0.045),
+                  right: SizeConfig.w(0.045),
+                  bottom: SizeConfig.h(0.012),
+                ),
+                child: Builder(
+                  builder: (context) {
+                    return LibrarySearchField(
+                      controller: _searchController,
                       onChanged: (value) {
+                        debugPrint(
+                          '============ LibraryPage.onSearchChanged ============',
+                        );
+                        debugPrint('→ query: ${value.trim()}');
+
                         context.read<LibraryCubit>().onSearchChanged(value);
                       },
                       onClear: () {
-                        searchController.clear();
-                        context.read<LibraryCubit>().clearSearch();
-                      },
-                      onTap: () {},
-                    ),
-                  ),
+                        debugPrint(
+                          '============ LibraryPage.onSearchClear ============',
+                        );
 
-                  BlocBuilder<LibraryCubit, LibraryState>(
-                    buildWhen: (previous, current) =>
-                        previous.selectedTab != current.selectedTab,
+                        _searchController.clear();
+
+                        context.read<LibraryCubit>().clearSearch();
+
+                        FocusScope.of(context).unfocus();
+                      },
+
+                      // أبقيناه لأن LibrarySearchField قد يطلبه كوسيط required.
+                      onTap: () {
+                        debugPrint(
+                          '============ LibraryPage.onSearchTap ============',
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+
+              Builder(
+                builder: (context) {
+                  return BlocBuilder<LibraryCubit, LibraryState>(
+                    buildWhen: (previous, current) {
+                      return previous.selectedTab != current.selectedTab ||
+                          previous.selectedTabIndex != current.selectedTabIndex;
+                    },
                     builder: (context, state) {
                       return LibraryTabsSection(
                         selectedIndex: state.selectedTabIndex,
                         onChanged: (index) {
+                          debugPrint(
+                            '============ LibraryPage.onTabChanged ============',
+                          );
+                          debugPrint('→ index: $index');
+
+                          _searchController.clear();
+                          FocusScope.of(context).unfocus();
+
                           context.read<LibraryCubit>().changeTabByIndex(index);
                         },
                       );
                     },
-                  ),
-
-                  SizedBox(height: SizeConfig.h(0.014)),
-
-                  Expanded(
-                    child: BlocBuilder<LibraryCubit, LibraryState>(
-                      builder: (context, state) {
-                        final isDark =
-                            Theme.of(context).brightness == Brightness.dark;
-                        final messageColor = isDark
-                            ? AppPalette.titleWhiteINDark
-                            : AppPalette.textColorInHome;
-
-                        if (state.status == LibraryStatus.loading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (state.status == LibraryStatus.failure) {
-                          return Center(
-                            child: CustomTextWidget(
-                              state.errorMessage ?? 'حدث خطأ ما',
-                              textAlign: TextAlign.center,
-                              color: messageColor,
-                              fontSize: SizeConfig.text(
-                                0.036,
-                              ).clamp(13.0, 16.0).toDouble(),
-                              fontWeight: FontWeight.w600,
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          );
-                        }
-
-                        if (state.isSearching &&
-                            state.searchMaterials.isEmpty) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (state.isSearchMode &&
-                            !state.isSearching &&
-                            state.searchMaterials.isEmpty) {
-                          return Center(
-                            child: CustomTextWidget(
-                              state.errorMessage ?? 'لا توجد نتائج مطابقة',
-                              textAlign: TextAlign.center,
-                              color: messageColor,
-                              fontSize: SizeConfig.text(
-                                0.036,
-                              ).clamp(13.0, 16.0).toDouble(),
-                              fontWeight: FontWeight.w600,
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          );
-                        }
-
-                        return Column(
-                          children: [
-                            if (!state.isSearchMode)
-                              LibraryMediaCarousel(
-                                items: state.featured
-                                    .map(_mapFeatured)
-                                    .toList(),
-                                onItemTap: (item) {
-                                  context.pushNamed(
-                                    AppRouterName.otherContentDetails,
-                                    extra: ContentDetailsRouteArgs(
-                                      contentId: item.id,
-                                      isMyContent: false,
-                                    ),
-                                  );
-                                },
-                              ),
-
-                            Expanded(
-                              child: LibraryContentList(
-                                items: state.displayedMaterials
-                                    .map(_mapMaterial)
-                                    .toList(),
-                                onItemBuild: (index) {
-                                  context
-                                      .read<LibraryCubit>()
-                                      .loadMoreWhenNeeded(index);
-                                },
-                                onItemTap: (item) {
-                                  context.pushNamed(
-                                    AppRouterName.otherContentDetails,
-                                    extra: ContentDetailsRouteArgs(
-                                      contentId: item.id,
-                                      isMyContent: false,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        );
-                        // return Column(
-                        //   children: [
-                        //     LibraryMediaCarousel(
-                        //       items: state.featured.map(_mapFeatured).toList(),
-                        //     ),
-
-                        //     Expanded(
-                        //       child: LibraryContentList(
-                        //         items: state.materials
-                        //             .map(_mapMaterial)
-                        //             .toList(),
-                        //         onItemBuild: (index) {
-                        //           context
-                        //               .read<LibraryCubit>()
-                        //               .loadMoreWhenNeeded(index);
-                        //         },
-                        //       ),
-                        //     ),
-                        //   ],
-                        // );
-                      },
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
-            ),
-          );
-        },
+
+              SizedBox(height: SizeConfig.h(0.014)),
+
+              const Expanded(child: _LibraryContentBody()),
+            ],
+          ),
+        ),
       ),
     );
   }
+}
 
-  LibraryMediaItem _mapFeatured(LibraryFeaturedEntity item) {
+class _LibraryContentBody extends StatelessWidget {
+  const _LibraryContentBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LibraryCubit, LibraryState>(
+      builder: (context, state) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
+        final messageColor = isDark
+            ? AppPalette.titleWhiteINDark
+            : AppPalette.textColorInHome;
+
+        /*
+         * التحميل الأولي للمكتبة.
+         */
+        if (state.status == LibraryStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        /*
+         * فشل تحميل المحتوى الأساسي.
+         */
+        if (state.status == LibraryStatus.failure) {
+          return _LibraryMessageState(
+            message: state.errorMessage ?? 'حدث خطأ ما',
+            color: messageColor,
+          );
+        }
+
+        /*
+         * تحميل نتائج البحث.
+         *
+         * يفترض هنا أن isSearching تعني أن طلب البحث
+         * ما زال قيد التنفيذ.
+         */
+        if (state.isSearching) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        /*
+         * انتهى البحث ولم توجد نتائج.
+         */
+        if (state.isSearchMode && state.searchMaterials.isEmpty) {
+          return _LibraryMessageState(
+            message: state.errorMessage ?? 'لا توجد نتائج مطابقة',
+            color: messageColor,
+          );
+        }
+
+        /*
+         * نجح تحميل المكتبة لكن لا يوجد محتوى.
+         */
+        if (!state.isSearchMode &&
+            state.featured.isEmpty &&
+            state.displayedMaterials.isEmpty) {
+          return _LibraryMessageState(
+            message: 'لا يوجد محتوى متاح حالياً',
+            color: messageColor,
+          );
+        }
+
+        // return Column(
+        //   children: [
+        //     if (!state.isSearchMode && state.featured.isNotEmpty)
+        //       LibraryMediaCarousel(
+        //         items: state.featured.map(_mapFeatured).toList(),
+        //         onItemTap: (item) {
+        //           _openContentDetails(context, contentId: item.id);
+        //         },
+        //       ),
+        //     Expanded(
+        //       child: LibraryContentList(
+        //         items: state.displayedMaterials.map(_mapMaterial).toList(),
+        //         onItemBuild: (index) {
+        //           context.read<LibraryCubit>().loadMoreWhenNeeded(index);
+        //         },
+        //         onItemTap: (item) {
+        //           _openContentDetails(context, contentId: item.id);
+        //         },
+        //       ),
+        //     ),
+        //   ],
+        // );
+
+        return LibraryContentList(
+          items: state.displayedMaterials.map(_mapMaterial).toList(),
+
+          header: !state.isSearchMode && state.featured.isNotEmpty
+              ? LibraryMediaCarousel(
+                  items: state.featured.map(_mapFeatured).toList(),
+                  onItemTap: (item) {
+                    _openContentDetails(context, contentId: item.id);
+                  },
+                )
+              : null,
+
+          onItemBuild: (index) {
+            context.read<LibraryCubit>().loadMoreWhenNeeded(index);
+          },
+
+          onItemTap: (item) {
+            _openContentDetails(context, contentId: item.id);
+          },
+        );
+      },
+    );
+  }
+
+  static void _openContentDetails(
+    BuildContext context, {
+    required int contentId,
+  }) {
+    debugPrint(
+      '============ LibraryContentBody.openContentDetails ============',
+    );
+    debugPrint('→ contentId: $contentId');
+
+    context.pushNamed(
+      AppRouterName.otherContentDetails,
+      extra: ContentDetailsRouteArgs(contentId: contentId, isMyContent: false),
+    );
+  }
+
+  static LibraryMediaItem _mapFeatured(LibraryFeaturedEntity item) {
     return LibraryMediaItem(
       id: item.id,
+
+      /*
+       * إن كان LibraryFeaturedEntity يحتوي title،
+       * استبدل النص الفارغ بالقيمة القادمة من الباك.
+       */
       title: '',
+
       scientificSpecialties: item.interests,
-      imageUrl: item.urlContent, // هون خليها من الباك
-      imageAsset: AppImage.carmen, // fallback بس
+      imageUrl: item.urlContent,
+
+      /*
+       * صورة احتياطية تستخدم عند عدم توفر رابط الصورة
+       * أو عند فشل تحميله داخل ودجت الصورة.
+       */
+      imageAsset: AppImage.carmen,
+
       likesCount: item.likeCount,
       savesCount: item.bookmarksCount,
       downloadsCount: item.downloadCount,
+
+      /*
+       * استبدلها بالقيمة الحقيقية إن كان الباك يعيدها.
+       */
       editsCount: 0,
+
       publishedAgo: item.publishedAt,
     );
   }
 
-  LibraryContentItem _mapMaterial(LibraryMaterialEntity item) {
+  static LibraryContentItem _mapMaterial(LibraryMaterialEntity item) {
     return LibraryContentItem(
       id: item.id,
       title: item.title,
@@ -225,9 +309,39 @@ class LibraryPage extends StatelessWidget {
       imageAsset: AppImage.carmen,
       specialties: item.interests,
       likesCount: item.likeCount,
+
       savesCount: 0,
+
       publishedAgo: item.publishedAt,
       isBookmarked: item.viewerHasBookmarked,
+    );
+  }
+}
+
+class _LibraryMessageState extends StatelessWidget {
+  final String message;
+  final Color color;
+
+  const _LibraryMessageState({required this.message, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.w(0.08),
+          vertical: SizeConfig.h(0.02),
+        ),
+        child: CustomTextWidget(
+          message,
+          textAlign: TextAlign.center,
+          color: color,
+          fontSize: SizeConfig.text(0.036).clamp(13.0, 16.0).toDouble(),
+          fontWeight: FontWeight.w600,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
     );
   }
 }

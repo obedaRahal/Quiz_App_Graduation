@@ -56,6 +56,7 @@ class HomeSliderCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             HomeSliderCardHeader(isDark: isDark, owner: item.owner),
             Divider(

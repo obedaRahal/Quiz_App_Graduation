@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_session_header_and_botton.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class StudyPlanDailyTasksHeader extends StatelessWidget {
-  final int tasksCount;
-  final VoidCallback onShowAllTap;
-
-  const StudyPlanDailyTasksHeader({
-    super.key,
-    required this.tasksCount,
-    required this.onShowAllTap,
-  });
+  const StudyPlanDailyTasksHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return StudyPlanSectionHeader(
-      title: 'قائمة المهام',
-      subtitle: '($tasksCount مهمة)',
-      buttonTitle: 'عرض كل المهام',
-      buttonIcon: Icons.arrow_back_rounded,
-      onTap: onShowAllTap,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTextWidget(
+          'عرض كل المهام',
+          fontSize: SizeConfig.text(0.04),
+          fontFamily: AppFont.elMessiriSemiBold,
+          color: context.appColors.blackToGrey2Dark,
+        ),
+      ],
     );
   }
 }

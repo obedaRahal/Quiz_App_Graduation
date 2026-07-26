@@ -23,18 +23,13 @@ class LaboratoryTestCardHeader extends StatelessWidget {
     return Row(
       children: [
         Padding(
-          padding: EdgeInsets.only(
-            top: 10,
-            bottom: 4,
-            left: SizeConfig.w(0.02),
-            right: SizeConfig.w(0.03),
-          ),
+          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.02)),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: CustomAppImage(
               height: SizeConfig.w(0.12),
               width: SizeConfig.w(0.12),
-              path:owner.ownerProfilePicture,
+              path: owner.ownerProfilePicture,
               fit: BoxFit.cover,
             ),
           ),
@@ -61,10 +56,7 @@ class LaboratoryTestCardHeader extends StatelessWidget {
                   ),
                   if (owner.isVerified)
                     const Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 4,
-                        horizontal: 8,
-                      ),
+                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                       child: Icon(
                         Icons.verified_rounded,
                         color: Colors.blue,

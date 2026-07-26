@@ -176,7 +176,7 @@ class CreateStudyPlanView extends StatelessWidget {
                           ? appColors.primaryToPrimaryDark
                           : appColors.greyToGreyMediumDark,
                       childHorizontalPad: SizeConfig.w(0.04),
-                      childVerticalPad: SizeConfig.w(0.013),
+                      childVerticalPad: SizeConfig.h(0.01),
                       borderRadius: 6,
                       onTap: isButtonEnabled
                           ? () {

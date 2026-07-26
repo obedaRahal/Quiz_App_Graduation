@@ -80,7 +80,6 @@ class _ManageStudyPlansBodyState extends State<ManageStudyPlansBody> {
                 builder: (context, state) {
                   return StudyPlansFilterSection(
                     selectedTab: state.selectedTab,
-                    isLoading: state.isLoading,
                     onTabSelected: (tab) {
                       context.read<ManageStudyPlansCubit>().changeTab(tab);
                     },

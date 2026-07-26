@@ -49,8 +49,13 @@ class LaboratoryState {
   final bool isAiDailyLimitLoading;
   final String? aiDailyLimitError;
   final AiGenerationDailyLimitDataEntity? aiDailyLimitData;
+
+  final bool hasInitialLoaded;
+
   const LaboratoryState({
     this.isInitialLoading = false,
+    this.hasInitialLoaded = false,
+
     this.isLoadingMore = false,
     this.error,
     this.examSessions = const [],
@@ -127,6 +132,8 @@ class LaboratoryState {
     bool? isAiDailyLimitLoading,
     String? aiDailyLimitError,
     Object? aiDailyLimitData = _sentinel,
+
+    bool? hasInitialLoaded,
   }) {
     return LaboratoryState(
       isInitialLoading: isInitialLoading ?? this.isInitialLoading,
@@ -177,6 +184,8 @@ class LaboratoryState {
       aiDailyLimitData: aiDailyLimitData == _sentinel
           ? this.aiDailyLimitData
           : aiDailyLimitData as AiGenerationDailyLimitDataEntity?,
+
+      hasInitialLoaded: hasInitialLoaded ?? this.hasInitialLoaded,
     );
   }
 

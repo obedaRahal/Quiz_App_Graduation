@@ -37,20 +37,18 @@ class StudyPlanDailyHoursSection extends StatelessWidget {
         Row(
           textDirection: TextDirection.ltr,
           children: [
-            Expanded(
-              child: CustomTextWidget(
-                hasHours
-                    ? _formatHours(dailyHours)
-                    : 'لم يتم تحديد الساعات بعد',
-                fontSize: SizeConfig.text(0.034),
-                fontFamily: AppFont.elMessiriSemiBold,
-                color: hasHours
-                    ? context.appColors.primaryToPrimaryDark
-                    : AppPalette.greyMedium,
-                textAlign: TextAlign.right,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+            CustomTextWidget(
+              hasHours
+                  ? _formatHours(dailyHours)
+                  : 'لم يتم تحديد الساعات بعد',
+              fontSize: SizeConfig.text(0.034),
+              fontFamily: AppFont.elMessiriSemiBold,
+              color: hasHours
+                  ? context.appColors.primaryToPrimaryDark
+                  : AppPalette.greyMedium,
+              textAlign: TextAlign.right,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
 
             Spacer(),

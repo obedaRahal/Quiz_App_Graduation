@@ -49,13 +49,53 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
     2: 'most_participated',
   };
 
+  // Future<void> getInitialExamSessions({required int interestId}) async {
+  //   emit(
+  //     state.copyWith(
+  //       isInitialLoading: true,
+  //       isLoadingMore: false,
+  //       error: null,
+  //       examSessions: [],
+  //       currentPage: 1,
+  //       hasMorePages: true,
+  //       selectedInterestId: interestId,
+  //     ),
+  //   );
+
+  //   try {
+  //     final response = await getTestsByInterestUseCase(
+  //       interestId: interestId,
+  //       page: 1,
+  //     );
+  //     debugPrint('INITIAL PAGE LOADED => ${response.meta.currentPage}');
+  //     debugPrint('INITIAL ITEMS => ${response.tests.length}');
+  //     debugPrint('HAS MORE => ${response.meta.hasMorePages}');
+  //     emit(
+  //       state.copyWith(
+  //         isInitialLoading: false,
+  //         examSessions: response.tests,
+  //         currentPage: response.meta.currentPage,
+  //         hasMorePages: response.meta.hasMorePages,
+  //         error: null,
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     emit(state.copyWith(isInitialLoading: false, error: e.toString()));
+  //   }
+  // }
   Future<void> getInitialExamSessions({required int interestId}) async {
+    debugPrint(
+      '============ LaboratoryCubit.getInitialExamSessions ============',
+    );
+    debugPrint('→ interestId: $interestId');
+
     emit(
       state.copyWith(
         isInitialLoading: true,
+        hasInitialLoaded: false,
         isLoadingMore: false,
         error: null,
-        examSessions: [],
+        examSessions: const [],
         currentPage: 1,
         hasMorePages: true,
         selectedInterestId: interestId,
@@ -67,12 +107,15 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
         interestId: interestId,
         page: 1,
       );
-      debugPrint('INITIAL PAGE LOADED => ${response.meta.currentPage}');
-      debugPrint('INITIAL ITEMS => ${response.tests.length}');
-      debugPrint('HAS MORE => ${response.meta.hasMorePages}');
+
+      debugPrint('✓ INITIAL PAGE: ${response.meta.currentPage}');
+      debugPrint('✓ INITIAL ITEMS: ${response.tests.length}');
+      debugPrint('✓ HAS MORE: ${response.meta.hasMorePages}');
+
       emit(
         state.copyWith(
           isInitialLoading: false,
+          hasInitialLoaded: true,
           examSessions: response.tests,
           currentPage: response.meta.currentPage,
           hasMorePages: response.meta.hasMorePages,
@@ -80,7 +123,15 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(isInitialLoading: false, error: e.toString()));
+      debugPrint('✗ LaboratoryCubit.getInitialExamSessions: $e');
+
+      emit(
+        state.copyWith(
+          isInitialLoading: false,
+          hasInitialLoaded: true,
+          error: e.toString(),
+        ),
+      );
     }
   }
 
@@ -283,32 +334,56 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
   }
 
   Future<void> getInitialLabTests({String tab = 'trending'}) async {
+    debugPrint('============ LaboratoryCubit.getInitialLabTests ============');
+    debugPrint('→ tab: $tab');
+
     emit(
       state.copyWith(
+        isInitialLoading: true,
+        hasInitialLoaded: false,
+
         isLabTestsLoading: true,
         isLabTestsLoadingMore: false,
         labTestsError: null,
-        featuredTopRatedTests: [],
-        labTests: [],
+
+        featuredTopRatedTests: const [],
+        labTests: const [],
+        examSessions: const [],
+
         selectedLabTab: tab,
+
         labTestsCurrentPage: 1,
         labTestsHasMorePages: true,
+
+        currentPage: 1,
+        hasMorePages: true,
+
+        error: null,
       ),
     );
 
     try {
       final response = await getLabRecommendedTestsUseCase(tab: tab, page: 1);
 
+      final mappedExamSessions = response.items
+          .map((item) => item.toExamSessionEntity())
+          .toList();
+
+      debugPrint('✓ LAB TAB: ${response.currentTab}');
+      debugPrint('✓ LAB ITEMS: ${response.items.length}');
+      debugPrint('✓ EXAM SESSIONS: ${mappedExamSessions.length}');
+      debugPrint('✓ HAS MORE: ${response.pagination.hasMore}');
+
       emit(
         state.copyWith(
+          isInitialLoading: false,
+          hasInitialLoaded: true,
+
           isLabTestsLoading: false,
 
           featuredTopRatedTests: response.featuredTopRated,
           labTests: response.items,
-
-          examSessions: response.items
-              .map((item) => item.toExamSessionEntity())
-              .toList(),
+          examSessions: mappedExamSessions,
 
           selectedLabTab: response.currentTab,
 
@@ -323,14 +398,30 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
         ),
       );
     } catch (e) {
+      debugPrint('✗ LaboratoryCubit.getInitialLabTests: $e');
+
       emit(
-        state.copyWith(isLabTestsLoading: false, labTestsError: e.toString()),
+        state.copyWith(
+          isInitialLoading: false,
+          hasInitialLoaded: true,
+
+          isLabTestsLoading: false,
+          labTestsError: e.toString(),
+          error: e.toString(),
+        ),
       );
     }
   }
 
   Future<void> changeLabTab(int index) async {
     final tab = _labTabs[index] ?? 'trending';
+
+    debugPrint('============ LaboratoryCubit.changeLabTab ============');
+    debugPrint('→ index: $index');
+    debugPrint('→ tab: $tab');
+
+    _searchDebounce?.cancel();
+
     emit(
       state.copyWith(
         isFilterMode: false,
@@ -341,14 +432,30 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
         filterNextCursor: null,
         filterHasMorePages: false,
         filterError: null,
+
+        isSearchMode: false,
+        isSearchLoading: false,
+        isSearchLoadingMore: false,
+        searchQuery: '',
+        searchResults: const [],
+        searchCurrentPage: 1,
+        searchHasMorePages: true,
+        searchError: null,
       ),
     );
+
     await getInitialLabTests(tab: tab);
   }
 
   Future<void> getNextLabTestsPage() async {
     if (_isFetchingMoreLabTests) return;
-    if (state.isLabTestsLoading || state.isLabTestsLoadingMore) return;
+
+    if (state.isInitialLoading ||
+        state.isLabTestsLoading ||
+        state.isLabTestsLoadingMore) {
+      return;
+    }
+
     if (!state.labTestsHasMorePages) return;
 
     _isFetchingMoreLabTests = true;
@@ -358,7 +465,10 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
     try {
       final nextPage = state.labTestsCurrentPage + 1;
 
-      debugPrint('LOADING LAB TESTS PAGE => $nextPage');
+      debugPrint(
+        '============ LaboratoryCubit.getNextLabTestsPage ============',
+      );
+      debugPrint('→ page: $nextPage');
 
       final response = await getLabRecommendedTestsUseCase(
         tab: state.selectedLabTab,
@@ -373,7 +483,6 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
         state.copyWith(
           isLabTestsLoadingMore: false,
 
-          // لا نلمس featuredTopRatedTests هون
           labTests: [...state.labTests, ...response.items],
 
           examSessions: [...state.examSessions, ...newExamSessions],
@@ -389,14 +498,11 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
         ),
       );
 
-      debugPrint(
-        'LAB TESTS TOTAL => ${state.labTests.length + response.items.length}',
-      );
-      debugPrint(
-        'EXAM SESSIONS TOTAL => ${state.examSessions.length + newExamSessions.length}',
-      );
-      debugPrint('LAB HAS MORE => ${response.pagination.hasMore}');
+      debugPrint('✓ NEW ITEMS: ${response.items.length}');
+      debugPrint('✓ HAS MORE: ${response.pagination.hasMore}');
     } catch (e) {
+      debugPrint('✗ LaboratoryCubit.getNextLabTestsPage: $e');
+
       emit(
         state.copyWith(
           isLabTestsLoadingMore: false,
@@ -558,33 +664,29 @@ class LaboratoryCubit extends Cubit<LaboratoryState> {
       ),
     );
   }
+
   Future<void> getAiGenerationDailyLimit() async {
-  if (state.isAiDailyLimitLoading) return;
+    if (state.isAiDailyLimitLoading) return;
 
-  emit(
-    state.copyWith(
-      isAiDailyLimitLoading: true,
-      aiDailyLimitError: null,
-    ),
-  );
+    emit(state.copyWith(isAiDailyLimitLoading: true, aiDailyLimitError: null));
 
-  try {
-    final response = await getAiGenerationDailyLimitUseCase();
+    try {
+      final response = await getAiGenerationDailyLimitUseCase();
 
-    emit(
-      state.copyWith(
-        isAiDailyLimitLoading: false,
-        aiDailyLimitError: null,
-        aiDailyLimitData: response.data,
-      ),
-    );
-  } catch (e) {
-    emit(
-      state.copyWith(
-        isAiDailyLimitLoading: false,
-        aiDailyLimitError: e.toString(),
-      ),
-    );
+      emit(
+        state.copyWith(
+          isAiDailyLimitLoading: false,
+          aiDailyLimitError: null,
+          aiDailyLimitData: response.data,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isAiDailyLimitLoading: false,
+          aiDailyLimitError: e.toString(),
+        ),
+      );
+    }
   }
-}
 }

@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
       child: Scaffold(
         body: SingleChildScrollView(
           child: Padding(
-            padding:  EdgeInsets.only(top: SizeConfig.h(0.03)),
+            padding: EdgeInsets.only(top: SizeConfig.h(0.03)),
             child: Column(
               textDirection: TextDirection.rtl,
               children: [
@@ -87,7 +87,7 @@ class HomePage extends StatelessWidget {
                     await unreadCountCubit.fetchUnreadCount();
                   },
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: SizeConfig.h(0.03)),
                 HomeTopBannerSection(
                   controller: controller,
                   isDark: isDark,
@@ -213,7 +213,9 @@ class HomePage extends StatelessWidget {
                     );
                   },
                 ),
-                const SizedBox(height: 24),
+
+                SizedBox(height: SizeConfig.h(0.03)),
+                
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
                     return Directionality(
@@ -223,104 +225,104 @@ class HomePage extends StatelessWidget {
                   },
                 ),
 
-                Center(
-                  child: Column(
-                    children: [
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            //context.pushNamed(AppRouterName.detailsOfTest);
-                            context.pushNamed(
-                              AppRouterName.detailsOfTest,
-                              extra: DetailsOfTestRouteArgs(testId: 100),
-                            );
-                          },
-                          child: Text("details of test"),
-                        ),
-                      ),
+                // Center(
+                //   child: Column(
+                //     children: [
+                //       Center(
+                //         child: InkWell(
+                //           onTap: () {
+                //             //context.pushNamed(AppRouterName.detailsOfTest);
+                //             context.pushNamed(
+                //               AppRouterName.detailsOfTest,
+                //               extra: DetailsOfTestRouteArgs(testId: 100),
+                //             );
+                //           },
+                //           child: Text("details of test"),
+                //         ),
+                //       ),
 
-                      SizedBox(height: 40),
+                //       SizedBox(height: 40),
 
-                      SizedBox(height: 40),
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            //context.pushNamed(AppRouterName.detailsOfTest);
-                            context.pushNamed(
-                              AppRouterName.myTestDetails,
-                              extra: DetailsOfTestRouteArgs(testId: 11),
-                            );
-                          },
-                          child: Text("my test detailssssssssss"),
-                        ),
-                      ),
+                //       SizedBox(height: 40),
+                //       Center(
+                //         child: InkWell(
+                //           onTap: () {
+                //             //context.pushNamed(AppRouterName.detailsOfTest);
+                //             context.pushNamed(
+                //               AppRouterName.myTestDetails,
+                //               extra: DetailsOfTestRouteArgs(testId: 11),
+                //             );
+                //           },
+                //           child: Text("my test detailssssssssss"),
+                //         ),
+                //       ),
 
-                      SizedBox(height: 40),
-                      SizedBox(height: 40),
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            //context.pushNamed(AppRouterName.detailsOfTest);
-                            context.pushNamed(
-                              AppRouterName.myPrivateTestDetails,
-                              extra: DetailsOfTestRouteArgs(testId: 805),
-                            );
-                          },
-                          child: Text("my test private detailssssssssss"),
-                        ),
-                      ),
+                //       SizedBox(height: 40),
+                //       SizedBox(height: 40),
+                //       Center(
+                //         child: InkWell(
+                //           onTap: () {
+                //             //context.pushNamed(AppRouterName.detailsOfTest);
+                //             context.pushNamed(
+                //               AppRouterName.myPrivateTestDetails,
+                //               extra: DetailsOfTestRouteArgs(testId: 805),
+                //             );
+                //           },
+                //           child: Text("my test private detailssssssssss"),
+                //         ),
+                //       ),
 
-                      SizedBox(height: 40),
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            //context.pushNamed(AppRouterName.detailsOfTest);
-                            context.pushNamed(
-                              AppRouterName.otherProfile,
-                              //extra: OtherProfileRouteArgs(userId: 815),
-                              extra: OtherProfileRouteArgs(userId: 811),
-                            );
-                          },
-                          child: Text(" other profile "),
-                        ),
-                      ),
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            context.pushNamed(
-                              AppRouterName.otherContentDetails,
-                              extra: const ContentDetailsRouteArgs(
-                                contentId: 2,
-                                isMyContent: true,
-                              ),
-                            );
-                          },
-                          child: const Text('عرض محتواي'),
-                        ),
-                      ),
-                      CustomButtonWidget(
-                        onTap: () {
-                          debugPrint("change mode ");
-                          context.read<ThemeCubit>().toggleTheme();
-                        },
-                        child: ThemedAppImage(
-                          darkPath: AppImage.logoDark,
-                          lightPath: AppImage.logoLight,
-                        ),
-                      ),
+                //       SizedBox(height: 40),
+                //       Center(
+                //         child: InkWell(
+                //           onTap: () {
+                //             //context.pushNamed(AppRouterName.detailsOfTest);
+                //             context.pushNamed(
+                //               AppRouterName.otherProfile,
+                //               //extra: OtherProfileRouteArgs(userId: 815),
+                //               extra: OtherProfileRouteArgs(userId: 811),
+                //             );
+                //           },
+                //           child: Text(" other profile "),
+                //         ),
+                //       ),
+                //       Center(
+                //         child: InkWell(
+                //           onTap: () {
+                //             context.pushNamed(
+                //               AppRouterName.otherContentDetails,
+                //               extra: const ContentDetailsRouteArgs(
+                //                 contentId: 2,
+                //                 isMyContent: true,
+                //               ),
+                //             );
+                //           },
+                //           child: const Text('عرض محتواي'),
+                //         ),
+                //       ),
+                //       CustomButtonWidget(
+                //         onTap: () {
+                //           debugPrint("change mode ");
+                //           context.read<ThemeCubit>().toggleTheme();
+                //         },
+                //         child: ThemedAppImage(
+                //           darkPath: AppImage.logoDark,
+                //           lightPath: AppImage.logoLight,
+                //         ),
+                //       ),
 
-                      SizedBox(height: 40),
-                      Center(
-                        child: InkWell(
-                          onTap: () async {
-                            await _openMyProfile(context);
-                          },
-                          child: Text(" my profile "),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                //       SizedBox(height: 40),
+                //       Center(
+                //         child: InkWell(
+                //           onTap: () async {
+                //             await _openMyProfile(context);
+                //           },
+                //           child: Text(" my profile "),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
               ],
             ),
           ),

@@ -98,3 +98,67 @@ class ManagedStudyPlansEmptyState
     }
   }
 }
+
+
+class EmptyStateCardPlanAndTask extends StatelessWidget {
+  final String title;
+  final String description;
+  final IconData icon;
+
+  const EmptyStateCardPlanAndTask({
+    super.key,
+    required this.title,
+    required this.description,
+    this.icon = Icons.inbox_rounded,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = context.appColors;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.w(0.06),
+        vertical: SizeConfig.h(0.05),
+      ),
+      decoration: BoxDecoration(
+        color: appColors.whiteToblack,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: appColors
+              .borderFieldColorNLightToborderFieldColorNDark,
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: SizeConfig.text(0.13),
+            color: AppPalette.greyMedium,
+          ),
+
+          SizedBox(height: SizeConfig.h(0.015)),
+
+          CustomTextWidget(
+            title,
+            fontSize: SizeConfig.text(0.036),
+            fontWeight: FontWeight.w700,
+            color: appColors.blackToGrey2Dark,
+            textAlign: TextAlign.center,
+          ),
+
+          SizedBox(height: SizeConfig.h(0.006)),
+
+          CustomTextWidget(
+            description,
+            fontSize: SizeConfig.text(0.029),
+            color: AppPalette.greyMedium,
+            textAlign: TextAlign.center,
+            maxLines: 3,
+          ),
+        ],
+      ),
+    );
+  }
+}

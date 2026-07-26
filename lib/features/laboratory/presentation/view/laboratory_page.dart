@@ -29,9 +29,10 @@ class LaboratoryPage extends StatelessWidget {
           const LaboratoryHeader(),
 
           Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: SizeConfig.w(0.045),
-              vertical: SizeConfig.h(0.012),
+            padding: EdgeInsets.only(
+              left: SizeConfig.w(0.03),
+              right: SizeConfig.w(0.03),
+              bottom: SizeConfig.h(0.012),
             ),
             child: LaboratorySearchField(
               controller: searchController,
@@ -49,6 +50,9 @@ class LaboratoryPage extends StatelessWidget {
             ),
           ),
 
+           LaboratoryTabsSection(),
+           SizedBox(height: SizeConfig.h(0.006),),
+
           Expanded(
             child: SingleChildScrollView(
               controller: scrollController,
@@ -60,7 +64,7 @@ class LaboratoryPage extends StatelessWidget {
                   return Column(
                     children: [
                       if (shouldShowTopCards) ...[
-                        const LaboratoryTabsSection(),
+                      //  const LaboratoryTabsSection(),
 
                         LaboratoryTestsSliderSection(
                           controller: controller,

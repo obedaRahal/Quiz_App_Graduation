@@ -43,7 +43,7 @@ class ActiveStudyPlanCard extends StatelessWidget {
 
               child: Column(
                 children: [
-                  SizedBox(height: SizeConfig.h(0.14)),
+                  SizedBox(height: SizeConfig.h(0.125)),
                   _PlanDateFooter(
                     startDate: plan.startDate,
                     endDate: plan.endDate,

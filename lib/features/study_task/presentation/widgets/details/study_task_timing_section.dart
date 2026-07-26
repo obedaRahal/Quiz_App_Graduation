@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
@@ -25,7 +24,7 @@ class TaskTimingSession extends StatelessWidget {
           fontFamily: AppFont.elMessiriBold,
           fontSize: SizeConfig.text(0.05),
         ),
-        SizedBox(width: SizeConfig.h(0.1)),
+        SizedBox(height: SizeConfig.h(0.015)),
 
         Row(
           textDirection: TextDirection.rtl,
@@ -47,6 +46,13 @@ class TaskTimingSession extends StatelessWidget {
                 icon: FontAwesomeIcons.hourglassHalf,
               ),
             ),
+            Expanded(
+              child: _MetaInfoItem(
+                title: 'التكرار',
+                value: timingInfo.repeatPattern,
+                icon: FontAwesomeIcons.repeat,
+              ),
+            ),
           ],
         ),
 
@@ -55,16 +61,7 @@ class TaskTimingSession extends StatelessWidget {
         Row(
           textDirection: TextDirection.rtl,
           children: [
-            Expanded(
-              child: _MetaInfoItem(
-                title: 'التكرار',
-                value: timingInfo.repeatPattern,
-                icon: FontAwesomeIcons.repeat,
-              ),
-            ),
-
-            SizedBox(width: SizeConfig.w(0.04)),
-
+            //SizedBox(width: SizeConfig.w(0.04)),
             Expanded(
               child: _MetaInfoItem(
                 title: 'تذكيرات المهمة',
@@ -141,4 +138,3 @@ class _MetaInfoItem extends StatelessWidget {
     );
   }
 }
-

@@ -20,7 +20,6 @@ class ManageStudyPlansHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = context.appColors;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Row(
       textDirection: TextDirection.rtl,
@@ -33,12 +32,14 @@ class ManageStudyPlansHeader extends StatelessWidget {
           textAlign: TextAlign.right,
         ),
 
-        SizedBox(width: SizeConfig.w(0.01)),
+        SizedBox(width: SizeConfig.w(0.012)),
 
         CustomTextWidget(
-          'الخطط المسموحة $plansCount/$maxPlansCount',
+          // 'الخطط المسموحة $plansCount/$maxPlansCount)',
+          '(الخطط المسموحة $plansCount/$maxPlansCount)',
+
           fontFamily: AppFont.elMessiriSemiBold,
-          fontSize: SizeConfig.text(0.027),
+          fontSize: SizeConfig.text(0.03),
           color: appColors.primaryToPrimaryDark,
           maxLines: 1,
         ),

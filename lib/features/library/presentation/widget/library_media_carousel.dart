@@ -58,7 +58,7 @@ class LibraryMediaCarousel extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           clipBehavior: Clip.none,
           padding: EdgeInsetsDirectional.only(
-            start: SizeConfig.w(0.045),
+            //start: SizeConfig.w(0.045),
             end: SizeConfig.w(0.045),
             bottom: SizeConfig.h(0.008),
           ),

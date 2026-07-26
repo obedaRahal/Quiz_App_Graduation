@@ -34,38 +34,122 @@ class LibraryContentItem {
   });
 }
 
+// class LibraryContentList extends StatelessWidget {
+//   final List<LibraryContentItem> items;
+//   final ValueChanged<int>? onItemBuild;
+//   final ValueChanged<LibraryContentItem>? onItemTap;
+//   final Widget? header;
+
+//   const LibraryContentList({
+//     super.key,
+//     required this.items,
+//     this.onItemBuild,
+//     this.onItemTap,
+//     this.header,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListView.separated(
+//       padding: EdgeInsets.symmetric(
+//         horizontal: SizeConfig.w(0.045),
+//         vertical: SizeConfig.h(0.012),
+//       ),
+//       physics: const BouncingScrollPhysics(),
+//       itemCount: items.length,
+//       separatorBuilder: (_, __) => Padding(
+//         padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.006)),
+//         child: Divider(
+//           height: 1,
+//           thickness: 1,
+//           color: Theme.of(context).dividerColor.withOpacity(
+//             Theme.of(context).brightness == Brightness.dark ? 0.45 : 0.9,
+//           ),
+//         ),
+//       ),
+//       itemBuilder: (context, index) {
+//         onItemBuild?.call(index);
+//         return _LibraryContentCard(
+//           item: items[index],
+//           onTap: () => onItemTap?.call(items[index]),
+//         );
+//       },
+//     );
+//   }
+// }
+
 class LibraryContentList extends StatelessWidget {
   final List<LibraryContentItem> items;
   final ValueChanged<int>? onItemBuild;
   final ValueChanged<LibraryContentItem>? onItemTap;
+  final Widget? header;
 
-  const LibraryContentList({super.key, required this.items, this.onItemBuild,this.onItemTap,});
+  const LibraryContentList({
+    super.key,
+    required this.items,
+    this.onItemBuild,
+    this.onItemTap,
+    this.header,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final hasHeader = header != null;
+
     return ListView.separated(
       padding: EdgeInsets.symmetric(
         horizontal: SizeConfig.w(0.045),
         vertical: SizeConfig.h(0.012),
       ),
       physics: const BouncingScrollPhysics(),
-      itemCount: items.length,
-      separatorBuilder: (_, __) => Padding(
-        padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.006)),
-        child: Divider(
-          height: 1,
-          thickness: 1,
-          color: Theme.of(context).dividerColor.withOpacity(
-            Theme.of(context).brightness == Brightness.dark ? 0.45 : 0.9,
+
+      // نضيف عنصرًا إضافيًا عندما يوجد Header.
+      itemCount: items.length + (hasHeader ? 1 : 0),
+
+      separatorBuilder: (context, index) {
+        /*
+         * لا نعرض Divider مباشرة بعد الـ Header،
+         * بل نترك مسافة فقط بينه وبين أول عنصر.
+         */
+        if (hasHeader && index == 0) {
+          return SizedBox(height: SizeConfig.h(0.012));
+        }
+
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.006)),
+          child: Divider(
+            height: 1,
+            thickness: 1,
+            color: Theme.of(context).dividerColor.withOpacity(
+              Theme.of(context).brightness == Brightness.dark ? 0.45 : 0.9,
+            ),
           ),
-        ),
-      ),
+        );
+      },
+
       itemBuilder: (context, index) {
-        onItemBuild?.call(index);
+        /*
+         * أول عنصر في القائمة هو الـ Header.
+         */
+        if (hasHeader && index == 0) {
+          return header!;
+        }
+
+        /*
+         * عند وجود Header يصبح index الخاص بالمادة
+         * أقل بواحد من index الخاص بالقائمة.
+         */
+        final itemIndex = hasHeader ? index - 1 : index;
+        final item = items[itemIndex];
+
+        onItemBuild?.call(itemIndex);
+
         return _LibraryContentCard(
-  item: items[index],
-  onTap: () => onItemTap?.call(items[index]),
-);
+          item: item,
+          onTap: () {
+            onItemTap?.call(item);
+          },
+        );
       },
     );
   }
@@ -75,10 +159,7 @@ class _LibraryContentCard extends StatelessWidget {
   final LibraryContentItem item;
   final VoidCallback? onTap;
 
-  const _LibraryContentCard({
-    required this.item,
-    this.onTap,
-  });
+  const _LibraryContentCard({required this.item, this.onTap});
 
   @override
   Widget build(BuildContext context) {

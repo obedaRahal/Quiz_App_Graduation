@@ -6,7 +6,7 @@ class EndPoints {
   //  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   //static const String refreshToken = 'http://localhost/api/v1/refresh';
-  static const String refreshToken = 'http://192.168.1.110/api/v1/refresh';
+  static const String refreshToken = 'http://192.168.1.9/api/v1/refresh';
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
 

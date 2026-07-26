@@ -25,7 +25,7 @@ class StudyPlanDefaultSwitchCard extends StatelessWidget {
     return CustomBackgroundWithChild(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03) , vertical: SizeConfig.h(0.01)),
-      backgroundColor: isDark ? AppPalette.fieldColorNDark : AppPalette.white,
+      backgroundColor: isDark ? AppPalette.fieldColorNDark : AppPalette.grey,
       borderRadius: BorderRadius.circular(9),
       border: Border.all(
         color: isDark

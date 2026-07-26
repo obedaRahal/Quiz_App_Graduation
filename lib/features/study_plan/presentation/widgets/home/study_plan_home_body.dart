@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
@@ -200,11 +202,14 @@ class StudyPlanHomeBody extends StatelessWidget {
                     ),
                   CustomDivider(height: 40, thickness: 3),
 
-                  StudyPlanDailyTasksHeader(
-                    tasksCount: state.tasks.length,
-                    onShowAllTap: () {
-                      debugPrint('Show all tasks');
-                    },
+                  Align(
+                    alignment: AlignmentGeometry.centerRight,
+                    child: CustomTextWidget(
+                      'عرض كل المهام',
+                      fontSize: SizeConfig.text(0.04),
+                      fontFamily: AppFont.elMessiriSemiBold,
+                      color: context.appColors.blackToGrey2Dark,
+                    ),
                   ),
 
                   SizedBox(height: SizeConfig.h(0.015)),

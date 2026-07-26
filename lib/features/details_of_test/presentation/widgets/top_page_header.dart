@@ -72,8 +72,8 @@ class HeaderActionButton extends StatelessWidget {
       borderRadius: 20,
       boxShadow: [
         BoxShadow(
-          color: appColors.greyMediumTogrey,
-          blurRadius: 2,
+          color: Color(0xffe4e4e4),
+          blurRadius: 5,
           offset: Offset(0, 0),
         ),
       ],
@@ -83,6 +83,7 @@ class HeaderActionButton extends StatelessWidget {
         icon,
         color: appColors.blackTogreyMedium,
         size: SizeConfig.h(0.03),
+        fontWeight: FontWeight.bold,
       ),
     );
   }

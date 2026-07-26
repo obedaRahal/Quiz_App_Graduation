@@ -50,10 +50,17 @@ class StudyTaskGeneralDetailsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            // _TaskHeader(
+            //   title: basicInfo.title,
+            //   statusStyle: statusStyle,
+            //   isCompleted: isCompleted,
+            //   onStatusToggle: onStatusToggle,
+            // ),
             _TaskHeader(
               title: basicInfo.title,
               statusStyle: statusStyle,
-              isCompleted: isCompleted,
+              status: basicInfo.status,
+              showStatusCheckBox: basicInfo.status != StudyTaskStatus.missed,
               onStatusToggle: onStatusToggle,
             ),
             SizedBox(height: SizeConfig.h(0.012)),
@@ -120,16 +127,56 @@ class StudyTaskGeneralDetailsCard extends StatelessWidget {
   }
 }
 
+// class _TaskHeader extends StatelessWidget {
+//   final String title;
+//   final _TaskStatusStyle statusStyle;
+//   final bool isCompleted;
+//   final VoidCallback onStatusToggle;
+
+//   const _TaskHeader({
+//     required this.title,
+//     required this.statusStyle,
+//     required this.isCompleted,
+//     required this.onStatusToggle,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       textDirection: TextDirection.rtl,
+//       crossAxisAlignment: CrossAxisAlignment.center,
+//       children: [
+//         Expanded(
+//           child: CustomTextWidget(
+//             title,
+//             textAlign: TextAlign.right,
+//             maxLines: 2,
+//             overflow: TextOverflow.ellipsis,
+//             fontSize: SizeConfig.text(0.041),
+//             fontFamily: AppFont.elMessiriBold,
+//             color: context.appColors.blackToGrey2Dark,
+//           ),
+//         ),
+//         SizedBox(width: SizeConfig.w(0.018)),
+//         _TaskStatusBadge(style: statusStyle),
+//         SizedBox(width: SizeConfig.w(0.018)),
+//         _TaskStatusCheckBox(value: isCompleted, onTap: onStatusToggle),
+//       ],
+//     );
+//   }
+// }
 class _TaskHeader extends StatelessWidget {
   final String title;
   final _TaskStatusStyle statusStyle;
-  final bool isCompleted;
+  final StudyTaskStatus status;
+  final bool showStatusCheckBox;
   final VoidCallback onStatusToggle;
 
   const _TaskHeader({
     required this.title,
     required this.statusStyle,
-    required this.isCompleted,
+    required this.status,
+    required this.showStatusCheckBox,
     required this.onStatusToggle,
   });
 
@@ -150,10 +197,16 @@ class _TaskHeader extends StatelessWidget {
             color: context.appColors.blackToGrey2Dark,
           ),
         ),
+
         SizedBox(width: SizeConfig.w(0.018)),
+
         _TaskStatusBadge(style: statusStyle),
-        SizedBox(width: SizeConfig.w(0.018)),
-        _TaskStatusCheckBox(value: isCompleted, onTap: onStatusToggle),
+
+        if (showStatusCheckBox) ...[
+          SizedBox(width: SizeConfig.w(0.018)),
+
+          _TaskStatusCheckBox(status: status, onTap: onStatusToggle),
+        ],
       ],
     );
   }
@@ -183,42 +236,134 @@ class _TaskStatusBadge extends StatelessWidget {
   }
 }
 
+// class _TaskStatusCheckBox extends StatelessWidget {
+//   final bool value;
+//   final VoidCallback onTap;
+
+//   const _TaskStatusCheckBox({required this.value, required this.onTap});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     const activeColor = Color(0xff2ECC71);
+
+//     return InkWell(
+//       onTap: onTap,
+//       borderRadius: BorderRadius.circular(4),
+//       child: AnimatedContainer(
+//         duration: const Duration(milliseconds: 220),
+//         width: SizeConfig.h(0.025),
+//         height: SizeConfig.h(0.025),
+//         alignment: Alignment.center,
+//         decoration: BoxDecoration(
+//           color: value ? activeColor : Colors.transparent,
+//           borderRadius: BorderRadius.circular(3),
+//           border: Border.all(
+//             color: value ? activeColor : AppPalette.greyMedium,
+//             width: 1.4,
+//           ),
+//         ),
+//         child: value
+//             ? Icon(
+//                 Icons.check_rounded,
+//                 size: SizeConfig.h(0.018),
+//                 color: Colors.white,
+//               )
+//             : null,
+//       ),
+//     );
+//   }
+// }
+
 class _TaskStatusCheckBox extends StatelessWidget {
-  final bool value;
+  final StudyTaskStatus status;
   final VoidCallback onTap;
 
-  const _TaskStatusCheckBox({required this.value, required this.onTap});
+  const _TaskStatusCheckBox({required this.status, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    const activeColor = Color(0xff2ECC71);
+    final style = _resolveCheckBoxStyle(status);
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(4),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
         width: SizeConfig.h(0.025),
         height: SizeConfig.h(0.025),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: value ? activeColor : Colors.transparent,
+          color: style.backgroundColor,
           borderRadius: BorderRadius.circular(3),
-          border: Border.all(
-            color: value ? activeColor : AppPalette.greyMedium,
-            width: 1.4,
-          ),
+          border: Border.all(color: style.borderColor, width: 1.4),
         ),
-        child: value
+        child: style.showIcon
             ? Icon(
-                Icons.check_rounded,
+                style.icon,
                 size: SizeConfig.h(0.018),
-                color: Colors.white,
+                color: style.iconColor,
               )
             : null,
       ),
     );
   }
+
+  _TaskCheckBoxStyle _resolveCheckBoxStyle(StudyTaskStatus status) {
+    switch (status) {
+      case StudyTaskStatus.todo:
+        return const _TaskCheckBoxStyle(
+          backgroundColor: Colors.transparent,
+          borderColor: AppPalette.greyMedium,
+          iconColor: Colors.transparent,
+          showIcon: false,
+          icon: Icons.check_rounded,
+        );
+
+      case StudyTaskStatus.inProgress:
+        return const _TaskCheckBoxStyle(
+          backgroundColor: Color(0xff5B9CFF),
+          borderColor: Color(0xff5B9CFF),
+          iconColor: Colors.white,
+          showIcon: true,
+          icon: Icons.more_horiz_rounded,
+        );
+
+      case StudyTaskStatus.completed:
+        return const _TaskCheckBoxStyle(
+          backgroundColor: Color(0xff2ECC71),
+          borderColor: Color(0xff2ECC71),
+          iconColor: Colors.white,
+          showIcon: true,
+          icon: Icons.check_rounded,
+        );
+
+      case StudyTaskStatus.missed:
+        return const _TaskCheckBoxStyle(
+          backgroundColor: Colors.transparent,
+          borderColor: AppPalette.greyMedium,
+          iconColor: Colors.transparent,
+          showIcon: false,
+          icon: Icons.check_rounded,
+        );
+    }
+  }
+}
+
+class _TaskCheckBoxStyle {
+  final Color backgroundColor;
+  final Color borderColor;
+  final Color iconColor;
+  final bool showIcon;
+  final IconData icon;
+
+  const _TaskCheckBoxStyle({
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.iconColor,
+    required this.showIcon,
+    required this.icon,
+  });
 }
 
 class _TaskDetailsRow extends StatelessWidget {
@@ -234,6 +379,7 @@ class _TaskDetailsRow extends StatelessWidget {
     return Row(
       textDirection: TextDirection.rtl,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: _TaskInfoColumn(

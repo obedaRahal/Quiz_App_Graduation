@@ -180,8 +180,13 @@ class _TaskHeader extends StatelessWidget {
         if (showStatusCheckBox) ...[
           SizedBox(width: SizeConfig.w(0.018)),
 
+          // _TaskStatusCheckBox(
+          //   value: task.isCompleted,
+          //   isLoading: isUpdating,
+          //   onTap: onStatusToggle,
+          // ),
           _TaskStatusCheckBox(
-            value: task.isCompleted,
+            status: task.status,
             isLoading: isUpdating,
             onTap: onStatusToggle,
           ),
@@ -216,55 +221,170 @@ class _TaskStatusBadge extends StatelessWidget {
   }
 }
 
+// class _TaskStatusCheckBox extends StatelessWidget {
+//   final bool value;
+//   final bool isLoading;
+//   final VoidCallback onTap;
+
+//   const _TaskStatusCheckBox({
+//     required this.value,
+//     required this.isLoading,
+//     required this.onTap,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final activeColor = const Color(0xff2ECC71);
+
+//     return InkWell(
+//       onTap: isLoading ? null : onTap,
+//       borderRadius: BorderRadius.circular(4),
+//       child: AnimatedContainer(
+//         duration: const Duration(milliseconds: 220),
+//         width: SizeConfig.h(0.025),
+//         height: SizeConfig.h(0.025),
+//         alignment: Alignment.center,
+//         decoration: BoxDecoration(
+//           color: value ? activeColor : Colors.transparent,
+//           borderRadius: BorderRadius.circular(3),
+//           border: Border.all(
+//             color: value ? activeColor : AppPalette.greyMedium,
+//             width: 1.4,
+//           ),
+//         ),
+//         child: isLoading
+//             ? Padding(
+//                 padding: const EdgeInsets.all(3),
+//                 child: CircularProgressIndicator(
+//                   strokeWidth: 1.5,
+//                   color: value ? Colors.white : activeColor,
+//                 ),
+//               )
+//             : value
+//             ? Icon(
+//                 Icons.check_rounded,
+//                 size: SizeConfig.h(0.018),
+//                 color: Colors.white,
+//               )
+//             : null,
+//       ),
+//     );
+//   }
+// }
 class _TaskStatusCheckBox extends StatelessWidget {
-  final bool value;
+  final String status;
   final bool isLoading;
   final VoidCallback onTap;
 
   const _TaskStatusCheckBox({
-    required this.value,
+    required this.status,
     required this.isLoading,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final activeColor = const Color(0xff2ECC71);
+    final style = _resolveCheckBoxStyle(status);
 
     return InkWell(
       onTap: isLoading ? null : onTap,
       borderRadius: BorderRadius.circular(4),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
         width: SizeConfig.h(0.025),
         height: SizeConfig.h(0.025),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: value ? activeColor : Colors.transparent,
+          color: style.backgroundColor,
           borderRadius: BorderRadius.circular(3),
-          border: Border.all(
-            color: value ? activeColor : AppPalette.greyMedium,
-            width: 1.4,
-          ),
+          border: Border.all(color: style.borderColor, width: 1.4),
         ),
         child: isLoading
             ? Padding(
                 padding: const EdgeInsets.all(3),
                 child: CircularProgressIndicator(
                   strokeWidth: 1.5,
-                  color: value ? Colors.white : activeColor,
+                  color: style.loadingColor,
                 ),
               )
-            : value
+            : style.showIcon
             ? Icon(
-                Icons.check_rounded,
+                style.icon,
                 size: SizeConfig.h(0.018),
-                color: Colors.white,
+                color: style.iconColor,
               )
             : null,
       ),
     );
   }
+
+  _TaskCheckBoxStyle _resolveCheckBoxStyle(String value) {
+    final normalized = value.trim();
+
+    switch (normalized) {
+      case 'للقيام':
+        return const _TaskCheckBoxStyle(
+          backgroundColor: Colors.transparent,
+          borderColor: AppPalette.greyMedium,
+          iconColor: Colors.transparent,
+          loadingColor: AppPalette.greyMedium,
+          showIcon: false,
+          icon: Icons.check_rounded,
+        );
+
+      case 'قيد المعالجة':
+      case 'قيد التنفيذ':
+        return const _TaskCheckBoxStyle(
+          backgroundColor: Color(0xff5B9CFF),
+          borderColor: Color(0xff5B9CFF),
+          iconColor: Colors.white,
+          loadingColor: Colors.white,
+          showIcon: true,
+          icon: Icons.more_horiz_rounded,
+        );
+
+      case 'تم الإنجاز':
+      case 'منجزة':
+      case 'مكتملة':
+        return const _TaskCheckBoxStyle(
+          backgroundColor: Color(0xff2ECC71),
+          borderColor: Color(0xff2ECC71),
+          iconColor: Colors.white,
+          loadingColor: Colors.white,
+          showIcon: true,
+          icon: Icons.check_rounded,
+        );
+
+      default:
+        return const _TaskCheckBoxStyle(
+          backgroundColor: Colors.transparent,
+          borderColor: AppPalette.greyMedium,
+          iconColor: Colors.transparent,
+          loadingColor: AppPalette.greyMedium,
+          showIcon: false,
+          icon: Icons.check_rounded,
+        );
+    }
+  }
+}
+
+class _TaskCheckBoxStyle {
+  final Color backgroundColor;
+  final Color borderColor;
+  final Color iconColor;
+  final Color loadingColor;
+  final bool showIcon;
+  final IconData icon;
+
+  const _TaskCheckBoxStyle({
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.iconColor,
+    required this.loadingColor,
+    required this.showIcon,
+    required this.icon,
+  });
 }
 
 class _TaskDetailsRow extends StatelessWidget {
@@ -368,7 +488,7 @@ class _TaskTimeColumn extends StatelessWidget {
         ),
         SizedBox(height: SizeConfig.h(0.004)),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             CustomTextWidget(
               end,
