@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/cancel_academic_verification_request_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/create_academic_verification_request_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/fetch_academic_verification_status_use_case.dart';
@@ -8,7 +8,7 @@ import 'package:quiz_app_grad/features/settings/domain/use_cases/params/update_a
 import 'package:quiz_app_grad/features/settings/domain/use_cases/update_academic_verification_visibility_use_case.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/academic_verification/academic_verification_state.dart';
 
-class AcademicVerificationCubit extends Cubit<AcademicVerificationState> {
+class AcademicVerificationCubit extends SafeCubit<AcademicVerificationState> {
   final FetchAcademicVerificationStatusUseCase
   fetchAcademicVerificationStatusUseCase;
 

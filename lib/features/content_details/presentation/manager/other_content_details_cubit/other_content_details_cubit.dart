@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/my_content_details/my_content_details_params.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/other_content_details_params.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/report_other_content_params.dart';
@@ -20,7 +20,7 @@ import 'package:quiz_app_grad/features/content_details/domain/usecases/unlike_ot
 
 import 'other_content_details_state.dart';
 
-class OtherContentDetailsCubit extends Cubit<OtherContentDetailsState> {
+class OtherContentDetailsCubit extends SafeCubit<OtherContentDetailsState> {
   final GetOtherContentDetailsUseCase getOtherContentDetailsUseCase;
   final LikeOtherContentUseCase likeOtherContentUseCase;
   final UnlikeOtherContentUseCase unlikeOtherContentUseCase;

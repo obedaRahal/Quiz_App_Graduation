@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 // import 'package:quiz_app_grad/core/database/api/token_refresh_service.dart';
 import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
 import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
@@ -10,7 +10,7 @@ import 'package:quiz_app_grad/features/auth/domain/use_cases/login_use_case.dart
 import 'package:quiz_app_grad/features/auth/domain/use_cases/resend_otp_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_state.dart';
 
-class LoginCubit extends Cubit<LoginState> {
+class LoginCubit extends SafeCubit<LoginState> {
   final LoginUseCase loginUseCase;
   final ResendOtpUseCase resendOtpUseCase;
   LoginCubit({required this.loginUseCase, required this.resendOtpUseCase})

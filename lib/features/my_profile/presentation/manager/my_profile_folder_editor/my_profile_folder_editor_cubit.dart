@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/my_profile/data/models/my_profile_folder_editor_route_args.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/create_edit_folder/my_profile_folder_selected_test_entity.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/create_edit_folder/my_profile_picker_tests_entity.dart';
@@ -18,7 +18,7 @@ import 'package:quiz_app_grad/features/my_profile/domain/use_cases/params/update
 import 'package:quiz_app_grad/features/my_profile/domain/use_cases/update_my_profile_folder_use_case.dart';
 import 'my_profile_folder_editor_state.dart';
 
-class MyProfileFolderEditorCubit extends Cubit<MyProfileFolderEditorState> {
+class MyProfileFolderEditorCubit extends SafeCubit<MyProfileFolderEditorState> {
   final FetchMyProfilePickerTestsUseCase fetchMyProfilePickerTestsUseCase;
 
   final FetchMyProfilePickerSearchTestsUseCase

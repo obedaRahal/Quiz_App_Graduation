@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_interaction_users_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_test_interaction_users_use_case.dart';
@@ -10,7 +10,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/t
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
 import 'test_interaction_users_state.dart';
 
-class TestInteractionUsersCubit extends Cubit<TestInteractionUsersState> {
+class TestInteractionUsersCubit extends SafeCubit<TestInteractionUsersState> {
   final GetTestInteractionUsersUseCase getTestInteractionUsersUseCase;
   final FollowCreatorUseCase followCreatorUseCase;
   final UnfollowCreatorUseCase unfollowCreatorUseCase;

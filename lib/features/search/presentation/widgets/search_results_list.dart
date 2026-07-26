@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_connections_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/search/domain/entities/search_user_entity.dart';
+import 'package:quiz_app_grad/features/search/presentation/widgets/features/search/presentation/widgets/search_user_result_tile.dart';
 
 class SearchResultsList extends StatelessWidget {
   final List<SearchUserEntity> users;
@@ -82,19 +83,33 @@ class SearchResultsList extends StatelessWidget {
         final isThisFollowLoading =
             isFollowLoading && activeFollowUserId == user.id;
 
-        return InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => onUserTap(user),
-          child: OtherProfileConnectionUserTile(
-            userName: user.name,
-            avatarUrl: user.avatarUrl,
-            educationLevel: user.academicLevel,
-            isVerified: user.isAcademicallyVerified,
-            isFollowing: user.viewerIsFollowing,
-            isFollowLoading: isThisFollowLoading,
-            onFollowTap: () => onFollowTap(user),
-          ),
+        return SearchUserResultTile(
+          userName: user.name,
+          avatarUrl: user.avatarUrl,
+          academicLevel: user.academicLevel,
+          isVerified: user.isAcademicallyVerified,
+          isFollowing: user.viewerIsFollowing,
+          isFollowLoading: isThisFollowLoading,
+          onUserTap: () {
+            onUserTap(user);
+          },
+          onFollowTap: () {
+            onFollowTap(user);
+          },
         );
+        // return InkWell(
+        //   borderRadius: BorderRadius.circular(16),
+        //   onTap: () => onUserTap(user),
+        //   child: OtherProfileConnectionUserTile(
+        //     userName: user.name,
+        //     avatarUrl: user.avatarUrl,
+        //     educationLevel: user.academicLevel,
+        //     isVerified: user.isAcademicallyVerified,
+        //     isFollowing: user.viewerIsFollowing,
+        //     isFollowLoading: isThisFollowLoading,
+        //     onFollowTap: () => onFollowTap(user),
+        //   ),
+        // );
       },
     );
   }

@@ -2,7 +2,7 @@
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_state.dart';
 
-// class RegisterCubit extends Cubit<RegisterState>{
+// class RegisterCubit extends SafeCubit<RegisterState>{
 //    RegisterCubit() : super(const RegisterState());
 //   void togglePasswordVisibility() {
 //     debugPrint(
@@ -13,13 +13,13 @@
 //   void selectGender(Gender gender) {
 //   emit(state.copyWith(selectedGender: gender));
 // }
-// } 
+// }
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
 // import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_state.dart';
 
-// class RegisterCubit extends Cubit<RegisterState> {
+// class RegisterCubit extends SafeCubit<RegisterState> {
 //   final RegisterUseCase registerUseCase;
 
 //   RegisterCubit(this.registerUseCase) : super(const RegisterState());
@@ -134,13 +134,13 @@
 //     passwordController.dispose();
 //     return super.close();
 //   }
-// } 
+// }
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/register_state.dart';
 
-// class RegisterCubit extends Cubit<RegisterState> {
+// class RegisterCubit extends SafeCubit<RegisterState> {
 //   final RegisterUseCase registerUseCase;
 
 //   RegisterCubit(this.registerUseCase) : super(const RegisterState());
@@ -275,7 +275,7 @@ import 'package:quiz_app_grad/features/auth/presentation/managet/register_cubit/
 //     return super.close();
 //   }
 //}
-class RegisterCubit extends Cubit<RegisterState> {
+class RegisterCubit extends SafeCubit<RegisterState> {
   final RegisterUseCase registerUseCase;
 
   RegisterCubit(this.registerUseCase) : super(const RegisterState());

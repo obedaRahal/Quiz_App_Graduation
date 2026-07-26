@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/entities/all_interests_response_entity.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
@@ -43,7 +43,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/get_other_profile_share_link_params.dart';
 import 'my_profile_state.dart';
 
-class MyProfileCubit extends Cubit<MyProfileState> {
+class MyProfileCubit extends SafeCubit<MyProfileState> {
   final GetMyProfilePersonalInfoUseCase getMyProfilePersonalInfoUseCase;
   final EditMyProfilePersonalInfoUseCase editMyProfilePersonalInfoUseCase;
   final EditMyProfileAcademicInfoUseCase editMyProfileAcademicInfoUseCase;

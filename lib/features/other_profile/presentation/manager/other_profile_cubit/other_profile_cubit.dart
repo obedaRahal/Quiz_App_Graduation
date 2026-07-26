@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/core/utils/compact_count_formatter.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_follow_action_params.dart';
@@ -32,7 +32,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_conte
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/save_folder_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
 
-class OtherProfileCubit extends Cubit<OtherProfileState> {
+class OtherProfileCubit extends SafeCubit<OtherProfileState> {
   final FetchOtherProfileOverviewUseCase fetchOtherProfileOverviewUseCase;
   final FetchOtherProfileTestsUseCase fetchOtherProfileTestsUseCase;
   bool _isFetchingMoreTests = false;

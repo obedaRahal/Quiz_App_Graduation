@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/subjects/study_subject_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/create_study_subject_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/delete_study_subject_use_case.dart';
@@ -8,7 +8,7 @@ import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/create
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/delete_study_subject_params.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_subjects/study_subjects_state.dart';
 
-class StudySubjectsCubit extends Cubit<StudySubjectsState> {
+class StudySubjectsCubit extends SafeCubit<StudySubjectsState> {
   static const int subjectNameMaxLength = 50;
 
   final GetStudySubjectsUseCase getStudySubjectsUseCase;

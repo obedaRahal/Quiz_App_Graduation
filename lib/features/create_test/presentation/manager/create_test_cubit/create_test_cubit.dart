@@ -1,6 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_generation_status_entity.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_content_params.dart';
@@ -21,7 +21,7 @@ import 'package:quiz_app_grad/features/create_test/domain/use_case/update_test_u
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_state.dart';
 
-class CreateTestCubit extends Cubit<CreateTestState> {
+class CreateTestCubit extends SafeCubit<CreateTestState> {
   final GetScientificClassificationsUseCase getScientificClassificationsUseCase;
   final CreateManualTestUseCase createManualTestUseCase;
   final StartAiQuestionGenerationUseCase startAiQuestionGenerationUseCase;
@@ -391,26 +391,20 @@ class CreateTestCubit extends Cubit<CreateTestState> {
       ),
     );
   }
-void replaceContentMedia(List<PlatformFile> files) {
-  if (!state.isContentMode) return;
 
-  if (state.isContentImages) {
-    emit(
-      state.copyWith(
-        aiMediaFiles: files.take(3).toList(),
-      ),
-    );
-    return;
+  void replaceContentMedia(List<PlatformFile> files) {
+    if (!state.isContentMode) return;
+
+    if (state.isContentImages) {
+      emit(state.copyWith(aiMediaFiles: files.take(3).toList()));
+      return;
+    }
+
+    if (state.isContentFile && files.isNotEmpty) {
+      emit(state.copyWith(aiMediaFiles: [files.first]));
+    }
   }
 
-  if (state.isContentFile && files.isNotEmpty) {
-    emit(
-      state.copyWith(
-        aiMediaFiles: [files.first],
-      ),
-    );
-  }
-}
   Future<void> fetchScientificClassifications({
     bool forceRefresh = false,
   }) async {
@@ -687,10 +681,10 @@ void replaceContentMedia(List<PlatformFile> files) {
     debugPrint(
       'VALIDATION selectedScientificCategories => ${state.selectedScientificCategories}',
     );
-   if (state.selectedScientificInterestIds.isEmpty &&
-    state.selectedScientificCategories.isEmpty) {
-  return 'يرجى اختيار تصنيف علمي واحد على الأقل';
-}
+    if (state.selectedScientificInterestIds.isEmpty &&
+        state.selectedScientificCategories.isEmpty) {
+      return 'يرجى اختيار تصنيف علمي واحد على الأقل';
+    }
 
     if (state.selectedScientificInterestIds.length >
         maxScientificCategoriesCount) {
@@ -1286,75 +1280,74 @@ void replaceContentMedia(List<PlatformFile> files) {
   }
 
   Future<void> submitUpdateContent() async {
-  if (state.isUpdateContentLoading) return;
+    if (state.isUpdateContentLoading) return;
 
-  final validationError = _validateUpdateContentBeforeSubmit();
+    final validationError = _validateUpdateContentBeforeSubmit();
 
-  if (validationError != null) {
-    emit(
-      state.copyWith(
-        updateContentError: validationError,
-        updateContentResponse: null,
-      ),
-    );
-    return;
-  }
+    if (validationError != null) {
+      emit(
+        state.copyWith(
+          updateContentError: validationError,
+          updateContentResponse: null,
+        ),
+      );
+      return;
+    }
 
-  final contentId = state.editingContentId;
+    final contentId = state.editingContentId;
 
-  if (contentId == null || contentId <= 0) {
-    emit(
-      state.copyWith(
-        updateContentError: 'تعذر تحديد المحتوى المطلوب تعديله',
-        updateContentResponse: null,
-      ),
-    );
-    return;
-  }
-
-  emit(
-    state.copyWith(
-      isUpdateContentLoading: true,
-      updateContentError: null,
-      updateContentResponse: null,
-    ),
-  );
-
-  try {
-    final params = _buildUpdateContentParams(contentId: contentId);
-
-    final response = await updateContentUseCase(params);
+    if (contentId == null || contentId <= 0) {
+      emit(
+        state.copyWith(
+          updateContentError: 'تعذر تحديد المحتوى المطلوب تعديله',
+          updateContentResponse: null,
+        ),
+      );
+      return;
+    }
 
     emit(
       state.copyWith(
-        isUpdateContentLoading: false,
+        isUpdateContentLoading: true,
         updateContentError: null,
-        updateContentResponse: response,
+        updateContentResponse: null,
       ),
     );
-  } catch (e) {
-    emit(
-      state.copyWith(
-        isUpdateContentLoading: false,
-        updateContentError: e.toString(),
-      ),
+
+    try {
+      final params = _buildUpdateContentParams(contentId: contentId);
+
+      final response = await updateContentUseCase(params);
+
+      emit(
+        state.copyWith(
+          isUpdateContentLoading: false,
+          updateContentError: null,
+          updateContentResponse: response,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isUpdateContentLoading: false,
+          updateContentError: e.toString(),
+        ),
+      );
+    }
+  }
+
+  UpdateContentParams _buildUpdateContentParams({required int contentId}) {
+    return UpdateContentParams(
+      contentId: contentId,
+      title: state.title.trim(),
+      description: state.description.trim(),
+      interestIds: state.selectedScientificInterestIds,
+      targetLevel: state.selectedAcademicLevel.trim(),
+      visibilityType: state.isPublished ? 'عام' : 'خاص',
+      mediaFiles: state.aiMediaFiles,
     );
   }
-}
-UpdateContentParams _buildUpdateContentParams({
-  required int contentId,
-}) {
-  return UpdateContentParams(
-    contentId: contentId,
-    title: state.title.trim(),
-    description: state.description.trim(),
-    interestIds: state.selectedScientificInterestIds,
-    targetLevel: state.selectedAcademicLevel.trim(),
-    visibilityType: state.isPublished ? 'عام' : 'خاص',
-    mediaFiles: state.aiMediaFiles,
-    
-  );
-}
+
   String? _validateUpdateContentBeforeSubmit() {
     if (!state.isUpdateContentMode) {
       return 'نوع العملية غير صالح';
@@ -1372,14 +1365,14 @@ UpdateContentParams _buildUpdateContentParams({
       return 'يرجى اختيار تصنيف علمي واحد على الأقل';
     }
 
-   final selectedClassificationCount =
-    state.selectedScientificInterestIds.isNotEmpty
+    final selectedClassificationCount =
+        state.selectedScientificInterestIds.isNotEmpty
         ? state.selectedScientificInterestIds.length
         : state.selectedScientificCategories.length;
 
-if (selectedClassificationCount > maxScientificCategoriesCount) {
-  return 'يمكن اختيار ثلاثة تصنيفات علمية فقط';
-}
+    if (selectedClassificationCount > maxScientificCategoriesCount) {
+      return 'يمكن اختيار ثلاثة تصنيفات علمية فقط';
+    }
 
     if (state.selectedAcademicLevel.trim().isEmpty) {
       return 'يرجى اختيار المستوى الدراسي';
@@ -1393,14 +1386,10 @@ if (selectedClassificationCount > maxScientificCategoriesCount) {
 
     return null;
   }
+
   void clearUpdateContentResult() {
-  emit(
-    state.copyWith(
-      updateContentError: null,
-      updateContentResponse: null,
-    ),
-  );
-}
+    emit(state.copyWith(updateContentError: null, updateContentResponse: null));
+  }
 
   Future<void> submitCreateContent() async {
     if (state.isCreateContentLoading) return;

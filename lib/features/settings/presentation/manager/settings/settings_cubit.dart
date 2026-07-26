@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/core/services/app_date_time_settings.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/disable_task_reminders_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/enable_task_reminders_use_case.dart';
@@ -15,7 +15,7 @@ import 'package:quiz_app_grad/features/settings/presentation/manager/settings/se
 import 'package:quiz_app_grad/features/study_alarm/domain/use_cases/get_study_alarm_schedule_use_case.dart';
 import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_scheduler_service.dart';
 
-class SettingsCubit extends Cubit<SettingsState> {
+class SettingsCubit extends SafeCubit<SettingsState> {
   final GetSettingsUseCase getSettingsUseCase;
 
   final EnableTaskRemindersUseCase enableTaskRemindersUseCase;

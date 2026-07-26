@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/get_theme_mode_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/set_theme_mode_use_case.dart';
 
 import 'theme_state.dart';
 
-class ThemeCubit extends Cubit<ThemeState> {
+class ThemeCubit extends SafeCubit<ThemeState> {
   final GetThemeModeUseCase getThemeModeUseCase;
   final SetThemeModeUseCase setThemeModeUseCase;
 

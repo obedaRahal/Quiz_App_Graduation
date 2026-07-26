@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class SearchHistoryChip extends StatelessWidget {
   final int historyId;
@@ -16,63 +18,100 @@ class SearchHistoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = context.appColors;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      constraints: const BoxConstraints(
-        maxWidth: 180,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: SizeConfig.h(0.035),
+        maxWidth: SizeConfig.w(0.52),
       ),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        textDirection: TextDirection.rtl,
-        children: [
-          Flexible(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: onTap,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  start: 12,
-                  end: 6,
-                  top: 8,
-                  bottom: 8,
-                ),
-                child: Text(
-                  query,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    color: colorScheme.onSurface,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: appColors.greyToGreyMediumDark,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: appColors.borderFieldColorNLightToborderFieldColorNDark,
+              width: 1,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            textDirection: TextDirection.rtl,
+            children: [
+              Flexible(
+                child: InkWell(
+                  onTap: onTap,
+                  borderRadius: const BorderRadius.horizontal(
+                    right: Radius.circular(18),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.only(
+                      start: SizeConfig.w(0.035),
+                      end: SizeConfig.w(0.018),
+                      top: SizeConfig.h(0.009),
+                      bottom: SizeConfig.h(0.009),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        Icon(
+                          Icons.history_rounded,
+                          size: SizeConfig.text(
+                            0.038,
+                          ).clamp(15.0, 19.0).toDouble(),
+                          color: appColors.primaryToPrimaryDark,
+                        ),
+
+                        SizedBox(width: SizeConfig.w(0.014)),
+
+                        Flexible(
+                          child: Text(
+                            query,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
+                            textDirection: TextDirection.rtl,
+                            style: TextStyle(
+                              color: appColors.blackToGrey2Dark,
+                              fontSize: SizeConfig.text(
+                                0.031,
+                              ).clamp(12.0, 14.0).toDouble(),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
+
+              Padding(
+                padding: EdgeInsetsDirectional.only(
+                  start: SizeConfig.w(0.012),
+                  end: SizeConfig.w(0.012),
+                ),
+                child: InkWell(
+                  onTap: onDelete,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: SizeConfig.text(0.036).clamp(14.0, 18.0).toDouble(),
+                    color: context
+                        .appColors
+                        .borderFieldColorNLightToborderFieldColorNDark,
+                  ),
+                ),
+              ),
+            ],
           ),
-          IconButton(
-            onPressed: onDelete,
-            visualDensity: VisualDensity.compact,
-            constraints: const BoxConstraints(
-              minWidth: 30,
-              minHeight: 30,
-            ),
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              Icons.close,
-              size: 16,
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(width: 3),
-        ],
+        ),
       ),
     );
   }
 }
-

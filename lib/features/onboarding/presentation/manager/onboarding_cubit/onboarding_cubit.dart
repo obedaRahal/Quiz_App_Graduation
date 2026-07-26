@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_interest_group.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/entities/onboarding_progress_preview_response.dart';
 import 'package:quiz_app_grad/features/onboarding/domain/use_cases/get_onboarding_interests_use_case.dart';
@@ -31,7 +31,7 @@ class EducationLevelValues {
   static const String graduatedLevel = 'خريج';
 }
 
-class OnboardingCubit extends Cubit<OnboardingState> {
+class OnboardingCubit extends SafeCubit<OnboardingState> {
   final SubmitDiscoverySourceUseCase submitDiscoverySourceUseCase;
   final SubmitEducationLevelUseCase submitEducationLevelUseCase;
   final SubmitSchoolStageUseCase submitSchoolStageUseCase;
@@ -876,139 +876,137 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   ////////////////////////
   // on boarding preview progress
   Future<void> initializeProgressPreviewIfNeeded({
-  required int lastCompletedStep,
-}) async {
-  debugPrint(
-    "============ OnboardingCubit.initializeProgressPreviewIfNeeded ============",
-  );
-  debugPrint("→ lastCompletedStep: $lastCompletedStep");
+    required int lastCompletedStep,
+  }) async {
+    debugPrint(
+      "============ OnboardingCubit.initializeProgressPreviewIfNeeded ============",
+    );
+    debugPrint("→ lastCompletedStep: $lastCompletedStep");
 
-  if (state.hasInitializedProgressPreview || state.isLoading) {
-    debugPrint("✗ progress preview already initialized or loading");
+    if (state.hasInitializedProgressPreview || state.isLoading) {
+      debugPrint("✗ progress preview already initialized or loading");
+      debugPrint("=================================================");
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        isLoading: true,
+        hasInitializedProgressPreview: true,
+        clearErrorMessage: true,
+      ),
+    );
+
+    final result = await getOnboardingProgressPreviewUseCase(
+      GetOnboardingProgressPreviewParams(email: onboardingEmail),
+    );
+
+    result.fold(
+      (failure) {
+        debugPrint(
+          "✗ initializeProgressPreview failure title: ${failure.title}",
+        );
+        debugPrint(
+          "✗ initializeProgressPreview failure message: ${failure.message}",
+        );
+
+        emit(
+          state.copyWith(
+            isLoading: false,
+            errorTitle: failure.title,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (response) {
+        _applyProgressPreviewResume(
+          response: response,
+          lastCompletedStep: lastCompletedStep,
+        );
+      },
+    );
+
     debugPrint("=================================================");
-    return;
   }
 
-  emit(
-    state.copyWith(
-      isLoading: true,
-      hasInitializedProgressPreview: true,
-      clearErrorMessage: true,
-    ),
-  );
+  void _applyProgressPreviewResume({
+    required OnboardingProgressPreviewResponse response,
+    required int lastCompletedStep,
+  }) {
+    debugPrint(
+      "============ OnboardingCubit._applyProgressPreviewResume ============",
+    );
 
-  final result = await getOnboardingProgressPreviewUseCase(
-    GetOnboardingProgressPreviewParams(
-      email: onboardingEmail,
-    ),
-  );
+    final previewDiscoverySource = response.discoverySource?.trim();
+    final previewEducationLevel = response.educationLevel?.trim();
 
-  result.fold(
-    (failure) {
-      debugPrint(
-        "✗ initializeProgressPreview failure title: ${failure.title}",
-      );
-      debugPrint(
-        "✗ initializeProgressPreview failure message: ${failure.message}",
-      );
+    final updatedVisibleSteps = _buildVisibleSteps(previewEducationLevel);
 
-      emit(
-        state.copyWith(
-          isLoading: false,
-          errorTitle: failure.title,
-          errorMessage: failure.message,
-        ),
-      );
-    },
-    (response) {
-      _applyProgressPreviewResume(
-        response: response,
-        lastCompletedStep: lastCompletedStep,
-      );
-    },
-  );
-
-  debugPrint("=================================================");
-}
-
-void _applyProgressPreviewResume({
-  required OnboardingProgressPreviewResponse response,
-  required int lastCompletedStep,
-}) {
-  debugPrint(
-    "============ OnboardingCubit._applyProgressPreviewResume ============",
-  );
-
-  final previewDiscoverySource = response.discoverySource?.trim();
-  final previewEducationLevel = response.educationLevel?.trim();
-
-  final updatedVisibleSteps = _buildVisibleSteps(previewEducationLevel);
-
-  final targetStep = _resolveResumeTargetStep(
-    lastCompletedStep: lastCompletedStep,
-    educationLevel: previewEducationLevel,
-  );
-
-  final targetIndex = updatedVisibleSteps.indexOf(targetStep);
-  final safeTargetIndex = targetIndex == -1 ? 0 : targetIndex;
-
-  emit(
-    state.copyWith(
-      heardAbout: previewDiscoverySource,
+    final targetStep = _resolveResumeTargetStep(
+      lastCompletedStep: lastCompletedStep,
       educationLevel: previewEducationLevel,
-      visibleSteps: updatedVisibleSteps,
-      currentStepIndex: safeTargetIndex,
-      isLoading: false,
-      clearErrorMessage: true,
-    ),
-  );
+    );
 
-  debugPrint("→ preview discoverySource: $previewDiscoverySource");
-  debugPrint("→ preview educationLevel: $previewEducationLevel");
-  debugPrint("→ resume targetStep: $targetStep");
-  debugPrint("→ resume targetIndex: $safeTargetIndex");
-  debugPrint("=================================================");
-}
+    final targetIndex = updatedVisibleSteps.indexOf(targetStep);
+    final safeTargetIndex = targetIndex == -1 ? 0 : targetIndex;
 
-OnboardingStepType _resolveResumeTargetStep({
-  required int lastCompletedStep,
-  required String? educationLevel,
-}) {
-  switch (lastCompletedStep) {
-    case 0:
-      return OnboardingStepType.heardAbout;
+    emit(
+      state.copyWith(
+        heardAbout: previewDiscoverySource,
+        educationLevel: previewEducationLevel,
+        visibleSteps: updatedVisibleSteps,
+        currentStepIndex: safeTargetIndex,
+        isLoading: false,
+        clearErrorMessage: true,
+      ),
+    );
 
-    case 1:
-      return OnboardingStepType.educationLevel;
-
-    case 2:
-      return _resolveStepAfterEducationLevel(educationLevel);
-
-    case 3:
-    case 4:
-    case 5:
-      return OnboardingStepType.interests;
-
-    default:
-      return OnboardingStepType.heardAbout;
+    debugPrint("→ preview discoverySource: $previewDiscoverySource");
+    debugPrint("→ preview educationLevel: $previewEducationLevel");
+    debugPrint("→ resume targetStep: $targetStep");
+    debugPrint("→ resume targetIndex: $safeTargetIndex");
+    debugPrint("=================================================");
   }
-}
 
-OnboardingStepType _resolveStepAfterEducationLevel(String? educationLevel) {
-  switch (educationLevel) {
-    case EducationLevelValues.schoolLevel:
-      return OnboardingStepType.schoolStage;
+  OnboardingStepType _resolveResumeTargetStep({
+    required int lastCompletedStep,
+    required String? educationLevel,
+  }) {
+    switch (lastCompletedStep) {
+      case 0:
+        return OnboardingStepType.heardAbout;
 
-    case EducationLevelValues.universityLevel:
-      return OnboardingStepType.currentUniversity;
+      case 1:
+        return OnboardingStepType.educationLevel;
 
-    case EducationLevelValues.mastersLevel:
-    case EducationLevelValues.doctorateLevel:
-    case EducationLevelValues.graduatedLevel:
-      return OnboardingStepType.graduatedUniversity;
+      case 2:
+        return _resolveStepAfterEducationLevel(educationLevel);
 
-    default:
-      return OnboardingStepType.educationLevel;
+      case 3:
+      case 4:
+      case 5:
+        return OnboardingStepType.interests;
+
+      default:
+        return OnboardingStepType.heardAbout;
+    }
   }
-}
+
+  OnboardingStepType _resolveStepAfterEducationLevel(String? educationLevel) {
+    switch (educationLevel) {
+      case EducationLevelValues.schoolLevel:
+        return OnboardingStepType.schoolStage;
+
+      case EducationLevelValues.universityLevel:
+        return OnboardingStepType.currentUniversity;
+
+      case EducationLevelValues.mastersLevel:
+      case EducationLevelValues.doctorateLevel:
+      case EducationLevelValues.graduatedLevel:
+        return OnboardingStepType.graduatedUniversity;
+
+      default:
+        return OnboardingStepType.educationLevel;
+    }
+  }
 }

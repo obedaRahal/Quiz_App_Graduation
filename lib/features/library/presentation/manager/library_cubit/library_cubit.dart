@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/library/domain/entities/library_params.dart';
 import 'package:quiz_app_grad/features/library/domain/entities/library_search_params.dart';
 import 'package:quiz_app_grad/features/library/domain/entities/library_tab_type.dart';
@@ -10,7 +10,7 @@ import 'package:quiz_app_grad/features/library/domain/usecases/search_library_co
 
 import 'library_state.dart';
 
-class LibraryCubit extends Cubit<LibraryState> {
+class LibraryCubit extends SafeCubit<LibraryState> {
   final GetLibraryContentUseCase getLibraryContentUseCase;
   final SearchLibraryContentUseCase searchLibraryContentUseCase;
 
@@ -86,55 +86,52 @@ class LibraryCubit extends Cubit<LibraryState> {
     await getInitialLibraryContent();
   }
 
- void onSearchChanged(String value) {
-  final query = value.trim();
+  void onSearchChanged(String value) {
+    final query = value.trim();
 
-  _searchDebounce?.cancel();
+    _searchDebounce?.cancel();
 
-  if (query.isEmpty) {
-    clearSearch();
-    return;
-  }
+    if (query.isEmpty) {
+      clearSearch();
+      return;
+    }
 
-  if (query.length < 2) {
+    if (query.length < 2) {
+      emit(
+        state.copyWith(
+          isSearchMode: true,
+          searchQuery: query,
+          isSearching: false,
+          searchMaterials: [],
+          clearSearchNextCursor: true,
+          searchHasMorePages: false,
+          errorMessage: 'كلمة البحث قصيرة جدًا',
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         isSearchMode: true,
         searchQuery: query,
-        isSearching: false,
+        isSearching: true,
         searchMaterials: [],
         clearSearchNextCursor: true,
         searchHasMorePages: false,
-        errorMessage: 'كلمة البحث قصيرة جدًا',
+        clearError: true,
       ),
     );
-    return;
+
+    _searchDebounce = Timer(const Duration(milliseconds: 600), () {
+      _searchFirstPage(query);
+    });
   }
-
-  emit(
-    state.copyWith(
-      isSearchMode: true,
-      searchQuery: query,
-      isSearching: true,
-      searchMaterials: [],
-      clearSearchNextCursor: true,
-      searchHasMorePages: false,
-      clearError: true,
-    ),
-  );
-
-  _searchDebounce = Timer(const Duration(milliseconds: 600), () {
-    _searchFirstPage(query);
-  });
-}
 
   Future<void> _searchFirstPage(String query) async {
     try {
       final response = await searchLibraryContentUseCase(
-        LibrarySearchParams(
-          query: query,
-          perPage: 20,
-        ),
+        LibrarySearchParams(query: query, perPage: 20),
       );
 
       if (state.searchQuery != query) return;
@@ -150,16 +147,16 @@ class LibraryCubit extends Cubit<LibraryState> {
         ),
       );
     } catch (error) {
-  emit(
-    state.copyWith(
-      isSearching: false,
-      searchMaterials: [],
-      clearSearchNextCursor: true,
-      searchHasMorePages: false,
-      errorMessage: error.toString(),
-    ),
-  );
-}
+      emit(
+        state.copyWith(
+          isSearching: false,
+          searchMaterials: [],
+          clearSearchNextCursor: true,
+          searchHasMorePages: false,
+          errorMessage: error.toString(),
+        ),
+      );
+    }
   }
 
   void clearSearch() {
@@ -221,10 +218,7 @@ class LibraryCubit extends Cubit<LibraryState> {
       );
     } catch (error) {
       emit(
-        state.copyWith(
-          isLoadingMore: false,
-          errorMessage: error.toString(),
-        ),
+        state.copyWith(isLoadingMore: false, errorMessage: error.toString()),
       );
     }
   }
@@ -258,10 +252,7 @@ class LibraryCubit extends Cubit<LibraryState> {
 
       emit(
         state.copyWith(
-          searchMaterials: [
-            ...state.searchMaterials,
-            ...response.materials,
-          ],
+          searchMaterials: [...state.searchMaterials, ...response.materials],
           searchNextCursor: response.meta.nextCursor,
           searchHasMorePages: response.meta.hasMorePages,
           isSearchLoadingMore: false,

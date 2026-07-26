@@ -1,7 +1,7 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'bottom_nav_state.dart';
 
-class BottomNavCubit extends Cubit<BottomNavState> {
+class BottomNavCubit extends SafeCubit<BottomNavState> {
   BottomNavCubit({int initialIndex = 0})
     : super(BottomNavState(currentIndex: initialIndex));
 

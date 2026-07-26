@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/forgot_password_request_otp_use_case.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/forgot_password_resend_otp_use_case.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/forgot_password_reset_use_case.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/forgot_password_verify_otp_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_state.dart';
 
-class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
+class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
   Timer? _timer;
 
   final ForgotPasswordRequestOtpUseCase forgotPasswordRequestOtpUseCase;
@@ -166,12 +166,12 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       );
       return;
     }
-if (state.otpCode.length != 6) {
-    emit(state.copyWith(showOtpError: true));
-    return;
-  }
+    if (state.otpCode.length != 6) {
+      emit(state.copyWith(showOtpError: true));
+      return;
+    }
 
-  emit(state.copyWith(showOtpError: false));
+    emit(state.copyWith(showOtpError: false));
     // if (otpCode.length != 6) {
     //   emit(
     //     state.copyWith(

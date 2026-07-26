@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/settings/data/services/sold_tests_pdf_service.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/sold_tests_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/fetch_sold_tests_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/fetch_sold_tests_params.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/sold_tests/sold_tests_state.dart';
 
-class SoldTestsCubit extends Cubit<SoldTestsState> {
+class SoldTestsCubit extends SafeCubit<SoldTestsState> {
   final FetchSoldTestsUseCase fetchSoldTestsUseCase;
 
   final SoldTestsPdfService soldTestsPdfService;

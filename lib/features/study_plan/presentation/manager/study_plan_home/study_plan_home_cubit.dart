@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/core/services/app_date_time_settings.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_daily_task_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_day_entity.dart';
@@ -16,7 +16,7 @@ import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_status
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/change_study_task_status_use_case.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/change_study_task_status_params.dart';
 
-class StudyPlanHomeCubit extends Cubit<StudyPlanHomeState> {
+class StudyPlanHomeCubit extends SafeCubit<StudyPlanHomeState> {
   static const bool useMockData = false;
 
   final GetStudyPlanDailyOverviewUseCase getStudyPlanDailyOverviewUseCase;

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_follow_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
@@ -14,7 +14,7 @@ import 'package:quiz_app_grad/features/search/domain/use_cases/params/search_use
 import 'package:quiz_app_grad/features/search/domain/use_cases/search_users_use_case.dart';
 import 'package:quiz_app_grad/features/search/presentation/manager/search/search_state.dart';
 
-class SearchCubit extends Cubit<SearchState> {
+class SearchCubit extends SafeCubit<SearchState> {
   final SearchUsersUseCase searchUsersUseCase;
   final FollowCreatorUseCase followCreatorUseCase;
   final UnfollowCreatorUseCase unfollowCreatorUseCase;
@@ -647,6 +647,4 @@ class SearchCubit extends Cubit<SearchState> {
 
     debugPrint('=======================================================');
   }
-
-  
 }

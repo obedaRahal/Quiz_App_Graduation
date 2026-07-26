@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_follow_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unfollow_creator_use_case.dart';
@@ -11,7 +11,8 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/get_other_
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/get_other_profile_connections_params.dart';
 import 'other_profile_connections_state.dart';
 
-class OtherProfileConnectionsCubit extends Cubit<OtherProfileConnectionsState> {
+class OtherProfileConnectionsCubit
+    extends SafeCubit<OtherProfileConnectionsState> {
   final GetOtherProfileConnectionsUseCase getOtherProfileConnectionsUseCase;
   final FollowCreatorUseCase followCreatorUseCase;
   final UnfollowCreatorUseCase unfollowCreatorUseCase;

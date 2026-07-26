@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_feedback_on_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/delete_feedback_on_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/download_test_file_use_case.dart';
@@ -23,7 +23,7 @@ import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/g
 import 'package:quiz_app_grad/features/my_test_details/domain/use_cases/params/get_my_test_modifications_params.dart';
 import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_test_details_cubit/my_test_details_state.dart';
 
-class MyTestDetailsCubit extends Cubit<MyTestDetailsState> {
+class MyTestDetailsCubit extends SafeCubit<MyTestDetailsState> {
   final GetMyPublicTestDetailsOverviewUseCase
   getMyPublicTestDetailsOverviewUseCase;
   final GetMyPublicTestStatusHistoryUseCase getMyPublicTestStatusHistoryUseCase;

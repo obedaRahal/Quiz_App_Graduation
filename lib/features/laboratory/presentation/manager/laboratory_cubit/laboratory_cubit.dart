@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/get_all_interests/domain/use_case/get_all_interests_use_case.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/entities/filter_tests_params.dart';
 import 'package:quiz_app_grad/features/laboratory/domain/mappers/lab_recommended_test_mapper.dart';
@@ -13,7 +13,7 @@ import 'package:quiz_app_grad/features/laboratory/domain/use_case/search_tests_b
 import 'package:quiz_app_grad/features/laboratory/presentation/manager/laboratory_cubit/laboratory_state.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_filter_bottom_sheet.dart';
 
-class LaboratoryCubit extends Cubit<LaboratoryState> {
+class LaboratoryCubit extends SafeCubit<LaboratoryState> {
   final GetTestsByInterestUseCase getTestsByInterestUseCase;
   final ScrollController scrollController = ScrollController();
   Timer? _searchDebounce;

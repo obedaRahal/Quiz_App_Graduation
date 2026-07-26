@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/study_task/domain/entities/study_task_details_entity.dart';
 import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_status.dart';
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/change_study_task_status_use_case.dart';
@@ -12,7 +12,7 @@ import 'package:quiz_app_grad/features/study_task/domain/use_cases/params/toggle
 import 'package:quiz_app_grad/features/study_task/domain/use_cases/toggle_study_sub_task_status_use_case.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/manager/study_task_details_state/study_task_details_state.dart';
 
-class StudyTaskDetailsCubit extends Cubit<StudyTaskDetailsState> {
+class StudyTaskDetailsCubit extends SafeCubit<StudyTaskDetailsState> {
   final GetStudyTaskDetailsUseCase getStudyTaskDetailsUseCase;
   final DeleteStudyTaskUseCase deleteStudyTaskUseCase;
   final ChangeStudyTaskStatusUseCase changeStudyTaskStatusUseCase;

@@ -6,7 +6,7 @@
 // import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_case.dart';
 // import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_state.dart';
 
-// class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
+// class VerifyRegisterCubit extends SafeCubit<VerifyRegisterState> {
 //   Timer? _timer;
 //   final VerifyEmailUseCase verifyEmailUseCase;
 //   final ResendOtpUseCase resendOtpUseCase;
@@ -207,12 +207,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/resend_otp_use_case.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_state.dart';
 
-class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
+class VerifyRegisterCubit extends SafeCubit<VerifyRegisterState> {
   Timer? _timer;
 
   final VerifyEmailUseCase verifyEmailUseCase;
@@ -301,12 +301,12 @@ class VerifyRegisterCubit extends Cubit<VerifyRegisterState> {
       );
       return;
     }
-if (state.otpCode.length != 6) {
-    emit(state.copyWith(showOtpError: true));
-    return;
-  }
+    if (state.otpCode.length != 6) {
+      emit(state.copyWith(showOtpError: true));
+      return;
+    }
 
-  emit(state.copyWith(showOtpError: false));
+    emit(state.copyWith(showOtpError: false));
     // if (otpCode.length != 6) {
     //   emit(
     //     state.copyWith(

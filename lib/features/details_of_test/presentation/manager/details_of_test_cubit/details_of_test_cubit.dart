@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_test_details_reviews_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_feedback_on_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/add_test_review_use_case.dart';
@@ -38,7 +38,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unlike_t
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/update_test_review_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_state.dart';
 
-class DetailsOfTestCubit extends Cubit<DetailsOfTestState> {
+class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
   final GetOtherTestDetailsOverviewUseCase getOtherTestDetailsOverviewUseCase;
   final GetOtherTestDetailsSampleUseCase getOtherTestDetailsSampleUseCase;
   final GetOtherTestDetailsReviewsUseCase getOtherTestDetailsReviewsUseCase;

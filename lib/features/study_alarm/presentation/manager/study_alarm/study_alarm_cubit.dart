@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/study_alarm/domain/use_cases/get_study_alarm_schedule_use_case.dart';
 import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_state.dart';
 import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_scheduler_service.dart';
 
-class StudyAlarmCubit extends Cubit<StudyAlarmState> {
+class StudyAlarmCubit extends SafeCubit<StudyAlarmState> {
   final GetStudyAlarmScheduleUseCase getStudyAlarmScheduleUseCase;
 
   final StudyAlarmSchedulerService schedulerService;

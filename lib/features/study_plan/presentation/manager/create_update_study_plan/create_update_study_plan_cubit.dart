@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/home/study_plan_summary_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/subjects/study_subject_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/create_study_plan_use_case.dart';
@@ -11,7 +11,7 @@ import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/update
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/update_study_plan_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/create_update_study_plan/create_update_study_plan_state.dart';
 
-class CreateUpdateStudyPlanCubit extends Cubit<CreateUpdateStudyPlanState> {
+class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
   final GetStudySubjectsUseCase getStudySubjectsUseCase;
   final CreateStudyPlanUseCase createStudyPlanUseCase;
 

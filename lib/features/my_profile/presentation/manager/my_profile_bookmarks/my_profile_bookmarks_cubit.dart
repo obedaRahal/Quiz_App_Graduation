@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/test_bookmark_action_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/unbookmark_test_use_case.dart';
 import 'package:quiz_app_grad/features/my_profile/domain/entities/my_profile_bookmarks_entity.dart';
@@ -11,7 +11,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/use_cases/params/fol
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_content_bookmark_use_case.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/use_cases/remove_folder_bookmark_use_case.dart';
 
-class MyProfileBookmarksCubit extends Cubit<MyProfileBookmarksState> {
+class MyProfileBookmarksCubit extends SafeCubit<MyProfileBookmarksState> {
   final FetchMyProfileBookmarksUseCase fetchMyProfileBookmarksUseCase;
   final UnbookmarkTestUseCase unbookmarkTestUseCase;
   final RemoveContentBookmarkUseCase removeContentBookmarkUseCase;

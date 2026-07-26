@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/notification/domain/use_cases/get_notification_unread_count_use_case.dart';
 import 'package:quiz_app_grad/features/notification/presentation/manager/notification_unread_count/notification_unread_count_state.dart';
 
-class NotificationUnreadCountCubit extends Cubit<NotificationUnreadCountState> {
+class NotificationUnreadCountCubit
+    extends SafeCubit<NotificationUnreadCountState> {
   final GetNotificationUnreadCountUseCase getNotificationUnreadCountUseCase;
 
   NotificationUnreadCountCubit({

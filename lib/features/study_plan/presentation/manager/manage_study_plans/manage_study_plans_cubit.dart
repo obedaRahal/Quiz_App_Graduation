@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/manage/managed_study_plan_entity.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/get_study_plans_use_case.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plans_params.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/manage_study_plans/manage_study_plans_state.dart';
 
-class ManageStudyPlansCubit extends Cubit<ManageStudyPlansState> {
+class ManageStudyPlansCubit extends SafeCubit<ManageStudyPlansState> {
   final GetStudyPlansUseCase getStudyPlansUseCase;
 
   ManageStudyPlansCubit({required this.getStudyPlansUseCase})

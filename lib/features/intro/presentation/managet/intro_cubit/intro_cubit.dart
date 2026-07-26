@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
 
 import 'intro_state.dart';
 
-class IntroCubit extends Cubit<IntroState> {
+class IntroCubit extends SafeCubit<IntroState> {
   IntroCubit() : super(const IntroState()) {
     debugPrint("============ IntroCubit INIT ============");
   }

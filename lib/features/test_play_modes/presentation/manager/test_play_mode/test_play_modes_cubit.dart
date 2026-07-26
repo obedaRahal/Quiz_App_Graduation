@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/core/services/accessibility/test_voice_assistant_service.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/services/challenge_result_pdf_service.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/services/mcq_result_pdf_service.dart';
@@ -14,7 +14,7 @@ import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/params/r
 import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/register_test_attempt_interaction_use_case.dart';
 import 'package:quiz_app_grad/features/test_play_modes/presentation/manager/test_play_mode/test_play_modes_state.dart';
 
-class TestPlayModesCubit extends Cubit<TestPlayModesState> {
+class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
   Timer? _sessionTimer;
   final TestVoiceAssistantService voiceAssistantService;
   final McqResultPdfService mcqResultPdfService;

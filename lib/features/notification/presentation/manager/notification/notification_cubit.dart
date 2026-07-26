@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 import 'package:quiz_app_grad/features/notification/domain/entities/notification_entity.dart';
 import 'package:quiz_app_grad/features/notification/domain/use_cases/get_notifications_use_case.dart';
 import 'package:quiz_app_grad/features/notification/domain/use_cases/mark_notifications_as_read_use_case.dart';
@@ -7,7 +7,7 @@ import 'package:quiz_app_grad/features/notification/domain/use_cases/params/get_
 import 'package:quiz_app_grad/features/notification/domain/use_cases/params/mark_notifications_as_read_params.dart';
 import 'package:quiz_app_grad/features/notification/presentation/manager/notification/notification_state.dart';
 
-class NotificationCubit extends Cubit<NotificationState> {
+class NotificationCubit extends SafeCubit<NotificationState> {
   final GetNotificationsUseCase getNotificationsUseCase;
   final MarkNotificationsAsReadUseCase markNotificationsAsReadUseCase;
 
