@@ -4,6 +4,10 @@ import 'package:quiz_app_grad/features/content_details/domain/entities/similar_c
 
 enum OtherContentDetailsStatus { initial, loading, success, failure }
 
+enum ContentShareLinkStatus { initial, loading, success, failure }
+
+enum SharedContentLinkStatus { initial, loading, success, failure }
+
 class OtherContentDetailsState {
   final OtherContentDetailsStatus status;
   final OtherContentDetailsEntity? details;
@@ -34,6 +38,12 @@ class OtherContentDetailsState {
   final String? downloadedFilePath;
   final bool isDeleteLoading;
   final bool isDeleted;
+  final ContentShareLinkStatus shareLinkStatus;
+  final String? shareUrl;
+  final SharedContentLinkStatus sharedContentLinkStatus;
+  final int? sharedMaterialId;
+  final bool? sharedContentIsOwner;
+
   const OtherContentDetailsState({
     this.status = OtherContentDetailsStatus.initial,
     this.details,
@@ -62,7 +72,26 @@ class OtherContentDetailsState {
     this.downloadedFilePath,
     this.isDeleteLoading = false,
     this.isDeleted = false,
+    this.shareLinkStatus = ContentShareLinkStatus.initial,
+    this.shareUrl,
+    this.sharedContentLinkStatus = SharedContentLinkStatus.initial,
+    this.sharedMaterialId,
+    this.sharedContentIsOwner,
   });
+
+  bool get isShareLinkLoading =>
+      shareLinkStatus == ContentShareLinkStatus.loading;
+  bool get isShareLinkSuccess =>
+      shareLinkStatus == ContentShareLinkStatus.success;
+  bool get isShareLinkFailure =>
+      shareLinkStatus == ContentShareLinkStatus.failure;
+
+  bool get isSharedContentLinkLoading =>
+      sharedContentLinkStatus == SharedContentLinkStatus.loading;
+  bool get isSharedContentLinkSuccess =>
+      sharedContentLinkStatus == SharedContentLinkStatus.success;
+  bool get isSharedContentLinkFailure =>
+      sharedContentLinkStatus == SharedContentLinkStatus.failure;
 
   OtherContentDetailsState copyWith({
     OtherContentDetailsStatus? status,
@@ -97,6 +126,13 @@ class OtherContentDetailsState {
     bool clearDownloadedFilePath = false,
     bool? isDeleteLoading,
     bool? isDeleted,
+    ContentShareLinkStatus? shareLinkStatus,
+    String? shareUrl,
+    bool clearShareUrl = false,
+    SharedContentLinkStatus? sharedContentLinkStatus,
+    int? sharedMaterialId,
+    bool? sharedContentIsOwner,
+    bool clearSharedContentLink = false,
   }) {
     return OtherContentDetailsState(
       status: status ?? this.status,
@@ -135,6 +171,16 @@ class OtherContentDetailsState {
           : downloadedFilePath ?? this.downloadedFilePath,
       isDeleteLoading: isDeleteLoading ?? this.isDeleteLoading,
       isDeleted: isDeleted ?? this.isDeleted,
+      shareLinkStatus: shareLinkStatus ?? this.shareLinkStatus,
+      shareUrl: clearShareUrl ? null : shareUrl ?? this.shareUrl,
+      sharedContentLinkStatus:
+          sharedContentLinkStatus ?? this.sharedContentLinkStatus,
+      sharedMaterialId: clearSharedContentLink
+          ? null
+          : sharedMaterialId ?? this.sharedMaterialId,
+      sharedContentIsOwner: clearSharedContentLink
+          ? null
+          : sharedContentIsOwner ?? this.sharedContentIsOwner,
     );
   }
 }

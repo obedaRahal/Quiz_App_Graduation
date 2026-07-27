@@ -16,7 +16,9 @@ import 'package:quiz_app_grad/features/auth/presentation/view/login_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/register_page.dart';
 import 'package:quiz_app_grad/features/auth/presentation/view/verify_email_page.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/view/content_details_page.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/view/shared_content_redirect_view.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/view/create_test_ai_loading_view.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/view/create_test_page.dart';
@@ -135,6 +137,28 @@ class AppRouter {
                   return cubit;
                 },
                 child: SharedTestRedirectView(slug: slug),
+              ),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.sharedContentRedirect,
+          name: AppRouterName.sharedContentRedirect,
+          pageBuilder: (context, state) {
+            final slug = state.pathParameters['slug'] ?? '';
+
+            debugPrint("============ SharedContentRedirect Route ============");
+            debugPrint("→ received slug: $slug");
+            debugPrint("=====================================================");
+
+            return _slidePage(
+              state: state,
+              child: BlocProvider(
+                create: (_) =>
+                    sl<OtherContentDetailsCubit>()
+                      ..resolveSharedContentLink(slug: slug),
+                child: SharedContentRedirectView(slug: slug),
               ),
             );
           },
@@ -939,6 +963,19 @@ class AppRouter {
       }
     }
 
+    if (uri.scheme == 'nerd' && uri.host == 'library') {
+      final slug = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : '';
+
+      debugPrint("============ Library Deep Link Redirect ============");
+      debugPrint("→ original uri: $uri");
+      debugPrint("→ slug: $slug");
+      debugPrint("====================================================");
+
+      if (slug.isNotEmpty) {
+        return AppRouterPath.sharedContentRedirectPath(slug);
+      }
+    }
+
     if (uri.scheme == 'nerd' && uri.host == 'profiles') {
       final slug = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : '';
 
@@ -962,6 +999,7 @@ class AppRouter {
     debugPrint("=========================================");
 
     if (currentLocation == AppRouterPath.sharedTestRedirect ||
+        currentLocation == AppRouterPath.sharedContentRedirect ||
         currentLocation == AppRouterPath.sharedProfileRedirect) {
       return null;
     }
@@ -1002,6 +1040,7 @@ class AppRouter {
     AppRouterPath.detailsOfTest,
 
     AppRouterPath.sharedTestRedirect,
+    AppRouterPath.sharedContentRedirect,
     AppRouterPath.sharedProfileRedirect,
   };
 

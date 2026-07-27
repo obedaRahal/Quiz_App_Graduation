@@ -150,6 +150,12 @@ class EndPoints {
 
   static String sharedTestLink(String slug) => '$baseUrl/test/shared/$slug';
 
+  static String contentShareLink(int materialId) =>
+      '$baseUrl/library/share-link/$materialId';
+
+  static String sharedContentLink(String slug) =>
+      '$baseUrl/library/shared/${Uri.encodeComponent(slug)}';
+
   //  get list of likes and bookmarks on TEST
   static String testInteractionUsers({
     required int testId,

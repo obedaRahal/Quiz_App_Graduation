@@ -15,6 +15,7 @@ abstract class AppRouterName {
   static const mainLayout = 'mainLayout';
   static const detailsOfTest = 'detailsOfTest';
   static const String sharedTestRedirect = '/shared-test/:slug';
+  static const String sharedContentRedirect = 'sharedContentRedirect';
   static const allCategoriesPage = 'allCategoriesPage';
   static const laboratoryPage = 'laboratoryPage';
   static const createTestPage = 'createTestPage';
@@ -54,6 +55,10 @@ abstract class AppRouterName {
 
 abstract class AppRouterPath {
   static String sharedTestRedirectPath(String slug) => '/shared-test/$slug';
+
+  static const String sharedContentRedirect = '/shared-content/:slug';
+  static String sharedContentRedirectPath(String slug) =>
+      '/shared-content/${Uri.encodeComponent(slug)}';
 
   static const String sharedProfileRedirect = '/share/profiles/:slug';
   static String sharedProfileRedirectPath(String slug) =>

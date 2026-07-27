@@ -63,6 +63,19 @@
             </intent-filter>
 
 
+            <!-- Deep link: shared library content -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="nerd"
+                    android:host="library" />
+            </intent-filter>
+
+
             <!-- Deep link: profiles -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

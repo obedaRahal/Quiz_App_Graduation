@@ -8,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/config/app_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
-import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
 import 'package:quiz_app_grad/core/services/notification/local_votification_service.dart';
@@ -78,6 +77,17 @@ class _QuizAppState extends State<QuizApp> {
           AppRouter.router.go(path);
 
           debugPrint("✓ router.go called");
+        },
+        onLibrarySlugReceived: (slug) {
+          final path = AppRouterPath.sharedContentRedirectPath(slug);
+
+          debugPrint("============ Library Deep Link Navigation ============");
+          debugPrint("→ slug: $slug");
+          debugPrint("→ path: $path");
+          debugPrint("======================================================");
+
+          AppRouter.router.go(path);
+          debugPrint("✓ library router.go called");
         },
       );
     });

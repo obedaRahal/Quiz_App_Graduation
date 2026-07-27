@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
+import 'package:quiz_app_grad/features/content_details/data/models/content_share_link_model.dart';
 import 'package:quiz_app_grad/features/content_details/data/models/follow_publisher_response_model.dart';
 import 'package:quiz_app_grad/features/content_details/data/models/similar_content_response_model.dart';
 import 'package:quiz_app_grad/features/content_details/data/models/unfollow_publisher_response_model.dart';
@@ -23,6 +24,8 @@ abstract class OtherContentDetailsRemoteDataSource {
   );
   Future<FollowPublisherResponseModel> followPublisher(int publisherId);
   Future<UnfollowPublisherResponseModel> unfollowPublisher(int publisherId);
+  Future<ContentShareLinkModel> getContentShareLink(int contentId);
+  Future<SharedContentLinkModel> resolveSharedContentLink(String slug);
 }
 
 class OtherContentDetailsRemoteDataSourceImpl
@@ -111,6 +114,40 @@ class OtherContentDetailsRemoteDataSourceImpl
     debugPrint('Unfollow publisher response received successfully');
 
     return UnfollowPublisherResponseModel.fromJson(response);
+  }
+
+  @override
+  Future<ContentShareLinkModel> getContentShareLink(int contentId) async {
+    final endpoint = EndPoints.contentShareLink(contentId);
+
+    debugPrint('============ Content Share Link API ============');
+    debugPrint('→ method: GET');
+    debugPrint('→ endpoint: $endpoint');
+    debugPrint('→ material_id: $contentId');
+
+    final response = await apiConsumer.get(endpoint);
+
+    debugPrint('✓ content share link received');
+    debugPrint('================================================');
+
+    return ContentShareLinkModel.fromJson(response as Map<String, dynamic>);
+  }
+
+  @override
+  Future<SharedContentLinkModel> resolveSharedContentLink(String slug) async {
+    final endpoint = EndPoints.sharedContentLink(slug);
+
+    debugPrint('============ Resolve Shared Content API ============');
+    debugPrint('→ method: GET');
+    debugPrint('→ endpoint: $endpoint');
+    debugPrint('→ slug: $slug');
+
+    final response = await apiConsumer.get(endpoint);
+
+    debugPrint('✓ shared content resolved');
+    debugPrint('====================================================');
+
+    return SharedContentLinkModel.fromJson(response as Map<String, dynamic>);
   }
 
   //    Download Content

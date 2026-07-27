@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/core/utils/safe_back_to_home.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
 
 class ContentDetailsAppBar extends StatelessWidget {
@@ -13,22 +14,26 @@ class ContentDetailsAppBar extends StatelessWidget {
   final String targetLevel;
   final bool isOwner;
   final bool isPublic;
-final VoidCallback? onEditContentTap;
+  final VoidCallback? onEditContentTap;
+  final VoidCallback? onShareContentTap;
+
   const ContentDetailsAppBar({
     super.key,
-  required this.title,
-  required this.currentIndex,
-  required this.totalCount,
-  required this.targetLevel,
-  required this.isOwner,
-  required this.isPublic,
-  this.onEditContentTap,
+    required this.title,
+    required this.currentIndex,
+    required this.totalCount,
+    required this.targetLevel,
+    required this.isOwner,
+    required this.isPublic,
+    this.onEditContentTap,
+    this.onShareContentTap,
   });
+
   void _showOwnerMenu(BuildContext context) async {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final dividerColor = Theme.of(
       context,
-    ).dividerColor.withOpacity(isDark ? 0.45 : 0.9);
+    ).dividerColor.withValues(alpha: isDark ? 0.45 : 0.9);
 
     final result = await showMenu<String>(
       context: context,
@@ -48,6 +53,20 @@ final VoidCallback? onEditContentTap;
         maxWidth: SizeConfig.w(0.52),
       ),
       items: [
+        if (isPublic) ...[
+          PopupMenuItem<String>(
+            value: 'share',
+            height: SizeConfig.h(0.040),
+            padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.035)),
+            child: _OwnerMenuText(title: 'مشاركة المحتوى', isDark: isDark),
+          ),
+          PopupMenuItem<String>(
+            enabled: false,
+            height: 1,
+            padding: EdgeInsets.zero,
+            child: Divider(height: 1, thickness: 1, color: dividerColor),
+          ),
+        ],
         PopupMenuItem<String>(
           value: 'edit',
           height: SizeConfig.h(0.040),
@@ -71,15 +90,21 @@ final VoidCallback? onEditContentTap;
       ],
     );
 
-   switch (result) {
-  case 'edit':
-    onEditContentTap?.call();
-    break;
+    if (!context.mounted) return;
 
-  case 'delete':
-    _showDeleteConfirmDialog(context);
-    break;
-}
+    switch (result) {
+      case 'share':
+        onShareContentTap?.call();
+        break;
+
+      case 'edit':
+        onEditContentTap?.call();
+        break;
+
+      case 'delete':
+        _showDeleteConfirmDialog(context);
+        break;
+    }
   }
 
   void _showDeleteConfirmDialog(BuildContext context) {
@@ -166,7 +191,7 @@ final VoidCallback? onEditContentTap;
               children: [
                 _CircleIconButton(
                   icon: Icons.arrow_back_ios_new_rounded,
-                  onTap: () => Navigator.maybePop(context),
+                  onTap: () =>safeBackToHome(context),
                 ),
 
                 const Spacer(),
@@ -193,7 +218,7 @@ final VoidCallback? onEditContentTap;
                       return;
                     }
 
-                    // لاحقاً منضيف مشاركة المحتوى
+                    onShareContentTap?.call();
                   },
                 ),
               ],
@@ -269,8 +294,8 @@ class _CircleIconButton extends StatelessWidget {
         height: SizeConfig.w(0.085),
         decoration: BoxDecoration(
           color: isDark
-              ? AppPalette.fieldColorNDark.withOpacity(0.85)
-              : AppPalette.white.withOpacity(0.92),
+              ? AppPalette.fieldColorNDark.withValues(alpha: 0.85)
+              : AppPalette.white.withValues(alpha: 0.92),
           shape: BoxShape.circle,
         ),
         child: Icon(
@@ -300,8 +325,8 @@ class _SmallOutlineBadge extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: Theme.of(context).brightness == Brightness.dark
-            ? AppPalette.black.withOpacity(0.28)
-            : AppPalette.white.withOpacity(0.88),
+            ? AppPalette.black.withValues(alpha: 0.28)
+            : AppPalette.white.withValues(alpha: 0.88),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
           color: color ?? Theme.of(context).colorScheme.primary,

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_state.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/route_args/content_details_route_args.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_details_demo_data.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_interest_chip.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_publisher_section.dart';
@@ -356,9 +359,7 @@ class _ContentTexts extends StatelessWidget {
               color: isDark
                   ? AppPalette.textWhiteINDark
                   : AppPalette.textColorInHome,
-              fontSize: SizeConfig.text(0.043)
-                  .clamp(17.0, 21.0)
-                  .toDouble(),
+              fontSize: SizeConfig.text(0.043).clamp(17.0, 21.0).toDouble(),
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -373,12 +374,8 @@ class _ContentTexts extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontFamily: 'elMessiriRegular',
-              color: isDark
-                  ? AppPalette.grey2Dark
-                  : AppPalette.greyMedium,
-              fontSize: SizeConfig.text(0.030)
-                  .clamp(11.0, 13.0)
-                  .toDouble(),
+              color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
+              fontSize: SizeConfig.text(0.030).clamp(11.0, 13.0).toDouble(),
               fontWeight: FontWeight.w500,
               height: 1.45,
             ),
@@ -468,6 +465,16 @@ class _RelatedContentList extends StatelessWidget {
                     publishedAgo: item.publishedAt,
                     isBookmarked: item.viewerHasBookmarked,
                   ),
+                  ocCardTap: () {
+                    debugPrint("content id is :${item.id}");
+                    context.pushNamed(
+                      AppRouterName.otherContentDetails,
+                      extra: ContentDetailsRouteArgs(
+                        contentId: item.id,
+                        isMyContent: false,
+                      ),
+                    );
+                  },
                   isBookmarkLoading: state.similarBookmarkLoadingIds.contains(
                     item.id,
                   ),
@@ -511,96 +518,101 @@ class _RelatedContentList extends StatelessWidget {
 class _RelatedContentCard extends StatelessWidget {
   final _RelatedContentItem item;
   final VoidCallback onBookmarkTap;
+  final VoidCallback ocCardTap;
   final bool isBookmarkLoading;
 
   const _RelatedContentCard({
     required this.item,
     required this.onBookmarkTap,
     required this.isBookmarkLoading,
+    required this.ocCardTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.004)),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _RelatedImage(imageUrl: item.imageUrl),
+    return InkWell(
+      onTap: ocCardTap,
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.004)),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _RelatedImage(imageUrl: item.imageUrl),
 
-            SizedBox(width: SizeConfig.w(0.025)),
+              SizedBox(width: SizeConfig.w(0.025)),
 
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      Expanded(
-                        child: CustomTextWidget(
-                          item.title,
-                          textAlign: TextAlign.right,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          color: isDark
-                              ? AppPalette.titleWhiteINDark
-                              : AppPalette.textColorInHome,
-                          fontSize: SizeConfig.text(
-                            0.038,
-                          ).clamp(14.0, 18.0).toDouble(),
-                          fontWeight: FontWeight.w700,
-                          fontFamily: AppFont.elMessiriRegular,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        Expanded(
+                          child: CustomTextWidget(
+                            item.title,
+                            textAlign: TextAlign.right,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            color: isDark
+                                ? AppPalette.titleWhiteINDark
+                                : AppPalette.textColorInHome,
+                            fontSize: SizeConfig.text(
+                              0.038,
+                            ).clamp(14.0, 18.0).toDouble(),
+                            fontWeight: FontWeight.w700,
+                            fontFamily: AppFont.elMessiriRegular,
+                          ),
                         ),
-                      ),
 
-                      SizedBox(width: SizeConfig.w(0.012)),
+                        SizedBox(width: SizeConfig.w(0.012)),
 
-                      _RelatedTypeBadge(title: item.type),
+                        _RelatedTypeBadge(title: item.type),
 
-                      SizedBox(width: SizeConfig.w(0.010)),
+                        SizedBox(width: SizeConfig.w(0.010)),
 
-                      _RelatedBookmarkButton(
-                        isDark: isDark,
-                        isBookmarked: item.isBookmarked,
-                        isLoading: isBookmarkLoading,
-                        onTap: onBookmarkTap,
-                      ),
-                    ],
-                  ),
+                        _RelatedBookmarkButton(
+                          isDark: isDark,
+                          isBookmarked: item.isBookmarked,
+                          isLoading: isBookmarkLoading,
+                          onTap: onBookmarkTap,
+                        ),
+                      ],
+                    ),
 
-                  SizedBox(height: SizeConfig.h(0.004)),
+                    SizedBox(height: SizeConfig.h(0.004)),
 
-                  CustomTextWidget(
-                    item.description,
-                    textAlign: TextAlign.right,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    color: isDark
-                        ? AppPalette.grey2Dark
-                        : AppPalette.greyMedium,
-                    fontSize: SizeConfig.text(
-                      0.027,
-                    ).clamp(10.0, 12.0).toDouble(),
-                    fontWeight: FontWeight.w500,
-                    fontFamily: AppFont.elMessiriRegular,
-                  ),
+                    CustomTextWidget(
+                      item.description,
+                      textAlign: TextAlign.right,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      color: isDark
+                          ? AppPalette.grey2Dark
+                          : AppPalette.greyMedium,
+                      fontSize: SizeConfig.text(
+                        0.027,
+                      ).clamp(10.0, 12.0).toDouble(),
+                      fontWeight: FontWeight.w500,
+                      fontFamily: AppFont.elMessiriRegular,
+                    ),
 
-                  SizedBox(height: SizeConfig.h(0.008)),
+                    SizedBox(height: SizeConfig.h(0.008)),
 
-                  _RelatedBottomRow(
-                    interests: item.interests,
-                    likesCount: item.likesCount,
-                    publishedAgo: item.publishedAgo,
-                  ),
-                ],
+                    _RelatedBottomRow(
+                      interests: item.interests,
+                      likesCount: item.likesCount,
+                      publishedAgo: item.publishedAgo,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

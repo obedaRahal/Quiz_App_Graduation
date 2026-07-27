@@ -8,12 +8,14 @@ import 'package:quiz_app_grad/features/content_details/domain/entities/similar_c
 import 'package:quiz_app_grad/features/content_details/domain/usecases/bookmark_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/download_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/follow_publisher_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/get_content_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_other_content_details_usecase.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_similar_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/like_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/delete_my_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/get_my_public_content_details_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/report_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/resolve_shared_content_link_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unbookmark_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unfollow_publisher_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unlike_other_content_use_case.dart';
@@ -33,6 +35,9 @@ class OtherContentDetailsCubit extends SafeCubit<OtherContentDetailsState> {
   final UnfollowPublisherUseCase unfollowPublisherUseCase;
   final GetMyPublicContentDetailsUseCase getMyPublicContentDetailsUseCase;
   final DeleteMyContentUseCase deleteMyContentUseCase;
+  final GetContentShareLinkUseCase getContentShareLinkUseCase;
+  final ResolveSharedContentLinkUseCase resolveSharedContentLinkUseCase;
+
   OtherContentDetailsCubit({
     required this.getOtherContentDetailsUseCase,
     required this.likeOtherContentUseCase,
@@ -46,6 +51,8 @@ class OtherContentDetailsCubit extends SafeCubit<OtherContentDetailsState> {
     required this.unfollowPublisherUseCase,
     required this.getMyPublicContentDetailsUseCase,
     required this.deleteMyContentUseCase,
+    required this.getContentShareLinkUseCase,
+    required this.resolveSharedContentLinkUseCase,
   }) : super(const OtherContentDetailsState());
 
   Future<void> getContentDetails(int id) async {
@@ -565,5 +572,159 @@ class OtherContentDetailsCubit extends SafeCubit<OtherContentDetailsState> {
 
       emit(state.copyWith(isDeleteLoading: false, errorMessage: e.toString()));
     }
+  }
+
+  Future<void> getContentShareLink({required int contentId}) async {
+    if (state.isShareLinkLoading) return;
+
+    if (contentId <= 0) {
+      emit(
+        state.copyWith(
+          shareLinkStatus: ContentShareLinkStatus.failure,
+          errorMessage: 'معرّف المحتوى غير صالح',
+          clearShareUrl: true,
+        ),
+      );
+      return;
+    }
+
+    debugPrint('============ OtherContentDetailsCubit.share ============');
+    debugPrint('→ contentId: $contentId');
+
+    emit(
+      state.copyWith(
+        shareLinkStatus: ContentShareLinkStatus.loading,
+        clearShareUrl: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await getContentShareLinkUseCase(contentId);
+
+    result.fold(
+      (failure) {
+        debugPrint('✗ content share link failure: ${failure.message}');
+        emit(
+          state.copyWith(
+            shareLinkStatus: ContentShareLinkStatus.failure,
+            errorMessage: failure.message,
+            clearShareUrl: true,
+          ),
+        );
+      },
+      (response) {
+        final shareUrl = response.shareUrl.trim();
+
+        if (shareUrl.isEmpty) {
+          emit(
+            state.copyWith(
+              shareLinkStatus: ContentShareLinkStatus.failure,
+              errorMessage: 'لم يُرجع الخادم رابط مشاركة صالحًا',
+              clearShareUrl: true,
+            ),
+          );
+          return;
+        }
+
+        debugPrint('✓ content share link success');
+        debugPrint('→ shareSlug: ${response.shareSlug}');
+        debugPrint('→ shareUrl: $shareUrl');
+
+        emit(
+          state.copyWith(
+            shareLinkStatus: ContentShareLinkStatus.success,
+            shareUrl: shareUrl,
+            clearError: true,
+          ),
+        );
+      },
+    );
+  }
+
+  void resetShareLinkState() {
+    emit(
+      state.copyWith(
+        shareLinkStatus: ContentShareLinkStatus.initial,
+        clearShareUrl: true,
+      ),
+    );
+  }
+
+  Future<void> resolveSharedContentLink({required String slug}) async {
+    if (state.isSharedContentLinkLoading) return;
+
+    final normalizedSlug = slug.trim();
+    if (normalizedSlug.isEmpty) {
+      emit(
+        state.copyWith(
+          sharedContentLinkStatus: SharedContentLinkStatus.failure,
+          errorMessage: 'رابط المحتوى غير صالح',
+          clearSharedContentLink: true,
+        ),
+      );
+      return;
+    }
+
+    debugPrint(
+      '============ OtherContentDetailsCubit.resolveShared ============',
+    );
+    debugPrint('→ slug: $normalizedSlug');
+
+    emit(
+      state.copyWith(
+        sharedContentLinkStatus: SharedContentLinkStatus.loading,
+        clearSharedContentLink: true,
+        clearError: true,
+      ),
+    );
+
+    final result = await resolveSharedContentLinkUseCase(normalizedSlug);
+
+    result.fold(
+      (failure) {
+        debugPrint('✗ resolve shared content failure: ${failure.message}');
+        emit(
+          state.copyWith(
+            sharedContentLinkStatus: SharedContentLinkStatus.failure,
+            errorMessage: failure.message,
+            clearSharedContentLink: true,
+          ),
+        );
+      },
+      (response) {
+        if (response.materialId <= 0) {
+          emit(
+            state.copyWith(
+              sharedContentLinkStatus: SharedContentLinkStatus.failure,
+              errorMessage: 'لم يُرجع الخادم معرّف محتوى صالحًا',
+              clearSharedContentLink: true,
+            ),
+          );
+          return;
+        }
+
+        debugPrint('✓ shared content resolved');
+        debugPrint('→ materialId: ${response.materialId}');
+        debugPrint('→ isOwner: ${response.isOwner}');
+
+        emit(
+          state.copyWith(
+            sharedContentLinkStatus: SharedContentLinkStatus.success,
+            sharedMaterialId: response.materialId,
+            sharedContentIsOwner: response.isOwner,
+            clearError: true,
+          ),
+        );
+      },
+    );
+  }
+
+  void resetSharedContentLinkState() {
+    emit(
+      state.copyWith(
+        sharedContentLinkStatus: SharedContentLinkStatus.initial,
+        clearSharedContentLink: true,
+      ),
+    );
   }
 }

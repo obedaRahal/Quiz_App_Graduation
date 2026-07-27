@@ -8,6 +8,7 @@ import 'package:quiz_app_grad/features/content_details/presentation/manager/othe
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_state.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/mapper/content_details_mapper.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_details_scaffold.dart';
+import 'package:share_plus/share_plus.dart';
 
 // class ContentDetailsPage extends StatelessWidget {
 //   const ContentDetailsPage({super.key});
@@ -51,6 +52,7 @@ class ContentDetailsPage extends StatelessWidget {
 
       child: BlocConsumer<OtherContentDetailsCubit, OtherContentDetailsState>(
         listenWhen: (previous, current) =>
+            previous.shareLinkStatus != current.shareLinkStatus ||
             (previous.successMessage != current.successMessage &&
                 current.successMessage != null) ||
             (current.status != OtherContentDetailsStatus.failure &&
@@ -59,7 +61,43 @@ class ContentDetailsPage extends StatelessWidget {
             previous.showOpenDownloadedFileDialog !=
                 current.showOpenDownloadedFileDialog,
 
-        listener: (context, state) {
+        listener: (context, state) async {
+          if (state.isShareLinkSuccess) {
+            final shareUrl = state.shareUrl?.trim() ?? '';
+            context.read<OtherContentDetailsCubit>().resetShareLinkState();
+
+            if (shareUrl.isEmpty) {
+              showValidationTopSnackBar(
+                context,
+                title: 'تعذر مشاركة المحتوى',
+                message: 'لم يتم استلام رابط مشاركة صالح',
+                type: AppValidationSnackBarType.error,
+              );
+              return;
+            }
+
+            await SharePlus.instance.share(
+              ShareParams(text: shareUrl, subject: 'مشاركة محتوى من Nerd'),
+            );
+            return;
+          }
+
+          if (state.isShareLinkFailure) {
+            final message =
+                state.errorMessage?.trim() ?? 'تعذر جلب رابط مشاركة المحتوى';
+
+            context.read<OtherContentDetailsCubit>().resetShareLinkState();
+
+            showValidationTopSnackBar(
+              context,
+              title: 'تعذر مشاركة المحتوى',
+              message: message,
+              type: AppValidationSnackBarType.error,
+            );
+            context.read<OtherContentDetailsCubit>().clearErrorMessage();
+            return;
+          }
+
           final errorMessage = state.errorMessage?.trim();
 
           if (state.status != OtherContentDetailsStatus.failure &&

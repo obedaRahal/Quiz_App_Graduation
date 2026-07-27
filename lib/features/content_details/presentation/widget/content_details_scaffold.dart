@@ -27,7 +27,6 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
   int _currentIndex = 0;
   int _pdfPagesCount = 1;
 
-  bool _sheetIsCollapsed = false;
   static const double _collapsedSheetSize = 0.105;
   double get _initialSheetSize => widget.data.isOwner ? 0.25 : 0.44;
 
@@ -39,34 +38,6 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
     return widget.data.assets.isNotEmpty
         ? widget.data.assets.length
         : widget.data.assetCount;
-  }
-
-  Future<void> _collapseSheet() async {
-    if (!_sheetController.isAttached) return;
-
-    await _sheetController.animateTo(
-      _collapsedSheetSize,
-      duration: const Duration(milliseconds: 260),
-      curve: Curves.easeOutCubic,
-    );
-
-    if (mounted) {
-      setState(() => _sheetIsCollapsed = true);
-    }
-  }
-
-  Future<void> _expandSheet() async {
-    if (!_sheetController.isAttached) return;
-
-    await _sheetController.animateTo(
-      _initialSheetSize,
-      duration: const Duration(milliseconds: 260),
-      curve: Curves.easeOutCubic,
-    );
-
-    if (mounted) {
-      setState(() => _sheetIsCollapsed = false);
-    }
   }
 
   Future<void> _toggleSheetFromImageTap() async {
@@ -94,40 +65,48 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
     _sheetController.dispose();
     super.dispose();
   }
-Future<void> _goToEditContent() async {
-  final data = widget.data;
 
-  final result = await context.pushNamed(
-    AppRouterName.createTestPage,
-    extra: CreateTestInitialArgs(
-      mode: data.isFile
-          ? CreateTestCreationMode.contentFile
-          : CreateTestCreationMode.contentImages,
-      isContentEditMode: true,
-      editingContentId: data.id,
-      initialTitle: data.title,
-      initialDescription: data.description,
-      initialIsPublished: data.isPublic,
-      initialAcademicLevel: data.targetLevel,
-      initialScientificCategories: data.interests,
-      initialScientificInterestIds: const [],
-      existingAiMedia: data.assets.map((asset) {
-        return CreateTestExistingMediaState(
-          id: asset.id,
-          name: asset.url.split('/').last,
-          url: asset.url,
-          type: data.isFile ? 'pdf' : 'image',
-        );
-      }).toList(),
-    ),
-  );
+  Future<void> _goToEditContent() async {
+    final data = widget.data;
 
-  if (!mounted) return;
+    final result = await context.pushNamed(
+      AppRouterName.createTestPage,
+      extra: CreateTestInitialArgs(
+        mode: data.isFile
+            ? CreateTestCreationMode.contentFile
+            : CreateTestCreationMode.contentImages,
+        isContentEditMode: true,
+        editingContentId: data.id,
+        initialTitle: data.title,
+        initialDescription: data.description,
+        initialIsPublished: data.isPublic,
+        initialAcademicLevel: data.targetLevel,
+        initialScientificCategories: data.interests,
+        initialScientificInterestIds: const [],
+        existingAiMedia: data.assets.map((asset) {
+          return CreateTestExistingMediaState(
+            id: asset.id,
+            name: asset.url.split('/').last,
+            url: asset.url,
+            type: data.isFile ? 'pdf' : 'image',
+          );
+        }).toList(),
+      ),
+    );
 
-  if (result == true) {
-    context.read<OtherContentDetailsCubit>().getMyContentDetails(data.id);
+    if (!mounted) return;
+
+    if (result == true) {
+      context.read<OtherContentDetailsCubit>().getMyContentDetails(data.id);
+    }
   }
-}
+
+  void _shareContent() {
+    context.read<OtherContentDetailsCubit>().getContentShareLink(
+      contentId: widget.data.id,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -162,6 +141,7 @@ Future<void> _goToEditContent() async {
             isOwner: widget.data.isOwner,
             isPublic: widget.data.isPublic,
             onEditContentTap: _goToEditContent,
+            onShareContentTap: _shareContent,
           ),
           Align(
             alignment: Alignment.bottomCenter,

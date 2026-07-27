@@ -1,6 +1,5 @@
 import 'package:quiz_app_grad/features/content_details/domain/entities/other_content_details_entity.dart';
 
-import '../widget/content_details_demo_data.dart';
 import 'package:quiz_app_grad/features/content_details/domain/entities/my_content_details/my_content_details_entity.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_details_demo_data.dart';
 

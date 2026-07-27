@@ -36,12 +36,14 @@ import 'package:quiz_app_grad/features/content_details/domain/repositories/other
 import 'package:quiz_app_grad/features/content_details/domain/usecases/bookmark_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/download_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/follow_publisher_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/get_content_share_link_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_other_content_details_usecase.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/get_similar_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/like_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/delete_my_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/my_content_details/get_my_public_content_details_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/report_other_content_use_case.dart';
+import 'package:quiz_app_grad/features/content_details/domain/usecases/resolve_shared_content_link_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unbookmark_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unfollow_publisher_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unlike_other_content_use_case.dart';
@@ -1130,6 +1132,17 @@ void _registerLibraryFeature() {
       () => GetOtherContentDetailsUseCase(sl<OtherContentDetailsRepository>()),
     );
   }
+  if (!sl.isRegistered<GetContentShareLinkUseCase>()) {
+    sl.registerLazySingleton<GetContentShareLinkUseCase>(
+      () => GetContentShareLinkUseCase(sl<OtherContentDetailsRepository>()),
+    );
+  }
+  if (!sl.isRegistered<ResolveSharedContentLinkUseCase>()) {
+    sl.registerLazySingleton<ResolveSharedContentLinkUseCase>(
+      () =>
+          ResolveSharedContentLinkUseCase(sl<OtherContentDetailsRepository>()),
+    );
+  }
   //===================== Other Content Bookmark =====================//
 
   if (!sl.isRegistered<OtherContentBookmarkRemoteDataSource>()) {
@@ -1240,6 +1253,8 @@ void _registerLibraryFeature() {
         unfollowPublisherUseCase: sl<UnfollowPublisherUseCase>(),
         getMyPublicContentDetailsUseCase: sl(),
         deleteMyContentUseCase: sl(),
+        getContentShareLinkUseCase: sl(),
+        resolveSharedContentLinkUseCase: sl(),
       ),
     );
   }

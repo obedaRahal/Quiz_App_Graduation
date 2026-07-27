@@ -3,12 +3,22 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 
+enum AppDeepLinkKind { test, library }
+
+class AppDeepLinkTarget {
+  final AppDeepLinkKind kind;
+  final String slug;
+
+  const AppDeepLinkTarget({required this.kind, required this.slug});
+}
+
 class DeepLinkService {
   final AppLinks _appLinks = AppLinks();
   StreamSubscription<Uri>? _subscription;
 
   Future<void> init({
     required void Function(String slug) onTestSlugReceived,
+    required void Function(String slug) onLibrarySlugReceived,
   }) async {
     debugPrint("============ DeepLinkService.init ============");
 
@@ -16,13 +26,21 @@ class DeepLinkService {
 
     if (initialUri != null) {
       debugPrint("→ initial deep link: $initialUri");
-      _handleUri(initialUri, onTestSlugReceived);
+      _handleUri(
+        initialUri,
+        onTestSlugReceived: onTestSlugReceived,
+        onLibrarySlugReceived: onLibrarySlugReceived,
+      );
     }
 
     _subscription = _appLinks.uriLinkStream.listen(
       (uri) {
         debugPrint("→ stream deep link: $uri");
-        _handleUri(uri, onTestSlugReceived);
+        _handleUri(
+          uri,
+          onTestSlugReceived: onTestSlugReceived,
+          onLibrarySlugReceived: onLibrarySlugReceived,
+        );
       },
       onError: (error) {
         debugPrint("✗ deep link stream error: $error");
@@ -32,43 +50,51 @@ class DeepLinkService {
     debugPrint("=================================================");
   }
 
-  void _handleUri(Uri uri, void Function(String slug) onTestSlugReceived) {
+  static AppDeepLinkTarget? parseUri(Uri uri) {
+    if (uri.scheme != 'nerd' || uri.pathSegments.isEmpty) {
+      return null;
+    }
+
+    final slug = uri.pathSegments.first.trim();
+    if (slug.isEmpty) return null;
+
+    final kind = switch (uri.host) {
+      'tests' => AppDeepLinkKind.test,
+      'library' => AppDeepLinkKind.library,
+      _ => null,
+    };
+
+    return kind == null ? null : AppDeepLinkTarget(kind: kind, slug: slug);
+  }
+
+  void _handleUri(
+    Uri uri, {
+    required void Function(String slug) onTestSlugReceived,
+    required void Function(String slug) onLibrarySlugReceived,
+  }) {
     debugPrint("============ DeepLinkService._handleUri ============");
     debugPrint("→ uri: $uri");
     debugPrint("→ scheme: ${uri.scheme}");
     debugPrint("→ host: ${uri.host}");
     debugPrint("→ pathSegments: ${uri.pathSegments}");
 
-    if (uri.scheme != 'nerd') {
-      debugPrint("✗ ignored: invalid scheme");
+    final target = parseUri(uri);
+    if (target == null) {
+      debugPrint("✗ ignored: unsupported or malformed deep link");
       debugPrint("=================================================");
       return;
     }
 
-    if (uri.host != 'tests') {
-      debugPrint("✗ ignored: invalid host");
-      debugPrint("=================================================");
-      return;
-    }
-
-    if (uri.pathSegments.isEmpty) {
-      debugPrint("✗ ignored: missing slug");
-      debugPrint("=================================================");
-      return;
-    }
-
-    final slug = uri.pathSegments.first.trim();
-
-    if (slug.isEmpty) {
-      debugPrint("✗ ignored: empty slug");
-      debugPrint("=================================================");
-      return;
-    }
-
-    debugPrint("✓ test slug received: $slug");
+    debugPrint("✓ deep link kind: ${target.kind.name}");
+    debugPrint("✓ slug received: ${target.slug}");
     debugPrint("=================================================");
 
-    onTestSlugReceived(slug);
+    switch (target.kind) {
+      case AppDeepLinkKind.test:
+        onTestSlugReceived(target.slug);
+      case AppDeepLinkKind.library:
+        onLibrarySlugReceived(target.slug);
+    }
   }
 
   Future<void> dispose() async {
