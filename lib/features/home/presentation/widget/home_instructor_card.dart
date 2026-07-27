@@ -39,7 +39,7 @@ class InstructorCard extends StatelessWidget {
                 path: avatarUrl,
                 fit: BoxFit.cover,
                 fallback: CustomAppImage(
-                  path: AppImage.carmen,
+                  path: AppImage.defaultImageFoeError,
                   fit: BoxFit.cover,
                 ),
               ),

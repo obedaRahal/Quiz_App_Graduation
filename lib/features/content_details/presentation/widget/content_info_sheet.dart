@@ -738,7 +738,7 @@ class _RelatedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final path = imageUrl.trim().isNotEmpty ? imageUrl : AppImage.carmen;
+    final path = imageUrl.trim().isNotEmpty ? imageUrl : AppImage.defaultImageFoeError;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),

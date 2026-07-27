@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
+import 'package:quiz_app_grad/core/utils/media_url_resolver.dart';
 
 class CustomAppImage extends StatelessWidget {
   final String path;
@@ -61,17 +62,9 @@ class CustomAppImage extends StatelessWidget {
   bool get _isNetwork =>
       path.startsWith('http://') || path.startsWith('https://');
 
-  // String get _resolvedPath {
-  //   if (path.startsWith('http://localhost')) {
-  //     return path.replaceFirst('http://localhost', 'http://10.0.2.2');
-  //   }
-
-  //   return path;
-  // }
-
   bool get _isLottie => path.toLowerCase().endsWith('.json');
 
-  String get _resolvedPath => path;
+  String get _resolvedPath => resolveMediaUrl(path);
 
   @override
   Widget build(BuildContext context) {
@@ -210,11 +203,7 @@ class CustomAppImage extends StatelessWidget {
     final resolvedColor =
         fallbackIconColor ?? Theme.of(context).colorScheme.outline;
 
-    final resolvedSize =
-        fallbackIconSize ??
-        ((width != null && height != null)
-            ? ((width! < height! ? width! : height!) * 0.45)
-            : 28);
+    final resolvedSize = _resolveFallbackIconSize();
 
     return Container(
       width: width,
@@ -226,6 +215,29 @@ class CustomAppImage extends StatelessWidget {
         child: Icon(fallbackIcon, size: resolvedSize, color: resolvedColor),
       ),
     );
+  }
+
+  double _resolveFallbackIconSize() {
+    final explicitSize = fallbackIconSize;
+    if (explicitSize != null &&
+        explicitSize.isFinite &&
+        explicitSize >= 0) {
+      return explicitSize;
+    }
+
+    final finiteDimensions = <double>[
+      if (width != null && width!.isFinite && width! > 0) width!,
+      if (height != null && height!.isFinite && height! > 0) height!,
+    ];
+
+    if (finiteDimensions.isEmpty) return 28;
+
+    final smallestDimension = finiteDimensions.reduce(
+      (first, second) => first < second ? first : second,
+    );
+    final calculatedSize = smallestDimension * 0.45;
+
+    return calculatedSize.clamp(12.0, 72.0).toDouble();
   }
 }
 

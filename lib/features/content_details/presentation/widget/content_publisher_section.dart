@@ -33,7 +33,7 @@ class ContentPublisherSection extends StatelessWidget {
             height: SizeConfig.w(0.105),
             child: CustomAppImage(
               path: publisher.avatarUrl.isEmpty
-                  ? AppImage.carmen
+                  ? AppImage.defaultImageFoeError
                   : publisher.avatarUrl,
               fit: BoxFit.cover,
             ),

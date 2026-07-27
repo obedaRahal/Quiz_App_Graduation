@@ -104,7 +104,7 @@ class AppImage {
   static String get mind1 => '$_baseImageLight/brain1.svg';
   static String get mind2 => '$_baseImageLight/_x31__17_.svg';
   static String get mind3 => '$_baseImageLight/_x31__8_.svg';
-  static String get carmen => '$_baseImageLight/caremalsh.jpg';
+  static String get defaultImageFoeError => '$_baseIcon/defaultImage.svg';
   static String get feather => '$_baseImageLight/feather.svg';
   static String get handshake => '$_baseImageLight/handshake.svg';
   static String get chemical => '$_baseImageLight/chemical-lab-svgrepo-com.svg';

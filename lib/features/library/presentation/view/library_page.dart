@@ -284,7 +284,7 @@ class _LibraryContentBody extends StatelessWidget {
        * صورة احتياطية تستخدم عند عدم توفر رابط الصورة
        * أو عند فشل تحميله داخل ودجت الصورة.
        */
-      imageAsset: AppImage.carmen,
+      imageAsset: AppImage.defaultImageFoeError,
 
       likesCount: item.likeCount,
       savesCount: item.bookmarksCount,
@@ -306,7 +306,7 @@ class _LibraryContentBody extends StatelessWidget {
       description: item.description,
       type: item.type,
       imageUrl: item.urlContent,
-      imageAsset: AppImage.carmen,
+      imageAsset: AppImage.defaultImageFoeError,
       specialties: item.interests,
       likesCount: item.likeCount,
 

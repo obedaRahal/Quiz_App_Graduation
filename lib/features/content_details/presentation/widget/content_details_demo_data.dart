@@ -118,14 +118,14 @@ class ContentDetailsDemoData {
     downloadCount: 12,
     publishedAt: '15 س',
     assets: [
-      ContentAssetUiData(id: 1, url: AppImage.carmen, position: 1),
-      ContentAssetUiData(id: 2, url: AppImage.carmen, position: 2),
-      ContentAssetUiData(id: 3, url: AppImage.carmen, position: 3),
+      ContentAssetUiData(id: 1, url: AppImage.defaultImageFoeError, position: 1),
+      ContentAssetUiData(id: 2, url: AppImage.defaultImageFoeError, position: 2),
+      ContentAssetUiData(id: 3, url: AppImage.defaultImageFoeError, position: 3),
     ],
     publisher: ContentPublisherUiData(
       id: 802,
       name: 'جيني تحسين أسير',
-      avatarUrl: AppImage.carmen,
+      avatarUrl: AppImage.defaultImageFoeError,
       followersCount: 500,
       followingCount: 2,
       publishedTestsCount: 14,
@@ -145,7 +145,7 @@ class ContentDetailsDemoData {
     bookmarksCount: 0,
     downloadCount: 0,
     publishedAt: '',
-    assets: [ContentAssetUiData(id: 604, url: AppImage.carmen, position: 1)],
+    assets: [ContentAssetUiData(id: 604, url: AppImage.defaultImageFoeError, position: 1)],
     publisher: null,
   );
 }

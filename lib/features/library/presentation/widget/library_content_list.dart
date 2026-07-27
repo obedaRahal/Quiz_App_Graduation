@@ -256,7 +256,7 @@ class _ContentImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final path = (imageUrl != null && imageUrl!.trim().isNotEmpty)
         ? imageUrl!
-        : (imageAsset ?? AppImage.carmen);
+        : (imageAsset ?? AppImage.defaultImageFoeError);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(14),

@@ -153,7 +153,7 @@ class _LibraryMediaImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final path = item.imageUrl != null && item.imageUrl!.trim().isNotEmpty
         ? item.imageUrl!
-        : (item.imageAsset ?? AppImage.carmen);
+        : (item.imageAsset ?? AppImage.defaultImageFoeError);
 
     return SizedBox.expand(
       child: CustomAppImage(path: path, fit: BoxFit.cover),

@@ -16,6 +16,7 @@ class OtherProfileContentCard extends StatelessWidget {
   final VoidCallback? onContentTap;
   final bool showSaveButton;
   final bool showLikeButton;
+  final bool showImageLoading;
 
   const OtherProfileContentCard({
     super.key,
@@ -25,6 +26,7 @@ class OtherProfileContentCard extends StatelessWidget {
     this.onContentTap,
     this.showSaveButton = true,
     this.showLikeButton = true,
+    this.showImageLoading = true,
   });
 
   @override
@@ -47,6 +49,7 @@ class OtherProfileContentCard extends StatelessWidget {
               _ContentThumbnail(
                 imageUrl: content.urlContent,
                 type: content.type,
+                showLoading: showImageLoading,
               ),
 
               SizedBox(width: SizeConfig.w(0.025)),
@@ -130,10 +133,12 @@ class OtherProfileContentCard extends StatelessWidget {
 class _ContentThumbnail extends StatelessWidget {
   final String imageUrl;
   final String type;
+  final bool showLoading;
 
   const _ContentThumbnail({
     required this.imageUrl,
     required this.type,
+    required this.showLoading,
   });
 
   bool get isImage => type.trim() == 'صورة';
@@ -163,6 +168,7 @@ class _ContentThumbnail extends StatelessWidget {
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
+                showLoadingForNetwork: showLoading,
               ),
             )
           : Center(

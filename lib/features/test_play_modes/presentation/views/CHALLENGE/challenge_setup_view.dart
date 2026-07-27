@@ -245,7 +245,7 @@ class _ChallengeSetupLoadedBody extends StatelessWidget {
 
     final viewer = state.content?.data.viewer;
     final playerName = viewer?.name ?? 'أنت';
-    final playerAvatar = viewer?.avatarUrl ?? AppImage.carmen;
+    final playerAvatar = viewer?.avatarUrl ?? AppImage.defaultImageFoeError;
 
     return Expanded(
       child: Column(

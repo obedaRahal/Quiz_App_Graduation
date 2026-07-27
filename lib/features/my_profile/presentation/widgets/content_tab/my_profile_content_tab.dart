@@ -168,6 +168,7 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
                           content: item.toOtherProfileContentEntity(),
                           showSaveButton: false,
                           showLikeButton: false,
+                          showImageLoading: false,
                           onContentTap: () {
                             context.pushNamed(
                               AppRouterName.otherContentDetails,
