@@ -24,7 +24,7 @@ class ContentReportSheet extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: AppPalette.black.withOpacity(0.22),
+      barrierColor: AppPalette.black.withValues(alpha: 0.22),
       isScrollControlled: true,
       builder: (_) => ContentReportSheet(onSubmit: onSubmit),
     );
@@ -71,12 +71,16 @@ class _ContentReportSheetState extends State<ContentReportSheet> {
             color: isDark ? AppPalette.fieldColorNDark : AppPalette.white,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.70),
+              color: Theme.of(context).colorScheme.primary.withValues(
+                alpha: 0.70,
+              ),
               width: 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.18),
+                color: Theme.of(context).colorScheme.primary.withValues(
+                  alpha: 0.18,
+                ),
                 blurRadius: 12,
                 offset: const Offset(0, 2),
               ),

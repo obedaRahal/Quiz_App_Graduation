@@ -487,6 +487,7 @@ class AppRouter {
             return ContentDetailsPage(
               contentId: args.contentId,
               isMyContent: args.isMyContent,
+              isMyPublicContent: args.isMyPublicContent,
             );
           },
         ),

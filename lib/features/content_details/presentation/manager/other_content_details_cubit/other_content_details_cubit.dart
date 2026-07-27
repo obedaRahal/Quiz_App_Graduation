@@ -503,8 +503,10 @@ class OtherContentDetailsCubit extends SafeCubit<OtherContentDetailsState> {
   }
 
   //            My Content Details
-  Future<void> getMyContentDetails(int id) async {
+  Future<void> getMyContentDetails(int id, {bool isPublic = true}) async {
     debugPrint('=========== MyContentDetailsCubit Method ===========');
+    debugPrint('→ contentId: $id');
+    debugPrint('→ visibility: ${isPublic ? 'public' : 'private'}');
 
     emit(
       state.copyWith(
@@ -516,7 +518,7 @@ class OtherContentDetailsCubit extends SafeCubit<OtherContentDetailsState> {
 
     try {
       final response = await getMyPublicContentDetailsUseCase(
-        MyContentDetailsParams(contentId: id),
+        MyContentDetailsParams(contentId: id, isPublic: isPublic),
       );
 
       emit(

@@ -74,7 +74,7 @@ class _ImageAssetPage extends StatelessWidget {
     return Container(
       color: isDark ? AppPalette.black : AppPalette.white,
       padding: EdgeInsets.only(
-        top: SizeConfig.h(0.070),
+        top: SizeConfig.h(0.105),
         left: SizeConfig.w(0.020),
         right: SizeConfig.w(0.020),
         bottom: SizeConfig.h(0.11),
@@ -253,7 +253,7 @@ class _PdfAssetViewerState extends State<_PdfAssetViewer> {
       child: Container(
         color: isDark ? AppPalette.black : AppPalette.white,
         padding: EdgeInsets.only(
-          top: SizeConfig.h(0.070),
+          top: SizeConfig.h(0.105),
           left: SizeConfig.w(0.020),
           right: SizeConfig.w(0.020),
           bottom: SizeConfig.h(0.11),

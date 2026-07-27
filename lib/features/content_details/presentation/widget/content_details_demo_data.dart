@@ -19,6 +19,9 @@ class ContentDetailsUiData {
   final bool viewerIsFollowingCreator;
   final bool isOwner;
   final bool isPublic;
+  final String visibilityType;
+  final String reviewStatus;
+  final List<ContentStatusHistoryUiData> statusHistory;
 
   const ContentDetailsUiData({
     required this.id,
@@ -39,9 +42,33 @@ class ContentDetailsUiData {
     this.viewerIsFollowingCreator = false,
     this.isOwner = false,
     this.isPublic = true,
+    this.visibilityType = '',
+    this.reviewStatus = '',
+    this.statusHistory = const [],
   });
 
-  bool get isFile => contentKind.trim() == 'ملف';
+  bool get isFile {
+    final normalized = contentKind.trim().toLowerCase();
+    return normalized == 'ملف' ||
+        normalized.contains('pdf') ||
+        normalized.contains('file');
+  }
+}
+
+class ContentStatusHistoryUiData {
+  final int id;
+  final String? fromStatus;
+  final String toStatus;
+  final String note;
+  final String happenedAt;
+
+  const ContentStatusHistoryUiData({
+    required this.id,
+    this.fromStatus,
+    required this.toStatus,
+    required this.note,
+    required this.happenedAt,
+  });
 }
 
 class ContentAssetUiData {

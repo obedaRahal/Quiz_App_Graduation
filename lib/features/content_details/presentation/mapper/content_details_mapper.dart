@@ -4,7 +4,9 @@ import 'package:quiz_app_grad/features/content_details/domain/entities/my_conten
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_details_demo_data.dart';
 
 extension MyContentDetailsMapper on MyContentDetailsEntity {
-  ContentDetailsUiData toUi() {
+  ContentDetailsUiData toUi({bool? isPublicOverride}) {
+    final isPublic = isPublicOverride ?? basicInfo.isPublic;
+
     return ContentDetailsUiData(
       id: basicInfo.id,
       title: basicInfo.title,
@@ -13,9 +15,9 @@ extension MyContentDetailsMapper on MyContentDetailsEntity {
       targetLevel: basicInfo.targetLevel,
       contentKind: basicInfo.contentKind,
       assetCount: basicInfo.assetCount,
-      likeCount: 0,
-      bookmarksCount: 0,
-      downloadCount: 0,
+      likeCount: basicInfo.likeCount,
+      bookmarksCount: basicInfo.bookmarksCount,
+      downloadCount: basicInfo.downloadCount,
       publishedAt: basicInfo.publishedAt,
       assets: basicInfo.assets
           .map(
@@ -28,7 +30,20 @@ extension MyContentDetailsMapper on MyContentDetailsEntity {
           .toList(),
       publisher: null,
       isOwner: true,
-      isPublic: basicInfo.visibilityType.trim() == 'محتوى عام',
+      isPublic: isPublic,
+      visibilityType: basicInfo.visibilityType,
+      reviewStatus: basicInfo.reviewStatus,
+      statusHistory: statusHistory
+          .map(
+            (item) => ContentStatusHistoryUiData(
+              id: item.id,
+              fromStatus: item.fromStatus,
+              toStatus: item.toStatus,
+              note: item.note,
+              happenedAt: item.happenedAt,
+            ),
+          )
+          .toList(),
     );
   }
 }

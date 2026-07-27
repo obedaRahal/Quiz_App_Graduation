@@ -16,36 +16,45 @@ class MyContentDetailsRemoteDataSourceImpl
     implements MyContentDetailsRemoteDataSource {
   final ApiConsumer apiConsumer;
 
-  const MyContentDetailsRemoteDataSourceImpl({
-    required this.apiConsumer,
-  });
+  const MyContentDetailsRemoteDataSourceImpl({required this.apiConsumer});
 
   @override
   Future<MyContentDetailsModel> getMyPublicContentDetails(
     MyContentDetailsParams params,
   ) async {
-    debugPrint('================ MyContentDetailsRemoteDataSource ================');
-    debugPrint('GET: ${EndPoints.myPublicContentDetails(params.contentId)}');
+    final endpoint = params.isPublic
+        ? EndPoints.myPublicContentDetails(params.contentId)
+        : EndPoints.myPrivateContentDetails(params.contentId);
 
-    final response = await apiConsumer.get(
-      EndPoints.myPublicContentDetails(params.contentId),
+    debugPrint(
+      '================ MyContentDetailsRemoteDataSource ================',
     );
+    debugPrint(
+      '→ content visibility: ${params.isPublic ? 'public' : 'private'}',
+    );
+    debugPrint('GET: $endpoint');
+
+    final response = await apiConsumer.get(endpoint);
 
     debugPrint('My public content details response received successfully');
+    debugPrint('My public content body $response');
 
     return MyContentDetailsModel.fromJson(response);
   }
+
   @override
-Future<DeleteContentResponseModel> deleteMyContent(int contentId) async {
-  debugPrint('================ DeleteContentRemoteDataSource ================');
-  debugPrint('DELETE: ${EndPoints.deleteMyContent(contentId)}');
+  Future<DeleteContentResponseModel> deleteMyContent(int contentId) async {
+    debugPrint(
+      '================ DeleteContentRemoteDataSource ================',
+    );
+    debugPrint('DELETE: ${EndPoints.deleteMyContent(contentId)}');
 
-  final response = await apiConsumer.delete(
-    EndPoints.deleteMyContent(contentId),
-  );
+    final response = await apiConsumer.delete(
+      EndPoints.deleteMyContent(contentId),
+    );
 
-  debugPrint('Delete content response received successfully');
+    debugPrint('Delete content response received successfully');
 
-  return DeleteContentResponseModel.fromJson(response);
-}
+    return DeleteContentResponseModel.fromJson(response);
+  }
 }

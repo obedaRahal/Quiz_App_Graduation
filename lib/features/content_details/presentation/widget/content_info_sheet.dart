@@ -16,6 +16,7 @@ import 'package:quiz_app_grad/features/content_details/presentation/widget/conte
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_publisher_section.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_report_sheet.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_statistics_row.dart';
+import 'package:quiz_app_grad/features/content_details/presentation/widget/content_status_history_section.dart';
 
 class ContentInfoSheet extends StatelessWidget {
   final ContentDetailsUiData data;
@@ -52,7 +53,7 @@ class ContentInfoSheet extends StatelessWidget {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
             boxShadow: [
               BoxShadow(
-                color: AppPalette.black.withOpacity(isDark ? 0.35 : 0.12),
+                color: AppPalette.black.withValues(alpha: isDark ? 0.35 : 0.12),
                 blurRadius: 14,
                 offset: const Offset(0, -4),
               ),
@@ -85,50 +86,8 @@ class ContentInfoSheet extends StatelessWidget {
 
                         SizedBox(height: SizeConfig.h(0.016)),
 
-                        if (!data.isOwner) ...[
-                          BlocBuilder<
-                            OtherContentDetailsCubit,
-                            OtherContentDetailsState
-                          >(
-                            buildWhen: (previous, current) =>
-                                previous.viewerHasLiked !=
-                                    current.viewerHasLiked ||
-                                previous.likeCount != current.likeCount ||
-                                previous.isLikeLoading !=
-                                    current.isLikeLoading ||
-                                previous.viewerHasBookmarked !=
-                                    current.viewerHasBookmarked ||
-                                previous.bookmarksCount !=
-                                    current.bookmarksCount ||
-                                previous.isBookmarkLoading !=
-                                    current.isBookmarkLoading,
-                            builder: (context, state) {
-                              return ContentStatisticsRow(
-                                publishedAt: data.publishedAt,
-                                downloadCount: data.downloadCount,
-                                bookmarksCount:
-                                    state.bookmarksCount ?? data.bookmarksCount,
-                                likeCount: state.likeCount ?? data.likeCount,
-                                viewerHasLiked:
-                                    state.viewerHasLiked ?? data.viewerHasLiked,
-                                viewerHasBookmarked:
-                                    state.viewerHasBookmarked ??
-                                    data.viewerHasBookmarked,
-                                isLikeLoading: state.isLikeLoading,
-                                isBookmarkLoading: state.isBookmarkLoading,
-                                onLikeTap: () {
-                                  context
-                                      .read<OtherContentDetailsCubit>()
-                                      .toggleLike();
-                                },
-                                onBookmarkTap: () {
-                                  context
-                                      .read<OtherContentDetailsCubit>()
-                                      .toggleBookmark();
-                                },
-                              );
-                            },
-                          ),
+                        if (!data.isOwner || data.isPublic) ...[
+                          _ContentStatisticsSection(data: data),
                           SizedBox(height: SizeConfig.h(0.018)),
                         ],
 
@@ -271,22 +230,27 @@ class ContentInfoSheet extends StatelessWidget {
                           child: Wrap(
                             spacing: SizeConfig.w(0.012),
                             runSpacing: SizeConfig.h(0.006),
-                            children: data.interests
-                                .take(3)
-                                .map((e) => ContentInterestChip(title: e))
-                                .toList(),
+                            children:
+                                (data.isOwner
+                                        ? data.interests
+                                        : data.interests.take(3))
+                                    .map((e) => ContentInterestChip(title: e))
+                                    .toList(),
                           ),
                         ),
 
-                        SizedBox(height: SizeConfig.h(0.014)),
+                        if (data.isOwner) ...[
+                          SizedBox(height: SizeConfig.h(0.012)),
+                          _OwnerContentMetadata(data: data),
+                        ],
 
                         if (!data.isOwner) ...[
                           Divider(
                             height: SizeConfig.h(0.026),
                             thickness: 1,
-                            color: Theme.of(
-                              context,
-                            ).dividerColor.withOpacity(isDark ? 0.45 : 0.9),
+                            color: Theme.of(context).dividerColor.withValues(
+                              alpha: isDark ? 0.45 : 0.9,
+                            ),
                           ),
 
                           Align(
@@ -311,25 +275,169 @@ class ContentInfoSheet extends StatelessWidget {
 
                           SizedBox(height: SizeConfig.h(0.014)),
                         ],
+
+                        if (data.isOwner) ...[
+                          Divider(
+                            height: SizeConfig.h(0.030),
+                            color: Theme.of(context).dividerColor,
+                          ),
+                          _BottomActions(isOwner: true),
+                          if (data.isPublic)
+                            ContentStatusHistorySection(
+                              history: data.statusHistory,
+                              reviewStatus: data.reviewStatus,
+                            ),
+                          SizedBox(height: SizeConfig.h(0.024)),
+                        ],
                       ],
                     ),
                   ),
                 ),
 
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: SizeConfig.w(0.045),
-                    right: SizeConfig.w(0.045),
-                    bottom: SizeConfig.h(0.018),
-                    top: SizeConfig.h(0.006),
+                if (!data.isOwner)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: SizeConfig.w(0.045),
+                      right: SizeConfig.w(0.045),
+                      bottom: SizeConfig.h(0.018),
+                      top: SizeConfig.h(0.006),
+                    ),
+                    child: const _BottomActions(isOwner: false),
                   ),
-                  child: _BottomActions(isOwner: data.isOwner),
-                ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class _ContentStatisticsSection extends StatelessWidget {
+  final ContentDetailsUiData data;
+
+  const _ContentStatisticsSection({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    if (data.isOwner) {
+      return ContentStatisticsRow(
+        publishedAt: data.publishedAt,
+        downloadCount: data.downloadCount,
+        bookmarksCount: data.bookmarksCount,
+        likeCount: data.likeCount,
+        viewerHasLiked: false,
+        viewerHasBookmarked: false,
+      );
+    }
+
+    return BlocBuilder<OtherContentDetailsCubit, OtherContentDetailsState>(
+      buildWhen: (previous, current) =>
+          previous.viewerHasLiked != current.viewerHasLiked ||
+          previous.likeCount != current.likeCount ||
+          previous.isLikeLoading != current.isLikeLoading ||
+          previous.viewerHasBookmarked != current.viewerHasBookmarked ||
+          previous.bookmarksCount != current.bookmarksCount ||
+          previous.isBookmarkLoading != current.isBookmarkLoading,
+      builder: (context, state) {
+        return ContentStatisticsRow(
+          publishedAt: data.publishedAt,
+          downloadCount: data.downloadCount,
+          bookmarksCount: state.bookmarksCount ?? data.bookmarksCount,
+          likeCount: state.likeCount ?? data.likeCount,
+          viewerHasLiked: state.viewerHasLiked ?? data.viewerHasLiked,
+          viewerHasBookmarked:
+              state.viewerHasBookmarked ?? data.viewerHasBookmarked,
+          isLikeLoading: state.isLikeLoading,
+          isBookmarkLoading: state.isBookmarkLoading,
+          onLikeTap: () {
+            context.read<OtherContentDetailsCubit>().toggleLike();
+          },
+          onBookmarkTap: () {
+            context.read<OtherContentDetailsCubit>().toggleBookmark();
+          },
+        );
+      },
+    );
+  }
+}
+
+class _OwnerContentMetadata extends StatelessWidget {
+  final ContentDetailsUiData data;
+
+  const _OwnerContentMetadata({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final visibility = data.isPublic ? 'محتوى عام' : 'محتوى خاص';
+
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Wrap(
+        spacing: SizeConfig.w(0.018),
+        runSpacing: SizeConfig.h(0.008),
+        children: [
+          if (data.contentKind.trim().isNotEmpty)
+            _MetadataChip(
+              icon: data.isFile
+                  ? Icons.picture_as_pdf_outlined
+                  : Icons.photo_library_outlined,
+              value: data.contentKind,
+            ),
+          // if (data.targetLevel.trim().isNotEmpty)
+          //   _MetadataChip(icon: Icons.school_outlined, value: data.targetLevel),
+          // _MetadataChip(
+          //   icon: data.isPublic
+          //       ? Icons.public_rounded
+          //       : Icons.lock_outline_rounded,
+          //   value: visibility,
+          // ),
+          // _MetadataChip(
+          //   icon: Icons.collections_outlined,
+          //   value: '${data.assetCount} مرفق',
+          // ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MetadataChip extends StatelessWidget {
+  final IconData icon;
+  final String value;
+
+  const _MetadataChip({required this.icon, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.w(0.024),
+        vertical: SizeConfig.h(0.006),
+      ),
+      decoration: BoxDecoration(
+        color: primary.withValues(alpha: isDark ? 0.16 : 0.08),
+        borderRadius: BorderRadius.circular(9),
+        border: Border.all(color: primary.withValues(alpha: 0.28)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        textDirection: TextDirection.rtl,
+        children: [
+          Icon(icon, color: primary, size: SizeConfig.text(0.035)),
+          SizedBox(width: SizeConfig.w(0.010)),
+          CustomTextWidget(
+            value,
+            color: primary,
+            fontSize: SizeConfig.text(0.028).clamp(10.5, 13.0).toDouble(),
+            fontWeight: FontWeight.w700,
+            fontFamily: AppFont.elMessiriRegular,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -352,8 +460,10 @@ class _ContentTexts extends StatelessWidget {
             data.title,
             textAlign: TextAlign.right,
             textDirection: TextDirection.rtl,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+            maxLines: data.isOwner ? null : 2,
+            overflow: data.isOwner
+                ? TextOverflow.visible
+                : TextOverflow.ellipsis,
             style: TextStyle(
               fontFamily: 'elMessiriRegular',
               color: isDark
@@ -370,8 +480,10 @@ class _ContentTexts extends StatelessWidget {
             data.description,
             textAlign: TextAlign.right,
             textDirection: TextDirection.rtl,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
+            maxLines: data.isOwner ? null : 3,
+            overflow: data.isOwner
+                ? TextOverflow.visible
+                : TextOverflow.ellipsis,
             style: TextStyle(
               fontFamily: 'elMessiriRegular',
               color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
@@ -488,8 +600,8 @@ class _RelatedContentList extends StatelessWidget {
                   Divider(
                     height: SizeConfig.h(0.020),
                     thickness: 1,
-                    color: Theme.of(context).dividerColor.withOpacity(
-                      Theme.of(context).brightness == Brightness.dark
+                    color: Theme.of(context).dividerColor.withValues(
+                      alpha: Theme.of(context).brightness == Brightness.dark
                           ? 0.45
                           : 0.9,
                     ),

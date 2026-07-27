@@ -2,11 +2,11 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 class EndPoints {
-  static const String baseUrl = 'http://192.168.1.9/api/v1/user-mobile';
+  static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
   //  static const String baseUrl = 'http://localhost/api/v1/user-mobile';
   // static const String baseUrl = 'http://192.168.138.1/api/v1/user-mobile';
   //static const String refreshToken = 'http://localhost/api/v1/refresh';
-  static const String refreshToken = 'http://192.168.1.9/api/v1/refresh';
+  static const String refreshToken = 'http://192.168.1.110/api/v1/refresh';
   // authhhhhh
   //static const String registerCitizen = 'citizen/register';
 
@@ -93,6 +93,8 @@ class EndPoints {
   // My Content Details
   static String myPublicContentDetails(int id) =>
       '/library/library-materials-details/my-public/$id';
+  static String myPrivateContentDetails(int id) =>
+      '/library/library-materials-details/my-private/$id';
   static String deleteMyContent(int contentId) =>
       '/library/delete/material/$contentId';
   // details of test

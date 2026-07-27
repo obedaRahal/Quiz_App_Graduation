@@ -174,6 +174,10 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
                               extra: ContentDetailsRouteArgs(
                                 contentId: item.id,
                                 isMyContent: true,
+                                isMyPublicContent: _isPublicContent(
+                                  item.libraryMaterialKind,
+                                  state.selectedLibraryTab,
+                                ),
                               ),
                             );
                           },
@@ -190,5 +194,19 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
         );
       },
     );
+  }
+
+  bool _isPublicContent(String materialKind, MyProfileLibraryTab selectedTab) {
+    final normalized = materialKind.trim().toLowerCase();
+
+    if (normalized.contains('private') || normalized.contains('خاص')) {
+      return false;
+    }
+
+    if (normalized.contains('public') || normalized.contains('عام')) {
+      return true;
+    }
+
+    return selectedTab != MyProfileLibraryTab.private;
   }
 }

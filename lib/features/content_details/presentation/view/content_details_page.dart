@@ -28,11 +28,13 @@ import 'package:share_plus/share_plus.dart';
 class ContentDetailsPage extends StatelessWidget {
   final int contentId;
   final bool isMyContent;
+  final bool isMyPublicContent;
 
   const ContentDetailsPage({
     super.key,
     required this.contentId,
     this.isMyContent = false,
+    this.isMyPublicContent = true,
   });
 
   @override
@@ -42,7 +44,7 @@ class ContentDetailsPage extends StatelessWidget {
         final cubit = sl<OtherContentDetailsCubit>();
 
         if (isMyContent) {
-          cubit.getMyContentDetails(contentId);
+          cubit.getMyContentDetails(contentId, isPublic: isMyPublicContent);
         } else {
           cubit.getContentDetails(contentId);
         }
@@ -225,7 +227,10 @@ class ContentDetailsPage extends StatelessWidget {
                             final cubit = context
                                 .read<OtherContentDetailsCubit>();
                             if (isMyContent) {
-                              cubit.getMyContentDetails(contentId);
+                              cubit.getMyContentDetails(
+                                contentId,
+                                isPublic: isMyPublicContent,
+                              );
                             } else {
                               cubit.getContentDetails(contentId);
                             }
@@ -254,7 +259,9 @@ class ContentDetailsPage extends StatelessWidget {
           }
 
           return ContentDetailsScaffold(
-            data: isMyContent ? state.myDetails!.toUi() : state.details!.toUi(),
+            data: isMyContent
+                ? state.myDetails!.toUi(isPublicOverride: isMyPublicContent)
+                : state.details!.toUi(),
           );
         },
       ),

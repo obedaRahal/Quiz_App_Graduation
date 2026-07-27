@@ -28,9 +28,15 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
   int _pdfPagesCount = 1;
 
   static const double _collapsedSheetSize = 0.105;
-  double get _initialSheetSize => widget.data.isOwner ? 0.25 : 0.44;
+  double get _initialSheetSize {
+    if (!widget.data.isOwner) return 0.44;
+    return widget.data.isPublic ? 0.48 : 0.34;
+  }
 
-  double get _expandedSheetSize => widget.data.isOwner ? 0.38 : 0.72;
+  double get _expandedSheetSize {
+    if (!widget.data.isOwner) return 0.72;
+    return widget.data.isPublic ? 0.92 : 0.68;
+  }
 
   int get _totalCount {
     if (widget.data.isFile) return _pdfPagesCount;
@@ -97,7 +103,10 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
     if (!mounted) return;
 
     if (result == true) {
-      context.read<OtherContentDetailsCubit>().getMyContentDetails(data.id);
+      context.read<OtherContentDetailsCubit>().getMyContentDetails(
+        data.id,
+        isPublic: data.isPublic,
+      );
     }
   }
 
