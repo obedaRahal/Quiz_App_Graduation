@@ -1,4 +1,4 @@
-package com.example.quiz_app_grad
+package com.nerd.app
 
 import android.content.Intent
 import android.provider.Settings
@@ -7,7 +7,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val systemSettingsChannel = "quiz_app_grad/system_settings"
+    private val systemSettingsChannel = "com.nerd.app/system_settings"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

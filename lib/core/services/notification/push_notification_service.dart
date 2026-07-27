@@ -23,6 +23,7 @@ class PushNotificationService {
 
     final token = await getTokenForLogin();
     debugPrint('📲 initial FCM registration available: ${token != null}');
+    debugPrint('📲 initial FCM registration available: ${token}');
 
     _listenForTokenRefresh();
     _handleForegroundMessages();

@@ -65,11 +65,13 @@ dependencies:
   firebase_messaging: ^16.4.3
   flutter_local_notifications: ^20.1.0
   alarm: ^5.4.1
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   bloc_test: ^10.0.0
+  flutter_launcher_icons: ^0.14.4
   mocktail: ^1.0.4
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -141,3 +143,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: true
+  ios: false
+
+  image_path: "assets/icons/app_icon.png"
+
+  # adaptive_icon_foreground: "assets/icons/app_icon.png"
+  # adaptive_icon_background: "#4A6FE7"
+
+  min_sdk_android: 21
