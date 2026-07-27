@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/services/notification/fcm_token.dart';
 import 'package:quiz_app_grad/core/services/notification/local_votification_service.dart';
+import 'package:quiz_app_grad/core/utils/app_logger.dart';
 import 'package:quiz_app_grad/firebase_options.dart';
 
 class PushNotificationService {
@@ -21,15 +22,16 @@ class PushNotificationService {
     debugPrint('🔐 FCM permission: ${settings.authorizationStatus}');
 
     final token = await getTokenForLogin();
-    debugPrint('📲 initial FCM token available: ${token != null}');
-    debugPrint('📲 initial FCM token length: ${token?.length ?? 0}');
+    debugPrint('📲 initial FCM registration available: ${token != null}');
 
     _listenForTokenRefresh();
     _handleForegroundMessages();
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       debugPrint('📬 onMessageOpenedApp: ${message.messageId}');
-      debugPrint('📬 data: ${message.data}');
+      debugPrint('📬 notification data received: ${message.data.isNotEmpty}');
+      // Android/iOS already resumes the app. External notification taps must
+      // not force navigation to the in-app notifications screen.
     });
   }
 
@@ -48,10 +50,7 @@ class PushNotificationService {
 
         if (token != null) {
           await FcmTokenStorage.saveToken(token);
-          debugPrint(
-            '✓ FCM token fetched for login '
-            '(attempt: $attempt, length: ${token.length})',
-          );
+          debugPrint('✓ FCM token fetched for login (attempt: $attempt)');
           return token;
         }
 
@@ -82,10 +81,7 @@ class PushNotificationService {
         if (normalizedToken == null) return;
 
         await FcmTokenStorage.saveToken(normalizedToken);
-        debugPrint(
-          '✓ refreshed FCM token cached '
-          '(length: ${normalizedToken.length})',
-        );
+        debugPrint('✓ refreshed FCM token cached');
       },
       onError: (Object error, StackTrace stackTrace) {
         debugPrint('✗ FCM token refresh listener failed: $error');
@@ -98,31 +94,41 @@ class PushNotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint('🚀 ENTERED onMessage (foreground)');
       debugPrint('📩 messageId: ${message.messageId}');
-      debugPrint('📩 title: ${message.notification?.title}');
-      debugPrint('📩 body : ${message.notification?.body}');
-      debugPrint('📩 data  : ${message.data}');
+      debugPrint('📩 notification payload received');
 
-      await LocalNotificationService.showBasicNotification(message);
+      try {
+        await LocalNotificationService.showBasicNotification(
+          message,
+          openNotificationsOnTap: true,
+        );
+      } catch (error, stackTrace) {
+        debugPrint('✗ foreground notification could not be displayed');
+        debugPrintStack(stackTrace: stackTrace);
+      }
     });
   }
 }
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  AppLogger.configure();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // FCM/APNs displays notification payloads automatically in the background.
   // Only data-only messages need us to create a local notification.
   if (message.notification == null) {
     await LocalNotificationService.init();
-    await LocalNotificationService.showBasicNotification(message);
+    await LocalNotificationService.showBasicNotification(
+      message,
+      openNotificationsOnTap: false,
+    );
   }
 
   debugPrint(
     '📩 Background message: ${message.messageId}, '
     'systemDisplayed: ${message.notification != null}',
   );
-  debugPrint('📩 Background data: ${message.data}');
+  debugPrint('📩 Background data received: ${message.data.isNotEmpty}');
 }
 
 String? _nonEmptyToken(String? value) {

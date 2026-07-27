@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 
-enum AppDeepLinkKind { test, library }
+enum AppDeepLinkKind { test, library, profile }
 
 class AppDeepLinkTarget {
   final AppDeepLinkKind kind;
@@ -19,8 +19,12 @@ class DeepLinkService {
   Future<void> init({
     required void Function(String slug) onTestSlugReceived,
     required void Function(String slug) onLibrarySlugReceived,
+    required void Function(String slug) onProfileSlugReceived,
   }) async {
     debugPrint("============ DeepLinkService.init ============");
+
+    await _subscription?.cancel();
+    _subscription = null;
 
     final initialUri = await _appLinks.getInitialLink();
 
@@ -30,6 +34,7 @@ class DeepLinkService {
         initialUri,
         onTestSlugReceived: onTestSlugReceived,
         onLibrarySlugReceived: onLibrarySlugReceived,
+        onProfileSlugReceived: onProfileSlugReceived,
       );
     }
 
@@ -40,6 +45,7 @@ class DeepLinkService {
           uri,
           onTestSlugReceived: onTestSlugReceived,
           onLibrarySlugReceived: onLibrarySlugReceived,
+          onProfileSlugReceived: onProfileSlugReceived,
         );
       },
       onError: (error) {
@@ -61,6 +67,7 @@ class DeepLinkService {
     final kind = switch (uri.host) {
       'tests' => AppDeepLinkKind.test,
       'library' => AppDeepLinkKind.library,
+      'profiles' => AppDeepLinkKind.profile,
       _ => null,
     };
 
@@ -71,6 +78,7 @@ class DeepLinkService {
     Uri uri, {
     required void Function(String slug) onTestSlugReceived,
     required void Function(String slug) onLibrarySlugReceived,
+    required void Function(String slug) onProfileSlugReceived,
   }) {
     debugPrint("============ DeepLinkService._handleUri ============");
     debugPrint("→ uri: $uri");
@@ -94,10 +102,13 @@ class DeepLinkService {
         onTestSlugReceived(target.slug);
       case AppDeepLinkKind.library:
         onLibrarySlugReceived(target.slug);
+      case AppDeepLinkKind.profile:
+        onProfileSlugReceived(target.slug);
     }
   }
 
   Future<void> dispose() async {
     await _subscription?.cancel();
+    _subscription = null;
   }
 }

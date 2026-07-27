@@ -108,6 +108,9 @@ class DioConsumer extends ApiConsumer {
             );
             handler.resolve(clonedRequest);
           } on DioException catch (e) {
+            if (e.response?.statusCode == 401) {
+              await clearSession?.call();
+            }
             handler.next(e);
           } catch (_) {
             handler.next(error);
@@ -116,31 +119,32 @@ class DioConsumer extends ApiConsumer {
       ),
     );
   }
-@override
-Future<Response<List<int>>> downloadBytes(
-  String path, {
-  Map<String, dynamic>? queryParameters,
-  CancelToken? cancelToken,
-  ProgressCallback? onReceiveProgress,
-  Options? options,
-}) async {
-  try {
-    final mergedOptions = (options ?? Options()).copyWith(
-      responseType: ResponseType.bytes,
-    );
+  @override
+  Future<Response<List<int>>> downloadBytes(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+    Options? options,
+  }) async {
+    try {
+      final mergedOptions = (options ?? Options()).copyWith(
+        responseType: ResponseType.bytes,
+      );
 
-    return await dio.get<List<int>>(
-      path,
-      queryParameters: queryParameters,
-      cancelToken: cancelToken,
-      onReceiveProgress: onReceiveProgress,
-      options: mergedOptions,
-    );
-  } on DioException catch (e) {
-    handleDioException(e);
-    rethrow;
+      return await dio.get<List<int>>(
+        path,
+        queryParameters: queryParameters,
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
+        options: mergedOptions,
+      );
+    } on DioException catch (e) {
+      handleDioException(e);
+      rethrow;
+    }
   }
-}
+
   Future<bool> _runRefreshOnce({
     bool clearSessionOnUnauthorizedOnly = false,
   }) async {
@@ -164,6 +168,9 @@ Future<Response<List<int>>> downloadBytes(
   }) async {
     try {
       final success = await refreshToken!.call();
+      if (!success && clearSessionOnUnauthorizedOnly) {
+        await clearSession?.call();
+      }
       return success;
     } on UnauthorizedException {
       if (clearSessionOnUnauthorizedOnly) {

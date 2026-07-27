@@ -212,7 +212,7 @@ class AppRouter {
           path: AppRouterPath.onboarding,
           name: AppRouterName.onboarding,
           pageBuilder: (context, state) {
-            final args = state.extra as OnboardingRouteArgs?;
+            final args = _routeExtra<OnboardingRouteArgs>(state);
             final email = args?.email.trim() ?? '';
 
             if (email.isEmpty) {
@@ -287,8 +287,8 @@ class AppRouter {
           path: AppRouterPath.verifyEmail,
           name: AppRouterName.verifyEmail,
           builder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>?;
-            final email = extra?['email'] as String? ?? '';
+            final extra = _routeMapExtra(state);
+            final email = _stringRouteValue(extra?['email']);
 
             final cubit = sl<VerifyRegisterCubit>();
             cubit.setEmail(email);
@@ -313,8 +313,8 @@ class AppRouter {
           path: AppRouterPath.forgotPasswordOtpCode,
           name: AppRouterName.forgotPasswordOtpCode,
           builder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>?;
-            final email = extra?['email'] as String? ?? '';
+            final extra = _routeMapExtra(state);
+            final email = _stringRouteValue(extra?['email']);
 
             final cubit = sl<ForgetPasswordCubit>();
             cubit.setEmail(email);
@@ -329,9 +329,9 @@ class AppRouter {
           path: AppRouterPath.forgotPasswordNewPassword,
           name: AppRouterName.forgotPasswordNewPassword,
           builder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>?;
-            final email = extra?['email'] as String? ?? '';
-            final otpCode = extra?['otpCode'] as String? ?? '';
+            final extra = _routeMapExtra(state);
+            final email = _stringRouteValue(extra?['email']);
+            final otpCode = _stringRouteValue(extra?['otpCode']);
 
             final cubit = sl<ForgetPasswordCubit>();
             cubit.setEmail(email);
@@ -347,7 +347,7 @@ class AppRouter {
           path: AppRouterPath.mainLayout,
           name: AppRouterName.mainLayout,
           builder: (context, state) {
-            final args = state.extra as MainLayoutRouteArgs?;
+            final args = _routeExtra<MainLayoutRouteArgs>(state);
 
             return MultiBlocProvider(
               providers: [
@@ -423,9 +423,7 @@ class AppRouter {
           name: AppRouterName.createTestPage,
           builder: (context, state) {
             return CreateTestView(
-              initialArgs: state.extra is CreateTestInitialArgs
-                  ? state.extra as CreateTestInitialArgs
-                  : null,
+              initialArgs: _routeExtra<CreateTestInitialArgs>(state),
             );
           },
         ),
@@ -433,7 +431,10 @@ class AppRouter {
           path: AppRouterPath.createTestAiLoadingPage,
           name: AppRouterName.createTestAiLoadingPage,
           builder: (context, state) {
-            final args = state.extra as CreateTestInitialArgs;
+            final args = _routeExtra<CreateTestInitialArgs>(state);
+            if (args == null) {
+              return _invalidRouteArgumentsView();
+            }
 
             return CreateTestAiLoadingView(args: args);
           },
@@ -442,9 +443,15 @@ class AppRouter {
           path: AppRouterPath.detailsOfTest,
           name: AppRouterName.detailsOfTest,
           pageBuilder: (context, state) {
-            final args = state.extra as DetailsOfTestRouteArgs?;
+            final args = _routeExtra<DetailsOfTestRouteArgs>(state);
+            if (args == null || args.testId <= 0) {
+              return _slidePage(
+                state: state,
+                child: _invalidRouteArgumentsView(),
+              );
+            }
 
-            final testId = args?.testId ?? 0;
+            final testId = args.testId;
 
             debugPrint("============ DetailsOfTest Route ============");
             debugPrint("→ received testId: $testId");
@@ -482,7 +489,10 @@ class AppRouter {
           path: AppRouterPath.otherContentDetails,
           name: AppRouterName.otherContentDetails,
           builder: (context, state) {
-            final args = state.extra as ContentDetailsRouteArgs;
+            final args = _routeExtra<ContentDetailsRouteArgs>(state);
+            if (args == null || args.contentId <= 0) {
+              return _invalidRouteArgumentsView();
+            }
 
             return ContentDetailsPage(
               contentId: args.contentId,
@@ -497,7 +507,10 @@ class AppRouter {
           builder: (context, state) {
             debugPrint("============ mcqTestSessionView Route ============");
 
-            final args = state.extra as TestPlayModesRouteArgs;
+            final args = _routeExtra<TestPlayModesRouteArgs>(state);
+            if (args == null || args.testId <= 0) {
+              return _invalidRouteArgumentsView();
+            }
 
             debugPrint("→ received testId: ${args.testId}");
             debugPrint("=================================================");
@@ -514,7 +527,10 @@ class AppRouter {
           builder: (context, state) {
             debugPrint("============ challengeSetupView Route ============");
 
-            final args = state.extra as TestPlayModesRouteArgs;
+            final args = _routeExtra<TestPlayModesRouteArgs>(state);
+            if (args == null || args.testId <= 0) {
+              return _invalidRouteArgumentsView();
+            }
 
             debugPrint("→ received testId: ${args.testId}");
             debugPrint("=================================================");
@@ -532,7 +548,10 @@ class AppRouter {
           builder: (context, state) {
             debugPrint("============ flashcardView Route ============");
 
-            final args = state.extra as TestPlayModesRouteArgs;
+            final args = _routeExtra<TestPlayModesRouteArgs>(state);
+            if (args == null || args.testId <= 0) {
+              return _invalidRouteArgumentsView();
+            }
 
             debugPrint("→ received testId: ${args.testId}");
             debugPrint("=================================================");
@@ -551,7 +570,10 @@ class AppRouter {
           builder: (context, state) {
             debugPrint("============ myTestDetails Route ============");
 
-            final args = state.extra as DetailsOfTestRouteArgs;
+            final args = _routeExtra<DetailsOfTestRouteArgs>(state);
+            if (args == null || args.testId <= 0) {
+              return _invalidRouteArgumentsView();
+            }
 
             debugPrint("→ received testId: ${args.testId}");
             debugPrint("=================================================");
@@ -576,7 +598,10 @@ class AppRouter {
           builder: (context, state) {
             debugPrint("============ myPrivateTestDetails Route ============");
 
-            final args = state.extra as DetailsOfTestRouteArgs;
+            final args = _routeExtra<DetailsOfTestRouteArgs>(state);
+            if (args == null || args.testId <= 0) {
+              return _invalidRouteArgumentsView();
+            }
 
             debugPrint("→ received testId: ${args.testId}");
             debugPrint("=================================================");
@@ -595,13 +620,16 @@ class AppRouter {
           pageBuilder: (context, state) {
             debugPrint("============ OtherProfile Route ============");
 
-            final args = state.extra as OtherProfileRouteArgs;
-            final userId = args.userId;
+            final args = _routeExtra<OtherProfileRouteArgs>(state);
+            final userId = args?.userId ?? 0;
 
             debugPrint("→ received userId: $userId");
             debugPrint("=================================================");
             if (userId <= 0) {
-              return _slidePage(state: state, child: const MainLayoutBody());
+              return _slidePage(
+                state: state,
+                child: _invalidRouteArgumentsView(),
+              );
             }
 
             return _slidePage(
@@ -621,13 +649,16 @@ class AppRouter {
           pageBuilder: (context, state) {
             debugPrint("============ myProfile Route ============");
 
-            final args = state.extra as OtherProfileRouteArgs;
-            final userId = args.userId;
+            final args = _routeExtra<OtherProfileRouteArgs>(state);
+            final userId = args?.userId ?? 0;
 
             debugPrint("→ received userId: $userId");
             debugPrint("=================================================");
             if (userId <= 0) {
-              return _slidePage(state: state, child: const MainLayoutBody());
+              return _slidePage(
+                state: state,
+                child: _invalidRouteArgumentsView(),
+              );
             }
 
             return _slidePage(
@@ -656,25 +687,14 @@ class AppRouter {
           },
         ),
 
-        // GoRoute(
-        //   path: AppRouterPath.myProfileFolderEditor,
-        //   name: AppRouterName.myProfileFolderEditor,
-        //   builder: (context, state) {
-        //     final args = state.extra as MyProfileFolderEditorRouteArgs?;
-
-        //     return BlocProvider(
-        //       create: (_) => sl<MyProfileFolderEditorCubit>(),
-        //       child: MyProfileFolderEditorView(
-        //         args: args ?? const MyProfileFolderEditorRouteArgs.create(userId: ),
-        //       ),
-        //     );
-        //   },
-        // ),
         GoRoute(
           path: AppRouterPath.myProfileFolderEditor,
           name: AppRouterName.myProfileFolderEditor,
           builder: (context, state) {
-            final args = state.extra as MyProfileFolderEditorRouteArgs;
+            final args = _routeExtra<MyProfileFolderEditorRouteArgs>(state);
+            if (args == null || args.userId <= 0) {
+              return _invalidRouteArgumentsView();
+            }
 
             return BlocProvider(
               create: (_) => sl<MyProfileFolderEditorCubit>(),
@@ -701,7 +721,7 @@ class AppRouter {
           path: AppRouterPath.createStudyPlan,
           name: AppRouterName.createStudyPlan,
           builder: (context, state) {
-            final plan = state.extra as StudyPlanSummaryEntity?;
+            final plan = _routeExtra<StudyPlanSummaryEntity>(state);
 
             return BlocProvider<CreateUpdateStudyPlanCubit>(
               create: (_) {
@@ -735,7 +755,10 @@ class AppRouter {
           path: AppRouterPath.studyPlanDetails,
           name: AppRouterName.studyPlanDetails,
           builder: (context, state) {
-            final plan = state.extra as StudyPlanSummaryEntity;
+            final plan = _routeExtra<StudyPlanSummaryEntity>(state);
+            if (plan == null || plan.id <= 0) {
+              return _invalidRouteArgumentsView();
+            }
 
             return BlocProvider<StudyPlanDetailsCubit>(
               create: (_) =>
@@ -749,7 +772,7 @@ class AppRouter {
           path: AppRouterPath.studyAlarmRinging,
           name: AppRouterName.studyAlarmRinging,
           builder: (context, state) {
-            final alarmSettings = state.extra as AlarmSettings?;
+            final alarmSettings = _routeExtra<AlarmSettings>(state);
 
             if (alarmSettings == null) {
               return const Scaffold(
@@ -767,7 +790,10 @@ class AppRouter {
           path: AppRouterPath.studyTaskDetails,
           name: AppRouterName.studyTaskDetails,
           builder: (context, state) {
-            final args = state.extra as StudyTaskDetailsArgs;
+            final args = _routeExtra<StudyTaskDetailsArgs>(state);
+            if (args == null || args.planId <= 0 || args.taskId <= 0) {
+              return _invalidRouteArgumentsView();
+            }
 
             debugPrint(
               '============ Open Study Task Details Route ============',
@@ -793,7 +819,7 @@ class AppRouter {
           path: AppRouterPath.createStudyTask,
           name: AppRouterName.createStudyTask,
           builder: (context, state) {
-            final args = state.extra as CreateStudyTaskArgs?;
+            final args = _routeExtra<CreateStudyTaskArgs>(state);
 
             debugPrint(
               '============ Open Create Study Task Route ============',
@@ -825,7 +851,7 @@ class AppRouter {
           path: AppRouterPath.updateStudyTask,
           name: AppRouterName.updateStudyTask,
           builder: (context, state) {
-            final args = state.extra as UpdateStudyTaskArgs?;
+            final args = _routeExtra<UpdateStudyTaskArgs>(state);
 
             debugPrint(
               '============ Open Update Study Task Route ============',
@@ -991,7 +1017,8 @@ class AppRouter {
     }
 
     final currentLocation = state.matchedLocation;
-    final status = sl<AuthSession>().status;
+    final authSession = sl<AuthSession>();
+    final status = authSession.status;
 
     debugPrint("============ Router Redirect ============");
     debugPrint("→ matchedLocation: ${state.matchedLocation}");
@@ -999,27 +1026,28 @@ class AppRouter {
     debugPrint("→ authStatus: $status");
     debugPrint("=========================================");
 
-    if (currentLocation == AppRouterPath.sharedTestRedirect ||
-        currentLocation == AppRouterPath.sharedContentRedirect ||
-        currentLocation == AppRouterPath.sharedProfileRedirect) {
-      return null;
-    }
-
     switch (status) {
       case AuthSessionStatus.unknown:
+        _rememberPendingSharedLocation(state, authSession);
         return currentLocation == AppRouterPath.splash
             ? null
             : AppRouterPath.splash;
 
       case AuthSessionStatus.unauthenticated:
-        return _guestAllowedRoutes.contains(currentLocation)
-            ? null
-            : AppRouterPath.welcome;
+        if (_guestAllowedRoutes.contains(currentLocation)) {
+          return null;
+        }
+
+        _rememberPendingSharedLocation(state, authSession);
+        return AppRouterPath.welcome;
 
       case AuthSessionStatus.authenticated:
-        return _authBlockedRoutes.contains(currentLocation)
-            ? AppRouterPath.mainLayout
-            : null;
+        if (!_authBlockedRoutes.contains(currentLocation)) {
+          return null;
+        }
+
+        return authSession.takePendingProtectedLocation() ??
+            AppRouterPath.mainLayout;
     }
   }
 
@@ -1035,14 +1063,6 @@ class AppRouter {
     AppRouterPath.forgotPasswordOtpCode,
     AppRouterPath.forgotPasswordNewPassword,
     AppRouterPath.studyAlarmRinging,
-
-    AppRouterPath.home,
-    AppRouterPath.mainLayout,
-    AppRouterPath.detailsOfTest,
-
-    AppRouterPath.sharedTestRedirect,
-    AppRouterPath.sharedContentRedirect,
-    AppRouterPath.sharedProfileRedirect,
   };
 
   static const Set<String> _authBlockedRoutes = {
@@ -1057,6 +1077,71 @@ class AppRouter {
     AppRouterPath.forgotPasswordOtpCode,
     AppRouterPath.forgotPasswordNewPassword,
   };
+
+  static void _rememberPendingSharedLocation(
+    GoRouterState state,
+    AuthSession authSession,
+  ) {
+    final path = state.uri.path;
+    if (_isSharedRedirectPath(path)) {
+      authSession.rememberProtectedLocation(state.uri.toString());
+    }
+  }
+
+  static bool _isSharedRedirectPath(String path) {
+    return path.startsWith('/shared-test/') ||
+        path.startsWith('/shared-content/') ||
+        path.startsWith('/share/profiles/');
+  }
+
+  static T? _routeExtra<T>(GoRouterState state) {
+    final extra = state.extra;
+    return extra is T ? extra : null;
+  }
+
+  static Map<String, dynamic>? _routeMapExtra(GoRouterState state) {
+    final extra = state.extra;
+    if (extra is! Map) {
+      return null;
+    }
+
+    return <String, dynamic>{
+      for (final entry in extra.entries)
+        if (entry.key is String) entry.key as String: entry.value,
+    };
+  }
+
+  static String _stringRouteValue(dynamic value) {
+    return value is String ? value.trim() : '';
+  }
+
+  static Widget _invalidRouteArgumentsView() {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline_rounded, size: 48),
+                const SizedBox(height: 16),
+                const Text(
+                  'تعذر فتح هذه الصفحة لأن بيانات التنقل غير مكتملة أو غير صالحة.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: () => router.goNamed(AppRouterName.mainLayout),
+                  child: const Text('العودة إلى الرئيسية'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   static CustomTransitionPage<void> _slidePage({
     required GoRouterState state,

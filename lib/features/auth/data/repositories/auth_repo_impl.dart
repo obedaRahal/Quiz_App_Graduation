@@ -45,8 +45,6 @@ class AuthRepositoryImpl implements AuthRepository {
         gender: gender,
       ),
     );
-    debugPrint(result.otpCode);
-
     return result.toEntity();
   }
 
@@ -67,7 +65,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     debugPrint("============ AuthRepositoryImpl.login ============");
-    debugPrint("→ email: $email");
+    debugPrint("→ login credentials prepared");
 
     final deviceMetadata = await loginDeviceMetadataService.getMetadata();
 
@@ -77,15 +75,10 @@ class AuthRepositoryImpl implements AuthRepository {
       "${deviceMetadata.fcmToken?.trim().isNotEmpty == true}",
     );
     debugPrint(
-      "→ fcm_token length: ${deviceMetadata.fcmToken?.trim().length ?? 0}",
-    );
-    debugPrint(
       "→ device_id resolved: "
       "${deviceMetadata.deviceId?.trim().isNotEmpty == true}",
     );
-    debugPrint(
-      "→ device_name: ${deviceMetadata.deviceName ?? 'not available'}",
-    );
+    debugPrint("→ device_name resolved: ${deviceMetadata.deviceName != null}");
     debugPrint("================================================");
 
     final result = await authRemoteDataSource.login(
@@ -99,7 +92,6 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     debugPrint("✓ login API success: ${result.title}");
-    debugPrint("→ token length: ${result.token.length}");
     debugPrint("→ expiresIn: ${result.expiresIn}");
 
     await TokenStorage.saveAccessToken(
@@ -189,14 +181,11 @@ class AuthRepositoryImpl implements AuthRepository {
       return false;
     }
 
-    debugPrint("→ current token length: ${currentToken.length}");
-
     final result = await authRemoteDataSource.refreshAccessToken(
       oldAccessToken: currentToken,
     );
 
     debugPrint("✓ refresh API success: ${result.title}");
-    debugPrint("→ new token length: ${result.newToken.length}");
     debugPrint("→ expiresIn: ${result.expiresIn}");
 
     await TokenStorage.saveAccessToken(

@@ -8,13 +8,11 @@ import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/home_instructor_card.dart';
 import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
+
 class InstructorsSection extends StatelessWidget {
   final HomeState state;
 
-  const InstructorsSection({
-    super.key,
-    required this.state,
-  });
+  const InstructorsSection({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +25,7 @@ class InstructorsSection extends StatelessWidget {
     if (state.isRecommendedUsersLoading) {
       return SizedBox(
         height: sectionHeight,
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -66,9 +62,7 @@ class InstructorsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: SizeConfig.w(0.036),
-          ),
+          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.036)),
           child: CustomTextWidget(
             'أشهر أصحاب المعلومات',
             fontSize: titleSize,
@@ -85,9 +79,7 @@ class InstructorsSection extends StatelessWidget {
         SizedBox(
           height: sectionHeight,
           child: ListView.separated(
-            padding: EdgeInsets.symmetric(
-              horizontal: SizeConfig.w(0.036),
-            ),
+            padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.036)),
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             itemCount: state.recommendedUsers.length,
@@ -107,15 +99,15 @@ class InstructorsSection extends StatelessWidget {
 
                   context.pushNamed(
                     AppRouterName.otherProfile,
-                    extra: OtherProfileRouteArgs(
-                      userId: item.id,
-                    ),
+                    extra: OtherProfileRouteArgs(userId: item.id),
                   );
                 },
               );
             },
           ),
         ),
+
+        SizedBox(height: SizeConfig.h(0.008)),
       ],
     );
   }

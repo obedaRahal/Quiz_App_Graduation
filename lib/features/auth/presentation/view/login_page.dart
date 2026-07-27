@@ -97,7 +97,6 @@ class LoginPage extends StatelessWidget {
                   final lastCompletedStep = state.lastCompletedStep;
 
                   debugPrint('Go to onboarding step: $lastCompletedStep');
-                  debugPrint('and email is: $email');
 
                   if (email.isEmpty) {
                     showValidationTopSnackBar(
@@ -141,7 +140,6 @@ class LoginPage extends StatelessWidget {
           );
 
           sl<AuthSession>().markAuthenticated();
-          context.goNamed(AppRouterName.mainLayout);
         }
       },
       builder: (context, state) {

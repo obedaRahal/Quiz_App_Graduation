@@ -12,7 +12,10 @@ import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
 import 'package:quiz_app_grad/core/services/notification/local_votification_service.dart';
+import 'package:quiz_app_grad/core/services/notification/notification_tap_service.dart';
 import 'package:quiz_app_grad/core/services/notification/push_notification_service.dart';
+import 'package:quiz_app_grad/core/utils/app_logger.dart';
+import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_ringing_service.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_state.dart';
@@ -21,9 +24,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:quiz_app_grad/firebase_options.dart';
 
 void main() async {
+  AppLogger.configure();
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Alarm.init();
 
   //await TokenStorage.clear();
 
@@ -32,30 +34,80 @@ void main() async {
   AppRouter.init();
   await initializeDateFormatting('ar');
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final optionalServices = await Future.wait<bool>([
+    _initializeOptionalService('Alarm', () async {
+      await Alarm.init();
+    }),
+    _initializeOptionalService('Firebase', () async {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }),
+    _initializeOptionalService(
+      'Local notifications',
+      LocalNotificationService.init,
+    ),
+  ]);
 
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  final alarmReady = optionalServices[0];
+  final firebaseReady = optionalServices[1];
 
-  await LocalNotificationService.init();
-  await PushNotificationService.init();
+  if (firebaseReady) {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
 
-  runApp(const QuizApp());
+  runApp(QuizApp(alarmReady: alarmReady));
+
+  if (firebaseReady) {
+    unawaited(
+      _initializeOptionalService(
+        'Push notifications',
+        PushNotificationService.init,
+      ),
+    );
+  }
+}
+
+Future<bool> _initializeOptionalService(
+  String name,
+  Future<void> Function() initialize,
+) async {
+  try {
+    await initialize().timeout(const Duration(seconds: 20));
+    debugPrint('✓ optional service initialized: $name');
+    return true;
+  } catch (error, stackTrace) {
+    debugPrint('✗ optional service failed: $name (${error.runtimeType})');
+    debugPrintStack(stackTrace: stackTrace);
+    return false;
+  }
 }
 
 class QuizApp extends StatefulWidget {
-  const QuizApp({super.key});
+  final bool alarmReady;
+
+  const QuizApp({super.key, this.alarmReady = false});
 
   @override
   State<QuizApp> createState() => _QuizAppState();
 }
 
 class _QuizAppState extends State<QuizApp> {
+  StreamSubscription<void>? _notificationTapSubscription;
+  AuthSession? _authSession;
+  bool _notificationNavigationScheduled = false;
+
   @override
   void initState() {
     super.initState();
 
+    _authSession = sl<AuthSession>()..addListener(_onAuthSessionChanged);
+    _notificationTapSubscription = NotificationTapService.taps.listen((_) {
+      _scheduleNotificationNavigation();
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (sl.isRegistered<StudyAlarmRingingService>()) {
+      if (widget.alarmReady && sl.isRegistered<StudyAlarmRingingService>()) {
         sl<StudyAlarmRingingService>().init(
           onAlarmRinging: (alarmSettings) async {
             await AppRouter.router.pushNamed(
@@ -66,38 +118,74 @@ class _QuizAppState extends State<QuizApp> {
         );
       }
 
-      sl<DeepLinkService>().init(
+      unawaited(_initializeDeepLinks());
+      _scheduleNotificationNavigation();
+    });
+  }
+
+  Future<void> _initializeDeepLinks() async {
+    try {
+      await sl<DeepLinkService>().init(
         onTestSlugReceived: (slug) {
-          final path = AppRouterPath.sharedTestRedirectPath(slug);
-
-          debugPrint("============ App Deep Link Navigation ============");
-          debugPrint("→ slug: $slug");
-          debugPrint("→ path: $path");
-          debugPrint("=================================================");
-
-          AppRouter.router.go(path);
-
-          debugPrint("✓ router.go called");
+          AppRouter.router.go(AppRouterPath.sharedTestRedirectPath(slug));
         },
         onLibrarySlugReceived: (slug) {
-          final path = AppRouterPath.sharedContentRedirectPath(slug);
-
-          debugPrint("============ Library Deep Link Navigation ============");
-          debugPrint("→ slug: $slug");
-          debugPrint("→ path: $path");
-          debugPrint("======================================================");
-
-          AppRouter.router.go(path);
-          debugPrint("✓ library router.go called");
+          AppRouter.router.go(AppRouterPath.sharedContentRedirectPath(slug));
+        },
+        onProfileSlugReceived: (slug) {
+          AppRouter.router.go(AppRouterPath.sharedProfileRedirectPath(slug));
         },
       );
+    } catch (error, stackTrace) {
+      debugPrint('✗ DeepLinkService initialization failed');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+  }
+
+  void _onAuthSessionChanged() {
+    _scheduleNotificationNavigation();
+  }
+
+  void _scheduleNotificationNavigation() {
+    if (!mounted ||
+        _notificationNavigationScheduled ||
+        !NotificationTapService.hasPendingTap ||
+        _authSession?.isAuthenticated != true) {
+      return;
+    }
+
+    _notificationNavigationScheduled = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _notificationNavigationScheduled = false;
+
+      if (!mounted ||
+          _authSession?.isAuthenticated != true ||
+          !NotificationTapService.consumePendingTap()) {
+        return;
+      }
+
+      final currentPath =
+          AppRouter.router.routeInformationProvider.value.uri.path;
+
+      if (currentPath == AppRouterPath.notifications) {
+        return;
+      }
+
+      unawaited(AppRouter.router.pushNamed(AppRouterName.notifications));
     });
   }
 
   @override
   void dispose() {
+    _authSession?.removeListener(_onAuthSessionChanged);
+    unawaited(_notificationTapSubscription?.cancel() ?? Future<void>.value());
+
     if (sl.isRegistered<StudyAlarmRingingService>()) {
       unawaited(sl<StudyAlarmRingingService>().dispose());
+    }
+    if (sl.isRegistered<DeepLinkService>()) {
+      unawaited(sl<DeepLinkService>().dispose());
     }
     super.dispose();
   }

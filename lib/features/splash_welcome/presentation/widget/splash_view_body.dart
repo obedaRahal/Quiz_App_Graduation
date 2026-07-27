@@ -217,8 +217,6 @@ class _SplashViewBodyState extends State<SplashViewBody>
       final expiryAt = await TokenStorage.getAccessTokenExpiry();
 
       debugPrint("→ hasAccessToken: $hasAccessToken");
-      debugPrint("→ token length: ${currentToken?.length ?? 0}");
-      debugPrint("→ token is: $currentToken");
       debugPrint("→ expiryAt: ${expiryAt?.toIso8601String() ?? 'null'}");
 
       if (!hasAccessToken || currentToken == null || currentToken.isEmpty) {
@@ -243,9 +241,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
         debugPrint("→ stored token is still valid");
         authSession.markAuthenticated();
 
-        if (!mounted) return;
-        context.goNamed(AppRouterName.mainLayout);
-        debugPrint("→ navigated to mainLayout");
+        debugPrint("→ authenticated navigation delegated to AppRouter");
         debugPrint("=================================================");
         return;
       }
@@ -257,20 +253,16 @@ class _SplashViewBodyState extends State<SplashViewBody>
       debugPrint("→ refreshSucceeded: $refreshSucceeded");
 
       if (refreshSucceeded) {
-        final refreshedToken = await TokenStorage.getAccessToken();
         final refreshedExpiry = await TokenStorage.getAccessTokenExpiry();
 
         debugPrint("✓ refresh succeeded");
-        debugPrint("→ refreshed token length: ${refreshedToken?.length ?? 0}");
         debugPrint(
           "→ refreshed expiryAt: ${refreshedExpiry?.toIso8601String() ?? 'null'}",
         );
 
         authSession.markAuthenticated();
 
-        if (!mounted) return;
-        context.goNamed(AppRouterName.mainLayout);
-        debugPrint("→ navigated to mainLayout after refresh");
+        debugPrint("→ authenticated navigation delegated to AppRouter");
         debugPrint("=================================================");
         return;
       }

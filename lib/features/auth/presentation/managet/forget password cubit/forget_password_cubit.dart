@@ -63,7 +63,7 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
     final email = emailController.text.trim();
 
     debugPrint("========== ForgetPasswordCubit.requestOtp ==========");
-    debugPrint("email => $email");
+    debugPrint("forgot-password OTP request prepared");
 
     if (email.isEmpty) {
       emit(
@@ -127,7 +127,7 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
 
   void setEmail(String value) {
     email = value;
-    debugPrint("ForgetPasswordCubit.setEmail -> $email");
+    debugPrint("ForgetPasswordCubit email prepared");
   }
 
   void otpChanged(String value) {
@@ -144,8 +144,7 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
     final otpCode = state.otpCode.trim();
 
     debugPrint("========== ForgetPasswordCubit.verifyOtp ==========");
-    debugPrint("email => $email");
-    debugPrint("otpCode => $otpCode");
+    debugPrint("forgot-password verification data prepared");
 
     if (email.isEmpty) {
       emit(
@@ -234,7 +233,7 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
     debugPrint(
       "========== ForgetPasswordCubit.resendForgotPasswordOtp ==========",
     );
-    debugPrint("email => $currentEmail");
+    debugPrint("forgot-password OTP resend request prepared");
 
     if (currentEmail.isEmpty) {
       emit(
@@ -299,10 +298,7 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
     final passwordConfirmation = passwordConfirmationController.text.trim();
 
     debugPrint("========== ForgetPasswordCubit.resetPassword ==========");
-    debugPrint("email => $currentEmail");
-    debugPrint("otpCode => $otpCode");
-    debugPrint("password length => ${password.length}");
-    debugPrint("passwordConfirmation length => ${passwordConfirmation.length}");
+    debugPrint("password reset data prepared");
 
     if (currentEmail.isEmpty) {
       emit(
@@ -394,7 +390,7 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
   }
 
   void setOtpCode(String value) {
-    debugPrint("ForgetPasswordCubit.setOtpCode -> $value");
+    debugPrint("ForgetPasswordCubit OTP updated");
 
     emit(state.copyWith(otpCode: value));
   }

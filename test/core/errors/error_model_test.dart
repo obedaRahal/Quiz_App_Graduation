@@ -43,6 +43,16 @@ void main() {
       expect(result.status, 500);
       expect(result.errorMessage, 'تعذر تنزيل الملف');
     });
+
+    test('reads a snake_case status_code value', () {
+      final result = ErrorModel.fromResponseData({
+        'status_code': '429',
+        'message': 'طلبات كثيرة',
+      });
+
+      expect(result.status, 429);
+      expect(result.errorMessage, 'طلبات كثيرة');
+    });
   });
 
   test(

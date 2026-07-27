@@ -28,7 +28,7 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
     debugPrint(
       "============ OnboardingRepositoryImpl.submitDiscoverySource ============",
     );
-    debugPrint("→ params: {email: $email, discovery_source: $discoverySource}");
+    debugPrint("→ discovery source request prepared: $discoverySource");
 
     try {
       debugPrint("→ calling remoteDataSource.submitDiscoverySource");
@@ -133,7 +133,7 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
     debugPrint(
       "============ OnboardingRepositoryImpl.submitSchoolStage ============",
     );
-    debugPrint("→ params: {email: $email, school_stage: $schoolStage}");
+    debugPrint("→ school stage request prepared: $schoolStage");
 
     try {
       debugPrint("→ calling remoteDataSource.submitSchoolStage");
@@ -343,7 +343,7 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
     debugPrint(
       "============ OnboardingRepositoryImpl.submitUserInterests ============",
     );
-    debugPrint("→ params: {email: $email, interest_ids: $interestIds}");
+    debugPrint("→ interests request prepared: $interestIds");
 
     try {
       debugPrint("→ calling remoteDataSource.submitUserInterests");
@@ -391,7 +391,7 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
     debugPrint(
       "============ OnboardingRepositoryImpl.getOnboardingProgressPreview ============",
     );
-    debugPrint("→ params: {email: $email}");
+    debugPrint("→ onboarding completion request prepared");
 
     try {
       debugPrint("→ calling remoteDataSource.getOnboardingProgressPreview");

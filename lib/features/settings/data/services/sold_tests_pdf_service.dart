@@ -27,9 +27,11 @@ class SoldTestsPdfService {
   static final PdfColor _greenColor = PdfColor.fromHex('#62DC69');
 
   Future<String> generateSoldTestsPdf({required SoldTestsEntity report}) async {
-    print('============ SoldTestsPdfService.generateSoldTestsPdf ============');
-    print('→ totalSalesCount: ${report.stats.totalSalesCount}');
-    print('→ sales count: ${report.sales.length}');
+    debugPrint(
+      '============ SoldTestsPdfService.generateSoldTestsPdf ============',
+    );
+    debugPrint('→ totalSalesCount: ${report.stats.totalSalesCount}');
+    debugPrint('→ sales count: ${report.sales.length}');
 
     final pdf = pw.Document();
 
@@ -101,8 +103,10 @@ class SoldTestsPdfService {
 
     await file.writeAsBytes(await pdf.save(), flush: true);
 
-    print('√ file path: ${file.path}');
-    print('===============================================================');
+    debugPrint('√ file path: ${file.path}');
+    debugPrint(
+      '===============================================================',
+    );
 
     return file.path;
   }

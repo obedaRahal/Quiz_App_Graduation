@@ -91,7 +91,12 @@ class ErrorModel {
   @override
   String toString() => errorMessage;
   static int _extractStatus(Map<String, dynamic> json, int fallbackStatusCode) {
-    return _parseStatus(json['status'] ?? json['statusCode'] ?? json['code']) ??
+    return _parseStatus(
+          json['status'] ??
+              json['statusCode'] ??
+              json['status_code'] ??
+              json['code'],
+        ) ??
         fallbackStatusCode;
   }
 

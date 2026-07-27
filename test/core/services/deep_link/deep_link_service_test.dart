@@ -22,6 +22,16 @@ void main() {
     expect(target.slug, 'test-share-slug');
   });
 
+  test('parses a shared profile deep link', () {
+    final target = DeepLinkService.parseUri(
+      Uri.parse('nerd://profiles/profile-share-slug'),
+    );
+
+    expect(target, isNotNull);
+    expect(target!.kind, AppDeepLinkKind.profile);
+    expect(target.slug, 'profile-share-slug');
+  });
+
   test('rejects unsupported and malformed deep links', () {
     expect(DeepLinkService.parseUri(Uri.parse('https://library/slug')), isNull);
     expect(DeepLinkService.parseUri(Uri.parse('nerd://library')), isNull);

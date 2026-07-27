@@ -129,7 +129,6 @@ class OtherProfileContentCard extends StatelessWidget {
 //   }
 // }
 
-
 class _ContentThumbnail extends StatelessWidget {
   final String imageUrl;
   final String type;
@@ -155,10 +154,7 @@ class _ContentThumbnail extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppPalette.greyLight,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: AppPalette.greyBorderCart,
-          width: 2,
-        ),
+        border: Border.all(color: AppPalette.greyBorderCart, width: 2),
       ),
       child: hasImage
           ? SizedBox.expand(
@@ -173,9 +169,7 @@ class _ContentThumbnail extends StatelessWidget {
             )
           : Center(
               child: Icon(
-                isImage
-                    ? Icons.image_rounded
-                    : Icons.insert_drive_file_rounded,
+                isImage ? Icons.image_rounded : Icons.insert_drive_file_rounded,
                 color: AppPalette.greyMedium,
                 size: SizeConfig.w(0.06),
               ),
@@ -183,7 +177,6 @@ class _ContentThumbnail extends StatelessWidget {
     );
   }
 }
-
 
 class _ContentHeaderRow extends StatelessWidget {
   final String title;

@@ -12,17 +12,37 @@ import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_tabs_section.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_test_card/laboratory_tests_slider_section.dart';
 
-class LaboratoryPage extends StatelessWidget {
+class LaboratoryPage extends StatefulWidget {
   const LaboratoryPage({super.key});
 
   @override
+  State<LaboratoryPage> createState() => _LaboratoryPageState();
+}
+
+class _LaboratoryPageState extends State<LaboratoryPage> {
+  late final PageController _testsSliderController;
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _testsSliderController = PageController(viewportFraction: 0.78);
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _testsSliderController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = PageController(viewportFraction: 0.78);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final appColors = context.appColors;
     final colorScheme = Theme.of(context).colorScheme;
     final scrollController = context.read<LaboratoryCubit>().scrollController;
-    final searchController = TextEditingController();
     return Scaffold(
       body: Column(
         children: [
@@ -35,12 +55,12 @@ class LaboratoryPage extends StatelessWidget {
               bottom: SizeConfig.h(0.012),
             ),
             child: LaboratorySearchField(
-              controller: searchController,
+              controller: _searchController,
               onChanged: (value) {
                 context.read<LaboratoryCubit>().onSearchChanged(value);
               },
               onClear: () {
-                searchController.clear();
+                _searchController.clear();
 
                 context.read<LaboratoryCubit>().exitSearchMode();
               },
@@ -50,8 +70,8 @@ class LaboratoryPage extends StatelessWidget {
             ),
           ),
 
-           LaboratoryTabsSection(),
-           SizedBox(height: SizeConfig.h(0.006),),
+          LaboratoryTabsSection(),
+          SizedBox(height: SizeConfig.h(0.006)),
 
           Expanded(
             child: SingleChildScrollView(
@@ -64,10 +84,9 @@ class LaboratoryPage extends StatelessWidget {
                   return Column(
                     children: [
                       if (shouldShowTopCards) ...[
-                      //  const LaboratoryTabsSection(),
-
+                        //  const LaboratoryTabsSection(),
                         LaboratoryTestsSliderSection(
-                          controller: controller,
+                          controller: _testsSliderController,
                           isDark: isDark,
                           appColors: appColors,
                           colorScheme: colorScheme,

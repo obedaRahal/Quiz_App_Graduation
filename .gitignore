@@ -43,3 +43,25 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local Android backups and machine-specific files
+/android_backup/
+**/.gradle/
+**/.kotlin/
+**/local.properties
+
+# Android signing secrets
+**/key.properties
+**/*.jks
+**/*.keystore
+
+# Backend Firebase/Admin credentials (client google-services.json is not secret)
+**/service-account*.json
+**/*service_account*.json
+
+# Environment files and private certificates
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.p12

@@ -18,6 +18,7 @@ import 'package:quiz_app_grad/features/auth/domain/use_cases/verify_email_use_ca
 import 'package:quiz_app_grad/features/auth/presentation/managet/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_cubit.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/verify_register_cubit/verify_register_cubit.dart';
+import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
 import 'package:quiz_app_grad/features/content_details/data/datasources/my_content_details_remote_data_source.dart';
 import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_bookmark_remote_data_source.dart';
 import 'package:quiz_app_grad/features/content_details/data/datasources/other_content_details_remote_data_source.dart';
@@ -335,7 +336,7 @@ Future<void> _registerCore() async {
         ),
         refreshToken: () => sl<AuthRepository>().refreshAccessToken(),
         clearSession: () async {
-          await TokenStorage.clear();
+          await Future.wait([TokenStorage.clear(), UserLocalStorage.clear()]);
           sl<AuthSession>().markUnauthenticated();
         },
       ),

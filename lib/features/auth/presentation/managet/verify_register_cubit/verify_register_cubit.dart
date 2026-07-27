@@ -225,17 +225,17 @@ class VerifyRegisterCubit extends SafeCubit<VerifyRegisterState> {
     required this.resendOtpUseCase,
   }) : super(const VerifyRegisterState()) {
     debugPrint("============ VerifyRegisterCubit INIT ============");
-    debugPrint("VerifyRegisterCubit created for email: $email");
+    debugPrint("VerifyRegisterCubit created");
     _startTimer();
   }
 
   void setEmail(String value) {
     email = value;
-    debugPrint("VerifyRegisterCubit.setEmail -> $email");
+    debugPrint("VerifyRegisterCubit email prepared");
   }
 
   void otpChanged(String value) {
-    debugPrint("VerifyRegisterCubit.otpChanged -> $value");
+    debugPrint("VerifyRegisterCubit OTP updated");
 
     emit(
       state.copyWith(
@@ -277,8 +277,7 @@ class VerifyRegisterCubit extends SafeCubit<VerifyRegisterState> {
     final otpCode = state.otpCode.trim();
 
     debugPrint("========== VerifyRegisterCubit.submitVerifyEmail ==========");
-    debugPrint("email => $email");
-    debugPrint("otpCode => $otpCode");
+    debugPrint("verification credentials prepared");
 
     if (email.isEmpty) {
       emit(
@@ -355,7 +354,7 @@ class VerifyRegisterCubit extends SafeCubit<VerifyRegisterState> {
     debugPrint(
       '================ VerifyRegisterCubit.resendCode ================',
     );
-    debugPrint('email => $email');
+    debugPrint('resend verification request prepared');
 
     if (email.isEmpty) {
       debugPrint('resend aborted => email is empty');

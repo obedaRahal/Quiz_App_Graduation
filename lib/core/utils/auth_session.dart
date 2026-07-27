@@ -7,6 +7,7 @@ class AuthSession extends ChangeNotifier {
     : _status = initialStatus;
 
   AuthSessionStatus _status;
+  String? _pendingProtectedLocation;
 
   AuthSessionStatus get status => _status;
 
@@ -15,6 +16,7 @@ class AuthSession extends ChangeNotifier {
   bool get isAuthenticated => _status == AuthSessionStatus.authenticated;
 
   bool get canAccessProtectedRoutes => isAuthenticated;
+  String? get pendingProtectedLocation => _pendingProtectedLocation;
 
   void setStatus(AuthSessionStatus newStatus) {
     if (_status == newStatus) return;
@@ -34,7 +36,27 @@ class AuthSession extends ChangeNotifier {
     setStatus(AuthSessionStatus.authenticated);
   }
 
+  void rememberProtectedLocation(String location) {
+    final normalized = location.trim();
+    if (normalized.isEmpty) {
+      return;
+    }
+
+    _pendingProtectedLocation = normalized;
+  }
+
+  String? takePendingProtectedLocation() {
+    final location = _pendingProtectedLocation;
+    _pendingProtectedLocation = null;
+    return location;
+  }
+
+  void clearPendingProtectedLocation() {
+    _pendingProtectedLocation = null;
+  }
+
   void reset() {
+    clearPendingProtectedLocation();
     markUnauthenticated();
   }
 }

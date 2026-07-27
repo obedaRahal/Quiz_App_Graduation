@@ -325,9 +325,7 @@ class RegisterCubit extends SafeCubit<RegisterState> {
     final password = passwordController.text.trim();
 
     debugPrint("========== RegisterCubit.submitRegister ==========");
-    debugPrint("name => $name");
-    debugPrint("email => $email");
-    debugPrint("password length => ${password.length}");
+    debugPrint("registration data prepared");
     debugPrint("selectedGender => ${state.selectedGender}");
 
     if (name.isEmpty) {

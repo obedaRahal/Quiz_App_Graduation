@@ -60,7 +60,7 @@ class OnboardingCubit extends SafeCubit<OnboardingState> {
     this.initialLastCompletedStep,
   }) : super(const OnboardingState()) {
     debugPrint("============ OnboardingCubit INIT ============");
-    debugPrint("→ onboardingEmail: $onboardingEmail");
+    debugPrint("→ onboarding email available: ${onboardingEmail.isNotEmpty}");
     debugPrint("→ initialLastCompletedStep: $initialLastCompletedStep");
   }
 

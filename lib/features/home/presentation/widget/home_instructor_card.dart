@@ -44,14 +44,14 @@ class InstructorCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: SizeConfig.h(0.003)),
             CustomTextWidget(
               item.name,
               fontWeight: FontWeight.w600,
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              fontSize: SizeConfig.text(0.032).clamp(10.0, 12.0),
+              fontSize: SizeConfig.text(0.03).clamp(10.0, 12.0),
               color: isDark
                   ? AppPalette.titleWhiteINDark
                   : AppPalette.greyMedium,

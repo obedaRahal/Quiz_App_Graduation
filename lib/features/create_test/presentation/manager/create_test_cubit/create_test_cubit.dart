@@ -1080,11 +1080,11 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
 
         final data = response.data;
 
-        print('AI POLLING ATTEMPT: $attempt');
-        print('requestId: $requestId');
-        print('status: ${data.status}');
-        print('failure: ${data.failure}');
-        print('questions count: ${data.questions.length}');
+        debugPrint('AI POLLING ATTEMPT: $attempt');
+        debugPrint('requestId: $requestId');
+        debugPrint('status: ${data.status}');
+        debugPrint('failure: ${data.failure}');
+        debugPrint('questions count: ${data.questions.length}');
 
         if (data.isCompleted) {
           if (data.questions.isEmpty) {
@@ -1128,7 +1128,7 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
 
         await Future.delayed(const Duration(seconds: aiPollingIntervalSeconds));
       } catch (e) {
-        print('AI POLLING ERROR attempt $attempt: $e');
+        debugPrint('AI POLLING ERROR attempt $attempt: $e');
 
         if (isClosed) return;
 

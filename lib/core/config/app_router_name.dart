@@ -62,7 +62,7 @@ abstract class AppRouterPath {
 
   static const String sharedProfileRedirect = '/share/profiles/:slug';
   static String sharedProfileRedirectPath(String slug) =>
-      '/share/profiles/$slug';
+      '/share/profiles/${Uri.encodeComponent(slug)}';
 
   static const splash = '/';
   static const welcome = '/welcome';

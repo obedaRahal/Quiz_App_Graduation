@@ -72,7 +72,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     debugPrint(
       'VERIFY FULL URL => ${EndPoints.baseUrl}${EndPoints.verifyEmail}',
     );
-    debugPrint('VERIFY DATA => ${request.toJson()}');
+    debugPrint('VERIFY REQUEST => prepared');
 
     final response = await apiConsumer.post(
       EndPoints.verifyEmail,
@@ -81,7 +81,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       options: Options(extra: {'requiresAuth': false}),
     );
 
-    debugPrint('VERIFY RESPONSE => $response');
+    debugPrint('VERIFY RESPONSE => received');
 
     return VerifyEmailResponseModel.fromJson(response);
   }
@@ -97,7 +97,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     debugPrint('→ fcm_token sent: ${requestData.containsKey('fcm_token')}');
     debugPrint('→ device_id sent: ${requestData.containsKey('device_id')}');
     debugPrint('→ device_name sent: ${requestData.containsKey('device_name')}');
-    debugPrint('→ safe request body: ${request.toSafeLogJson()}');
     debugPrint('==================================================');
 
     final response = await apiConsumer.post(
@@ -116,7 +115,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   ) async {
     debugPrint('================ RESEND OTP REQUEST ================');
     debugPrint('RESEND FULL URL => ${EndPoints.baseUrl}${EndPoints.resendOtp}');
-    debugPrint('RESEND DATA => ${request.toJson()}');
+    debugPrint('RESEND REQUEST => prepared');
 
     final response = await apiConsumer.post(
       EndPoints.resendOtp,
@@ -125,7 +124,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       options: Options(extra: {'requiresAuth': false}),
     );
 
-    debugPrint('RESEND RESPONSE => $response');
+    debugPrint('RESEND RESPONSE => received');
     debugPrint('================ END RESEND OTP REQUEST ================');
 
     return ResendOtpResponseModel.fromJson(response);
@@ -138,7 +137,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     debugPrint(
       'FORGOT PASSWORD REQUEST OTP URL => ${EndPoints.baseUrl}${EndPoints.forgotPasswordRequestOtp}',
     );
-    debugPrint('FORGOT PASSWORD REQUEST OTP DATA => ${request.toJson()}');
+    debugPrint('FORGOT PASSWORD REQUEST OTP => prepared');
 
     final response = await apiConsumer.post(
       EndPoints.forgotPasswordRequestOtp,
@@ -157,7 +156,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     debugPrint(
       'FORGOT PASSWORD VERIFY OTP URL => ${EndPoints.baseUrl}${EndPoints.forgotPasswordVerifyOtp}',
     );
-    debugPrint('FORGOT PASSWORD VERIFY OTP DATA => ${request.toJson()}');
+    debugPrint('FORGOT PASSWORD VERIFY OTP => prepared');
 
     final response = await apiConsumer.post(
       EndPoints.forgotPasswordVerifyOtp,
@@ -176,7 +175,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     debugPrint(
       'FORGOT PASSWORD RESEND OTP URL => ${EndPoints.baseUrl}${EndPoints.forgotPasswordResendOtp}',
     );
-    debugPrint('FORGOT PASSWORD RESEND OTP DATA => ${request.toJson()}');
+    debugPrint('FORGOT PASSWORD RESEND OTP => prepared');
 
     final response = await apiConsumer.post(
       EndPoints.forgotPasswordResendOtp,
@@ -195,7 +194,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     debugPrint(
       'FORGOT PASSWORD RESET URL => ${EndPoints.baseUrl}${EndPoints.forgotPasswordReset}',
     );
-    debugPrint('FORGOT PASSWORD RESET DATA => ${request.toJson()}');
+    debugPrint('FORGOT PASSWORD RESET REQUEST => prepared');
 
     final response = await apiConsumer.post(
       EndPoints.forgotPasswordReset,
@@ -228,7 +227,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         ),
       );
 
-      debugPrint("← response (refreshAccessToken): ${response.data}");
+      debugPrint("← refreshAccessToken response received");
       debugPrint("=================================================");
 
       return RefreshTokenResponseModel.fromJson(

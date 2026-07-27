@@ -21,13 +21,33 @@ import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_r
 import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_cubit.dart';
 import 'package:quiz_app_grad/features/study_alarm/presentation/manager/study_alarm/study_alarm_state.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late final PageController _topBannerController;
+  late final PageController _testsSliderController;
+
+  @override
+  void initState() {
+    super.initState();
+    _topBannerController = PageController(viewportFraction: 0.95);
+    _testsSliderController = PageController(viewportFraction: 0.74);
+  }
+
+  @override
+  void dispose() {
+    _topBannerController.dispose();
+    _testsSliderController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final PageController controller = PageController(viewportFraction: 0.95);
-    final PageController controller2 = PageController(viewportFraction: 0.74);
     SizeConfig.init(context);
     final appColors = context.appColors;
     final colorScheme = context.colorScheme;
@@ -79,7 +99,7 @@ class HomePage extends StatelessWidget {
                 ),
                 SizedBox(height: SizeConfig.h(0.03)),
                 HomeTopBannerSection(
-                  controller: controller,
+                  controller: _topBannerController,
                   isDark: isDark,
                   colorScheme: colorScheme,
                   circleSize: circleSize,
@@ -186,7 +206,7 @@ class HomePage extends StatelessWidget {
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
                     return HomeSliderSection(
-                      controller2: controller2,
+                      controller2: _testsSliderController,
                       isDark: isDark,
                       appColors: appColors,
                       colorScheme: colorScheme,
@@ -215,104 +235,7 @@ class HomePage extends StatelessWidget {
                   },
                 ),
 
-                // Center(
-                //   child: Column(
-                //     children: [
-                //       Center(
-                //         child: InkWell(
-                //           onTap: () {
-                //             //context.pushNamed(AppRouterName.detailsOfTest);
-                //             context.pushNamed(
-                //               AppRouterName.detailsOfTest,
-                //               extra: DetailsOfTestRouteArgs(testId: 100),
-                //             );
-                //           },
-                //           child: Text("details of test"),
-                //         ),
-                //       ),
-
-                //       SizedBox(height: 40),
-
-                //       SizedBox(height: 40),
-                //       Center(
-                //         child: InkWell(
-                //           onTap: () {
-                //             //context.pushNamed(AppRouterName.detailsOfTest);
-                //             context.pushNamed(
-                //               AppRouterName.myTestDetails,
-                //               extra: DetailsOfTestRouteArgs(testId: 11),
-                //             );
-                //           },
-                //           child: Text("my test detailssssssssss"),
-                //         ),
-                //       ),
-
-                //       SizedBox(height: 40),
-                //       SizedBox(height: 40),
-                //       Center(
-                //         child: InkWell(
-                //           onTap: () {
-                //             //context.pushNamed(AppRouterName.detailsOfTest);
-                //             context.pushNamed(
-                //               AppRouterName.myPrivateTestDetails,
-                //               extra: DetailsOfTestRouteArgs(testId: 805),
-                //             );
-                //           },
-                //           child: Text("my test private detailssssssssss"),
-                //         ),
-                //       ),
-
-                //       SizedBox(height: 40),
-                //       Center(
-                //         child: InkWell(
-                //           onTap: () {
-                //             //context.pushNamed(AppRouterName.detailsOfTest);
-                //             context.pushNamed(
-                //               AppRouterName.otherProfile,
-                //               //extra: OtherProfileRouteArgs(userId: 815),
-                //               extra: OtherProfileRouteArgs(userId: 811),
-                //             );
-                //           },
-                //           child: Text(" other profile "),
-                //         ),
-                //       ),
-                //       Center(
-                //         child: InkWell(
-                //           onTap: () {
-                //             context.pushNamed(
-                //               AppRouterName.otherContentDetails,
-                //               extra: const ContentDetailsRouteArgs(
-                //                 contentId: 2,
-                //                 isMyContent: true,
-                //               ),
-                //             );
-                //           },
-                //           child: const Text('عرض محتواي'),
-                //         ),
-                //       ),
-                //       CustomButtonWidget(
-                //         onTap: () {
-                //           debugPrint("change mode ");
-                //           context.read<ThemeCubit>().toggleTheme();
-                //         },
-                //         child: ThemedAppImage(
-                //           darkPath: AppImage.logoDark,
-                //           lightPath: AppImage.logoLight,
-                //         ),
-                //       ),
-
-                //       SizedBox(height: 40),
-                //       Center(
-                //         child: InkWell(
-                //           onTap: () async {
-                //             await _openMyProfile(context);
-                //           },
-                //           child: Text(" my profile "),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
+                SizedBox(height: SizeConfig.h(0.01)),
               ],
             ),
           ),

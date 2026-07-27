@@ -3,9 +3,7 @@ import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
 // import 'package:quiz_app_grad/core/database/api/token_refresh_service.dart';
 import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
 import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
-import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/errors/exceptions.dart';
-import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/login_use_case.dart';
 import 'package:quiz_app_grad/features/auth/domain/use_cases/resend_otp_use_case.dart';
 import 'package:quiz_app_grad/features/auth/presentation/managet/login_cubit/login_state.dart';
@@ -31,8 +29,7 @@ class LoginCubit extends SafeCubit<LoginState> {
     final password = passwordController.text.trim();
 
     debugPrint("========== LoginCubit.submitLogin ==========");
-    debugPrint("email => $email");
-    debugPrint("password length => ${password.length}");
+    debugPrint("login credentials prepared");
 
     if (email.isEmpty) {
       emit(
@@ -65,8 +62,7 @@ class LoginCubit extends SafeCubit<LoginState> {
     try {
       final result = await loginUseCase(email: email, password: password);
 
-      debugPrint("LOGIN SUCCESS => token length: ${result.token.length}");
-      debugPrint("LOGIN USER => ${result.user.name}");
+      debugPrint("LOGIN SUCCESS => authentication data received");
       await TokenStorage.saveAccessToken(
         token: result.token,
         expiresInSeconds: result.expiresIn,
@@ -78,7 +74,6 @@ class LoginCubit extends SafeCubit<LoginState> {
         gender: result.user.gender,
       );
 
-      sl<AuthSession>().markAuthenticated();
       emit(
         state.copyWith(
           loginStatus: LoginStatus.success,
@@ -86,9 +81,6 @@ class LoginCubit extends SafeCubit<LoginState> {
           errorMessage: null,
         ),
       );
-      final savedToken = await TokenStorage.getAccessToken();
-      debugPrint('SAVED TOKEN => $savedToken');
-
       //       final refreshed = await sl<TokenRefreshService>().refreshToken();
       // debugPrint('MANUAL REFRESH RESULT => $refreshed');
 
@@ -164,7 +156,7 @@ class LoginCubit extends SafeCubit<LoginState> {
     }
 
     try {
-      debugPrint('LOGIN resend verify email OTP => $email');
+      debugPrint('LOGIN resend verify email OTP request started');
 
       await resendOtpUseCase(email: email);
 

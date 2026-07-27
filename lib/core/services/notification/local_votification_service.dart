@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:quiz_app_grad/core/services/notification/notification_tap_service.dart';
 
 class LocalNotificationService {
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -15,7 +16,24 @@ class LocalNotificationService {
   static Future<void>? _initializationFuture;
 
   static void onTap(NotificationResponse notificationResponse) {
+    if (shouldOpenNotificationsFromPayload(notificationResponse.payload)) {
+      NotificationTapService.registerTap();
+    }
     streamController.add(notificationResponse);
+  }
+
+  @visibleForTesting
+  static bool shouldOpenNotificationsFromPayload(String? payload) {
+    if (payload == null || payload.trim().isEmpty) {
+      return false;
+    }
+
+    try {
+      final decoded = jsonDecode(payload);
+      return decoded is Map && decoded['open_notifications'] == true;
+    } on FormatException {
+      return false;
+    }
   }
 
   static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
@@ -56,7 +74,10 @@ class LocalNotificationService {
         ?.createNotificationChannel(_channel);
   }
 
-  static Future<void> showBasicNotification(RemoteMessage message) async {
+  static Future<void> showBasicNotification(
+    RemoteMessage message, {
+    required bool openNotificationsOnTap,
+  }) async {
     final android = AndroidNotificationDetails(
       _channel.id,
       _channel.name,
@@ -95,6 +116,7 @@ class LocalNotificationService {
       payload: jsonEncode({
         'message_id': message.messageId,
         'data': message.data,
+        'open_notifications': openNotificationsOnTap,
       }),
     );
 
@@ -182,5 +204,8 @@ String? _notificationIdentity(RemoteMessage message) {
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
-  LocalNotificationService.streamController.add(notificationResponse);
+  debugPrint(
+    'Background notification tap received; '
+    'the app will resume without forced navigation.',
+  );
 }
