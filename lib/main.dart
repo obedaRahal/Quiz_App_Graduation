@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/app_keyboard_dismiss_scope.dart';
 import 'package:quiz_app_grad/core/config/app_router.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
@@ -113,6 +114,11 @@ class _QuizAppState extends State<QuizApp> {
             darkTheme: AppTheme.dark(),
             themeMode: state.themeMode,
             routerConfig: AppRouter.router,
+            builder: (context, child) {
+              return AppKeyboardDismissScope(
+                child: child ?? const SizedBox.shrink(),
+              );
+            },
           );
         },
       ),
