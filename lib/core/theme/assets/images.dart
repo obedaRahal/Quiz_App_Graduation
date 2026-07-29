@@ -135,7 +135,8 @@ class AppImage {
       '$_baseImageDark/challengeMainCardDark.svg';
 
   //// study plan
-  static String get studyplan => '$_baseIcon/studyplan.svg';
+  static String get studyPlanLight => '$_baseImageLight/studyplan.svg';
+  static String get studyPlanDark => '$_baseImageDark/studyplan.png';
   static String get oldTask => '$_baseIcon/oldTask.svg';
   static String get currentTask => '$_baseIcon/currentTask.svg';
   static String get doneTask => '$_baseIcon/doneTask.svg';

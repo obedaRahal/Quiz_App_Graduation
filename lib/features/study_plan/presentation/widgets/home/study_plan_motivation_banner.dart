@@ -4,9 +4,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class StudyPlanMotivationBanner extends StatefulWidget {
@@ -43,14 +45,14 @@ class _StudyPlanMotivationBannerState extends State<StudyPlanMotivationBanner> {
       children: [
         ImageFiltered(
           imageFilter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-          child: CustomAppImage(path: AppImage.studyplan),
+          child: ThemedAppImage(lightPath: AppImage.studyPlanLight , darkPath: AppImage.studyPlanDark,),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.02)),
           child: CustomTextWidget(
             _selectedPhrase,
             maxLines: 3,
-            color: AppPalette.black,
+            color: context.appColors.blackToGrey2Dark,
             fontFamily: AppFont.elMessiriBold,
             fontSize: SizeConfig.text(0.04),
           ),

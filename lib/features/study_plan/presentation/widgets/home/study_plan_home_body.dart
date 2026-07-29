@@ -192,9 +192,19 @@ class StudyPlanHomeBody extends StatelessWidget {
                     ),
                   if (overview.data.plan == null)
                     EmptyActionBox(
-                      onTap: () {
-                        debugPrint('Open active plan');
-                        
+                      onTap: () async {
+                        debugPrint('Create study plan');
+                        // context.pushNamed(AppRouterName.createStudyPlan);
+                        final result = await context
+                            .pushNamed<StudyPlanMutationResult>(
+                              AppRouterName.createStudyPlan,
+                            );
+
+                        if (result != null && context.mounted) {
+                          await context
+                              .read<StudyPlanHomeCubit>()
+                              .refreshOverview();
+                        }
                       },
                       icon: Icons.event_note_rounded,
                       title: 'لا توجد خطة دراسية',

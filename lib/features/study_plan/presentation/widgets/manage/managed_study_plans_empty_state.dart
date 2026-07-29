@@ -41,7 +41,7 @@ class ManagedStudyPlansEmptyState
                 ? Icons.search_off_rounded
                 : Icons.event_note_rounded,
             size: SizeConfig.text(0.13),
-            color: AppPalette.greyMedium,
+            color: appColors.primaryToPrimaryDark,
           ),
 
           SizedBox(height: SizeConfig.h(0.015)),
