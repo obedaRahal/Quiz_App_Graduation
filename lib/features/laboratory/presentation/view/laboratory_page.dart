@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/manager/laboratory_cubit/laboratory_cubit.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/manager/laboratory_cubit/laboratory_state.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/shimmers/laboratory_page_shimmer.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_exam_sessions_section.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_header.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_search_field.dart';
@@ -43,132 +44,147 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
     final appColors = context.appColors;
     final colorScheme = Theme.of(context).colorScheme;
     final scrollController = context.read<LaboratoryCubit>().scrollController;
-    return Scaffold(
-      body: Column(
-        children: [
-          const LaboratoryHeader(),
+    return BlocBuilder<LaboratoryCubit, LaboratoryState>(
+      buildWhen: (previous, current) =>
+          previous.isLabTestsLoading != current.isLabTestsLoading ||
+          previous.hasInitialLoaded != current.hasInitialLoaded,
+      builder: (context, state) {
+        if (!state.hasInitialLoaded && state.isLabTestsLoading) {
+          return const LaboratoryPageShimmer();
+        }
 
-          Padding(
-            padding: EdgeInsets.only(
-              left: SizeConfig.w(0.03),
-              right: SizeConfig.w(0.03),
-              bottom: SizeConfig.h(0.012),
-            ),
-            child: LaboratorySearchField(
-              controller: _searchController,
-              onChanged: (value) {
-                context.read<LaboratoryCubit>().onSearchChanged(value);
-              },
-              onClear: () {
-                _searchController.clear();
+        return Scaffold(
+          body: Column(
+            children: [
+              const LaboratoryHeader(),
 
-                context.read<LaboratoryCubit>().exitSearchMode();
-              },
-              onTap: () {
-                context.read<LaboratoryCubit>().enterSearchMode();
-              },
-            ),
-          ),
+              Padding(
+                padding: EdgeInsets.only(
+                  left: SizeConfig.w(0.03),
+                  right: SizeConfig.w(0.03),
+                  bottom: SizeConfig.h(0.012),
+                ),
+                child: LaboratorySearchField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    context.read<LaboratoryCubit>().onSearchChanged(value);
+                  },
+                  onClear: () {
+                    _searchController.clear();
 
-          LaboratoryTabsSection(),
-          SizedBox(height: SizeConfig.h(0.006)),
+                    context.read<LaboratoryCubit>().exitSearchMode();
+                  },
+                  onTap: () {
+                    context.read<LaboratoryCubit>().enterSearchMode();
+                  },
+                ),
+              ),
 
-          Expanded(
-            child: SingleChildScrollView(
-              controller: scrollController,
-              child: BlocBuilder<LaboratoryCubit, LaboratoryState>(
-                builder: (context, state) {
-                  final shouldShowTopCards =
-                      !state.isSearchMode && !state.isFilterMode;
+              LaboratoryTabsSection(),
+              SizedBox(height: SizeConfig.h(0.006)),
 
-                  return Column(
-                    children: [
-                      if (shouldShowTopCards) ...[
-                        //  const LaboratoryTabsSection(),
-                        LaboratoryTestsSliderSection(
-                          controller: _testsSliderController,
-                          isDark: isDark,
-                          appColors: appColors,
-                          colorScheme: colorScheme,
-                        ),
-                      ],
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: BlocBuilder<LaboratoryCubit, LaboratoryState>(
+                    builder: (context, state) {
+                      final shouldShowTopCards =
+                          !state.isSearchMode && !state.isFilterMode;
 
-                      if (state.isFilterMode) ...[
-                        Padding(
-                          padding: EdgeInsets.only(
-                            right: SizeConfig.w(0.045),
-                            left: SizeConfig.w(0.045),
-                            bottom: SizeConfig.h(0.010),
-                          ),
-                          child: Row(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  context.read<LaboratoryCubit>().clearFilter();
-                                },
-                                borderRadius: BorderRadius.circular(20),
-                                child: Container(
-                                  height: SizeConfig.h(0.034),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: SizeConfig.w(0.026),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isDark
-                                        ? AppPalette.fieldColorNDark
-                                        : AppPalette.primarySoft,
+                      return Column(
+                        children: [
+                          if (shouldShowTopCards) ...[
+                            //  const LaboratoryTabsSection(),
+                            LaboratoryTestsSliderSection(
+                              controller: _testsSliderController,
+                              isDark: isDark,
+                              appColors: appColors,
+                              colorScheme: colorScheme,
+                            ),
+                          ],
+
+                          if (state.isFilterMode) ...[
+                            Padding(
+                              padding: EdgeInsets.only(
+                                right: SizeConfig.w(0.045),
+                                left: SizeConfig.w(0.045),
+                                bottom: SizeConfig.h(0.010),
+                              ),
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      context
+                                          .read<LaboratoryCubit>()
+                                          .clearFilter();
+                                    },
                                     borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: isDark
-                                          ? AppPalette.borderFieldColorNDark
-                                          : AppPalette.primary,
+                                    child: Container(
+                                      height: SizeConfig.h(0.034),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: SizeConfig.w(0.026),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? AppPalette.fieldColorNDark
+                                            : AppPalette.primarySoft,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: isDark
+                                              ? AppPalette.borderFieldColorNDark
+                                              : AppPalette.primary,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.close_rounded,
+                                            size: SizeConfig.text(0.034),
+                                            color:
+                                                appColors.primaryToPrimaryDark,
+                                          ),
+                                          SizedBox(width: SizeConfig.w(0.008)),
+                                          CustomTextWidget(
+                                            'إلغاء ',
+                                            fontSize: SizeConfig.text(0.026),
+                                            fontWeight: FontWeight.w800,
+                                            color:
+                                                appColors.primaryToPrimaryDark,
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.close_rounded,
-                                        size: SizeConfig.text(0.034),
-                                        color: appColors.primaryToPrimaryDark,
-                                      ),
-                                      SizedBox(width: SizeConfig.w(0.008)),
-                                      CustomTextWidget(
-                                        'إلغاء ',
-                                        fontSize: SizeConfig.text(0.026),
-                                        fontWeight: FontWeight.w800,
-                                        color: appColors.primaryToPrimaryDark,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
+
+                                  const Spacer(),
+
+                                  CustomTextWidget(
+                                    'نتائج البحث',
+                                    fontSize: SizeConfig.text(0.034),
+                                    fontWeight: FontWeight.w900,
+                                    color: isDark
+                                        ? AppPalette.textWhiteINDark
+                                        : AppPalette.textColorInHome,
+                                    textAlign: TextAlign.right,
                                   ),
-                                ),
+                                ],
                               ),
+                            ),
+                          ],
 
-                              const Spacer(),
-
-                              CustomTextWidget(
-                                'نتائج البحث',
-                                fontSize: SizeConfig.text(0.034),
-                                fontWeight: FontWeight.w900,
-                                color: isDark
-                                    ? AppPalette.textWhiteINDark
-                                    : AppPalette.textColorInHome,
-                                textAlign: TextAlign.right,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-
-                      const LaboratoryExamSessionsSection(),
-                    ],
-                  );
-                },
+                          const LaboratoryExamSessionsSection(),
+                        ],
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

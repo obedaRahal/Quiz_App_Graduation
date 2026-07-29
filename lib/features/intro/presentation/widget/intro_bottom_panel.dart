@@ -67,13 +67,13 @@ class IntroBottomPanel extends StatelessWidget {
                   ],
                 ),
               ),
-              if (isSaving)
-                PositionedDirectional(
-                  bottom: 0,
-                  end: SizeConfig.w(.35),
-                  start: SizeConfig.w(.35),
-                  child: CircularProgressIndicator(),
-                ),
+              // if (isSaving)
+              //   PositionedDirectional(
+              //     bottom: 0,
+              //     end: SizeConfig.w(.35),
+              //     start: SizeConfig.w(.35),
+              //     child: CircularProgressIndicator(),
+              //   ),
               PositionedDirectional(
                 bottom: 0,
                 end: 12,

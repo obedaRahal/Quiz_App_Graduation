@@ -17,6 +17,7 @@ import 'package:quiz_app_grad/features/content_details/presentation/widget/conte
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_report_sheet.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_statistics_row.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_status_history_section.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 
 class ContentInfoSheet extends StatelessWidget {
   final ContentDetailsUiData data;
@@ -49,7 +50,7 @@ class ContentInfoSheet extends StatelessWidget {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF101820) : AppPalette.white,
+            color: isDark ? AppPalette.greyMediumDark : AppPalette.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
             boxShadow: [
               BoxShadow(
@@ -112,6 +113,14 @@ class ContentInfoSheet extends StatelessWidget {
                                 isFollowLoading:
                                     state.isFollowLoading ||
                                     state.isUnfollowLoading,
+                                onPublisherTap: () {
+                                  context.pushNamed(
+                                    AppRouterName.otherProfile,
+                                    extra: OtherProfileRouteArgs(
+                                      userId: data.publisher!.id,
+                                    ),
+                                  );
+                                },
                                 onFollowTap: () {
                                   final isFollowing =
                                       state.viewerIsFollowingPublisher ??
@@ -738,7 +747,9 @@ class _RelatedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final path = imageUrl.trim().isNotEmpty ? imageUrl : AppImage.defaultImageFoeError;
+    final path = imageUrl.trim().isNotEmpty
+        ? imageUrl
+        : AppImage.defaultImageFoeError;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),

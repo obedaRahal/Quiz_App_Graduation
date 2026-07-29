@@ -24,6 +24,7 @@ class TestOverviewTab extends StatelessWidget {
   final String targetLevel;
   final String language;
   final int participantsCount;
+  final VoidCallback onPublisherTap;
   final VoidCallback onFollowTap;
 
   //final String reviewStatus;
@@ -48,6 +49,7 @@ class TestOverviewTab extends StatelessWidget {
     required this.participantsCount,
     //required this.reviewStatus,
     required this.interests,
+    required this.onPublisherTap,
     required this.onFollowTap,
   });
 
@@ -71,8 +73,7 @@ class TestOverviewTab extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: SizeConfig.h(.02),)
-
+          SizedBox(height: SizeConfig.h(.02)),
         ],
         TestPublisherCard(
           name: creatorName,
@@ -82,6 +83,7 @@ class TestOverviewTab extends StatelessWidget {
           followingCount: followingCount,
           publishedTestsCount: publishedTestsCount,
           isFollowing: isFollowingCreator,
+          onPublisherTap: onPublisherTap,
           onFollowTap: onFollowTap,
         ),
 

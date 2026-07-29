@@ -56,14 +56,15 @@ class CustomConfirmationDialog extends StatelessWidget {
       insetPadding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.055)),
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: SizeConfig.h(0.32)),
-
-        child: CustomBackgroundWithChild(
+        child: Container(
           width: double.infinity,
-          backgroundColor: appColors.whiteToblack,
-          borderRadius: BorderRadius.circular(18),
           padding: EdgeInsets.symmetric(
             horizontal: SizeConfig.w(0.045),
             vertical: SizeConfig.h(0.022),
+          ),
+          decoration: BoxDecoration(
+            color: appColors.whiteToblack,
+            borderRadius: BorderRadius.circular(18),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

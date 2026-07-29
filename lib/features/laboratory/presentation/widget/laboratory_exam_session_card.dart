@@ -405,7 +405,7 @@ class _FooterInfo extends StatelessWidget {
                 : const Color(0xFF26323D),
           ),
           SizedBox(width: SizeConfig.w(0.004)),
-          Icon(icon, size: iconSize, color: const Color(0xFF26323D)),
+          Icon(icon, size: iconSize, color: AppPalette.greyMedium),
         ],
       ),
     );

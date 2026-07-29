@@ -103,7 +103,7 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                             : FontAwesomeIcons.bookmark,
                         isActive: hasBookmarked,
                         activeColor: hasBookmarked
-                            ? AppPalette.black
+                            ? (isDark? AppPalette.primaryDark : AppPalette.black)
                             : AppPalette.greyMedium,
                         onIconTap: onBookmarkTap,
                         onValueTap: onBookmarkValueTap,

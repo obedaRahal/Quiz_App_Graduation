@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/features/home/domain/entities/recommended_users_re
 class HomeState {
   final int pageIndex;
   final int filterIndex;
+  final bool hasInitialLoaded;
 
   final bool isRecommendedTestsLoading;
   final String? recommendedTestsError;
@@ -21,6 +22,7 @@ class HomeState {
   const HomeState({
     this.pageIndex = 0,
     this.filterIndex = 0,
+    this.hasInitialLoaded = false,
     this.isRecommendedTestsLoading = false,
     this.recommendedTestsError,
     this.recommendedTests = const [],
@@ -35,6 +37,7 @@ class HomeState {
   HomeState copyWith({
     int? pageIndex,
     int? filterIndex,
+    bool? hasInitialLoaded,
     bool? isRecommendedTestsLoading,
     String? recommendedTestsError,
     List<RecommendedTestItemEntity>? recommendedTests,
@@ -48,6 +51,7 @@ class HomeState {
     return HomeState(
       pageIndex: pageIndex ?? this.pageIndex,
       filterIndex: filterIndex ?? this.filterIndex,
+      hasInitialLoaded: hasInitialLoaded ?? this.hasInitialLoaded,
       isRecommendedTestsLoading:
           isRecommendedTestsLoading ?? this.isRecommendedTestsLoading,
       recommendedTestsError: recommendedTestsError,

@@ -86,6 +86,10 @@ class HomeCubit extends SafeCubit<HomeState> {
       getRecommendedTests(),
       getRecommendedUsers(),
     ]);
+
+    if (isClosed) return;
+
+    emit(state.copyWith(hasInitialLoaded: true));
   }
 
   void changePage(int index) {

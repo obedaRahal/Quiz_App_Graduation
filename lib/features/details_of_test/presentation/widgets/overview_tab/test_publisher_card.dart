@@ -17,6 +17,7 @@ class TestPublisherCard extends StatelessWidget {
   final int followingCount;
   final int publishedTestsCount;
   final bool isFollowing;
+  final VoidCallback onPublisherTap;
   final VoidCallback onFollowTap;
 
   const TestPublisherCard({
@@ -28,6 +29,7 @@ class TestPublisherCard extends StatelessWidget {
     required this.followingCount,
     required this.publishedTestsCount,
     required this.isFollowing,
+    required this.onPublisherTap,
     required this.onFollowTap,
   });
 
@@ -50,72 +52,79 @@ class TestPublisherCard extends StatelessWidget {
         Row(
           textDirection: TextDirection.rtl,
           children: [
-            //SvgPicture.network(profilePicture),
-            CustomAppImage(
-              path: profilePicture,
-              width: SizeConfig.w(0.145),
-              height: SizeConfig.h(0.08),
-              fit: BoxFit.cover,
+            InkWell(
+              onTap: onPublisherTap,
               borderRadius: BorderRadius.circular(10),
+              child: CustomAppImage(
+                path: profilePicture,
+                width: SizeConfig.w(0.1),
+                height: SizeConfig.h(0.07),
+                fit: BoxFit.cover,
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
 
             SizedBox(width: SizeConfig.w(0.02)),
 
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Row(
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      Flexible(
-                        child: CustomTextWidget(
-                          name,
-                          color: appColors.blackToGrey2Dark,
-                          fontFamily: AppFont.elMessiriSemiBold,
-                          fontSize: SizeConfig.text(0.038),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.end,
+              child: InkWell(
+                onTap: onPublisherTap,
+                borderRadius: BorderRadius.circular(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        Flexible(
+                          child: CustomTextWidget(
+                            name,
+                            color: appColors.blackToGrey2Dark,
+                            fontFamily: AppFont.elMessiriSemiBold,
+                            fontSize: SizeConfig.text(0.038),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.end,
+                          ),
                         ),
-                      ),
 
-                      if (isVerified) ...[
-                        const SizedBox(width: 5),
-                        CustomAppImage(
-                          path: AppImage.verifyCheck,
-                          width: 13,
-                          height: 13,
-                          color: appColors.primaryToPrimaryDark,
+                        if (isVerified) ...[
+                          const SizedBox(width: 5),
+                          CustomAppImage(
+                            path: AppImage.verifyCheck,
+                            width: 13,
+                            height: 13,
+                            color: appColors.primaryToPrimaryDark,
+                          ),
+                        ],
+                      ],
+                    ),
+
+                    SizedBox(height: SizeConfig.h(0.004)),
+
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 6,
+                      runSpacing: 2,
+                      children: [
+                        _PublisherStat(
+                          label: "اختبار",
+                          value: formatCompactCount(publishedTestsCount),
+                        ),
+                        _DotSeparator(),
+                        _PublisherStat(
+                          label: "يتابع",
+                          value: formatCompactCount(followingCount),
+                        ),
+                        _DotSeparator(),
+                        _PublisherStat(
+                          label: "متابع",
+                          value: formatCompactCount(followersCount),
                         ),
                       ],
-                    ],
-                  ),
-
-                  SizedBox(height: SizeConfig.h(0.004)),
-
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 6,
-                    runSpacing: 2,
-                    children: [
-                      _PublisherStat(
-                        label: "اختبار",
-                        value: formatCompactCount(publishedTestsCount),
-                      ),
-                      _DotSeparator(),
-                      _PublisherStat(
-                        label: "يتابع",
-                        value: formatCompactCount(followingCount),
-                      ),
-                      _DotSeparator(),
-                      _PublisherStat(
-                        label: "متابع",
-                        value: formatCompactCount(followersCount),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
 

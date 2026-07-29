@@ -13,7 +13,6 @@ import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_pla
 import 'package:quiz_app_grad/features/study_plan/presentation/models/study_plan_mutation_result.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/active_study_plan_card.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_daily_task_card.dart';
-import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_daily_tasks_header.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_date_section.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_home_header.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_mock_scenario_switcher.dart';
@@ -195,6 +194,7 @@ class StudyPlanHomeBody extends StatelessWidget {
                     EmptyActionBox(
                       onTap: () {
                         debugPrint('Open active plan');
+                        
                       },
                       icon: Icons.event_note_rounded,
                       title: 'لا توجد خطة دراسية',
@@ -294,17 +294,6 @@ class StudyPlanHomeBody extends StatelessWidget {
                 ],
               ),
             ),
-
-            if (state.isLoading && state.overview != null)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: Container(
-                    color: Colors.white.withValues(alpha: 0.28),
-                    alignment: Alignment.topCenter,
-                    child: const LinearProgressIndicator(minHeight: 2),
-                  ),
-                ),
-              ),
 
             if (StudyPlanHomeCubit.useMockData)
               const Positioned(

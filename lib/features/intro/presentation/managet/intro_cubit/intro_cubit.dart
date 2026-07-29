@@ -23,7 +23,7 @@ class IntroCubit extends SafeCubit<IntroState> {
       );
       await CacheHelper.saveData(key: CacheHelper.hasSeenIntroKey, value: true);
 
-      await Future.delayed(const Duration(seconds: 2));
+      //await Future.delayed(const Duration(seconds: 2));
 
       emit(state.copyWith(isSaving: false, isFinished: true));
       debugPrint(

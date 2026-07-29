@@ -12,6 +12,7 @@ import 'package:quiz_app_grad/features/library/domain/entities/library_featured_
 import 'package:quiz_app_grad/features/library/domain/entities/library_material_entity.dart';
 import 'package:quiz_app_grad/features/library/presentation/manager/library_cubit/library_cubit.dart';
 import 'package:quiz_app_grad/features/library/presentation/manager/library_cubit/library_state.dart';
+import 'package:quiz_app_grad/features/library/presentation/shimmers/library_page_shimmer.dart';
 import 'package:quiz_app_grad/features/library/presentation/widget/libaray_tabs_section.dart';
 import 'package:quiz_app_grad/features/library/presentation/widget/library_content_list.dart';
 import 'package:quiz_app_grad/features/library/presentation/widget/library_header.dart';
@@ -54,90 +55,106 @@ class _LibraryPageState extends State<LibraryPage> {
 
         return sl<LibraryCubit>()..getInitialLibraryContent();
       },
-      child: Scaffold(
-        body: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: SizeConfig.h(0.008)),
-                child: const LibraryHeader(),
-              ),
+      child: BlocBuilder<LibraryCubit, LibraryState>(
+        buildWhen: (previous, current) =>
+            previous.status != current.status ||
+            previous.materials != current.materials,
+        builder: (context, state) {
+          if ((state.status == LibraryStatus.initial ||
+                  state.status == LibraryStatus.loading) &&
+              state.materials.isEmpty) {
+            return const LibraryPageShimmer();
+          }
 
-              Padding(
-                padding: EdgeInsets.only(
-                  left: SizeConfig.w(0.045),
-                  right: SizeConfig.w(0.045),
-                  bottom: SizeConfig.h(0.012),
-                ),
-                child: Builder(
-                  builder: (context) {
-                    return LibrarySearchField(
-                      controller: _searchController,
-                      onChanged: (value) {
-                        debugPrint(
-                          '============ LibraryPage.onSearchChanged ============',
+          return Scaffold(
+            body: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: SizeConfig.h(0.008)),
+                    child: const LibraryHeader(),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: SizeConfig.w(0.045),
+                      right: SizeConfig.w(0.045),
+                      bottom: SizeConfig.h(0.012),
+                    ),
+                    child: Builder(
+                      builder: (context) {
+                        return LibrarySearchField(
+                          controller: _searchController,
+                          onChanged: (value) {
+                            debugPrint(
+                              '============ LibraryPage.onSearchChanged ============',
+                            );
+                            debugPrint('→ query: ${value.trim()}');
+
+                            context.read<LibraryCubit>().onSearchChanged(value);
+                          },
+                          onClear: () {
+                            debugPrint(
+                              '============ LibraryPage.onSearchClear ============',
+                            );
+
+                            _searchController.clear();
+
+                            context.read<LibraryCubit>().clearSearch();
+
+                            FocusScope.of(context).unfocus();
+                          },
+
+                          // أبقيناه لأن LibrarySearchField قد يطلبه كوسيط required.
+                          onTap: () {
+                            debugPrint(
+                              '============ LibraryPage.onSearchTap ============',
+                            );
+                          },
                         );
-                        debugPrint('→ query: ${value.trim()}');
-
-                        context.read<LibraryCubit>().onSearchChanged(value);
                       },
-                      onClear: () {
-                        debugPrint(
-                          '============ LibraryPage.onSearchClear ============',
-                        );
+                    ),
+                  ),
 
-                        _searchController.clear();
+                  Builder(
+                    builder: (context) {
+                      return BlocBuilder<LibraryCubit, LibraryState>(
+                        buildWhen: (previous, current) {
+                          return previous.selectedTab != current.selectedTab ||
+                              previous.selectedTabIndex !=
+                                  current.selectedTabIndex;
+                        },
+                        builder: (context, state) {
+                          return LibraryTabsSection(
+                            selectedIndex: state.selectedTabIndex,
+                            onChanged: (index) {
+                              debugPrint(
+                                '============ LibraryPage.onTabChanged ============',
+                              );
+                              debugPrint('→ index: $index');
 
-                        context.read<LibraryCubit>().clearSearch();
+                              _searchController.clear();
+                              FocusScope.of(context).unfocus();
 
-                        FocusScope.of(context).unfocus();
-                      },
-
-                      // أبقيناه لأن LibrarySearchField قد يطلبه كوسيط required.
-                      onTap: () {
-                        debugPrint(
-                          '============ LibraryPage.onSearchTap ============',
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-
-              Builder(
-                builder: (context) {
-                  return BlocBuilder<LibraryCubit, LibraryState>(
-                    buildWhen: (previous, current) {
-                      return previous.selectedTab != current.selectedTab ||
-                          previous.selectedTabIndex != current.selectedTabIndex;
-                    },
-                    builder: (context, state) {
-                      return LibraryTabsSection(
-                        selectedIndex: state.selectedTabIndex,
-                        onChanged: (index) {
-                          debugPrint(
-                            '============ LibraryPage.onTabChanged ============',
+                              context.read<LibraryCubit>().changeTabByIndex(
+                                index,
+                              );
+                            },
                           );
-                          debugPrint('→ index: $index');
-
-                          _searchController.clear();
-                          FocusScope.of(context).unfocus();
-
-                          context.read<LibraryCubit>().changeTabByIndex(index);
                         },
                       );
                     },
-                  );
-                },
+                  ),
+
+                  SizedBox(height: SizeConfig.h(0.014)),
+
+                  const Expanded(child: _LibraryContentBody()),
+                ],
               ),
-
-              SizedBox(height: SizeConfig.h(0.014)),
-
-              const Expanded(child: _LibraryContentBody()),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

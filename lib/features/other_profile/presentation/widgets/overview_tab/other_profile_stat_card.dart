@@ -61,7 +61,7 @@ class OtherProfileStatCard extends StatelessWidget {
               Flexible(
                 child: CustomTextWidget(
                   value,
-                  color: appColors.blackTogreyMedium,
+                  color: appColors.blackToGrey2Dark,
                   fontFamily: AppFont.elMessiriBold,
                   fontSize: SizeConfig.text(0.04),
                   textAlign: TextAlign.center,
@@ -76,7 +76,7 @@ class OtherProfileStatCard extends StatelessWidget {
 
           CustomTextWidget(
             description,
-            color: appColors.blackTogreyMedium,
+            color: appColors.blackToGrey2Dark,
             fontSize: SizeConfig.text(0.02),
             textAlign: TextAlign.center,
             textDirection: TextDirection.rtl,

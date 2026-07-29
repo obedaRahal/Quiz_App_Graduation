@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/services/app_date_time_settings.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_cubit.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/manager/study_plan_home/study_plan_home_state.dart';
+import 'package:quiz_app_grad/features/study_plan/presentation/shimmers/study_plan_home_shimmer.dart';
 import 'package:quiz_app_grad/features/study_plan/presentation/widgets/home/study_plan_home_body.dart';
 
 class StudyPlanHomeView extends StatelessWidget {
@@ -55,7 +56,7 @@ class StudyPlanHomeView extends StatelessWidget {
         },
         builder: (context, state) {
           if (state.isInitial || state.isLoading && state.overview == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const StudyPlanHomeShimmer();
           }
 
           if (state.isFailure && state.overview == null) {

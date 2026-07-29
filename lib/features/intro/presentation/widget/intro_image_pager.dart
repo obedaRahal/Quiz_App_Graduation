@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/features/intro/data/model/intro_page_item.dart';
-import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class IntroImagePager extends StatelessWidget {
   final PageController controller;

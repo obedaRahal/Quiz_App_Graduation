@@ -23,7 +23,7 @@ class AppImage {
   //////// introoooo ////////////////
   static String get intro1 => '$_baseImageLight/intro1light.png';
   static String get intro2 => '$_baseImageLight/intro2light.png';
-  static String get intro3 => '$_baseImageLight/intro3light.svg';
+  static String get intro3 => '$_baseImageLight/intro3light.png';
 
   /////////// common images //////////////
   static String get emptyDataLight => '$_baseImageLight/emptyDataLight.svg';

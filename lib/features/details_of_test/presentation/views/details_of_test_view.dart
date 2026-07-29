@@ -23,6 +23,8 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/test_purchase_bottom_bar.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/top_page_header.dart';
 import 'package:quiz_app_grad/features/test_play_modes/data/models/test_play_modes_route_args.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/get_test_play_content_use_case.dart';
+import 'package:quiz_app_grad/features/test_play_modes/domain/use_cases/params/get_test_play_content_params.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -38,6 +40,7 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
   bool _waitingPaymentReturn = false;
   int? _paymentTestId;
   bool _showPaymentResultAfterRefresh = false;
+  bool _isValidatingPaidTestAccess = false;
 
   @override
   void initState() {
@@ -74,6 +77,53 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
     context.read<DetailsOfTestCubit>().getOtherTestDetailsOverview(
       testId: _paymentTestId!,
     );
+  }
+
+  Future<bool> _canOpenPlayMode({
+    required int testId,
+    required bool isPaid,
+    required bool hasPurchased,
+    required bool isOwner,
+  }) async {
+    final requiresPurchase = isPaid && !hasPurchased && !isOwner;
+
+    if (!requiresPurchase) return true;
+    if (_isValidatingPaidTestAccess) return false;
+
+    _isValidatingPaidTestAccess = true;
+
+    try {
+      final result = await sl<GetTestPlayContentUseCase>()(
+        GetTestPlayContentParams(testId: testId),
+      );
+
+      if (!mounted) return false;
+
+      result.fold(
+        (failure) {
+          showValidationTopSnackBar(
+            context,
+            title: failure.title.trim().isNotEmpty ? failure.title : 'تنبيه',
+            message: failure.message.trim().isNotEmpty
+                ? failure.message
+                : 'يجب شراء الاختبار أولًا للانتقال إلى أنماط اللعب',
+            type: AppValidationSnackBarType.hint,
+          );
+        },
+        (_) {
+          showValidationTopSnackBar(
+            context,
+            title: 'تنبيه',
+            message: 'يجب شراء الاختبار أولًا للانتقال إلى أنماط اللعب',
+            type: AppValidationSnackBarType.hint,
+          );
+        },
+      );
+
+      return false;
+    } finally {
+      _isValidatingPaidTestAccess = false;
+    }
   }
 
   @override
@@ -333,6 +383,9 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                           return const SizedBox.shrink();
                         }
 
+                        final viewerContext =
+                            overview.data.extraInfo.viewerContext;
+
                         return NotificationListener<ScrollNotification>(
                           onNotification: (notification) {
                             if (notification.metrics.maxScrollExtent <= 0) {
@@ -397,16 +450,8 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                       overview.data.basicInfo.reviewsCount,
                                   bookmarksCount:
                                       overview.data.basicInfo.bookmarksCount,
-                                  hasLiked: overview
-                                      .data
-                                      .extraInfo
-                                      .viewerContext
-                                      .hasLiked,
-                                  hasBookmarked: overview
-                                      .data
-                                      .extraInfo
-                                      .viewerContext
-                                      .hasBookmarked,
+                                  hasLiked: viewerContext.hasLiked,
+                                  hasBookmarked: viewerContext.hasBookmarked,
                                   onLikeTap: () {
                                     debugPrint("toggle like");
                                     context
@@ -451,12 +496,16 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                   },
                                   onMcqModeTap: () async {
                                     debugPrint("go to MCQ MODE");
-                                    // context.pushNamed(
-                                    //   AppRouterName.mcqTestSessionView,
-                                    //   extra: TestPlayModesRouteArgs(
-                                    //     testId: overview.data.id,
-                                    //   ),
-                                    // );
+
+                                    final canOpen = await _canOpenPlayMode(
+                                      testId: overview.data.id,
+                                      isPaid: viewerContext.isPaid,
+                                      hasPurchased: viewerContext.hasPurchased,
+                                      isOwner: viewerContext.isOwner,
+                                    );
+
+                                    if (!canOpen || !context.mounted) return;
+
                                     final result = await context.pushNamed(
                                       AppRouterName.mcqTestSessionView,
                                       extra: TestPlayModesRouteArgs(
@@ -488,17 +537,22 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                   //     ),
                                   //   );
                                   // },
-                                  onChallengeModeTap: () {
+                                  onChallengeModeTap: () async {
                                     debugPrint('challenge mode tap');
                                     debugPrint(
-                                      '→ isAttemptIt: ${overview.data.extraInfo.viewerContext.isAttemptIt}',
+                                      '→ isAttemptIt: ${viewerContext.isAttemptIt}',
                                     );
 
-                                    if (!overview
-                                        .data
-                                        .extraInfo
-                                        .viewerContext
-                                        .isAttemptIt) {
+                                    final canOpen = await _canOpenPlayMode(
+                                      testId: overview.data.id,
+                                      isPaid: viewerContext.isPaid,
+                                      hasPurchased: viewerContext.hasPurchased,
+                                      isOwner: viewerContext.isOwner,
+                                    );
+
+                                    if (!canOpen || !context.mounted) return;
+
+                                    if (!viewerContext.isAttemptIt) {
                                       showValidationTopSnackBar(
                                         context,
                                         title: 'تنبيه',
@@ -527,17 +581,22 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                   //     ),
                                   //   );
                                   // },
-                                  onFlashCardModeTap: () {
+                                  onFlashCardModeTap: () async {
                                     debugPrint('flashcard mode tap');
                                     debugPrint(
-                                      '→ isAttemptIt: ${overview.data.extraInfo.viewerContext.isAttemptIt}',
+                                      '→ isAttemptIt: ${viewerContext.isAttemptIt}',
                                     );
 
-                                    if (!overview
-                                        .data
-                                        .extraInfo
-                                        .viewerContext
-                                        .isAttemptIt) {
+                                    final canOpen = await _canOpenPlayMode(
+                                      testId: overview.data.id,
+                                      isPaid: viewerContext.isPaid,
+                                      hasPurchased: viewerContext.hasPurchased,
+                                      isOwner: viewerContext.isOwner,
+                                    );
+
+                                    if (!canOpen || !context.mounted) return;
+
+                                    if (!viewerContext.isAttemptIt) {
                                       showValidationTopSnackBar(
                                         context,
                                         title: 'تنبيه',

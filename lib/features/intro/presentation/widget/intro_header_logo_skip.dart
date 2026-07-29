@@ -22,7 +22,7 @@ class IntroHeaderLogoSkip extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset(AppImage.logo, height: SizeConfig.h(0.06)),
+          Image.asset(AppImage.logo, height: SizeConfig.h(0.05)),
           InkWell(
             onTap: onSkip,
             child: Row(

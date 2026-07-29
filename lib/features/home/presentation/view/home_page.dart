@@ -9,6 +9,7 @@ import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:quiz_app_grad/features/home/presentation/manager/home_cubit/home_state.dart';
+import 'package:quiz_app_grad/features/home/presentation/shimmers/home_page_shimmer.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/builed_filter_item.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/card_widgets/home_slider_section.dart';
 import 'package:quiz_app_grad/features/home/presentation/widget/home_categories_section.dart';
@@ -49,6 +50,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+    final hasInitialLoaded = context.select<HomeCubit, bool>(
+      (cubit) => cubit.state.hasInitialLoaded,
+    );
+
+    if (!hasInitialLoaded) {
+      return const HomePageShimmer();
+    }
+
     final appColors = context.appColors;
     final colorScheme = context.colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;

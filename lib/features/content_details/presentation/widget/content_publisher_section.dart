@@ -11,12 +11,14 @@ class ContentPublisherSection extends StatelessWidget {
   final ContentPublisherUiData publisher;
   final bool isFollowing;
   final bool isFollowLoading;
+  final VoidCallback onPublisherTap;
   final VoidCallback? onFollowTap;
 
   const ContentPublisherSection({
     super.key,
     required this.publisher,
     required this.isFollowing,
+    required this.onPublisherTap,
     this.isFollowLoading = false,
     this.onFollowTap,
   });
@@ -27,15 +29,19 @@ class ContentPublisherSection extends StatelessWidget {
     return Row(
       textDirection: TextDirection.rtl,
       children: [
-        ClipOval(
-          child: SizedBox(
-            width: SizeConfig.w(0.105),
-            height: SizeConfig.w(0.105),
-            child: CustomAppImage(
-              path: publisher.avatarUrl.isEmpty
-                  ? AppImage.defaultImageFoeError
-                  : publisher.avatarUrl,
-              fit: BoxFit.cover,
+        InkWell(
+          onTap: onPublisherTap,
+          customBorder: const CircleBorder(),
+          child: ClipOval(
+            child: SizedBox(
+              width: SizeConfig.w(0.105),
+              height: SizeConfig.w(0.105),
+              child: CustomAppImage(
+                path: publisher.avatarUrl.isEmpty
+                    ? AppImage.defaultImageFoeError
+                    : publisher.avatarUrl,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
@@ -43,52 +49,56 @@ class ContentPublisherSection extends StatelessWidget {
         SizedBox(width: SizeConfig.w(0.025)),
 
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                textDirection: TextDirection.rtl,
-                children: [
-                  Flexible(
-                    child: CustomTextWidget(
-                      publisher.name,
-                      textAlign: TextAlign.right,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppPalette.textWhiteINDark
-                          : AppPalette.textColorInHome,
-                      fontSize: SizeConfig.text(
-                        0.034,
-                      ).clamp(13.0, 16.0).toDouble(),
-                      fontWeight: FontWeight.w700,
-                      fontFamily: AppFont.elMessiriRegular,
+          child: InkWell(
+            onTap: onPublisherTap,
+            borderRadius: BorderRadius.circular(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  textDirection: TextDirection.rtl,
+                  children: [
+                    Flexible(
+                      child: CustomTextWidget(
+                        publisher.name,
+                        textAlign: TextAlign.right,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppPalette.textWhiteINDark
+                            : AppPalette.textColorInHome,
+                        fontSize: SizeConfig.text(
+                          0.034,
+                        ).clamp(13.0, 16.0).toDouble(),
+                        fontWeight: FontWeight.w700,
+                        fontFamily: AppFont.elMessiriRegular,
+                      ),
                     ),
-                  ),
-                  if (publisher.isVerified) ...[
-                    SizedBox(width: SizeConfig.w(0.010)),
-                    Icon(
-                      Icons.verified_rounded,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: SizeConfig.text(0.036),
-                    ),
+                    if (publisher.isVerified) ...[
+                      SizedBox(width: SizeConfig.w(0.010)),
+                      Icon(
+                        Icons.verified_rounded,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: SizeConfig.text(0.036),
+                      ),
+                    ],
                   ],
-                ],
-              ),
-              SizedBox(height: SizeConfig.h(0.004)),
-              CustomTextWidget(
-                '${_formatCount(publisher.followingCount)} يتابع • '
-                '${_formatCount(publisher.followersCount)} متابع • '
-                '${publisher.publishedTestsCount} اختبار',
-                textAlign: TextAlign.right,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                color: AppPalette.greyMedium,
-                fontSize: SizeConfig.text(0.025).clamp(9.0, 11.0).toDouble(),
-                fontWeight: FontWeight.w600,
-                fontFamily: AppFont.elMessiriRegular,
-              ),
-            ],
+                ),
+                SizedBox(height: SizeConfig.h(0.004)),
+                CustomTextWidget(
+                  '${_formatCount(publisher.followingCount)} يتابع • '
+                  '${_formatCount(publisher.followersCount)} متابع • '
+                  '${publisher.publishedTestsCount} اختبار',
+                  textAlign: TextAlign.right,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  color: AppPalette.greyMedium,
+                  fontSize: SizeConfig.text(0.025).clamp(9.0, 11.0).toDouble(),
+                  fontWeight: FontWeight.w600,
+                  fontFamily: AppFont.elMessiriRegular,
+                ),
+              ],
+            ),
           ),
         ),
 

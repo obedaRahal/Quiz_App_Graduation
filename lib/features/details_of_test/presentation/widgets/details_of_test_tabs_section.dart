@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -15,6 +17,7 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/shimmers/sam
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_overview_tap.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/review_tab/review_tab.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/sample_tab/sample_test_tap.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 
 class DetailsOfTestTabsSection extends StatelessWidget {
   final int testId;
@@ -183,6 +186,12 @@ class _DetailsTabContent extends StatelessWidget {
           language: data.extraInfo.language,
           participantsCount: data.extraInfo.participantsCount,
           interests: data.extraInfo.interests.map((e) => e.name).toList(),
+          onPublisherTap: () {
+            context.pushNamed(
+              AppRouterName.otherProfile,
+              extra: OtherProfileRouteArgs(userId: data.creator.id),
+            );
+          },
           onFollowTap: () {
             debugPrint("follow / unfollow");
             context.read<DetailsOfTestCubit>().toggleCreatorFollow(

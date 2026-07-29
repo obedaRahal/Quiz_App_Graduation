@@ -29,7 +29,7 @@ class OtherProfileGeneralStatsSection extends StatelessWidget {
       children: [
         CustomTextWidget(
           "احصائيات عامة",
-          color: appColors.blackTogreyMedium,
+          color: appColors.blackToGrey2Dark,
           fontFamily: AppFont.elMessiriBold,
           fontSize: SizeConfig.text(0.04),
         ),
@@ -46,7 +46,7 @@ class OtherProfileGeneralStatsSection extends StatelessWidget {
                 icon: FontAwesomeIcons.solidBookmark,
 
                 value: bookMarksCount,
-                description: 'اختبارًا منشورًا',
+                description: 'حفظا للاختبارات',
               ),
             ),
 
