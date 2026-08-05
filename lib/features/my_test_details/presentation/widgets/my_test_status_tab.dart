@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.d
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -70,11 +71,11 @@ class MyTestStatusTab extends StatelessWidget {
         SizedBox(height: SizeConfig.h(0.012)),
 
         if (previousStatuses.isEmpty)
-          Center(
-            child: CustomTextWidget(
-              'لا توجد حالات سابقة',
-              color: AppPalette.greyMedium,
-              textAlign: TextAlign.center,
+          const Center(
+            child: EmptyActionBox(
+              icon: Icons.history_toggle_off_rounded,
+              title: 'لا توجد حالات سابقة',
+              description: 'لم يطرأ تغيير سابق على حالة هذا الاختبار',
             ),
           )
         else

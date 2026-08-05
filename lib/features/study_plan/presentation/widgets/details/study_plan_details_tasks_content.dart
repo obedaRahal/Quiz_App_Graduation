@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -82,13 +83,10 @@ class StudyPlanDetailsTasksContent extends StatelessWidget {
 
             if (state.tasksSearchQuery.trim().isNotEmpty &&
                 !state.hasSearchResults)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.04)),
-                child: CustomTextWidget(
-                  'لا توجد مهام مطابقة للبحث',
-                  color: AppPalette.greyMedium,
-                  textAlign: TextAlign.center,
-                ),
+              const EmptyActionBox(
+                icon: Icons.search_off_rounded,
+                title: 'لا توجد نتائج',
+                description: 'لم نعثر على مهام مطابقة لبحثك',
               )
             else ...[
               StudyPlanTasksGroupSection(

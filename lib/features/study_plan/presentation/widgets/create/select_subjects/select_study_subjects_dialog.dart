@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -168,12 +169,11 @@ class _SelectStudySubjectsDialogState extends State<SelectStudySubjectsDialog> {
                         horizontal: SizeConfig.w(0.04),
                         vertical: SizeConfig.h(0.04),
                       ),
-                      child: CustomTextWidget(
-                        'لا توجد مواد متاحة، أضف مادة أولًا من إدارة المواد',
-                        fontSize: SizeConfig.text(0.031),
-                        color: AppPalette.greyMedium,
-                        textAlign: TextAlign.center,
-                        maxLines: 3,
+                      child: const EmptyActionBox(
+                        icon: Icons.menu_book_outlined,
+                        title: 'لا توجد مواد متاحة',
+                        description:
+                            'أضف مادة أولاً من إدارة المواد ثم أعد المحاولة',
                       ),
                     )
                   : SingleChildScrollView(

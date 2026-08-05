@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -51,13 +52,12 @@ class HomeSliderSection extends StatelessWidget {
     }
 
     if (state.recommendedTests.isEmpty) {
-      return SizedBox(
-        height: SizeConfig.h(0.20),
-        child: Center(
-          child: CustomTextWidget(
-            'لا توجد اختبارات حالياً',
-            color: AppPalette.greyMedium,
-          ),
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12),
+        child: EmptyActionBox(
+          icon: Icons.quiz_outlined,
+          title: 'لا توجد اختبارات',
+          description: 'لا توجد اختبارات مقترحة لعرضها حالياً',
         ),
       );
     }

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
-import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
-import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/use_cases/params/get_study_plans_params.dart';
 
-class ManagedStudyPlansEmptyState
-    extends StatelessWidget {
+class ManagedStudyPlansEmptyState extends StatelessWidget {
   final StudyPlansTab selectedTab;
   final bool isSearchEmptyResult;
 
@@ -18,57 +14,14 @@ class ManagedStudyPlansEmptyState
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: SizeConfig.w(0.06),
-        vertical: SizeConfig.h(0.05),
-      ),
-      decoration: BoxDecoration(
-        color: appColors.whiteToblack,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: appColors
-              .borderFieldColorNLightToborderFieldColorNDark,
-        ),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            isSearchEmptyResult
-                ? Icons.search_off_rounded
-                : Icons.event_note_rounded,
-            size: SizeConfig.text(0.13),
-            color: appColors.primaryToPrimaryDark,
-          ),
-
-          SizedBox(height: SizeConfig.h(0.015)),
-
-          CustomTextWidget(
-            isSearchEmptyResult
-                ? 'لا توجد نتائج مطابقة'
-                : _emptyTitle(),
-            fontSize: SizeConfig.text(0.036),
-            fontWeight: FontWeight.w700,
-            color: appColors.blackToGrey2Dark,
-            textAlign: TextAlign.center,
-          ),
-
-          SizedBox(height: SizeConfig.h(0.006)),
-
-          CustomTextWidget(
-            isSearchEmptyResult
-                ? 'جرّب البحث باستخدام عنوان مختلف'
-                : _emptyDescription(),
-            fontSize: SizeConfig.text(0.029),
-            color: AppPalette.greyMedium,
-            textAlign: TextAlign.center,
-            maxLines: 3,
-          ),
-        ],
-      ),
+    return EmptyActionBox(
+      icon: isSearchEmptyResult
+          ? Icons.search_off_rounded
+          : Icons.event_note_rounded,
+      title: isSearchEmptyResult ? 'لا توجد نتائج' : _emptyTitle(),
+      description: isSearchEmptyResult
+          ? 'جرّب البحث باستخدام عنوان مختلف'
+          : _emptyDescription(),
     );
   }
 
@@ -99,7 +52,6 @@ class ManagedStudyPlansEmptyState
   }
 }
 
-
 class EmptyStateCardPlanAndTask extends StatelessWidget {
   final String title;
   final String description;
@@ -114,51 +66,6 @@ class EmptyStateCardPlanAndTask extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appColors = context.appColors;
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: SizeConfig.w(0.06),
-        vertical: SizeConfig.h(0.05),
-      ),
-      decoration: BoxDecoration(
-        color: appColors.whiteToblack,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: appColors
-              .borderFieldColorNLightToborderFieldColorNDark,
-        ),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            size: SizeConfig.text(0.13),
-            color: AppPalette.greyMedium,
-          ),
-
-          SizedBox(height: SizeConfig.h(0.015)),
-
-          CustomTextWidget(
-            title,
-            fontSize: SizeConfig.text(0.036),
-            fontWeight: FontWeight.w700,
-            color: appColors.blackToGrey2Dark,
-            textAlign: TextAlign.center,
-          ),
-
-          SizedBox(height: SizeConfig.h(0.006)),
-
-          CustomTextWidget(
-            description,
-            fontSize: SizeConfig.text(0.029),
-            color: AppPalette.greyMedium,
-            textAlign: TextAlign.center,
-            maxLines: 3,
-          ),
-        ],
-      ),
-    );
+    return EmptyActionBox(icon: icon, title: title, description: description);
   }
 }

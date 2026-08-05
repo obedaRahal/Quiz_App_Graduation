@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_cubit.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/manager/onboarding_cubit/onboarding_state.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interest_group_section.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/interests_models.dart';
 import 'package:quiz_app_grad/features/onboarding/presentation/widgets/steps/interests/selected_interests_wrap.dart';
 
-import '../../../../../../core/theme/color/app_colors.dart';
 import '../../../../../../core/utils/media_query_config.dart';
 
 class InterestsStep extends StatelessWidget {
@@ -27,15 +26,10 @@ class InterestsStep extends StatelessWidget {
         );
 
         if (state.interestGroups.isEmpty) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.03)),
-            child: Center(
-              child: CustomTextWidget(
-                'لا توجد اهتمامات متاحة حاليًا',
-                color: AppPalette.greyMedium,
-                textAlign: TextAlign.center,
-              ),
-            ),
+          return const EmptyActionBox(
+            icon: Icons.interests_outlined,
+            title: 'لا توجد اهتمامات',
+            description: 'لا توجد اهتمامات متاحة للاختيار حالياً',
           );
         }
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
@@ -204,9 +206,19 @@ class _LibraryContentBody extends StatelessWidget {
          * انتهى البحث ولم توجد نتائج.
          */
         if (state.isSearchMode && state.searchMaterials.isEmpty) {
-          return _LibraryMessageState(
-            message: state.errorMessage ?? 'لا توجد نتائج مطابقة',
-            color: messageColor,
+          return Column(
+            children: [
+              CustomBackgroundWithChild(
+                width: double.infinity,
+                childHorizontalPad: SizeConfig.w(0.04) ,
+                backgroundColor: Colors.transparent,
+                child: const EmptyActionBox(
+                  icon: Icons.search_off_rounded,
+                  title: 'لا توجد نتائج',
+                  description: 'لم نعثر على محتوى مطابق لبحثك',
+                ),
+              ),
+            ],
           );
         }
 
@@ -216,9 +228,10 @@ class _LibraryContentBody extends StatelessWidget {
         if (!state.isSearchMode &&
             state.featured.isEmpty &&
             state.displayedMaterials.isEmpty) {
-          return _LibraryMessageState(
-            message: 'لا يوجد محتوى متاح حالياً',
-            color: messageColor,
+          return const EmptyActionBox(
+            icon: Icons.local_library_outlined,
+            title: 'لا يوجد محتوى',
+            description: 'لا يوجد محتوى متاح ضمن هذا التصنيف حالياً',
           );
         }
 

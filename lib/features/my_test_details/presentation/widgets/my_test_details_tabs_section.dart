@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -228,11 +229,11 @@ class _StatusTabBlocContentState extends State<_StatusTabBlocContent> {
         final statusHistory = state.statusHistoryDetails;
 
         if (statusHistory == null || statusHistory.data.isEmpty) {
-          return Center(
-            child: CustomTextWidget(
-              'لا يوجد سجل حالات متاح لهذا الاختبار',
-              color: AppPalette.greyMedium,
-              textAlign: TextAlign.center,
+          return const Center(
+            child: EmptyActionBox(
+              icon: Icons.history_toggle_off_rounded,
+              title: 'لا يوجد سجل حالات',
+              description: 'لم يطرأ تغيير على حالة هذا الاختبار حتى الآن',
             ),
           );
         }

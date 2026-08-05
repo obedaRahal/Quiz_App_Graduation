@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-import 'package:quiz_app_grad/features/other_profile/presentation/widgets/other_profile_connections_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/search/domain/entities/search_user_entity.dart';
 import 'package:quiz_app_grad/features/search/presentation/widgets/features/search/presentation/widgets/search_user_result_tile.dart';
 
@@ -36,12 +37,19 @@ class SearchResultsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (users.isEmpty) {
-      return Center(
-        child: CustomTextWidget(
-          'لا توجد نتائج مطابقة',
-          color: AppPalette.greyMedium,
-          textAlign: TextAlign.center,
-          fontSize: SizeConfig.text(0.034),
+      return const Center(
+        child: Column(
+          children: [
+            CustomBackgroundWithChild(
+              width: double.infinity,
+              backgroundColor: Colors.transparent,
+              child: EmptyActionBox(
+                icon: Icons.person_search_outlined,
+                title: 'لا توجد نتائج',
+                description: 'لم نعثر على مستخدمين مطابقين لبحثك',
+              ),
+            ),
+          ],
         ),
       );
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_confirmation_dialog.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
@@ -98,14 +99,10 @@ class MyProfileFoldersTab extends StatelessWidget {
                 ),
               )
             else if (folders.isEmpty)
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.05)),
-                  child: const Text(
-                    'لا توجد مجلدات ضمن هذا التصنيف الحالي',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
+              const EmptyActionBox(
+                icon: Icons.folder_open_outlined,
+                title: 'لا توجد مجلدات',
+                description: 'لا توجد مجلدات ضمن هذا التصنيف حالياً',
               )
             else
               Column(

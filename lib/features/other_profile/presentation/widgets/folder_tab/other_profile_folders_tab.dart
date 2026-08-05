@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_folders_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/shimmer/my_profile_folder_card_shimmer.dart';
@@ -39,14 +40,10 @@ class OtherProfileFoldersTab extends StatelessWidget {
         if (isLoading)
           shimmerLoader ?? const MyProfileFoldersShimmerList()
         else if (folders.isEmpty)
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.05)),
-              child: const Text(
-                'لا توجد قوائم متاحة ضمن هذا التصنيف الحالي',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
+          const EmptyActionBox(
+            icon: Icons.folder_open_outlined,
+            title: 'لا توجد مجلدات',
+            description: 'لا توجد مجلدات متاحة ضمن هذا التصنيف حالياً',
           )
         else
           Column(

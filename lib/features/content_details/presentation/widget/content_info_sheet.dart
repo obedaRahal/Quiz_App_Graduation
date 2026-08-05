@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
@@ -552,15 +553,10 @@ class _RelatedContentList extends StatelessWidget {
         }
 
         if (state.similarMaterials.isEmpty) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.014)),
-            child: CustomTextWidget(
-              'لا يوجد محتوى مشابه حالياً',
-              color: AppPalette.greyMedium,
-              fontSize: SizeConfig.text(0.030).clamp(11.0, 13.0).toDouble(),
-              fontWeight: FontWeight.w600,
-              fontFamily: AppFont.elMessiriRegular,
-            ),
+          return const EmptyActionBox(
+            icon: Icons.content_copy_outlined,
+            title: 'لا يوجد محتوى مشابه',
+            description: 'لا يوجد محتوى مشابه لعرضه حالياً',
           );
         }
 

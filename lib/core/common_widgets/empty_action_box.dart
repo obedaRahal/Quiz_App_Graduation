@@ -7,7 +7,7 @@ import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class EmptyActionBox extends StatelessWidget {
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final String title;
   final String description;
   final IconData icon;
@@ -20,7 +20,7 @@ class EmptyActionBox extends StatelessWidget {
 
   const EmptyActionBox({
     super.key,
-    required this.onTap,
+    this.onTap,
     required this.title,
     required this.description,
     this.icon = Icons.add_circle_outline_rounded,
@@ -43,7 +43,7 @@ class EmptyActionBox extends StatelessWidget {
         width: double.infinity,
         backgroundColor:
             backgroundColor ??
-            (isDark ? Colors.white.withOpacity(0.05) : AppPalette.grey),
+            (isDark ? Colors.white.withValues(alpha: 0.05) : AppPalette.grey),
         borderRadius: BorderRadius.circular(10),
         padding: EdgeInsets.symmetric(
           horizontal: SizeConfig.w(0.035),

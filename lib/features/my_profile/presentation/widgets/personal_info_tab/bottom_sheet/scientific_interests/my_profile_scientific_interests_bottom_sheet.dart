@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.d
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -158,12 +159,14 @@ class _MyProfileScientificInterestsBottomSheetState
           return Container(
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1F1F1F) : AppPalette.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(22),
+              ),
             ),
             child: Column(
               children: [
                 SizedBox(height: SizeConfig.h(0.012)),
-      
+
                 Container(
                   width: SizeConfig.w(0.12),
                   height: 5,
@@ -172,11 +175,13 @@ class _MyProfileScientificInterestsBottomSheetState
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-      
+
                 SizedBox(height: SizeConfig.h(0.018)),
-      
+
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.045)),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.w(0.045),
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -193,7 +198,7 @@ class _MyProfileScientificInterestsBottomSheetState
                           fontSize: SizeConfig.text(0.03),
                         ),
                       ),
-      
+
                       CustomTextWidget(
                         'الاهتمامات العلمية',
                         color: context.appColors.blackTogreyMedium,
@@ -203,16 +208,16 @@ class _MyProfileScientificInterestsBottomSheetState
                     ],
                   ),
                 ),
-      
+
                 CustomDivider(height: 20, thickness: 3, isDashed: true),
-      
+
                 Expanded(
                   child: BlocBuilder<AllInterestsCubit, AllInterestsState>(
                     builder: (context, state) {
                       if (state.isLoading) {
                         return const Center(child: CircularProgressIndicator());
                       }
-      
+
                       if (state.errorMessage != null) {
                         return Center(
                           child: CustomTextWidget(
@@ -222,17 +227,23 @@ class _MyProfileScientificInterestsBottomSheetState
                           ),
                         );
                       }
-      
+
                       if (state.filteredCategories.isEmpty) {
                         return Center(
-                          child: CustomTextWidget(
-                            'لا توجد اهتمامات متاحة',
-                            color: AppPalette.greyMedium,
-                            fontSize: SizeConfig.text(0.035),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: SizeConfig.w(0.045),
+                            ),
+                            child: const EmptyActionBox(
+                              icon: Icons.interests_outlined,
+                              title: 'لا توجد اهتمامات',
+                              description:
+                                  'لا توجد اهتمامات متاحة للاختيار حالياً',
+                            ),
                           ),
                         );
                       }
-      
+
                       return ListView.separated(
                         controller: scrollController,
                         padding: EdgeInsets.symmetric(
@@ -253,7 +264,7 @@ class _MyProfileScientificInterestsBottomSheetState
                     },
                   ),
                 ),
-      
+
                 CustomBackgroundWithChild(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(

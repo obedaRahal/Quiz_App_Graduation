@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
@@ -121,7 +122,6 @@ class _MyProfileBookmarksBodyState extends State<_MyProfileBookmarksBody> {
               ),
 
               //SizedBox(height: SizeConfig.h(0.012)),
-
               BlocBuilder<MyProfileBookmarksCubit, MyProfileBookmarksState>(
                 buildWhen: (p, c) => p.selectedTab != c.selectedTab,
                 builder: (context, state) {
@@ -196,11 +196,15 @@ class _MyProfileBookmarksBodyState extends State<_MyProfileBookmarksBody> {
                         }
 
                         if (state.items.isEmpty) {
-                          return Center(
-                            child: CustomTextWidget(
-                              'لا توجد عناصر محفوظة حالياً',
-                              color: AppPalette.greyMedium,
-                              fontSize: SizeConfig.text(0.035),
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: EmptyActionBox(
+                                icon: Icons.bookmark_border_rounded,
+                                title: 'لا توجد عناصر محفوظة',
+                                description:
+                                    'ستظهر هنا الاختبارات والمحتويات والمجلدات التي تحفظها',
+                              ),
                             ),
                           );
                         }

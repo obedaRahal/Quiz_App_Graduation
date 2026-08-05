@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.d
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -295,13 +296,19 @@ class _ConnectionsContent extends StatelessWidget {
 
         if (state.users.isEmpty) {
           return Center(
-            child: CustomTextWidget(
-              state.hasSearchQuery
-                  ? 'لا توجد نتائج مطابقة'
-                  : 'لا يوجد مستخدمون لعرضهم',
-              color: AppPalette.greyMedium,
-              textAlign: TextAlign.center,
-              fontSize: SizeConfig.text(0.034),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.045)),
+              child: EmptyActionBox(
+                icon: state.hasSearchQuery
+                    ? Icons.person_search_outlined
+                    : Icons.people_outline_rounded,
+                title: state.hasSearchQuery
+                    ? 'لا توجد نتائج'
+                    : 'لا يوجد مستخدمون',
+                description: state.hasSearchQuery
+                    ? 'لم نعثر على مستخدمين مطابقين لبحثك'
+                    : 'لا يوجد مستخدمون لعرضهم حالياً',
+              ),
             ),
           );
         }

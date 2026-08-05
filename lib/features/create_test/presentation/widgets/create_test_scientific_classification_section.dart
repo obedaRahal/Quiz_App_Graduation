@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -532,13 +533,11 @@ class _ScientificPickerEmpty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CustomTextWidget(
-        'لا توجد تصنيفات علمية حالياً',
-        fontSize: SizeConfig.text(0.030),
-        fontWeight: FontWeight.w800,
-        color: AppPalette.greyMedium,
-        textAlign: TextAlign.center,
+    return const Center(
+      child: EmptyActionBox(
+        icon: Icons.category_outlined,
+        title: 'لا توجد تصنيفات علمية',
+        description: 'لا توجد تصنيفات علمية متاحة للاختيار حالياً',
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -74,12 +75,12 @@ void showTestModificationBottomSheet({
 
                   Expanded(
                     child: items.isEmpty
-                        ? Center(
-                            child: CustomTextWidget(
-                              'لا توجد تعديلات مطلوبة',
-                              color: AppPalette.greyMedium,
-                              textAlign: TextAlign.center,
-                              fontSize: SizeConfig.text(0.034),
+                        ? const Center(
+                            child: EmptyActionBox(
+                              icon: Icons.fact_check_outlined,
+                              title: 'لا توجد تعديلات مطلوبة',
+                              description:
+                                  'لم يطلب المشرف أي تعديلات على الاختبار',
                             ),
                           )
                         : ListView.separated(

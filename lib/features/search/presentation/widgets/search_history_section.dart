@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/features/search/presentation/widgets/search_history_chip.dart';
 import 'package:quiz_app_grad/features/search/presentation/widgets/search_history_header.dart';
 
@@ -21,12 +22,14 @@ class SearchHistorySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SearchHistoryHeader(
-          onClearAll: onClearAll,
-        ),
+        SearchHistoryHeader(onClearAll: onClearAll),
         const SizedBox(height: 8),
         if (histories.isEmpty)
-          const _EmptySearchHistory()
+          const EmptyActionBox(
+            icon: Icons.history_rounded,
+            title: 'لا يوجد سجل بحث',
+            description: 'ستظهر هنا عمليات البحث التي تجريها',
+          )
         else
           Wrap(
             alignment: WrapAlignment.start,
@@ -48,46 +51,9 @@ class SearchHistorySection extends StatelessWidget {
   }
 }
 
-class _EmptySearchHistory extends StatelessWidget {
-  const _EmptySearchHistory();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 40,
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.history,
-            size: 52,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'لا يوجد سجل بحث حتى الآن',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: colorScheme.onSurfaceVariant,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class SearchHistoryUiModel {
   final int id;
   final String query;
 
-  const SearchHistoryUiModel({
-    required this.id,
-    required this.query,
-  });
+  const SearchHistoryUiModel({required this.id, required this.query});
 }

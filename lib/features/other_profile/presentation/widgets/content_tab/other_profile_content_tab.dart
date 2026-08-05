@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_content_entity.dart';
 import 'package:quiz_app_grad/features/other_profile/presentation/manager/other_profile_cubit/other_profile_state.dart';
@@ -52,14 +53,10 @@ class OtherProfileContentTab extends StatelessWidget {
         if (isLoading)
           shimmerLoader ?? ContentCardsShimmerList()
         else if (contents.isEmpty)
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.05)),
-              child: const Text(
-                'لا يوجد محتوى متاح ضمن هذا التصنيف الحالي',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
+          const EmptyActionBox(
+            icon: Icons.article_outlined,
+            title: 'لا يوجد محتوى',
+            description: 'لا يوجد محتوى متاح ضمن هذا التصنيف حالياً',
           )
         else
           Column(

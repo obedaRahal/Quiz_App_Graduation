@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -87,15 +88,11 @@ class StudyTaskSubtasksSection extends StatelessWidget {
   }
 }
 
-
 class _SubTaskTile extends StatelessWidget {
   final StudySubTaskEntity subTask;
   final VoidCallback onTap;
 
-  const _SubTaskTile({
-    required this.subTask,
-    required this.onTap,
-  });
+  const _SubTaskTile({required this.subTask, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -111,9 +108,7 @@ class _SubTaskTile extends StatelessWidget {
         child: Row(
           textDirection: TextDirection.rtl,
           children: [
-            _SubTaskStatusCircle(
-              isCompleted: subTask.isCompleted,
-            ),
+            _SubTaskStatusCircle(isCompleted: subTask.isCompleted),
 
             SizedBox(width: SizeConfig.w(0.025)),
 
@@ -124,8 +119,7 @@ class _SubTaskTile extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 fontSize: SizeConfig.text(0.032),
-                fontFamily:
-                    AppFont.elMessiriSemiBold,
+                fontFamily: AppFont.elMessiriSemiBold,
                 color: subTask.isCompleted
                     ? AppPalette.greyMedium
                     : appColors.blackToGrey2Dark,
@@ -141,9 +135,7 @@ class _SubTaskTile extends StatelessWidget {
 class _SubTaskStatusCircle extends StatelessWidget {
   final bool isCompleted;
 
-  const _SubTaskStatusCircle({
-    required this.isCompleted,
-  });
+  const _SubTaskStatusCircle({required this.isCompleted});
 
   @override
   Widget build(BuildContext context) {
@@ -157,13 +149,9 @@ class _SubTaskStatusCircle extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isCompleted
-            ? completedColor
-            : Colors.transparent,
+        color: isCompleted ? completedColor : Colors.transparent,
         border: Border.all(
-          color: isCompleted
-              ? completedColor
-              : inactiveColor,
+          color: isCompleted ? completedColor : inactiveColor,
           width: 1.5,
         ),
       ),
@@ -181,24 +169,14 @@ class _SubTaskStatusCircle extends StatelessWidget {
 class _EmptySubTasks extends StatelessWidget {
   final String countLabel;
 
-  const _EmptySubTasks({
-    required this.countLabel,
-  });
+  const _EmptySubTasks({required this.countLabel});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: SizeConfig.h(0.025),
-      ),
-      child: Center(
-        child: CustomTextWidget(
-          'لا توجد مهام فرعية',
-          fontSize: SizeConfig.text(0.03),
-          fontFamily: AppFont.elMessiriSemiBold,
-          color: AppPalette.greyMedium,
-        ),
-      ),
+    return const EmptyActionBox(
+      icon: Icons.checklist_rounded,
+      title: 'لا توجد مهام فرعية',
+      description: 'لم تتم إضافة مهام فرعية لهذه المهمة',
     );
   }
 }

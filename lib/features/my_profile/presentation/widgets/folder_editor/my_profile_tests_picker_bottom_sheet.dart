@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.d
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -403,11 +404,11 @@ class _PickerTestsList extends StatelessWidget {
             canLoadMoreFilteredTests;
 
         if (tests.isEmpty && !hasListFooter) {
-          return Center(
-            child: CustomTextWidget(
-              'لا توجد اختبارات ضمن هذا التصنيف',
-              color: AppPalette.greyMedium,
-              textAlign: TextAlign.center,
+          return const Center(
+            child: EmptyActionBox(
+              icon: Icons.quiz_outlined,
+              title: 'لا توجد اختبارات',
+              description: 'لا توجد اختبارات ضمن هذا التصنيف حالياً',
             ),
           );
         }

@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 import 'package:quiz_app_grad/features/notification/domain/entities/notification_entity.dart';
@@ -24,8 +25,8 @@ class NotificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardColor = notification.isRead
-        ? AppPalette.white
-        : AppPalette.primarySoft;
+        ? context.appColors.whiteToblack
+        : context.appColors.primarySoftTogreyLightDark;
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),
@@ -73,7 +74,7 @@ class NotificationCard extends StatelessWidget {
                     notification.title,
                     fontSize: SizeConfig.text(0.035),
                     fontFamily: AppFont.elMessiriBold,
-                    color: AppPalette.textColorInHome,
+                    color: context.appColors.blackToGrey2Dark,
                     textAlign: TextAlign.right,
                   ),
 
@@ -92,7 +93,7 @@ class NotificationCard extends StatelessWidget {
                   CustomTextWidget(
                     notification.sentAt,
                     fontSize: SizeConfig.text(0.026),
-                    color: AppPalette.black,
+                    color: context.appColors.blackTogreyMedium,
                     textAlign: TextAlign.right,
                   ),
                 ],
@@ -100,14 +101,14 @@ class NotificationCard extends StatelessWidget {
             ),
 
             CustomButtonWidget(
-              backgroundColor: AppPalette.primary,
+              backgroundColor: context.appColors.primaryToPrimaryDark,
               borderRadius: 10,
               childHorizontalPad: SizeConfig.w(0.035),
               childVerticalPad: SizeConfig.h(0.003),
               onTap: navigateToPage,
               child: CustomTextWidget(
                 "انتقال",
-                color: AppPalette.white,
+                color: context.appColors.whiteToblack,
                 fontSize: SizeConfig.text(0.03),
               ),
             ),

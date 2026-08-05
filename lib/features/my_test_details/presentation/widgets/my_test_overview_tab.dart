@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/widgets/overview_tab/test_info_details_section.dart';
@@ -16,10 +16,7 @@ import 'package:quiz_app_grad/features/my_test_details/presentation/manager/my_t
 class MyTestOverviewTab extends StatelessWidget {
   final MyPublicTestDetailsOverviewEntity overview;
 
-  const MyTestOverviewTab({
-    super.key,
-    required this.overview,
-  });
+  const MyTestOverviewTab({super.key, required this.overview});
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +55,11 @@ class MyTestOverviewTab extends StatelessWidget {
             SizedBox(height: SizeConfig.h(0.012)),
 
             if (extraInfo.previewQuestions.isEmpty)
-              Center(
-                child: CustomTextWidget(
-                  'لا توجد عينة أسئلة متاحة',
-                  color: AppPalette.greyMedium,
-                  textAlign: TextAlign.center,
+              const Center(
+                child: EmptyActionBox(
+                  icon: Icons.help_outline_rounded,
+                  title: 'لا توجد عينة أسئلة',
+                  description: 'لم تتم إضافة عينة أسئلة لهذا الاختبار',
                 ),
               )
             else
@@ -90,12 +87,10 @@ class MyTestOverviewTab extends StatelessWidget {
                       ),
                       selectedOptionId: selectedOptionId,
                       onOptionSelected: (optionId) {
-                        context
-                            .read<MyTestDetailsCubit>()
-                            .selectSampleAnswer(
-                              questionId: question.id,
-                              optionId: optionId,
-                            );
+                        context.read<MyTestDetailsCubit>().selectSampleAnswer(
+                          questionId: question.id,
+                          optionId: optionId,
+                        );
                       },
                     ),
                   );

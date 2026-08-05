@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/features/study_task/presentation/widgets/common/subjects/study_task_subject_option.dart';
 
 Future<int?> showStudyTaskSubjectsBottomSheet({
@@ -105,9 +106,13 @@ class _StudyTaskSubjectsBottomSheetState
               Expanded(
                 child: _filteredSubjects.isEmpty
                     ? const Center(
-                        child: Text(
-                          'لا توجد مواد مطابقة',
-                          textAlign: TextAlign.center,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: EmptyActionBox(
+                            icon: Icons.search_off_rounded,
+                            title: 'لا توجد نتائج',
+                            description: 'لا توجد مواد دراسية مطابقة لبحثك',
+                          ),
                         ),
                       )
                     : ListView.separated(

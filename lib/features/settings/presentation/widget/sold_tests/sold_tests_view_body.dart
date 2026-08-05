@@ -4,6 +4,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
@@ -274,9 +275,9 @@ class _SoldTestsViewBodyState extends State<SoldTestsViewBody> {
                                   SizedBox(
                                     width: SizeConfig.text(0.034),
                                     height: SizeConfig.text(0.034),
-                                    child:  CircularProgressIndicator(
+                                    child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                    color: context.appColors.whiteToblack,
+                                      color: context.appColors.whiteToblack,
                                     ),
                                   ),
                                   SizedBox(width: SizeConfig.w(0.025)),
@@ -366,26 +367,14 @@ class _EmptyBody extends StatelessWidget {
     return Center(
       child: Padding(
         padding: EdgeInsets.all(SizeConfig.w(0.05)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isSearching
-                  ? Icons.search_off_rounded
-                  : Icons.shopping_bag_outlined,
-              color: AppPalette.greyMedium,
-              size: SizeConfig.text(0.13),
-            ),
-            SizedBox(height: SizeConfig.h(0.012)),
-            CustomTextWidget(
-              isSearching
-                  ? 'لا توجد نتائج مطابقة للبحث'
-                  : 'لا توجد اختبارات مباعة حالياً',
-              color: AppPalette.greyMedium,
-              textAlign: TextAlign.center,
-              fontSize: SizeConfig.text(0.035),
-            ),
-          ],
+        child: EmptyActionBox(
+          icon: isSearching
+              ? Icons.search_off_rounded
+              : Icons.shopping_bag_outlined,
+          title: isSearching ? 'لا توجد نتائج' : 'لا توجد اختبارات مباعة',
+          description: isSearching
+              ? 'لم نعثر على اختبارات مباعة مطابقة لبحثك'
+              : 'ستظهر هنا الاختبارات بعد إتمام أول عملية بيع',
         ),
       ),
     );

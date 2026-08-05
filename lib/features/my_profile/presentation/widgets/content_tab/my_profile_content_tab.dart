@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -104,15 +105,10 @@ class _MyProfileContentTabState extends State<MyProfileContentTab> {
                 ),
               )
             else if (items.isEmpty)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
-                child: Center(
-                  child: CustomTextWidget(
-                    'لا يوجد محتوى لعرضه حالياً',
-                    color: AppPalette.greyMedium,
-                    fontSize: SizeConfig.text(0.034),
-                  ),
-                ),
+              const EmptyActionBox(
+                icon: Icons.article_outlined,
+                title: 'لا يوجد محتوى',
+                description: 'لا يوجد محتوى لعرضه ضمن هذا التصنيف حالياً',
               )
             else
               ListView.builder(

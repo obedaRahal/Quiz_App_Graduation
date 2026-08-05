@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -192,12 +193,14 @@ class _NotificationBodyState extends State<_NotificationBody> {
                       child: ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: [
-                          SizedBox(height: SizeConfig.h(0.3)),
-                          Center(
-                            child: CustomTextWidget(
-                              'لا توجد إشعارات حالياً',
-                              color: AppPalette.greyMedium,
-                              fontSize: SizeConfig.text(0.035),
+                          SizedBox(height: SizeConfig.h(0.2)),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: EmptyActionBox(
+                              icon: Icons.notifications_none_rounded,
+                              title: 'لا توجد إشعارات',
+                              description:
+                                  'ستظهر هنا الإشعارات الجديدة عند وصولها',
                             ),
                           ),
                         ],

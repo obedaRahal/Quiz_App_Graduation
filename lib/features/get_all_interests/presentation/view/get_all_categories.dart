@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/get_all_interests/presentation/manager/all_categories_cubit/all_interests_state.dart';
@@ -54,11 +55,11 @@ class AllCategoriesPage extends StatelessWidget {
                     }
 
                     if (state.filteredCategories.isEmpty) {
-                      return Center(
-                        child: CustomTextWidget(
-                          'لا توجد نتائج مطابقة',
-                          color: AppPalette.greyMedium,
-                          fontSize: SizeConfig.text(0.04),
+                      return const Center(
+                        child: EmptyActionBox(
+                          icon: Icons.search_off_rounded,
+                          title: 'لا توجد نتائج',
+                          description: 'لم نعثر على تصنيفات مطابقة لبحثك',
                         ),
                       );
                     }

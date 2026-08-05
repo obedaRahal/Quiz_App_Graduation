@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
@@ -277,13 +278,19 @@ class _InteractionUsersContent extends StatelessWidget {
 
         if (state.users.isEmpty) {
           return Center(
-            child: CustomTextWidget(
-              state.hasSearchQuery
-                  ? 'لا توجد نتائج مطابقة'
-                  : 'لا يوجد مستخدمون لعرضهم',
-              color: AppPalette.greyMedium,
-              textAlign: TextAlign.center,
-              fontSize: SizeConfig.text(0.034),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.045)),
+              child: EmptyActionBox(
+                icon: state.hasSearchQuery
+                    ? Icons.person_search_outlined
+                    : Icons.people_outline_rounded,
+                title: state.hasSearchQuery
+                    ? 'لا توجد نتائج'
+                    : 'لا يوجد مستخدمون',
+                description: state.hasSearchQuery
+                    ? 'لم نعثر على مستخدمين مطابقين لبحثك'
+                    : 'لا يوجد مستخدمون لعرضهم حالياً',
+              ),
             ),
           );
         }

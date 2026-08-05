@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/manager/laboratory_cubit/laboratory_cubit.dart';
@@ -37,36 +38,32 @@ class LaboratoryExamSessionsSection extends StatelessWidget {
         final sessions = isFilter
             ? state.filterResults
             : isSearch
-                ? state.searchResults
-                : state.examSessions;
+            ? state.searchResults
+            : state.examSessions;
 
         final isLoading = isFilter
             ? state.isFilterLoading
             : isSearch
-                ? state.isSearchLoading
-                : state.isInitialLoading;
+            ? state.isSearchLoading
+            : state.isInitialLoading;
 
         final error = isFilter
             ? state.filterError
             : isSearch
-                ? state.searchError
-                : state.error;
+            ? state.searchError
+            : state.error;
 
         /*
          * هذه الحالة تمنع ظهور empty state قبل انتهاء
          * أول طلب لجلب الجلسات الامتحانية.
          */
         final isInitialWaiting =
-            !isFilter &&
-            !isSearch &&
-            !state.hasInitialLoaded;
+            !isFilter && !isSearch && !state.hasInitialLoaded;
 
         if (isLoading || isInitialWaiting) {
           return SizedBox(
             height: SizeConfig.h(0.25),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
+            child: const Center(child: CircularProgressIndicator()),
           );
         }
 
@@ -78,8 +75,8 @@ class LaboratoryExamSessionsSection extends StatelessWidget {
                 isFilter
                     ? 'حدث خطأ أثناء تطبيق الفلتر'
                     : isSearch
-                        ? 'حدث خطأ أثناء البحث'
-                        : 'حدث خطأ أثناء جلب الجلسات الامتحانية',
+                    ? 'حدث خطأ أثناء البحث'
+                    : 'حدث خطأ أثناء جلب الجلسات الامتحانية',
                 color: AppPalette.greyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -88,20 +85,22 @@ class LaboratoryExamSessionsSection extends StatelessWidget {
         }
 
         if (sessions.isEmpty) {
-          return SizedBox(
-            height: SizeConfig.h(0.20),
-            child: Center(
-              child: CustomTextWidget(
-                isFilter
-                    ? 'لا توجد نتائج مطابقة للفلتر'
-                    : isSearch
-                        ? state.searchQuery.trim().isEmpty
-                            ? 'يرجى إدخال اسم الاختبار للبحث'
-                            : 'لا توجد نتائج مطابقة'
-                        : 'لا توجد جلسات امتحانية حالياً',
-                color: AppPalette.greyMedium,
-                textAlign: TextAlign.center,
-              ),
+          final description = isFilter
+              ? 'لا توجد جلسات مطابقة للفلاتر المحددة'
+              : isSearch
+              ? state.searchQuery.trim().isEmpty
+                    ? 'أدخل اسم الاختبار لبدء البحث'
+                    : 'لم نعثر على جلسات مطابقة لبحثك'
+              : 'لا توجد جلسات امتحانية لعرضها حالياً';
+
+          return Padding(
+            padding:  EdgeInsets.symmetric(horizontal: SizeConfig.w(0.04)),
+            child: EmptyActionBox(
+              icon: isSearch
+                  ? Icons.search_off_rounded
+                  : Icons.event_busy_outlined,
+              title: isSearch ? 'لا توجد نتائج' : 'لا توجد جلسات امتحانية',
+              description: description,
             ),
           );
         }
@@ -109,9 +108,8 @@ class LaboratoryExamSessionsSection extends StatelessWidget {
         final showBottomLoader = isFilter
             ? state.isFilterLoadingMore
             : isSearch
-                ? state.isSearchLoadingMore
-                : state.isLoadingMore ||
-                    state.isLabTestsLoadingMore;
+            ? state.isSearchLoadingMore
+            : state.isLoadingMore || state.isLabTestsLoadingMore;
 
         return ListView.separated(
           padding: EdgeInsets.only(
@@ -120,28 +118,19 @@ class LaboratoryExamSessionsSection extends StatelessWidget {
           ),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount:
-              sessions.length + (showBottomLoader ? 1 : 0),
+          itemCount: sessions.length + (showBottomLoader ? 1 : 0),
           separatorBuilder: (_, __) {
-            return SizedBox(
-              height: SizeConfig.h(0.018),
-            );
+            return SizedBox(height: SizeConfig.h(0.018));
           },
           itemBuilder: (context, index) {
             if (index >= sessions.length) {
               return Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: SizeConfig.h(0.018),
-                ),
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.018)),
+                child: const Center(child: CircularProgressIndicator()),
               );
             }
 
-            return LaboratoryExamSessionCard(
-              item: sessions[index],
-            );
+            return LaboratoryExamSessionCard(item: sessions[index]);
           },
         );
       },

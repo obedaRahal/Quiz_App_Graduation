@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
@@ -49,14 +50,10 @@ class OtherProfileTestsTab extends StatelessWidget {
         if (isLoading)
           shimmerLoader ?? const OtherProfileTestsTabShimmer()
         else if (tests.isEmpty)
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.05)),
-              child: const Text(
-                'لا توجد اختبارات متاحة ضمن هذا التصنيف الحالي',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
+          const EmptyActionBox(
+            icon: Icons.quiz_outlined,
+            title: 'لا توجد اختبارات',
+            description: 'لا توجد اختبارات متاحة ضمن هذا التصنيف حالياً',
           )
         else
           //OtherProfileTestsTabShimmer(),

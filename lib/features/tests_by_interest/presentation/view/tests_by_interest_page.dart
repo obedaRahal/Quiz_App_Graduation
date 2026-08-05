@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -165,12 +166,16 @@ class _TestsByInterestViewState extends State<_TestsByInterestView> {
 
                     if (visibleTests.isEmpty) {
                       return Center(
-                        child: CustomTextWidget(
-                          state.isSearchMode
-                              ? 'لا توجد نتائج مطابقة'
+                        child: EmptyActionBox(
+                          icon: state.isSearchMode
+                              ? Icons.search_off_rounded
+                              : Icons.quiz_outlined,
+                          title: state.isSearchMode
+                              ? 'لا توجد نتائج'
+                              : 'لا توجد اختبارات',
+                          description: state.isSearchMode
+                              ? 'لم نعثر على اختبارات مطابقة لبحثك'
                               : 'لا توجد اختبارات ضمن هذا التصنيف حالياً',
-                          color: AppPalette.greyMedium,
-                          fontSize: SizeConfig.text(0.038),
                         ),
                       );
                     }

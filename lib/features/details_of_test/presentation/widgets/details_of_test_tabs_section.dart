@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -242,11 +243,11 @@ class _SampleTabBlocContent extends StatelessWidget {
         final sample = state.sampleDetails;
 
         if (sample == null || sample.questions.isEmpty) {
-          return Center(
-            child: CustomTextWidget(
-              'لا توجد عينة أسئلة متاحة',
-              color: AppPalette.greyMedium,
-              textAlign: TextAlign.center,
+          return const Center(
+            child: EmptyActionBox(
+              icon: Icons.help_outline_rounded,
+              title: 'لا توجد عينة أسئلة',
+              description: 'لم يضف الناشر عينة أسئلة لهذا الاختبار',
             ),
           );
         }

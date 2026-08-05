@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
@@ -44,15 +45,12 @@ class InstructorsSection extends StatelessWidget {
     }
 
     if (state.recommendedUsers.isEmpty) {
-      return SizedBox(
-        height: sectionHeight,
-        child: Center(
-          child: CustomTextWidget(
-            'لا يوجد أصحاب معلومات حالياً',
-            color: AppPalette.greyMedium,
-            textAlign: TextAlign.center,
-            fontSize: SizeConfig.text(0.035),
-          ),
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12),
+        child: EmptyActionBox(
+          icon: Icons.people_outline_rounded,
+          title: 'لا يوجد ناشرون مقترحون',
+          description: 'لا يوجد ناشرون مقترحون لعرضهم حالياً',
         ),
       );
     }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
-import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/study_plan/domain/entities/details/study_plan_details_subject_entity.dart';
@@ -45,22 +45,10 @@ class StudyPlanDetailsSubjectsSection extends StatelessWidget {
         SizedBox(height: SizeConfig.h(0.014)),
 
         if (subjects.items.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              horizontal: SizeConfig.w(0.04),
-              vertical: SizeConfig.h(0.018),
-            ),
-            decoration: BoxDecoration(
-              color: appColors.primarySoftTogreyLightDark,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: CustomTextWidget(
-              'لا توجد مواد مرتبطة بهذه الخطة',
-              color: AppPalette.greyMedium,
-              fontSize: SizeConfig.text(0.03),
-              textAlign: TextAlign.center,
-            ),
+          const EmptyActionBox(
+            icon: Icons.menu_book_outlined,
+            title: 'لا توجد مواد',
+            description: 'لا توجد مواد دراسية مرتبطة بهذه الخطة',
           )
         else
           Align(

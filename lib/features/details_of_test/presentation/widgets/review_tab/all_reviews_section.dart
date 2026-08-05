@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
-import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -63,29 +62,10 @@ class ReviewsSection extends StatelessWidget {
         if (isLoading)
           const ReviewsSectionShimmer(isThereHeader: false)
         else if (reviews.isEmpty)
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.03)),
-              child: Column(
-                children: [
-                  ThemedAppImage(
-                    lightPath: AppImage.emptyDataLight,
-                    darkPath: AppImage.emptyDataDark,
-                  ),
-                  CustomTextWidget(
-                    'لا توجد مراجعات',
-                    color: appColors.blackTogreyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  CustomTextWidget(
-                    'لم يتم القيام بأية مراجعة بعد من هذا التقيمم على الاختبار',
-                    color: appColors.blackToGreyLightDark,
-                    textAlign: TextAlign.center,
-                    fontSize: SizeConfig.text(0.035),
-                  ),
-                ],
-              ),
-            ),
+          const EmptyActionBox(
+            icon: Icons.rate_review_outlined,
+            title: 'لا توجد مراجعات',
+            description: 'لم تتم إضافة مراجعات بهذا التقييم حتى الآن',
           )
         else
           Column(

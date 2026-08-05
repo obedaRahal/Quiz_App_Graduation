@@ -5,6 +5,7 @@ import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_divider.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
@@ -180,12 +181,10 @@ class _FolderContentBody extends StatelessWidget {
               SizedBox(height: SizeConfig.h(0.014)),
 
               if (tests.isEmpty)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.05)),
-                  child: const Text(
-                    'لا توجد اختبارات داخل هذا المجلد',
-                    style: TextStyle(color: Colors.grey),
-                  ),
+                const EmptyActionBox(
+                  icon: Icons.folder_off_outlined,
+                  title: 'المجلد فارغ',
+                  description: 'لا توجد اختبارات داخل هذا المجلد',
                 )
               else
                 ...tests.map((test) {

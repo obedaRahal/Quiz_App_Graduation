@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -946,21 +947,11 @@ Future<void> showLaboratoryScientificClassificationSheet({
                         SizedBox(height: SizeConfig.h(0.012)),
 
                         if (categories.isEmpty)
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: SizeConfig.h(0.020),
-                            ),
-                            child: Center(
-                              child: CustomTextWidget(
-                                'لا توجد تصنيفات متاحة حالياً',
-                                fontSize: SizeConfig.text(0.030),
-                                fontWeight: FontWeight.w700,
-                                color: isDark
-                                    ? AppPalette.grey2Dark
-                                    : AppPalette.greyMedium,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
+                          const EmptyActionBox(
+                            icon: Icons.category_outlined,
+                            title: 'لا توجد تصنيفات',
+                            description:
+                                'لا توجد تصنيفات متاحة للاختيار حالياً',
                           ),
 
                         ...categories.map((category) {

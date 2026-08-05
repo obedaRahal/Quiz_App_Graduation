@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
+import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
@@ -89,16 +90,10 @@ class MyProfileTestsTab extends StatelessWidget {
             if (isLoading)
               OtherProfileTestsTabShimmer()
             else if (shouldShowEmptyState)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: SizeConfig.h(0.06)),
-                child: Center(
-                  child: CustomTextWidget(
-                    _emptyMessage(state),
-                    color: AppPalette.greyMedium,
-                    fontSize: SizeConfig.text(0.034),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+              EmptyActionBox(
+                icon: Icons.quiz_outlined,
+                title: 'لا توجد اختبارات',
+                description: _emptyMessage(state),
               )
             else if (isFailure)
               Padding(
