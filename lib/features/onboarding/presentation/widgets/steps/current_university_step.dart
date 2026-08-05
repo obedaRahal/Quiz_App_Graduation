@@ -55,6 +55,7 @@ class CurrentUniversityStep extends StatelessWidget {
               _SectionLabel(title: 'الجامعة'),
               SizedBox(height: SizeConfig.h(0.005)),
               OnboardingDropdownField<UniversityOption>(
+                
                 value: selectedUniversity,
                 items: currentUniversityOptions,
                 hintText: 'اختر الجامعة التي تدرس فيها',

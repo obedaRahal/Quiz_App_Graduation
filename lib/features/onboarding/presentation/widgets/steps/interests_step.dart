@@ -25,13 +25,13 @@ class InterestsStep extends StatelessWidget {
           groups: state.interestGroups,
         );
 
-        if (state.interestGroups.isEmpty) {
-          return const EmptyActionBox(
-            icon: Icons.interests_outlined,
-            title: 'لا توجد اهتمامات',
-            description: 'لا توجد اهتمامات متاحة للاختيار حالياً',
-          );
-        }
+        // if (state.interestGroups.isEmpty) {
+        //   return const EmptyActionBox(
+        //     icon: Icons.interests_outlined,
+        //     title: 'لا توجد اهتمامات',
+        //     description: 'لا توجد اهتمامات متاحة للاختيار حالياً',
+        //   );
+        // }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.end,

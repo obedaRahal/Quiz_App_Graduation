@@ -99,6 +99,7 @@ class OnboardingScaffold extends StatelessWidget {
                   ),
                 ),
               ],
+              if (!hasTitle) SizedBox(height: SizeConfig.w(0.15)),
 
               if (hasDescription) ...[
                 SizedBox(height: SizeConfig.h(0.01)),

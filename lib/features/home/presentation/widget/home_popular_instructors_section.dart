@@ -59,19 +59,6 @@ class InstructorsSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.036)),
-          child: CustomTextWidget(
-            'أشهر أصحاب المعلومات',
-            fontSize: titleSize,
-            color: colorScheme.secondary,
-            textAlign: TextAlign.right,
-            fontWeight: FontWeight.bold,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-
         SizedBox(height: SizeConfig.h(0.008)),
 
         SizedBox(

@@ -41,50 +41,48 @@ class OnboardingDropdownField<T> extends StatelessWidget {
     final focusColor = appColors.primaryToPrimaryDark;
     final secondaryTextColor = appColors.blackTogreyMedium;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: DropdownButtonFormField<T>(
-        value: value,
-        isExpanded: true,
-        menuMaxHeight: SizeConfig.h(0.5),
-        icon: Icon(
-          Icons.keyboard_arrow_down_rounded,
-          color: secondaryTextColor,
-        ),
-        hint: CustomTextWidget(
-          hintText,
-          fontSize: 12,
-          color: secondaryTextColor,
-          textAlign: TextAlign.right,
-        ),
-        decoration: _buildDropdownDecoration(
-          fillColor: fillColor,
-          borderColor: borderColor,
-          focusColor: focusColor,
-        ),
-        items: items.map((item) {
-          return DropdownMenuItem<T>(
-            value: item,
-            alignment: Alignment.centerRight,
-            child: itemBuilder != null
-                ? itemBuilder!(item)
-                : CustomTextWidget(
-                    labelBuilder(item),
-                    textAlign: TextAlign.right,
-                    fontSize: SizeConfig.text(0.035),
-                    color: secondaryTextColor,
-                  ),
-          );
-        }).toList(),
-        selectedItemBuilder: selectedItemBuilder == null
-            ? null
-            : (context) {
-                return items.map((item) {
-                  return selectedItemBuilder!(item);
-                }).toList();
-              },
-        onChanged: isEnabled ? onChanged : null,
+    return DropdownButtonFormField<T>(
+      alignment: AlignmentGeometry.centerRight,
+      value: value,
+      isExpanded: true,
+      menuMaxHeight: SizeConfig.h(0.5),
+      icon: Icon(
+        Icons.keyboard_arrow_down_rounded,
+        color: secondaryTextColor,
       ),
+      hint: CustomTextWidget(
+        hintText,
+        fontSize: 12,
+        color: secondaryTextColor,
+        textAlign: TextAlign.right,
+      ),
+      decoration: _buildDropdownDecoration(
+        fillColor: fillColor,
+        borderColor: borderColor,
+        focusColor: focusColor,
+      ),
+      items: items.map((item) {
+        return DropdownMenuItem<T>(
+          value: item,
+          alignment: Alignment.centerRight,
+          child: itemBuilder != null
+              ? itemBuilder!(item)
+              : CustomTextWidget(
+                  labelBuilder(item),
+                  textAlign: TextAlign.right,
+                  fontSize: SizeConfig.text(0.035),
+                  color: secondaryTextColor,
+                ),
+        );
+      }).toList(),
+      selectedItemBuilder: selectedItemBuilder == null
+          ? null
+          : (context) {
+              return items.map((item) {
+                return selectedItemBuilder!(item);
+              }).toList();
+            },
+      onChanged: isEnabled ? onChanged : null,
     );
   }
 

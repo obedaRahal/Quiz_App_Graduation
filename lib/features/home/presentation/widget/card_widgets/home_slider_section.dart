@@ -52,8 +52,8 @@ class HomeSliderSection extends StatelessWidget {
     }
 
     if (state.recommendedTests.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12),
+      return  Padding(
+        padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03) , vertical: SizeConfig.h(0.012)),
         child: EmptyActionBox(
           icon: Icons.quiz_outlined,
           title: 'لا توجد اختبارات',

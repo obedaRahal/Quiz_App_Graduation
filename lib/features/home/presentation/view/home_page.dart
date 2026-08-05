@@ -224,6 +224,53 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
 
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.w(0.036),
+                    vertical: SizeConfig.h(0.02),
+                  ),
+                  child: Row(
+                    textDirection: TextDirection.rtl,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: CustomTextWidget(
+                          "قائمة التصنيفات",
+                          fontSize: titleSize,
+                          color: colorScheme.secondary,
+                          textAlign: TextAlign.right,
+                          fontWeight: FontWeight.bold,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              context.pushNamed(
+                                AppRouterName.allCategoriesPage,
+                              );
+                            },
+                            child: CustomTextWidget(
+                              "عرض الكل",
+                              fontSize: actionSize,
+                            ),
+                          ),
+                          SizedBox(width: SizeConfig.w(0.01)),
+                          Icon(
+                            Icons.keyboard_arrow_left,
+                            size: actionSize + 2,
+                            color: colorScheme.primary,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
                     return Directionality(
@@ -234,6 +281,23 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 SizedBox(height: SizeConfig.h(0.03)),
+                Align(
+                  alignment: AlignmentGeometry.centerRight,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.w(0.036),
+                    ),
+                    child: CustomTextWidget(
+                      'أشهر أصحاب المعلومات',
+                      fontSize: titleSize,
+                      color: colorScheme.secondary,
+                      textAlign: TextAlign.right,
+                      fontWeight: FontWeight.bold,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
 
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
