@@ -155,7 +155,7 @@ class _OtherProfileInfoPanel extends StatelessWidget {
               : const Color(0xFFF3F6FF),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [

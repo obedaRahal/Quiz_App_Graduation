@@ -20,6 +20,8 @@ import 'package:quiz_app_grad/features/create_test/domain/use_case/update_conten
 import 'package:quiz_app_grad/features/create_test/domain/use_case/update_test_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_state.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/utils/create_test_question_constraints.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/utils/manual_questions_json_import.dart';
 
 class CreateTestCubit extends SafeCubit<CreateTestState> {
   final GetScientificClassificationsUseCase getScientificClassificationsUseCase;
@@ -50,15 +52,23 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
   static const List<int> successLimits = [20, 30, 40, 50, 60, 70, 80];
 
   static const List<String> languages = ['عربية', 'إنكليزية', 'مختلطة'];
-  static const int minQuestionsCount = 5;
-  static const int maxQuestionsCount = 100;
-  static const int minOptionsCount = 2;
-  static const int maxOptionsCount = 5;
+  static const int minQuestionsCount =
+      CreateTestQuestionConstraints.minQuestionsCount;
+  static const int maxQuestionsCount =
+      CreateTestQuestionConstraints.maxQuestionsCount;
+  static const int minOptionsCount =
+      CreateTestQuestionConstraints.minOptionsCount;
+  static const int maxOptionsCount =
+      CreateTestQuestionConstraints.maxOptionsCount;
 
-  static const int questionMaxLength = 500;
-  static const int questionMinLength = 10;
-  static const int optionMaxLength = 150;
-  static const int explanationMaxLength = 1000;
+  static const int questionMaxLength =
+      CreateTestQuestionConstraints.questionMaxLength;
+  static const int questionMinLength =
+      CreateTestQuestionConstraints.questionMinLength;
+  static const int optionMaxLength =
+      CreateTestQuestionConstraints.optionMaxLength;
+  static const int explanationMaxLength =
+      CreateTestQuestionConstraints.explanationMaxLength;
   static const int maxScientificCategoriesCount = 3;
 
   static const Map<String, List<CreateTestScientificCategoryUiModel>>
@@ -388,6 +398,59 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
         selectedSampleQuestions: updatedSampleQuestions
             .take(allowedCount)
             .toList(),
+      ),
+    );
+  }
+
+  ManualQuestionsJsonImportResult prepareImportedQuestions(PlatformFile file) {
+    if (file.extension?.toLowerCase() != 'json') {
+      return const ManualQuestionsJsonImportResult.failure(
+        'يمكن استيراد ملفات JSON فقط.',
+      );
+    }
+
+    final bytes = file.bytes;
+    if (bytes == null) {
+      return const ManualQuestionsJsonImportResult.failure(
+        'تعذر قراءة الملف المحدد. حاول اختيار الملف مرة أخرى.',
+      );
+    }
+
+    final result = parseManualQuestionsJson(bytes);
+    if (!result.isSuccess) return result;
+
+    final totalQuestionsCount = state.questions.length + result.questions.length;
+    if (totalQuestionsCount > maxQuestionsCount) {
+      return ManualQuestionsJsonImportResult.failure(
+        'إضافة ${result.questions.length} سؤالًا ستتجاوز الحد الأقصى وهو $maxQuestionsCount سؤال.',
+      );
+    }
+
+    return result;
+  }
+
+  void appendImportedQuestions(List<ImportedManualQuestion> importedQuestions) {
+    if (importedQuestions.isEmpty ||
+        state.questions.length + importedQuestions.length > maxQuestionsCount) {
+      return;
+    }
+
+    final questions = importedQuestions
+        .map(
+          (question) => CreateTestQuestionState(
+            questionText: question.questionText,
+            options: question.options,
+            correctOptionIndex: question.correctOptionIndex,
+            explanation: question.explanation,
+          ),
+        )
+        .toList();
+
+    emit(
+      state.copyWith(
+        questions: [...state.questions, ...questions],
+        createManualTestError: null,
+        createManualTestResponse: null,
       ),
     );
   }

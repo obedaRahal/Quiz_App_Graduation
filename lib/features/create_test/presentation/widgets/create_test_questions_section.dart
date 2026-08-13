@@ -11,7 +11,9 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_cubit.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_state.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/widgets/create_test_questions_import_section.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/widgets/create_test_top_explanation_banner.dart';
 
 class CreateTestQuestionsSection extends StatelessWidget {
@@ -30,9 +32,14 @@ class CreateTestQuestionsSection extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-           _QuestionsHeader(isEditMode: state.isEditMode),
+            _QuestionsHeader(isEditMode: state.isEditMode),
 
             SizedBox(height: SizeConfig.h(0.016)),
+            if (!state.isEditMode &&
+                state.creationMode == CreateTestCreationMode.manual) ...[
+              const CreateTestQuestionsImportSection(),
+              SizedBox(height: SizeConfig.h(0.016)),
+            ],
             if (!state.isEditMode &&
                 state.isAiMode &&
                 state.aiProvider.trim().isNotEmpty &&
