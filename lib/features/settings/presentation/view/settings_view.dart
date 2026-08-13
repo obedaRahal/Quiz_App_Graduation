@@ -476,6 +476,21 @@ class _SettingsViewState extends State<SettingsView> {
                             SizedBox(height: SizeConfig.h(0.02)),
 
                             SettingsTile(
+                              title: 'الاختبارات المشتراة',
+                              subtitle:
+                                  'قائمة الاختبارات التي اشتريتها داخل التطبيق',
+                              icon: Icons.shopping_bag_outlined,
+                              iconColor: Colors.deepPurple,
+                              iconBackgroundColor: Colors.deepPurple
+                                  .withValues(alpha: .15),
+                              onTap: () {
+                                context.pushNamed(AppRouterName.purchasedTests);
+                              },
+                            ),
+
+                            SizedBox(height: SizeConfig.h(0.02)),
+
+                            SettingsTile(
                               title: 'تغيير كلمة المرور',
                               subtitle:
                                   'يمكنك تغير كلمة المرور الخاصة بك بكل سهولة',

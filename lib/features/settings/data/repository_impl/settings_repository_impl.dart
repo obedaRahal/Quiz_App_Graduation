@@ -6,9 +6,11 @@ import 'package:quiz_app_grad/features/settings/data/data_source/settings_remote
 import 'package:quiz_app_grad/features/settings/data/models/settings_operation_response_model.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/academic_verification_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/settings_entity.dart';
+import 'package:quiz_app_grad/features/settings/domain/entity/purchased_tests_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/entity/sold_tests_entity.dart';
 import 'package:quiz_app_grad/features/settings/domain/repositories/settings_repository.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/fetch_sold_tests_params.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/params/fetch_purchased_tests_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/logout_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/update_date_time_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/update_password_params.dart';
@@ -450,6 +452,50 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
       return const Left(
         ServerFailure(title: 'حدث خطأ', message: 'تعذر جلب الاختبارات المباعة'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, PurchasedTestsEntity>> fetchPurchasedTests(
+    FetchPurchasedTestsParams params,
+  ) async {
+    try {
+      final result = await remoteDataSource.fetchPurchasedTests(params: params);
+
+      if (!result.success) {
+        return Left(
+          ServerFailure(
+            title: result.title.isEmpty
+                ? 'تعذر جلب الاختبارات المشتراة'
+                : result.title,
+            message: 'تعذر جلب الاختبارات المشتراة. حاول مرة أخرى.',
+            statusCode: result.statusCode,
+          ),
+        );
+      }
+
+      return Right(result);
+    } on ServerException catch (exception) {
+      return Left(
+        ServerFailure(
+          title: exception.errorModel.errorTitle,
+          message: exception.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (exception) {
+      return Left(
+        CacheFailure(
+          title: exception.errorMessage,
+          message: exception.errorMessage,
+        ),
+      );
+    } catch (_) {
+      return const Left(
+        ServerFailure(
+          title: 'حدث خطأ',
+          message: 'تعذر جلب الاختبارات المشتراة. حاول مرة أخرى.',
+        ),
       );
     }
   }

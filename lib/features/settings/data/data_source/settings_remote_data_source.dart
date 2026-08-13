@@ -4,9 +4,11 @@ import 'package:quiz_app_grad/core/database/api/api_consumer.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
 import 'package:quiz_app_grad/features/settings/data/models/academic_verification_model.dart';
 import 'package:quiz_app_grad/features/settings/data/models/get_settings_response_model.dart';
+import 'package:quiz_app_grad/features/settings/data/models/purchased_tests_model.dart';
 import 'package:quiz_app_grad/features/settings/data/models/settings_operation_response_model.dart';
 import 'package:quiz_app_grad/features/settings/data/models/sold_tests_model.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/fetch_sold_tests_params.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/params/fetch_purchased_tests_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/logout_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/update_date_time_params.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/params/update_password_params.dart';
@@ -33,6 +35,10 @@ abstract class SettingsRemoteDataSource {
   Future<SettingsOperationResponseModel> logout({required LogoutParams params});
 
   Future<SoldTestsModel> fetchSoldTests({required FetchSoldTestsParams params});
+
+  Future<PurchasedTestsModel> fetchPurchasedTests({
+    required FetchPurchasedTestsParams params,
+  });
 
   Future<AcademicVerificationModel> fetchAcademicVerificationStatus();
 
@@ -260,6 +266,20 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
     );
 
     return model;
+  }
+
+  @override
+  Future<PurchasedTestsModel> fetchPurchasedTests({
+    required FetchPurchasedTestsParams params,
+  }) async {
+    final response = await apiConsumer.get(
+      EndPoints.purchasedTests,
+      queryParameters: params.toQueryParameters(),
+    );
+
+    return PurchasedTestsModel.fromJson(
+      (response as Map).cast<String, dynamic>(),
+    );
   }
 
   @override

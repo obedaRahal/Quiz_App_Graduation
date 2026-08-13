@@ -201,6 +201,7 @@ import 'package:quiz_app_grad/features/settings/domain/use_cases/create_academic
 import 'package:quiz_app_grad/features/settings/domain/use_cases/disable_task_reminders_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/enable_task_reminders_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/fetch_academic_verification_status_use_case.dart';
+import 'package:quiz_app_grad/features/settings/domain/use_cases/fetch_purchased_tests_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/fetch_sold_tests_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/get_settings_use_case.dart';
 import 'package:quiz_app_grad/features/settings/domain/use_cases/get_theme_mode_use_case.dart';
@@ -212,6 +213,7 @@ import 'package:quiz_app_grad/features/settings/domain/use_cases/update_password
 import 'package:quiz_app_grad/features/settings/domain/use_cases/update_theme_mode_use_case.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/academic_verification/academic_verification_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/settings/settings_cubit.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/purchased_tests/purchased_tests_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/sold_tests/sold_tests_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/auth/domain/repositories/auth_repository.dart';
@@ -2081,6 +2083,10 @@ void _registerSettingsFeature() {
     () => FetchSoldTestsUseCase(settingsRepository: sl()),
   );
 
+  sl.registerLazySingleton<FetchPurchasedTestsUseCase>(
+    () => FetchPurchasedTestsUseCase(settingsRepository: sl()),
+  );
+
   sl.registerLazySingleton<SoldTestsPdfService>(() => SoldTestsPdfService());
 
   sl.registerLazySingleton<FetchAcademicVerificationStatusUseCase>(
@@ -2125,5 +2131,9 @@ void _registerSettingsFeature() {
   sl.registerFactory<SoldTestsCubit>(
     () =>
         SoldTestsCubit(fetchSoldTestsUseCase: sl(), soldTestsPdfService: sl()),
+  );
+
+  sl.registerFactory<PurchasedTestsCubit>(
+    () => PurchasedTestsCubit(fetchPurchasedTestsUseCase: sl()),
   );
 }

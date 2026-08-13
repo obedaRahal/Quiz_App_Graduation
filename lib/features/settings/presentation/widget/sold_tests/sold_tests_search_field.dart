@@ -6,6 +6,7 @@ import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class SoldTestsSearchField extends StatelessWidget {
   final TextEditingController controller;
+  final String hintText;
   final ValueChanged<String> onChanged;
   final VoidCallback? onClear;
 
@@ -13,6 +14,7 @@ class SoldTestsSearchField extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onChanged,
+    this.hintText = 'ابحث في الاختبارات المباعة',
     this.onClear,
   });
 
@@ -29,7 +31,7 @@ class SoldTestsSearchField extends StatelessWidget {
         textDirection: TextDirection.rtl,
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText: 'ابحث في الاختبارات المباعة',
+          hintText: hintText,
           hintTextDirection: TextDirection.rtl,
           prefixIcon: Icon(
             Icons.search_rounded,

@@ -70,8 +70,10 @@ import 'package:quiz_app_grad/features/search/presentation/view/search_view.dart
 import 'package:quiz_app_grad/features/settings/data/models/settings_route_args.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/academic_verification/academic_verification_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/settings/settings_cubit.dart';
+import 'package:quiz_app_grad/features/settings/presentation/manager/purchased_tests/purchased_tests_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/sold_tests/sold_tests_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/view/academic_verification_view.dart';
+import 'package:quiz_app_grad/features/settings/presentation/view/purchased_tests_view.dart';
 import 'package:quiz_app_grad/features/settings/presentation/view/settings_view.dart';
 import 'package:quiz_app_grad/features/settings/presentation/view/sold_tests_view.dart';
 import 'package:quiz_app_grad/features/splash_welcome/presentation/view/splash_view.dart';
@@ -949,6 +951,20 @@ class AppRouter {
               child: BlocProvider(
                 create: (_) => sl<SoldTestsCubit>()..fetchInitial(),
                 child: const SoldTestsView(),
+              ),
+            );
+          },
+        ),
+
+        GoRoute(
+          path: AppRouterPath.purchasedTests,
+          name: AppRouterName.purchasedTests,
+          pageBuilder: (context, state) {
+            return _slidePage(
+              state: state,
+              child: BlocProvider(
+                create: (_) => sl<PurchasedTestsCubit>()..fetchInitial(),
+                child: const PurchasedTestsView(),
               ),
             );
           },

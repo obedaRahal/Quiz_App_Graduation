@@ -609,6 +609,8 @@ class EndPoints {
 
   static const String soldTests = '$baseUrl/settings/sold-tests';
 
+  static const String purchasedTests = '$baseUrl/settings/get-my-purchases';
+
   static const String academicVerificationStatus =
       '$baseUrl/settings/status/certificate-request';
 
