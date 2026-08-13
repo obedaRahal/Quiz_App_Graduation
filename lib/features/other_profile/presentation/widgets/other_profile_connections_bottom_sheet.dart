@@ -26,6 +26,8 @@ Future<void> showOtherProfileConnectionsBottomSheet({
   required String title,
   String searchHint = 'ابحث عن مستخدم',
 }) {
+  cubit.getInitialUsers(userId: userId, type: type);
+
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -33,7 +35,7 @@ Future<void> showOtherProfileConnectionsBottomSheet({
     backgroundColor: Colors.transparent,
     builder: (_) {
       return BlocProvider.value(
-        value: cubit..getInitialUsers(userId: userId, type: type),
+        value: cubit,
         child: OtherProfileConnectionsBottomSheet(
           userId: userId,
           type: type,

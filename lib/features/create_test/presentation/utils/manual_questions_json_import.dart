@@ -20,20 +20,34 @@ class ImportedManualQuestion {
 class ManualQuestionsJsonImportResult {
   final List<ImportedManualQuestion> questions;
   final String? error;
+  final List<String> warnings;
 
   const ManualQuestionsJsonImportResult._({
     required this.questions,
     required this.error,
+    required this.warnings,
   });
 
   const ManualQuestionsJsonImportResult.success(
-    List<ImportedManualQuestion> questions,
-  ) : this._(questions: questions, error: null);
+    List<ImportedManualQuestion> questions, {
+    List<String> warnings = const [],
+  }) : this._(questions: questions, error: null, warnings: warnings);
 
   const ManualQuestionsJsonImportResult.failure(String error)
-    : this._(questions: const [], error: error);
+    : this._(questions: const [], error: error, warnings: const []);
 
   bool get isSuccess => error == null;
+
+  ManualQuestionsJsonImportResult withAdditionalWarnings(
+    List<String> additionalWarnings,
+  ) {
+    if (!isSuccess || additionalWarnings.isEmpty) return this;
+
+    return ManualQuestionsJsonImportResult.success(
+      questions,
+      warnings: [...warnings, ...additionalWarnings],
+    );
+  }
 }
 
 ManualQuestionsJsonImportResult parseManualQuestionsJson(Uint8List bytes) {
@@ -73,9 +87,9 @@ ManualQuestionsJsonImportResult parseManualQuestionsJson(Uint8List bytes) {
 
   try {
     decoded = jsonDecode(normalizedContent);
-  } on FormatException {
-    return const ManualQuestionsJsonImportResult.failure(
-      'تعذر قراءة JSON.\n\n'
+  } on FormatException catch (error) {
+    return ManualQuestionsJsonImportResult.failure(
+      'تعذر قراءة JSON${_jsonErrorLocation(normalizedContent, error.offset)}.\n\n'
       'إذا أنشأت الملف بواسطة ChatGPT أو Gemini فتأكد من حفظه بصيغة JSON وليس كنص منسق.',
     );
   }
@@ -141,6 +155,8 @@ ManualQuestionsJsonImportResult parseManualQuestionsJson(Uint8List bytes) {
   // }
 
   final importedQuestions = <ImportedManualQuestion>[];
+  final warnings = <String>[];
+  final firstQuestionIndexByText = <String, int>{};
 
   for (var index = 0; index < rawQuestions.length; index++) {
     final questionNumber = index + 1;
@@ -228,6 +244,17 @@ ManualQuestionsJsonImportResult parseManualQuestionsJson(Uint8List bytes) {
       );
     }
 
+    final normalizedQuestionText = normalizeImportedQuestionText(questionText);
+    final firstQuestionIndex =
+        firstQuestionIndexByText[normalizedQuestionText];
+    if (firstQuestionIndex != null) {
+      warnings.add(
+        'السؤال رقم $questionNumber مكرر للسؤال رقم $firstQuestionIndex داخل الملف.',
+      );
+    } else {
+      firstQuestionIndexByText[normalizedQuestionText] = questionNumber;
+    }
+
     importedQuestions.add(
       ImportedManualQuestion(
         questionText: questionText,
@@ -238,5 +265,33 @@ ManualQuestionsJsonImportResult parseManualQuestionsJson(Uint8List bytes) {
     );
   }
 
-  return ManualQuestionsJsonImportResult.success(importedQuestions);
+  return ManualQuestionsJsonImportResult.success(
+    importedQuestions,
+    warnings: warnings,
+  );
+}
+
+String normalizeImportedQuestionText(String value) {
+  return value.trim().replaceAll(RegExp(r'\s+'), ' ').toLowerCase();
+}
+
+String _jsonErrorLocation(String content, int? offset) {
+  if (offset == null) return '';
+
+  var line = 1;
+  var column = 1;
+  final lastIndex = offset.clamp(0, content.length) as int;
+
+  for (var index = 0; index < lastIndex; index++) {
+    final character = content.codeUnitAt(index);
+
+    if (character == 0x0A) {
+      line++;
+      column = 1;
+    } else if (character != 0x0D) {
+      column++;
+    }
+  }
+
+  return ' في السطر $line، العمود $column';
 }

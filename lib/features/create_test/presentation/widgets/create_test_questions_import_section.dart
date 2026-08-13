@@ -239,6 +239,7 @@ Future<void> _pickQuestionsJsonFile(BuildContext context) async {
     importedQuestionsCount: importResult.questions.length,
     totalQuestionsCount:
         cubit.state.questions.length + importResult.questions.length,
+    warnings: importResult.warnings,
   );
 
   if (shouldAppend != true || !context.mounted) return;
@@ -320,6 +321,7 @@ Future<bool?> showQuestionImportConfirmationDialog(
   BuildContext context, {
   required int importedQuestionsCount,
   required int totalQuestionsCount,
+  required List<String> warnings,
 }) {
   return showDialog<bool>(
     context: context,
@@ -328,8 +330,29 @@ Future<bool?> showQuestionImportConfirmationDialog(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
           title: const Text('إضافة الأسئلة المستوردة؟'),
-          content: Text(
-            'تم العثور على $importedQuestionsCount سؤالًا صالحًا. سيصبح إجمالي الأسئلة $totalQuestionsCount. لن يتم إرسال الاختبار تلقائيًا.',
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'تم العثور على $importedQuestionsCount سؤالًا صالحًا. سيصبح إجمالي الأسئلة $totalQuestionsCount. لن يتم إرسال الاختبار تلقائيًا.',
+              ),
+              if (warnings.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.amber.shade700),
+                  ),
+                  child: Text(
+                    'تنبيه: تم العثور على أسئلة مكررة. ستتم إضافتها كما هي ويمكنك حذفها أو تعديلها لاحقًا.\n${warnings.join('\n')}',
+                  ),
+                ),
+              ],
+            ],
           ),
           actions: [
             TextButton(

@@ -53,5 +53,29 @@ void main() {
 
     expect(result.isSuccess, isFalse);
     expect(result.error, isNotEmpty);
+    expect(result.error, contains('السطر'));
+  });
+
+  test('warns when the imported file contains duplicate questions', () {
+    final result = parseManualQuestionsJson(
+      jsonBytes({
+        'questions': [
+          {
+            'question': 'What is the capital of Syria?',
+            'options': ['Damascus', 'Aleppo'],
+            'correctOptionIndex': 0,
+          },
+          {
+            'question': '  what   is the capital of syria?  ',
+            'options': ['Damascus', 'Homs'],
+            'correctOptionIndex': '0',
+          },
+        ],
+      }),
+    );
+
+    expect(result.isSuccess, isTrue);
+    expect(result.warnings, hasLength(1));
+    expect(result.warnings.single, contains('مكرر'));
   });
 }

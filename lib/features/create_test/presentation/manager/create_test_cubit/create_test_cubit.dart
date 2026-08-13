@@ -426,7 +426,25 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
       );
     }
 
-    return result;
+    final existingQuestionTexts = state.questions
+        .map((question) => normalizeImportedQuestionText(question.questionText))
+        .toSet();
+    final duplicateWarnings = <String>[];
+
+    for (var index = 0; index < result.questions.length; index++) {
+      final importedQuestion = result.questions[index];
+      final normalizedQuestionText = normalizeImportedQuestionText(
+        importedQuestion.questionText,
+      );
+
+      if (existingQuestionTexts.contains(normalizedQuestionText)) {
+        duplicateWarnings.add(
+          'السؤال رقم ${index + 1} مكرر لسؤال موجود بالفعل في الاختبار.',
+        );
+      }
+    }
+
+    return result.withAdditionalWarnings(duplicateWarnings);
   }
 
   void appendImportedQuestions(List<ImportedManualQuestion> importedQuestions) {
