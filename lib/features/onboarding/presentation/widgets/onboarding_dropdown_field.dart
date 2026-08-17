@@ -15,6 +15,7 @@ class OnboardingDropdownField<T> extends StatelessWidget {
   final Widget Function(T item)? selectedItemBuilder;
 
   final bool isEnabled;
+  final double? itemHeight;
 
   const OnboardingDropdownField({
     super.key,
@@ -26,6 +27,7 @@ class OnboardingDropdownField<T> extends StatelessWidget {
     this.itemBuilder,
     this.selectedItemBuilder,
     this.isEnabled = true,
+    this.itemHeight,
   });
 
   @override
@@ -45,6 +47,7 @@ class OnboardingDropdownField<T> extends StatelessWidget {
       alignment: AlignmentGeometry.centerRight,
       value: value,
       isExpanded: true,
+      itemHeight: itemHeight,
       menuMaxHeight: SizeConfig.h(0.5),
       icon: Icon(
         Icons.keyboard_arrow_down_rounded,

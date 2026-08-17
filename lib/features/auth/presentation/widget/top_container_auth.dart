@@ -144,7 +144,7 @@ class TopContainerAuth extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: CustomTextWidget(
               title,
-              fontSize: SizeConfig.text(compact ? 0.07 : 0.078),
+              fontSize: SizeConfig.text(compact ? 0.07 : 0.07),
               color: colorScheme.onPrimary,
             ),
           ),

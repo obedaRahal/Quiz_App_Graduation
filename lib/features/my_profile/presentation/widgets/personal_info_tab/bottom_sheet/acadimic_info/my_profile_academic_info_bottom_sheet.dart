@@ -803,6 +803,7 @@ class _UniversityFieldsSection extends StatelessWidget {
           labelBuilder: (item) => item.title,
           itemBuilder: (item) => UniversityDropdownItem(item: item),
           selectedItemBuilder: (item) => UniversityDropdownItem(item: item),
+          itemHeight: SizeConfig.h(0.072),
           onChanged: onUniversityChanged,
         ),
 
@@ -869,6 +870,7 @@ class _GraduateDocumentsSection extends StatelessWidget {
           labelBuilder: (item) => item.title,
           itemBuilder: (item) => UniversityDropdownItem(item: item),
           selectedItemBuilder: (item) => UniversityDropdownItem(item: item),
+          itemHeight: SizeConfig.h(0.072),
           onChanged: onUniversityChanged,
         ),
 
