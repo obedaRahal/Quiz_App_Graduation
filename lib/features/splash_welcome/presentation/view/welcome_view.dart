@@ -6,14 +6,41 @@ import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
+import 'package:quiz_app_grad/core/utils/auth_session.dart';
+import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
-class WelcomeView extends StatelessWidget {
+class WelcomeView extends StatefulWidget {
   const WelcomeView({super.key});
+
+  @override
+  State<WelcomeView> createState() => _WelcomeViewState();
+}
+
+class _WelcomeViewState extends State<WelcomeView> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      final notice = sl<AuthSession>().takePendingAccountBlockNotice();
+      if (notice == null) return;
+
+      showValidationTopSnackBar(
+        context,
+        title: notice.title,
+        message: notice.message,
+        type: AppValidationSnackBarType.error,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

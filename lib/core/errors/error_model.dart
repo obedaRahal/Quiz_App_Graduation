@@ -66,6 +66,12 @@ class ErrorModel {
     return meta['is_permanent'] == true;
   }
 
+  bool get isAccountBlocked {
+    return meta.containsKey('reason') &&
+        meta.containsKey('is_permanent') &&
+        (meta.containsKey('starts_at') || meta.containsKey('ends_at'));
+  }
+
   String? get startsAt {
     final value = meta['starts_at'];
     if (value == null) return null;

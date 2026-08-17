@@ -341,6 +341,15 @@ Future<void> _registerCore() async {
           await Future.wait([TokenStorage.clear(), UserLocalStorage.clear()]);
           sl<AuthSession>().markUnauthenticated();
         },
+        onAuthenticatedForbidden: (error) async {
+          final authSession = sl<AuthSession>();
+          authSession.setPendingAccountBlockNotice(
+            title: error.errorTitle,
+            message: error.errorMessage,
+          );
+          await Future.wait([TokenStorage.clear(), UserLocalStorage.clear()]);
+          authSession.markUnauthenticated();
+        },
       ),
     );
   }

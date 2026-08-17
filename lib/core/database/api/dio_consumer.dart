@@ -4,11 +4,15 @@ import 'package:quiz_app_grad/core/database/api/idempotency_interceptor.dart';
 
 import 'api_consumer.dart';
 import '../../errors/exceptions.dart';
+import '../../errors/error_model.dart';
 
 typedef AccessTokenGetter = Future<String?> Function();
 typedef TokenExpiringSoonChecker = Future<bool> Function();
 typedef RefreshTokenCallback = Future<bool> Function();
 typedef ClearSessionCallback = Future<void> Function();
+typedef AuthenticatedForbiddenCallback = Future<void> Function(
+  ErrorModel error,
+);
 
 class DioConsumer extends ApiConsumer {
   final Dio dio;
@@ -17,8 +21,10 @@ class DioConsumer extends ApiConsumer {
   final TokenExpiringSoonChecker? isTokenExpiringSoon;
   final RefreshTokenCallback? refreshToken;
   final ClearSessionCallback? clearSession;
+  final AuthenticatedForbiddenCallback? onAuthenticatedForbidden;
 
   Future<bool>? _refreshFuture;
+  Future<void>? _forbiddenFuture;
 
   DioConsumer({
     required this.dio,
@@ -26,6 +32,7 @@ class DioConsumer extends ApiConsumer {
     this.isTokenExpiringSoon,
     this.refreshToken,
     this.clearSession,
+    this.onAuthenticatedForbidden,
   }) {
     dio.options = dio.options.copyWith(
       baseUrl: dio.options.baseUrl.isEmpty
@@ -80,6 +87,14 @@ class DioConsumer extends ApiConsumer {
             EndPoints.refreshToken,
           );
           final alreadyRetried = requestOptions.extra['retried'] == true;
+
+          if (requiresAuth && statusCode == 403) {
+            final isAccountBlocked = await _handleAuthenticatedForbidden(error);
+            if (isAccountBlocked) {
+              handler.next(error);
+              return;
+            }
+          }
 
           if (!requiresAuth ||
               isRefreshRequest ||
@@ -169,6 +184,29 @@ class DioConsumer extends ApiConsumer {
     final result = await _refreshFuture!;
     _refreshFuture = null;
     return result;
+  }
+
+  Future<bool> _handleAuthenticatedForbidden(DioException error) async {
+    final errorModel = ErrorModel.fromResponseData(
+      error.response?.data,
+      fallbackStatusCode: error.response?.statusCode ?? 403,
+      fallbackMessage: error.message,
+    );
+
+    if (!errorModel.isAccountBlocked || onAuthenticatedForbidden == null) {
+      return false;
+    }
+
+    _forbiddenFuture ??= onAuthenticatedForbidden!(
+      errorModel,
+    );
+
+    try {
+      await _forbiddenFuture;
+      return true;
+    } finally {
+      _forbiddenFuture = null;
+    }
   }
 
   Future<bool> _performRefresh({

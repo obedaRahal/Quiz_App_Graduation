@@ -2,12 +2,20 @@ import 'package:flutter/foundation.dart';
 
 enum AuthSessionStatus { unknown, unauthenticated, authenticated }
 
+class AccountBlockNotice {
+  final String title;
+  final String message;
+
+  const AccountBlockNotice({required this.title, required this.message});
+}
+
 class AuthSession extends ChangeNotifier {
   AuthSession({AuthSessionStatus initialStatus = AuthSessionStatus.unknown})
     : _status = initialStatus;
 
   AuthSessionStatus _status;
   String? _pendingProtectedLocation;
+  AccountBlockNotice? _pendingAccountBlockNotice;
 
   AuthSessionStatus get status => _status;
 
@@ -53,6 +61,22 @@ class AuthSession extends ChangeNotifier {
 
   void clearPendingProtectedLocation() {
     _pendingProtectedLocation = null;
+  }
+
+  void setPendingAccountBlockNotice({
+    required String title,
+    required String message,
+  }) {
+    _pendingAccountBlockNotice = AccountBlockNotice(
+      title: title,
+      message: message,
+    );
+  }
+
+  AccountBlockNotice? takePendingAccountBlockNotice() {
+    final notice = _pendingAccountBlockNotice;
+    _pendingAccountBlockNotice = null;
+    return notice;
   }
 
   void reset() {
