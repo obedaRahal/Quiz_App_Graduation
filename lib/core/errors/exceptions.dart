@@ -21,9 +21,6 @@ class CacheException implements Exception {
   String toString() => errorMessage;
 }
 
-// =========================
-// Server / Network Exceptions
-// =========================
 
 class BadCertificateException extends ServerException {
   const BadCertificateException(super.errorModel);
@@ -100,7 +97,6 @@ ErrorModel _buildErrorModel(DioException e) {
   );
 }
 
-/// ترمي Exception دايمًا، ولا تُرجع قيمة.
 Never handleDioException(DioException e) {
   debugPrint('================ DIO EXCEPTION ================');
   debugPrint('DioException type: ${e.type}');

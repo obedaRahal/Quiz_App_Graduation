@@ -41,10 +41,8 @@ class CommonTopPartForgetPassword extends StatelessWidget {
               child: ArrowBack(),
             ),
           ),
-          // SvgPicture.asset(img, height: imgHeight),
           CustomAppImage(path: img, height: imgHeight),
 
-          // SizedBox(height: 24),
           CustomTextWidget(
             title,
             fontSize: SizeConfig.diagonal * .038,

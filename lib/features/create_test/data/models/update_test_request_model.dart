@@ -54,8 +54,6 @@ class UpdateTestRequestModel {
       'difficulty_level': difficultyLevel,
       'target_level': targetLevel,
       'interest_ids': interestIds,
-      // 'interests_ids': interestIds,
-      // 'interests': interestIds,
       'questions': questions.map((question) => question.toJson()).toList(),
     };
 
@@ -67,8 +65,6 @@ class UpdateTestRequestModel {
       json['pass_mark_percentage'] = passMarkPercentage;
     }
 
-    /// إذا الاختبار خاص لا نرسل السعر.
-    /// إذا عام والسعر null أو 0 فهو مجاني حسب الباك.
     if (testType == 'عام') {
       json['price'] = price;
     }

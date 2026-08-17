@@ -307,15 +307,12 @@ class _ReportReasonDialogCardState extends State<ReportReasonDialogCard> {
                         offset: const Offset(0, -4),
                       ),
                     ],
-                    //border: ,
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(16),
                       bottomRight: Radius.circular(16),
                     ),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        // horizontal: SizeConfig.w(0.025),
-                        //vertical: SizeConfig.h(0.014),
                       ),
                       child: CustomButtonWidget(
                         width: double.infinity,
@@ -349,15 +346,6 @@ class _ReportReasonDialogCardState extends State<ReportReasonDialogCard> {
                                 fontFamily: AppFont.elMessiriSemiBold,
                                 fontSize: SizeConfig.text(0.032),
                               ),
-                        //   child: CustomTextWidget(
-                        //     widget.buttonText,
-                        //     color: canSubmit
-                        //         ? AppPalette.white
-                        //         : AppPalette.greyMedium,
-                        //     fontFamily: AppFont.elMessiriSemiBold,
-                        //     fontSize: SizeConfig.text(0.032),
-                        //   ),
-                        // ),
                       ),
                     ),
                   ),
@@ -409,12 +397,6 @@ class _ReportSheetHeader extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(color: AppPalette.greyMedium),
-                  //  boxShadow: [
-                  //   BoxShadow(
-                  //     color: AppPalette.grey2Dark,
-                  //     blurRadius: 4
-                  //   )
-                  // ],
                 ),
                 child: Icon(
                   Icons.close_rounded,

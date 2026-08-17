@@ -70,69 +70,8 @@ class RateTestSection extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Row(
-              //   textDirection: TextDirection.rtl,
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     CustomTextWidget(
-              //       "قيم الاختبار",
-              //       color: appColors.blackTogreyMedium,
-              //       fontFamily: AppFont.elMessiriBold,
-              //       fontSize: SizeConfig.text(0.04),
-              //     ),
 
-              //     CustomButtonWidget(
-              //       backgroundColor: state.canSubmitDraftReview
-              //           ? appColors.primaryToPrimaryDark
-              //           : appColors.greyMediumTogrey,
-              //       childHorizontalPad: SizeConfig.w(0.06),
-              //       childVerticalPad: SizeConfig.w(0.01),
-              //       borderRadius: 18,
-              //       onTap: state.canSubmitDraftReview
-              //           ? () {
-              //               // context.read<DetailsOfTestCubit>().submitDraftReview(
-              //               //   testId: testId,
-              //               // );
-              //               if (!canSubmitReview) {
-              //                 showValidationTopSnackBar(
-              //                   context,
-              //                   title: "تنبيه",
-              //                   message:
-              //                       "يجب شراء الاختبار أولًا حتى تتمكن من نشر تقييمك",
-              //                   type: AppValidationSnackBarType.hint,
-              //                 );
-              //                 return;
-              //               }
 
-              //               context
-              //                   .read<DetailsOfTestCubit>()
-              //                   .submitDraftReview(testId: testId);
-              //             }
-              //           : () {
-              //               showValidationTopSnackBar(
-              //                 context,
-              //                 title: "تنبيه",
-              //                 message: "اختر عدد النجوم أولًا",
-              //                 type: AppValidationSnackBarType.error,
-              //               );
-              //             },
-              //       child: state.isAddReviewLoading
-              //           ? SizedBox(
-              //               width: SizeConfig.w(0.045),
-              //               height: SizeConfig.w(0.045),
-              //               child: CircularProgressIndicator(
-              //                 strokeWidth: 2.5,
-              //                 color: appColors.whiteToblack,
-              //               ),
-              //             )
-              //           : CustomTextWidget(
-              //               "نشر",
-              //               color: appColors.whiteToblack,
-              //               fontSize: SizeConfig.text(0.03),
-              //             ),
-              //     ),
-              //   ],
-              // ),
               Row(
                 textDirection: TextDirection.rtl,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -278,7 +217,6 @@ class RateTestSection extends StatelessWidget {
               SizedBox(
                 height: 40,
                 child:
-                    //TextField(
                     TextFormField(
                       key: ValueKey(
                         '${state.isEditingMyReview}_${state.editingReviewId}',

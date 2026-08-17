@@ -29,7 +29,6 @@ class StudyPlanSelectionBox extends StatelessWidget {
       borderRadius: BorderRadius.circular(9),
       child: Container(
         width: double.infinity,
-        //minHeight: SizeConfig.h(0.058),
         padding: EdgeInsets.symmetric(
           horizontal: SizeConfig.w(0.03),
           vertical: SizeConfig.h(0.012),

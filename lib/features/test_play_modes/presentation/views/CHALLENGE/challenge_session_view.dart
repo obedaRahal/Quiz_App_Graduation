@@ -39,14 +39,6 @@ class _ChallengeSessionViewState extends State<ChallengeSessionView> {
       return;
     }
 
-    // showExitTestPlayModeDialog(
-    //   context: context,
-    //   onExitConfirmed: () {
-    //     context.read<TestPlayModesCubit>().restartChallengeSession();
-    //     Navigator.pop(context);
-    //     Navigator.pop(context);
-    //   },
-    // );
     showCustomConfirmationDialog(
       context: context,
       title: 'هل تريد مغادرة الاختبار حقاً ؟',

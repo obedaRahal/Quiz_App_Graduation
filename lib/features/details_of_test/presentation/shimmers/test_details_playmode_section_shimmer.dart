@@ -105,7 +105,6 @@ class _TestDetailsCardShimmer extends StatelessWidget {
 
           SizedBox(height: SizeConfig.h(0.025)),
 
-          //const Spacer(),
           Row(
             textDirection: TextDirection.rtl,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

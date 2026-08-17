@@ -35,7 +35,6 @@ class ManageStudyPlansHeader extends StatelessWidget {
         SizedBox(width: SizeConfig.w(0.012)),
 
         CustomTextWidget(
-          // 'الخطط المسموحة $plansCount/$maxPlansCount)',
           '(الخطط المسموحة $plansCount/$maxPlansCount)',
 
           fontFamily: AppFont.elMessiriSemiBold,

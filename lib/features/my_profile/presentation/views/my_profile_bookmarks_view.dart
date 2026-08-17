@@ -121,7 +121,6 @@ class _MyProfileBookmarksBodyState extends State<_MyProfileBookmarksBody> {
                 ),
               ),
 
-              //SizedBox(height: SizeConfig.h(0.012)),
               BlocBuilder<MyProfileBookmarksCubit, MyProfileBookmarksState>(
                 buildWhen: (p, c) => p.selectedTab != c.selectedTab,
                 builder: (context, state) {
@@ -317,7 +316,6 @@ class _BookmarkItemBuilder extends StatelessWidget {
             contentId: material.id,
           );
         },
-        // Like is not an action provided by the bookmarks screen.
         onLikeTap: () {},
         showLikeButton: false,
       );

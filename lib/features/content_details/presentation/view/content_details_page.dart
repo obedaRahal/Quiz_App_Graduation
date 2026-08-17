@@ -10,21 +10,8 @@ import 'package:quiz_app_grad/features/content_details/presentation/mapper/conte
 import 'package:quiz_app_grad/features/content_details/presentation/widget/content_details_scaffold.dart';
 import 'package:share_plus/share_plus.dart';
 
-// class ContentDetailsPage extends StatelessWidget {
-//   const ContentDetailsPage({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return ContentDetailsScaffold(
-//       data: ContentDetailsDemoData.imagesContent,
-//     );
 
-//     // للتجربة بحالة الملف:
-//     // return ContentDetailsScaffold(
-//     //   data: ContentDetailsDemoData.fileContent,
-//     // );
-//   }
-// }
 class ContentDetailsPage extends StatelessWidget {
   final int contentId;
   final bool isMyContent;

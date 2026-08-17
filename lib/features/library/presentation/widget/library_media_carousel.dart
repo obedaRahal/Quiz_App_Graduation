@@ -58,7 +58,6 @@ class LibraryMediaCarousel extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           clipBehavior: Clip.none,
           padding: EdgeInsetsDirectional.only(
-            //start: SizeConfig.w(0.045),
             end: SizeConfig.w(0.045),
             bottom: SizeConfig.h(0.008),
           ),
@@ -92,9 +91,7 @@ class _LibraryMediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // final cardWidth = SizeConfig.w(0.285).clamp(104.0, 124.0).toDouble();
     final cardWidth = SizeConfig.w(0.36).clamp(132.0, 155.0).toDouble();
     final radius = SizeConfig.w(0.045).clamp(14.0, 18.0).toDouble();
 
@@ -161,18 +158,8 @@ class _LibraryMediaImage extends StatelessWidget {
   }
 }
 
-// class _LibraryMediaPlaceholder extends StatelessWidget {
-//   final LibraryMediaItem item;
 
-//   const _LibraryMediaPlaceholder({required this.item});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox.expand(
-//       child: CustomAppImage(path: AppImage.carmen, fit: BoxFit.cover),
-//     );
-//   }
-// }
 
 class _LibraryMediaBottomInfo extends StatelessWidget {
   final LibraryMediaItem item;
@@ -193,39 +180,8 @@ class _LibraryMediaBottomInfo extends StatelessWidget {
 
         SizedBox(height: SizeConfig.h(0.006)),
 
-        // Row(
-        //   textDirection: TextDirection.rtl,
-        //   children: [
-        //     Expanded(
-        //       child: Row(
-        //         mainAxisSize: MainAxisSize.min,
-        //         children: [
-        //           _LibraryMediaMetric(
-        //             icon: Icons.favorite_rounded,
-        //             value: _formatCount(item.likesCount),
-        //           ),
-        //           SizedBox(width: SizeConfig.w(0.010)),
-        //           _LibraryMediaMetric(
-        //             icon: Icons.bookmark_rounded,
-        //             value: _formatCount(item.savesCount),
-        //           ),
-        //           SizedBox(width: SizeConfig.w(0.010)),
-        //           _LibraryMediaMetric(
-        //             icon: Icons.download_rounded,
-        //             value: _formatCount(item.downloadsCount),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
 
-        //     SizedBox(width: SizeConfig.w(0.010)),
 
-        //     _LibraryMediaMetric(
-        //       icon: Icons.access_time_rounded,
-        //       value: item.publishedAgo,
-        //     ),
-        //   ],
-        // ),
         Row(
           textDirection: TextDirection.rtl,
           children: [

@@ -142,9 +142,6 @@ class PublicReviewUiModel {
   final String reviewText;
   final int helpfulCount;
 
-  /// null = لم يجب بعد
-  /// true = نعم
-  /// false = لا
   final bool? myHelpfulVote;
 
   const PublicReviewUiModel({
@@ -330,7 +327,6 @@ class PublicReviewCard extends StatelessWidget {
 
         Positioned(
           left: -6,
-          //right: 0,
           top: 4,
           child: _ReviewReportMenuButton(onReport: onReport),
         ),
@@ -430,7 +426,6 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
             canInteract
                 ? 'هل وجدت هذه المراجعة مفيدة؟'
                 : 'اشترِ الاختبار للتفاعل مع المراجعات',
-            //'هل وجدت هذه المراجعة مفيدة؟',
             color: appColors.primaryToPrimaryDark,
             fontSize: SizeConfig.text(0.03),
             textAlign: TextAlign.right,
@@ -441,28 +436,6 @@ class _ReviewHelpfulQuestionRow extends StatelessWidget {
 
         SizedBox(width: SizeConfig.w(0.02)),
 
-        // if (isLoading)
-        //   SizedBox(
-        //     width: SizeConfig.w(0.045),
-        //     height: SizeConfig.w(0.045),
-        //     child: CircularProgressIndicator(
-        //       strokeWidth: 2,
-        //       color: AppPalette.primary,
-        //     ),
-        //   )
-        // else ...[
-        //   _HelpfulActionButton(
-        //     title: 'نعم',
-        //     isSelected: currentVote == true,
-        //     onTap: onYesTap,
-        //   ),
-        //   SizedBox(width: SizeConfig.w(0.02)),
-        //   _HelpfulActionButton(
-        //     title: 'لا',
-        //     isSelected: currentVote == false,
-        //     onTap: isLoading ? null : onYesTap,
-        //   ),
-        // ],
         _HelpfulActionButton(
           title: 'نعم',
           isSelected: currentVote == true,

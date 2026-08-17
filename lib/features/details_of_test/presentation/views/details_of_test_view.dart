@@ -351,9 +351,6 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                   Expanded(
                     child: BlocBuilder<DetailsOfTestCubit, DetailsOfTestState>(
                       builder: (context, state) {
-                        // if (state.isOverviewLoading) {
-                        //   return const Center(child: CircularProgressIndicator());
-                        // }
                         if (state.isOverviewLoading) {
                           return SingleChildScrollView(
                             child: Column(
@@ -528,15 +525,6 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                     );
                                   },
 
-                                  // onChallengeModeTap: () {
-                                  //   debugPrint("chaleng");
-                                  //   context.pushNamed(
-                                  //     AppRouterName.challengeSetupView,
-                                  //     extra: TestPlayModesRouteArgs(
-                                  //       testId: overview.data.id,
-                                  //     ),
-                                  //   );
-                                  // },
                                   onChallengeModeTap: () async {
                                     debugPrint('challenge mode tap');
                                     debugPrint(
@@ -571,16 +559,7 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
                                     );
                                   },
 
-                                  // onFlashCardModeTap: () {
-                                  //   debugPrint("flash");
 
-                                  //   context.pushNamed(
-                                  //     AppRouterName.flashcardView,
-                                  //     extra: TestPlayModesRouteArgs(
-                                  //       testId: overview.data.id,
-                                  //     ),
-                                  //   );
-                                  // },
                                   onFlashCardModeTap: () async {
                                     debugPrint('flashcard mode tap');
                                     debugPrint(

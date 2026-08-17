@@ -32,7 +32,6 @@ class SchoolStageStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //SizeConfig.init(context);
 
     return BlocBuilder<OnboardingCubit, OnboardingState>(
       buildWhen: (previous, current) =>
@@ -54,7 +53,6 @@ class SchoolStageStep extends StatelessWidget {
                         context.read<OnboardingCubit>().schoolStageChanged(
                           _options[1].title,
                         );
-                        //debugPrint(state.schoolStage);
                       },
                     ),
                   ),

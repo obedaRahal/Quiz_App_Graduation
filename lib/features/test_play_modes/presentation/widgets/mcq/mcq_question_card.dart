@@ -55,7 +55,7 @@ class McqQuestionCard extends StatelessWidget {
             );
           },
           child: CustomBackgroundWithChild(
-            key: ValueKey(question.questionId), // أو question.position
+            key: ValueKey(question.questionId),
             width: double.infinity,
             backgroundColor: appColors.whiteToblack,
             borderRadius: BorderRadius.circular(30),
@@ -120,73 +120,12 @@ class McqQuestionCard extends StatelessWidget {
           ),
         ),
 
-        // AnimatedContainer(
-        //   duration: const Duration(milliseconds: 2600),
-        //   curve: Curves.easeOutCubic,
-        //   child: CustomBackgroundWithChild(
-        //     width: double.infinity,
-        //     backgroundColor: isDark ? AppPalette.black : AppPalette.white,
-        //     borderRadius: BorderRadius.circular(30),
-        //     border: Border.all(color: _cardBorderColor(context), width: 2.2),
-        //     padding: EdgeInsetsDirectional.only(
-        //       start: SizeConfig.w(0.022),
-        //       end: SizeConfig.w(0.022),
-        //       top: SizeConfig.h(0.025),
-        //       bottom: SizeConfig.h(0.04),
-        //     ),
-        //     child: Column(
-        //       crossAxisAlignment: CrossAxisAlignment.end,
-        //       children: [
-        //         _McqQuestionHeader(number: question.position),
 
-        //         SizedBox(height: SizeConfig.h(0.008)),
 
-        //         CustomTextWidget(
-        //           question.questionText,
-        //           textAlign: TextAlign.start,
-        //           textDirection: TextDirection.rtl,
-        //           color: appColors.blackToGrey2Dark,
-        //           fontFamily: AppFont.elMessiriBold,
-        //           fontSize: SizeConfig.text(0.035),
-        //         ),
 
-        //         SizedBox(height: SizeConfig.h(0.014)),
 
-        //         Align(
-        //           alignment: Alignment.centerRight,
-        //           child: CustomBackgroundWithChild(
-        //             backgroundColor: AppPalette.primarySoft,
-        //             childHorizontalPad: SizeConfig.w(0.015),
-        //             childVerticalPad: SizeConfig.h(0.002),
-        //             borderRadius: BorderRadius.circular(20),
-        //             child: CustomTextWidget(
-        //               "الخيارات",
-        //               fontFamily: AppFont.elMessiriSemiBold,
-        //               fontSize: SizeConfig.text(0.03),
-        //               color: appColors.primaryToPrimaryDark,
-        //             ),
-        //           ),
-        //         ),
 
-        //         SizedBox(height: SizeConfig.h(0.008)),
 
-        //         ...question.options.map((option) {
-        //           return Padding(
-        //             padding: EdgeInsets.only(bottom: SizeConfig.h(0.008)),
-        //             child: _McqOptionItem(
-        //               optionId: option.optionId,
-        //               optionPosition: option.position,
-        //               optionText: option.optionText,
-        //               isCorrectOption: option.isCorrect,
-        //               state: state,
-        //               onTap: onOptionTap,
-        //             ),
-        //           );
-        //         }),
-        //       ],
-        //     ),
-        //   ),
-        // ),
       ],
     );
   }

@@ -148,202 +148,10 @@ class _AcademicHeader extends StatelessWidget {
   }
 }
 
-// Future<void> showAcademicLevelPicker(BuildContext context) {
-//   final cubit = context.read<CreateTestCubit>();
-//   final Map<String, List<String>> levelsMap = {
-//     'جامعة': [
-//       'سنة أولى جامعة',
-//       'سنة ثانية جامعة',
-//       'سنة ثالثة جامعة',
-//       'سنة رابعة جامعة',
-//       'سنة خامسة جامعة',
-//       'سنة سادسة جامعة',
-//     ],
-//     'مدرسة': ['صف أول', 'صف ثاني', 'صف ثالث', 'صف رابع', 'صف خامس', 'صف سادس'],
-//     'إعدادي': ['صف سابع', 'صف ثامن', 'صف تاسع'],
-//     'ثانوي': [
-//       'صف عاشر',
-//       'صف حادي عشر',
-//       'صف ثاني عشر',
-//       'أدبي',
-//       'علمي',
-//       'مهني',
-//       'بكالوريا',
-//     ],
-//     'معهد': ['سنة أولى معهد', 'سنة ثانية معهد', 'سنة ثالثة معهد'],
-//     'أخرى': ['ماجستير', 'دكتوراه', 'معلومات عامة'],
-//   };
 
-//   return showGeneralDialog<void>(
-//     context: context,
-//     barrierDismissible: true,
-//     barrierLabel: 'academic_level_picker',
-//     barrierColor: Colors.black.withOpacity(0.18),
-//     transitionDuration: const Duration(milliseconds: 240),
-//     pageBuilder: (dialogContext, animation, secondaryAnimation) {
-//       return BlocProvider.value(
-//         value: cubit,
-//         child: Stack(
-//           children: [
-//             Positioned.fill(
-//               child: BackdropFilter(
-//                 filter: ImageFilter.blur(sigmaX: 4.5, sigmaY: 4.5),
-//                 child: const SizedBox.expand(),
-//               ),
-//             ),
-//             Align(
-//               alignment: Alignment.bottomCenter,
-//               child: Material(
-//                 color: Colors.transparent,
-//                 child: Container(
-//                   width: double.infinity,
-//                   constraints: BoxConstraints(maxHeight: SizeConfig.h(0.86)),
-//                   decoration: const BoxDecoration(
-//                     color: Colors.white,
-//                     borderRadius: BorderRadius.vertical(
-//                       top: Radius.circular(24),
-//                     ),
-//                   ),
-//                   child: Column(
-//                     children: [
-//                       SizedBox(height: SizeConfig.h(0.010)),
-//                       Container(
-//                         width: SizeConfig.w(0.13),
-//                         height: SizeConfig.h(0.0045),
-//                         decoration: BoxDecoration(
-//                           color: const Color(0xFFC8C8C8),
-//                           borderRadius: BorderRadius.circular(20),
-//                         ),
-//                       ),
-//                       SizedBox(height: SizeConfig.h(0.008)),
-//                       CustomTextWidget(
-//                         'المستوى الدراسي',
-//                         fontSize: SizeConfig.text(0.040),
-//                         fontWeight: FontWeight.w900,
-//                         color: AppPalette.textColorInHome,
-//                         textAlign: TextAlign.right,
-//                       ),
-//                       SizedBox(height: SizeConfig.h(0.012)),
-//                       Expanded(
-//                         child: SingleChildScrollView(
-//                           physics: const BouncingScrollPhysics(),
-//                           padding: EdgeInsets.symmetric(
-//                             horizontal: SizeConfig.w(0.035),
-//                           ),
-//                           child: Column(
-//                             crossAxisAlignment: CrossAxisAlignment.start,
-//                             children: levelsMap.entries.map((entry) {
-//                               final category = entry.key;
-//                               final options = entry.value;
-//                               return Column(
-//                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                 children: [
-//                                   CustomTextWidget(
-//                                     category,
-//                                     fontSize: SizeConfig.text(0.033),
-//                                     fontWeight: FontWeight.w900,
-//                                     color: AppPalette.textColorInHome,
-//                                     textAlign: TextAlign.right,
-//                                   ),
-//                                   SizedBox(height: SizeConfig.h(0.010)),
-//                                   Wrap(
-//                                     spacing: SizeConfig.w(0.018),
-//                                     runSpacing: SizeConfig.h(0.008),
-//                                     children: options.map((option) {
-//                                       final isSelected =
-//                                           cubit.state.selectedAcademicLevel ==
-//                                           option;
-//                                       return _AcademicLevelTile(
-//                                         level: option,
-//                                         selected: isSelected,
-//                                         onTap: () {
-//                                           cubit.changeAcademicLevel(option);
-//                                           Navigator.of(dialogContext).pop();
-//                                         },
-//                                       );
-//                                     }).toList(),
-//                                   ),
-//                                   SizedBox(height: SizeConfig.h(0.012)),
-//                                 ],
-//                               );
-//                             }).toList(),
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       );
-//     },
-//     transitionBuilder: (context, animation, secondaryAnimation, child) {
-//       final curvedAnimation = CurvedAnimation(
-//         parent: animation,
-//         curve: Curves.easeOutCubic,
-//       );
-//       return SlideTransition(
-//         position: Tween<Offset>(
-//           begin: const Offset(0, 1),
-//           end: Offset.zero,
-//         ).animate(curvedAnimation),
-//         child: FadeTransition(opacity: curvedAnimation, child: child),
-//       );
-//     },
-//   );
-// }
 
-// class _AcademicLevelTile extends StatelessWidget {
-//   final String level;
-//   final bool selected;
-//   final VoidCallback onTap;
 
-//   const _AcademicLevelTile({
-//     required this.level,
-//     required this.selected,
-//     required this.onTap,
-//   });
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return InkWell(
-//       onTap: onTap,
-//       borderRadius: BorderRadius.circular(6),
-//       child: Container(
-//         height: SizeConfig.h(0.042),
-//         padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.030)),
-//         margin: EdgeInsets.symmetric(vertical: SizeConfig.h(0.004)),
-//         decoration: BoxDecoration(
-//           color: selected ? const Color(0xFF5B86FF) : Colors.white,
-//           borderRadius: BorderRadius.circular(6),
-//           border: Border.all(
-//             color: selected ? const Color(0xFF5B86FF) : const Color(0xFFE6E6E6),
-//           ),
-//         ),
-//         child: Row(
-//           children: [
-//             CustomTextWidget(
-//               level,
-//               fontSize: SizeConfig.text(0.024),
-//               fontWeight: FontWeight.w800,
-//               color: selected ? Colors.white : const Color(0xFF8B8B8B),
-//               textAlign: TextAlign.right,
-//             ),
-//             const Spacer(),
-//             if (selected)
-//               Icon(
-//                 Icons.check_circle_rounded,
-//                 color: Colors.white,
-//                 size: SizeConfig.text(0.033),
-//               ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 Future<void> showAcademicLevelPicker(BuildContext context) {
   final cubit = context.read<CreateTestCubit>();
   String tempSelectedLevel = cubit.state.selectedAcademicLevel;
@@ -528,16 +336,7 @@ Future<void> showAcademicLevelPicker(BuildContext context) {
                                       },
                                     ),
 
-                                    //SizedBox(height: SizeConfig.h(0.008)),
 
-                                    // _SecondaryTracksRow(
-                                    //   selectedLevel: tempSelectedLevel,
-                                    //   onSelected: (value) {
-                                    //     setModalState(() {
-                                    //       tempSelectedLevel = value;
-                                    //     });
-                                    //   },
-                                    // ),
                                     SizedBox(height: SizeConfig.h(0.020)),
 
                                     _AcademicGroupHeader(
@@ -693,8 +492,6 @@ class _AcademicGroupHeader extends StatelessWidget {
         CustomAppImage(
           path: icon,
 
-          //  height: SizeConfig.h(23),
-          //  width: SizeConfig.w(23),
           color: isDark
               ? AppPalette.textWhiteINDark
               : AppPalette.textColorInHome,

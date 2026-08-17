@@ -31,7 +31,6 @@ class LaboratoryTestCardFooter extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: SizeConfig.w(0.03),
-        //vertical: SizeConfig.h(0.006),
       ),
       child: Row(
         children: [
@@ -46,7 +45,6 @@ class LaboratoryTestCardFooter extends StatelessWidget {
                   childVerticalPad: 5,
                   borderRadius: 8,
                   onTap: () {
-                    //context.pushNamed(AppRouterName.detailsOfTest);
                     context.pushNamed(
                       AppRouterName.detailsOfTest,
                       extra: DetailsOfTestRouteArgs(testId: 4),

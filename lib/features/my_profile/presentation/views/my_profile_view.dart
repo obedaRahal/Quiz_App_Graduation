@@ -4,9 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
-// import 'package:quiz_app_grad/core/common_widgets/custom_themed_app_image.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
-// import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
@@ -18,7 +16,6 @@ import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profil
 import 'package:quiz_app_grad/features/my_profile/presentation/manager/my_profile/my_profile_state.dart';
 import 'package:quiz_app_grad/features/my_profile/presentation/widgets/my_profile_body.dart';
 import 'package:quiz_app_grad/features/settings/data/models/settings_route_args.dart';
-// import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MyProfileView extends StatefulWidget {

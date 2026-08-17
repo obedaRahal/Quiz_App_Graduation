@@ -33,13 +33,11 @@ class OtherProfileFolderCard extends StatelessWidget {
         backgroundColor: appColors.whiteToblack,
         borderRadius: BorderRadius.circular(14),
         padding: EdgeInsets.symmetric(
-          //horizontal: SizeConfig.w(0.03),
           vertical: SizeConfig.h(0.012),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // _FolderImage(),
             ColoredFolderSvg(
               assetPath: AppImage.folderIcon,
               topColor: _parseHexColor(folder.colorCode),

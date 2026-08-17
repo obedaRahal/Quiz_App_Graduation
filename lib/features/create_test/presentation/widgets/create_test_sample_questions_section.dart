@@ -159,12 +159,6 @@ Future<void> showSampleQuestionsPicker({
                 child: Container(
                   width: double.infinity,
                   constraints: BoxConstraints(maxHeight: SizeConfig.h(0.78)),
-                  // decoration: const BoxDecoration(
-                  //   color: Colors.white,
-                  //   borderRadius: BorderRadius.vertical(
-                  //     top: Radius.circular(24),
-                  //   ),
-                  // ),
                   decoration: BoxDecoration(
                     color: isDark ? AppPalette.black : AppPalette.white,
                     borderRadius: const BorderRadius.vertical(
@@ -267,54 +261,7 @@ Future<void> showSampleQuestionsPicker({
                             ),
                           ),
 
-                          // Padding(
-                          //   padding: EdgeInsets.symmetric(
-                          //     horizontal: SizeConfig.w(0.04),
-                          //   ),
-                          //   child: SizedBox(
-                          //     height: SizeConfig.h(0.046),
-                          //     child: Stack(
-                          //       alignment: Alignment.center,
-                          //       children: [
-                          //         Center(
-                          //           child: CustomTextWidget(
-                          //             'عينة الأسئلة',
-                          //             fontSize: SizeConfig.text(0.040),
-                          //             fontWeight: FontWeight.w900,
-                          //             color: AppPalette.textColorInHome,
-                          //             textAlign: TextAlign.center,
-                          //           ),
-                          //         ),
 
-                          //         Align(
-                          //           alignment: Alignment.centerLeft,
-                          //           child: Container(
-                          //             height: SizeConfig.h(0.026),
-                          //             padding: EdgeInsets.symmetric(
-                          //               horizontal: SizeConfig.w(0.030),
-                          //             ),
-                          //             decoration: BoxDecoration(
-                          //               color: const Color(0xFFEAF1FF),
-                          //               borderRadius: BorderRadius.circular(20),
-                          //               border: Border.all(
-                          //                 color: const Color(0xFF8FB4FF),
-                          //               ),
-                          //             ),
-                          //             child: Center(
-                          //               child: CustomTextWidget(
-                          //                 '$selectedCount/$allowedSamplesCount',
-                          //                 fontSize: SizeConfig.text(0.022),
-                          //                 fontWeight: FontWeight.w900,
-                          //                 color: const Color(0xFF5B86FF),
-                          //                 textAlign: TextAlign.center,
-                          //               ),
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
                           const _DashedDivider(),
 
                           Expanded(
@@ -410,17 +357,6 @@ Future<void> showSampleQuestionsPicker({
                                     borderRadius: BorderRadius.circular(7),
                                   ),
                                 ),
-                                // style: ElevatedButton.styleFrom(
-                                //   backgroundColor: const Color(0xFF5B86FF),
-                                //   disabledBackgroundColor: const Color(
-                                //     0xFFEFEFEF,
-                                //   ),
-                                //   foregroundColor: Colors.white,
-                                //   elevation: 0,
-                                //   shape: RoundedRectangleBorder(
-                                //     borderRadius: BorderRadius.circular(7),
-                                //   ),
-                                // ),
                                 child: CustomTextWidget(
                                   'حفظ',
                                   fontSize: SizeConfig.text(0.030),
@@ -696,38 +632,9 @@ class _SampleChip extends StatelessWidget {
   }
 }
 
-// class _SampleChip extends StatelessWidget {
-//   final String title;
 
-//   const _SampleChip({required this.title});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final isDark = Theme.of(context).brightness == Brightness.dark;
-//     final appColors = context.appColors;
 
-//     return Container(
-//       height: SizeConfig.h(0.030),
-//       padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.025)),
-//       decoration: BoxDecoration(
-//         color: isDark ? AppPalette.fieldColorNDark : AppPalette.primarySoft,
-//         borderRadius: BorderRadius.circular(7),
-//         border: Border.all(
-//           color: isDark
-//               ? AppPalette.borderFieldColorNDark
-//               : appColors.primaryToPrimaryDark,
-//         ),
-//       ),
-//       child: CustomTextWidget(
-//         title,
-//         fontSize: SizeConfig.text(0.024),
-//         fontWeight: FontWeight.w800,
-//         color: appColors.primaryToPrimaryDark,
-//         textAlign: TextAlign.center,
-//       ),
-//     );
-//   }
-// }
 
 class _DashedDivider extends StatelessWidget {
   const _DashedDivider();

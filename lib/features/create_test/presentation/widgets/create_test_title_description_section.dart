@@ -65,7 +65,6 @@ class CreateTestTitleDescriptionSection extends StatelessWidget {
               currentLength: state.description.length,
               minLines: 1,
               maxLines: 3,
-              // height: SizeConfig.h(0.075),
               onChanged: context.read<CreateTestCubit>().changeDescription,
             ),
           ],

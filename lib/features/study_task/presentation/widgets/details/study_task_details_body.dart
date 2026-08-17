@@ -88,7 +88,6 @@ class StudyTaskDetailsBody extends StatelessWidget {
                     StudyTaskSubtasksSection(
                       subtasks: task.subtasks,
                       count: basicInfo.subtasksCount,
-                      //updatingSubTaskId: state.updatingSubTaskId,
                       onSubTaskTap: (subTaskId) {
                         context
                             .read<StudyTaskDetailsCubit>()

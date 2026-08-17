@@ -57,8 +57,6 @@ class DioConsumer extends ApiConsumer {
               if (shouldRefresh) {
                 final refreshSucceeded = await _runRefreshOnce();
                 if (!refreshSucceeded) {
-                  // لا نطرد المستخدم هنا مباشرة بسبب احتمالية أن يكون الخطأ مؤقتًا
-                  // فقط نكمل بالـ token الحالي، وقد يعالج onError الأمر لاحقًا إن رجع 401
                 }
               }
 
@@ -106,8 +104,6 @@ class DioConsumer extends ApiConsumer {
             return;
           }
 
-          // A FormData instance may contain consumed file streams after the
-          // first request. Let the caller rebuild it for a manual retry.
           if (requestOptions.data is FormData) {
             handler.next(error);
             return;
@@ -195,10 +191,6 @@ class DioConsumer extends ApiConsumer {
       }
       return false;
     } catch (_) {
-      // لا نمسح الجلسة هنا لأن الخطأ قد يكون:
-      // - انقطاع إنترنت
-      // - Timeout
-      // - 500 من السيرفر
       return false;
     }
   }
@@ -300,7 +292,6 @@ class DioConsumer extends ApiConsumer {
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
-        //options: options,
         options: mergedOptions,
       );
       return response.data;
@@ -383,7 +374,6 @@ class DioConsumer extends ApiConsumer {
         data: data,
         queryParameters: queryParameters,
         cancelToken: cancelToken,
-        //options: options,
         options: mergedOptions,
       );
       return response.data;

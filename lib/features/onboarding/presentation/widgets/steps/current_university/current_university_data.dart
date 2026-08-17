@@ -2,9 +2,6 @@ import 'current_university_helpers.dart';
 import 'current_university_models.dart';
 
 final List<UniversityOption> currentUniversityOptions = [
-  // =========================
-  // جامعات عامة
-  // =========================
   UniversityOption(
     title: 'جامعة دمشق',
     isPrivate: false,
@@ -163,9 +160,6 @@ final List<UniversityOption> currentUniversityOptions = [
     ],
   ),
 
-  // =========================
-  // جامعات خاصة
-  // =========================
   UniversityOption(
     title: 'جامعة القلمون',
     isPrivate: true,

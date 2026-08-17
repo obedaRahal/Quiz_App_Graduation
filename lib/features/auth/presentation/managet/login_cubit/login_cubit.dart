@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/presentation/safe_cubit.dart';
-// import 'package:quiz_app_grad/core/database/api/token_refresh_service.dart';
 import 'package:quiz_app_grad/core/database/cache/token_storage.dart';
 import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
 import 'package:quiz_app_grad/core/errors/exceptions.dart';
@@ -81,11 +80,7 @@ class LoginCubit extends SafeCubit<LoginState> {
           errorMessage: null,
         ),
       );
-      //       final refreshed = await sl<TokenRefreshService>().refreshToken();
-      // debugPrint('MANUAL REFRESH RESULT => $refreshed');
 
-      // final tokenAfterRefresh = await TokenStorage.getAccessToken();
-      // debugPrint('TOKEN AFTER REFRESH => $tokenAfterRefresh');
     } catch (e, s) {
       debugPrint("LOGIN ERROR => $e");
       debugPrint("LOGIN STACK => $s");

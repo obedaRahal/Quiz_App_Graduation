@@ -67,7 +67,6 @@ class ChallengeMainCard extends StatelessWidget {
               ),
             ],
           ),
-          //Spacer(),
           SizedBox(height: SizeConfig.diagonal * .045),
 
           CustomTextWidget(

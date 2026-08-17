@@ -255,7 +255,6 @@ class StudyTaskRemoteDataSourceImpl implements StudyTaskRemoteDataSource {
 
     if (!params.isValid) {
       debugPrint('✗ invalid update study task params');
-      //debugPrint('→ hasChanges: ${params.hasChanges}');
       debugPrint('→ body: ${params.toBody()}');
       debugPrint(
         '===============================================================',

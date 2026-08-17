@@ -16,8 +16,6 @@ class StudyTaskRepeatSection extends StatelessWidget {
 
   final String sectionDescription;
 
-  /// نستخدمها في شاشة التعديل عندما يعيد الخادم
-  /// نمط التكرار دون يوم التكرار.
   final bool showMissingWeekdayWarning;
 
   const StudyTaskRepeatSection({

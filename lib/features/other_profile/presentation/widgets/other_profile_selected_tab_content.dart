@@ -79,7 +79,6 @@ class _TestsTabBlocContentState extends State<_TestsTabBlocContent> {
   void initState() {
     super.initState();
 
-    // جلب البيانات ذكياً عند بناء الـ Content لأول مرة فقط (Lazy Loading)
     final cubit = context.read<OtherProfileCubit>();
     if (cubit.state.isGetTestsInitial) {
       Future.microtask(() {
@@ -98,7 +97,6 @@ class _TestsTabBlocContentState extends State<_TestsTabBlocContent> {
           previous.tests != current.tests ||
           previous.errorMessage != current.errorMessage,
       builder: (context, state) {
-        // 1. تمرير حالة التحميل (Loading) للتاب لعرض المؤشر أو الـ Shimmer الخاص به
         if (state.isGetTestsFailure) {
           return Center(
             child: Padding(
@@ -212,11 +210,7 @@ class _FoldersTabBlocContentState extends State<_FoldersTabBlocContent> {
           isLoadingMore: state.isGetMoreFoldersLoading,
           hasLoadMoreError: state.isGetMoreFoldersFailure,
           loadMoreErrorMessage: state.errorMessage,
-          //shimmerLoader: const Center(child: CircularProgressIndicator()),
           onSaveTap: (id) {
-            // context.read<OtherProfileCubit>().toggleFolderSaveLocally(
-            //   folderId: id,
-            // );
 
             context.read<OtherProfileCubit>().toggleFolderBookmark(
               folderId: id,

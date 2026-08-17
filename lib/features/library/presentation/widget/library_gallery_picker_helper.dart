@@ -34,7 +34,6 @@ class LibraryImagePickerHelper {
 
         if (image == null) break;
 
-        // هون لاحقاً منضيف معالجة قص الورقة وإزالة الخلفية
         final processedImagePath = await _processCapturedDocumentImage(
           image.path,
         );
@@ -59,8 +58,6 @@ class LibraryImagePickerHelper {
   }
 
   static Future<String> _processCapturedDocumentImage(String imagePath) async {
-    // حالياً بيرجع الصورة كما هي.
-    // قص حدود الورقة وإزالة الخلفية يحتاج Document Scanner / OpenCV / Backend.
     return imagePath;
   }
 

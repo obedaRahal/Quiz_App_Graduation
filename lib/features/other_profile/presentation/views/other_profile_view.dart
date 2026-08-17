@@ -26,9 +26,6 @@ class _OtherProfileViewState extends State<OtherProfileView> {
     Future.microtask(() {
       if (!mounted) return;
 
-      // context.read<OtherProfileCubit>().loadMockOtherProfile(
-      //       userId: widget.userId,
-      //     );
     });
   }
 
@@ -120,7 +117,6 @@ class _OtherProfileViewState extends State<OtherProfileView> {
             ),
             SizedBox(height: SizeConfig.h(0.01)),
 
-            // زر تبديل الثيم التجريبي أزيل من واجهة الملف الشخصي الآخر.
             Expanded(child: OtherProfileBody(userId: widget.userId)),
           ],
         ),

@@ -38,8 +38,6 @@ class OnboardingOptionSelectedCard extends StatelessWidget {
     final backgroundColor = isSelected
         ? (selectedBackgroundColor ??
         appColors.primarySoftTogreyLightDark)
-              //AppPalette.primarySoft
-              //AppPalette.greyLightDark)
         : (unselectedBackgroundColor ?? appColors.greyToGreyMediumDark);
 
     final borderColor = isSelected

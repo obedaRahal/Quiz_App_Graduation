@@ -100,9 +100,6 @@ class MyProfileState {
   final FetchMyProfileStatus fetchStatus;
   final UpdateMyProfileStatus updateStatus;
 
-  // The former shared errorTitle/errorMessage fields were intentionally
-  // replaced so an unrelated request cannot clear or display another
-  // operation's error.
   final MyProfileOperationError? profileError;
   final MyProfileOperationError? updateError;
   final MyProfileOperationError? libraryError;

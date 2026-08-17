@@ -107,7 +107,6 @@ class _RatingScoreColumn extends StatelessWidget {
           ),
         ),
 
-        //SizedBox(height: SizeConfig.h(0.004)),
         CustomTextWidget(
           '$totalRatingsText  •  $totalCommentsText',
           color: AppPalette.greyMedium,

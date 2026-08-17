@@ -134,8 +134,8 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
     emit(state.copyWith(successLimit: null));
   }
 
-  static const int minDurationSeconds = 600; // 10:00
-  static const int maxDurationSeconds = 10800; // 180:00
+  static const int minDurationSeconds = 600;
+  static const int maxDurationSeconds = 10800;
 
   void prepareDurationPicker() {
     emit(
@@ -573,40 +573,12 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
       'after confirm state ids => ${state.selectedScientificInterestIds}',
     );
   }
-  // void prepareScientificCategoriesPicker() {
-  //   emit(
-  //     state.copyWith(
-  //       pendingScientificInterestIds: [...state.selectedScientificInterestIds],
-  //     ),
-  //   );
-  // }
 
-  // void togglePendingScientificInterest(int interestId) {
-  //   final selected = [...state.pendingScientificInterestIds];
 
-  //   if (selected.contains(interestId)) {
-  //     selected.remove(interestId);
-  //   } else {
-  //     if (selected.length >= maxScientificCategoriesCount) return;
-  //     selected.add(interestId);
-  //   }
 
-  //   emit(state.copyWith(pendingScientificInterestIds: selected));
-  // }
 
-  // void confirmScientificCategories() {
-  //   final selectedIds = [...state.pendingScientificInterestIds]..sort();
 
-  //   final selectedNames = _getScientificInterestNamesByIds(selectedIds);
 
-  //   emit(
-  //     state.copyWith(
-  //       selectedScientificInterestIds: selectedIds,
-  //       selectedScientificCategories: selectedNames,
-  //       pendingScientificInterestIds: selectedIds,
-  //     ),
-  //   );
-  // }
 
   List<String> _getScientificInterestNamesByIds(List<int> ids) {
     final names = <String>[];
@@ -1340,7 +1312,6 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
     );
   }
 
-  // Update Test
   Future<void> submitCreateOrUpdateTest() async {
     if (state.isUpdateContentMode) {
       await submitUpdateContent();

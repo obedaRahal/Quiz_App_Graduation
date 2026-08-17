@@ -394,18 +394,6 @@ class _OwnerContentMetadata extends StatelessWidget {
                   : Icons.photo_library_outlined,
               value: data.contentKind,
             ),
-          // if (data.targetLevel.trim().isNotEmpty)
-          //   _MetadataChip(icon: Icons.school_outlined, value: data.targetLevel),
-          // _MetadataChip(
-          //   icon: data.isPublic
-          //       ? Icons.public_rounded
-          //       : Icons.lock_outline_rounded,
-          //   value: visibility,
-          // ),
-          // _MetadataChip(
-          //   icon: Icons.collections_outlined,
-          //   value: '${data.assetCount} مرفق',
-          // ),
         ],
       ),
     );

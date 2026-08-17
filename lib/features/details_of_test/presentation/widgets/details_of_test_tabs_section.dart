@@ -227,7 +227,6 @@ class _SampleTabBlocContent extends StatelessWidget {
       builder: (context, state) {
         if (state.isSampleLoading) {
           return const SampleTestTabShimmer();
-          //Center(child: CircularProgressIndicator());
         }
 
         if (state.isSampleFailure) {
@@ -353,25 +352,9 @@ class _ReviewsTabBlocContent extends StatelessWidget {
           previous.reviewFeedbackStatus != current.reviewFeedbackStatus ||
           previous.activeFeedbackReviewId != current.activeFeedbackReviewId,
       builder: (context, state) {
-        // if (state.isReviewsLoading) {
-        //   return const Center(child: CircularProgressIndicator());
-        // }
 
-        // if (state.isReviewsFailure) {
-        //   return Center(
-        //     child: CustomTextWidget(
-        //       state.errorMessage ?? 'حدث خطأ أثناء جلب المراجعات',
-        //       color: AppPalette.red,
-        //       textAlign: TextAlign.center,
-        //     ),
-        //   );
-        // }
 
-        // final reviews = state.reviewsDetails;
 
-        // if (reviews == null) {
-        //   return const SizedBox.shrink();
-        // }
         final reviews = state.reviewsDetails;
 
         if (state.isInitialReviewsLoading) {

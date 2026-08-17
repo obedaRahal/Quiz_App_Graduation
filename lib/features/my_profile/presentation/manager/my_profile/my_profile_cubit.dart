@@ -198,7 +198,6 @@ class MyProfileCubit extends SafeCubit<MyProfileState> {
         break;
 
       case MyProfileTab.personalInfo:
-        //case MyProfileTab.achievements:
         break;
     }
 
@@ -289,33 +288,6 @@ class MyProfileCubit extends SafeCubit<MyProfileState> {
     );
   }
 
-  // Future<void> saveChangesMock() async {
-  //   debugPrint("============ MyProfileCubit.saveChangesMock ============");
-  //   if (!state.hasChanges) {
-  //     debugPrint("✗ no changes to save");
-  //     debugPrint("=================================================");
-  //     return;
-  //   }
-  //   final edited = state.editableProfile;
-  //   if (edited == null) return;
-  //   emit(
-  //     state.copyWith(
-  //       updateStatus: UpdateMyProfileStatus.loading,
-  //       clearError: true,
-  //     ),
-  //   );
-  //   await Future.delayed(const Duration(milliseconds: 800));
-  //   emit(
-  //     state.copyWith(
-  //       updateStatus: UpdateMyProfileStatus.success,
-  //       profile: edited,
-  //       editableProfile: edited,
-  //       clearError: true,
-  //     ),
-  //   );
-  //   debugPrint("✓ profile changes saved locally");
-  //   debugPrint("=================================================");
-  // }
 
   void resetUpdateState() {
     emit(
@@ -326,21 +298,7 @@ class MyProfileCubit extends SafeCubit<MyProfileState> {
     );
   }
 
-  // void updateAcademicInformation(
-  //   MyProfileAcademicInformationEntity academicInformation,
-  // ) {
-  //   final current = state.editableProfile;
-  //   if (current == null) return;
 
-  //   emit(
-  //     state.copyWith(
-  //       editableProfile: current.copyWith(
-  //         academicInformation: academicInformation,
-  //       ),
-  //       updateStatus: UpdateMyProfileStatus.initial,
-  //     ),
-  //   );
-  // }
 
   void updateScientificInterests(List<InterestItemEntity> interests) {
     final current = state.editableProfile;
@@ -358,9 +316,6 @@ class MyProfileCubit extends SafeCubit<MyProfileState> {
     );
   }
 
-  ////////////////////// APIs /////////////////////
-  ////////////////////// APIs /////////////////////
-  ////////////////////// APIs /////////////////////
   Future<void> getMyProfilePersonalInfo({required int userId}) async {
     debugPrint(
       "============ MyProfileCubit.getMyProfilePersonalInfo ============",
@@ -886,7 +841,6 @@ class MyProfileCubit extends SafeCubit<MyProfileState> {
 
     return success;
   }
-  ////////////////// content tab //////////////////
 
   Future<void> changeMyProfileLibraryTab(MyProfileLibraryTab tab) async {
     if (state.selectedLibraryTab == tab) return;
@@ -1226,7 +1180,6 @@ class MyProfileCubit extends SafeCubit<MyProfileState> {
     await fetchMyProfileLibraryInitial();
   }
 
-  ///////////////////////// folder Api /////////////////
   Future<void> changeMyProfileFoldersTab(MyProfileFoldersTabEnum tab) async {
     if (state.selectedFoldersTab == tab) return;
     _foldersRequestGeneration++;
@@ -1597,11 +1550,6 @@ class MyProfileCubit extends SafeCubit<MyProfileState> {
     );
   }
 
-  /////////////////////////// TEST tab //////////////////////////
-  /////////////////////////// TEST tab //////////////////////////
-  /////////////////////////// TEST tab //////////////////////////
-  /////////////////////////// TEST tab //////////////////////////
-  /////////////////////////// TEST tab /////////////////////////
 
   Future<void> fetchMyProfileTestsInitial() async {
     debugPrint(
@@ -2030,9 +1978,6 @@ class MyProfileCubit extends SafeCubit<MyProfileState> {
     );
   }
 
-  ////////////////// filter /////////////////////
-  ////////////////// filter /////////////////////
-  ////////////////// filter /////////////////////
   Future<void> getMyProfileTestsFilterInterests() async {
     if (state.isTestsFilterInterestsLoading) {
       return;
@@ -2308,7 +2253,6 @@ class MyProfileCubit extends SafeCubit<MyProfileState> {
     debugPrint("=================================================");
   }
 
-  /////////////////// share profile /////////////
   Future<void> getMyProfileShareLink() async {
     debugPrint(
       "============ MyProfileCubit.getMyProfileShareLink ============",

@@ -27,7 +27,6 @@ void main() async {
   AppLogger.configure();
   WidgetsFlutterBinding.ensureInitialized();
 
-  //await TokenStorage.clear();
 
   await CacheHelper.init();
   await initSl();

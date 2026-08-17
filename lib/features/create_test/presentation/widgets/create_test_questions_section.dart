@@ -503,7 +503,6 @@ class _PreviewOptionTile extends StatelessWidget {
               color: textColor,
               textAlign: TextAlign.right,
               maxLines: 3,
-              //overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -1095,7 +1094,6 @@ class _DashedDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SizedBox(
       height: 1,

@@ -25,8 +25,6 @@ class IntroImagePager extends StatelessWidget {
         itemBuilder: (context, index) {
           return CustomAppImage(
             path: pages[index].image,
-            // width: double.infinity,
-            // height: SizeConfig.h(.75),
             fit: BoxFit.contain,
           );
         },

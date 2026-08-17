@@ -32,7 +32,6 @@ class ActiveStudyPlanCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        //borderRadius: BorderRadius.circular(14),
         child: Stack(
           children: [
             CustomBackgroundWithChild(

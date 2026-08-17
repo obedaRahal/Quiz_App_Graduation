@@ -26,56 +26,58 @@ Future<void> showCreateTestOptionsSheet<T>({
     pageBuilder: (dialogContext, animation, secondaryAnimation) {
       final isDark = Theme.of(dialogContext).brightness == Brightness.dark;
 
-      return Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 4.5, sigmaY: 4.5),
-              child: const SizedBox.expand(),
+      return SafeArea(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 4.5, sigmaY: 4.5),
+                child: const SizedBox.expand(),
+              ),
             ),
-          ),
-
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Material(
-              color: Colors.transparent,
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: Container(
-                  width: double.infinity,
-                  constraints: BoxConstraints(
-                    maxHeight: SizeConfig.h(0.62),
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark ? AppPalette.black : AppPalette.white,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
+        
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Material(
+                color: Colors.transparent,
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Container(
+                    width: double.infinity,
+                    constraints: BoxConstraints(
+                      maxHeight: SizeConfig.h(0.62),
                     ),
-                    border: Border.all(
-                      color: isDark
-                          ? AppPalette.borderFieldColorNDark
-                          : Colors.transparent,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(isDark ? 0.24 : 0.10),
-                        blurRadius: 18,
-                        offset: const Offset(0, -6),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppPalette.black : AppPalette.white,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(24),
                       ),
-                    ],
-                  ),
-                  child: _CreateTestOptionsSheetContent<T>(
-                    title: title,
-                    items: items,
-                    selectedItem: selectedItem,
-                    itemLabel: itemLabel,
-                    onSelected: onSelected,
+                      border: Border.all(
+                        color: isDark
+                            ? AppPalette.borderFieldColorNDark
+                            : Colors.transparent,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(isDark ? 0.24 : 0.10),
+                          blurRadius: 18,
+                          offset: const Offset(0, -6),
+                        ),
+                      ],
+                    ),
+                    child: _CreateTestOptionsSheetContent<T>(
+                      title: title,
+                      items: items,
+                      selectedItem: selectedItem,
+                      itemLabel: itemLabel,
+                      onSelected: onSelected,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     },
     transitionBuilder: (context, animation, secondaryAnimation, child) {
@@ -359,393 +361,37 @@ Future<void> showCreateTestDurationDialog(BuildContext context) {
   );
 }
 
-// class _CreateTestDurationDialogContent extends StatefulWidget {
-//   const _CreateTestDurationDialogContent();
 
-//   @override
-//   State<_CreateTestDurationDialogContent> createState() =>
-//       _CreateTestDurationDialogContentState();
-// }
 
-// class _CreateTestDurationDialogContentState
-//     extends State<_CreateTestDurationDialogContent> {
-//   late FixedExtentScrollController _hoursController;
-//   late FixedExtentScrollController _minutesController;
 
-//   static const int _minDurationMinutes = 10;
-//   static const int _maxDurationMinutes = 180;
 
-//   @override
-//   void initState() {
-//     super.initState();
 
-//     final cubit = context.read<CreateTestCubit>();
-//     final initialMinutes = cubit.state.pendingDurationMinutes.clamp(
-//       _minDurationMinutes,
-//       _maxDurationMinutes,
-//     );
 
-//     final initialHours = initialMinutes ~/ 60;
-//     final initialRemainMinutes = initialMinutes % 60;
 
-//     _hoursController = FixedExtentScrollController(initialItem: initialHours);
-//     _minutesController = FixedExtentScrollController(
-//       initialItem: initialRemainMinutes,
-//     );
 
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       cubit.changePendingDuration(
-//         hours: initialHours,
-//         minutes: initialRemainMinutes,
-//       );
-//     });
-//   }
 
-//   @override
-//   void dispose() {
-//     _hoursController.dispose();
-//     _minutesController.dispose();
-//     super.dispose();
-//   }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocBuilder<CreateTestCubit, CreateTestState>(
-//       buildWhen: (previous, current) {
-//         return previous.pendingDurationMinutes != current.pendingDurationMinutes;
-//       },
-//       builder: (context, state) {
-//         final isDark = Theme.of(context).brightness == Brightness.dark;
-//         final appColors = context.appColors;
 
-//         final pendingMinutes = state.pendingDurationMinutes.clamp(
-//           _minDurationMinutes,
-//           _maxDurationMinutes,
-//         );
 
-//         final hours = pendingMinutes ~/ 60;
-//         final minutes = pendingMinutes % 60;
 
-//         return Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             Padding(
-//               padding: EdgeInsets.symmetric(
-//                 horizontal: SizeConfig.w(0.035),
-//                 vertical: SizeConfig.h(0.012),
-//               ),
-//               child: Stack(
-//                 alignment: Alignment.center,
-//                 children: [
-//                   Center(
-//                     child: CustomTextWidget(
-//                       'مؤقت',
-//                       fontSize: SizeConfig.text(0.040),
-//                       fontWeight: FontWeight.w900,
-//                       color: isDark
-//                           ? AppPalette.textWhiteINDark
-//                           : AppPalette.textColorInHome,
-//                       textAlign: TextAlign.center,
-//                     ),
-//                   ),
 
-//                   Align(
-//                     alignment: Alignment.centerLeft,
-//                     child: InkWell(
-//                       onTap: () => Navigator.of(context).pop(),
-//                       borderRadius: BorderRadius.circular(30),
-//                       child: Container(
-//                         width: SizeConfig.w(0.080),
-//                         height: SizeConfig.w(0.080),
-//                         decoration: BoxDecoration(
-//                           color: isDark
-//                               ? AppPalette.fieldColorNDark
-//                               : AppPalette.white,
-//                           shape: BoxShape.circle,
-//                           border: Border.all(
-//                             color: isDark
-//                                 ? AppPalette.borderFieldColorNDark
-//                                 : AppPalette.primaryToWhite,
-//                           ),
-//                         ),
-//                         child: Icon(
-//                           Icons.close_rounded,
-//                           size: SizeConfig.text(0.040),
-//                           color: isDark
-//                               ? AppPalette.titleWhiteINDark
-//                               : AppPalette.black,
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
 
-//             const _PickerDashedDivider(),
 
-//             Padding(
-//               padding: EdgeInsets.symmetric(
-//                 horizontal: SizeConfig.w(0.05),
-//                 vertical: SizeConfig.h(0.014),
-//               ),
-//               child: Row(
-//                 textDirection: TextDirection.ltr,
-//                 children: [
-//                   Expanded(
-//                     child: _DurationWheel(
-//                       title: 'دقائق',
-//                       controller: _minutesController,
-//                       itemCount: 60,
-//                       selectedValue: minutes,
-//                       itemLabel: (value) => value.toString().padLeft(2, '0'),
-//                       onSelectedItemChanged: (value) {
-//                         context.read<CreateTestCubit>().changePendingDuration(
-//                               hours: hours,
-//                               minutes: value,
-//                             );
-//                       },
-//                     ),
-//                   ),
 
-//                   Padding(
-//                     padding: EdgeInsets.symmetric(
-//                       horizontal: SizeConfig.w(0.030),
-//                     ),
-//                     child: CustomTextWidget(
-//                       ':',
-//                       fontSize: SizeConfig.text(0.070),
-//                       fontWeight: FontWeight.w900,
-//                       color: isDark
-//                           ? AppPalette.textWhiteINDark
-//                           : AppPalette.textColorInHome,
-//                       textAlign: TextAlign.center,
-//                     ),
-//                   ),
 
-//                   Expanded(
-//                     child: _DurationWheel(
-//                       title: 'ساعات',
-//                       controller: _hoursController,
-//                       itemCount: 4,
-//                       selectedValue: hours,
-//                       itemLabel: (value) => value.toString().padLeft(2, '0'),
-//                       onSelectedItemChanged: (value) {
-//                         context.read<CreateTestCubit>().changePendingDuration(
-//                               hours: value,
-//                               minutes: minutes,
-//                             );
-//                       },
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
 
-//             Padding(
-//               padding: EdgeInsets.only(
-//                 left: SizeConfig.w(0.04),
-//                 right: SizeConfig.w(0.04),
-//                 bottom: SizeConfig.h(0.010),
-//               ),
-//               child: CustomTextWidget(
-//                 'يمكنك اختيار مدة بين 10 دقائق و3 ساعات، أو تركها بدون مدة.',
-//                 fontSize: SizeConfig.text(0.024),
-//                 fontWeight: FontWeight.w600,
-//                 color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
-//                 textAlign: TextAlign.center,
-//                 maxLines: 2,
-//               ),
-//             ),
 
-//             Container(
-//               padding: EdgeInsets.only(
-//                 left: SizeConfig.w(0.04),
-//                 right: SizeConfig.w(0.04),
-//                 top: SizeConfig.h(0.010),
-//                 bottom: SizeConfig.h(0.014),
-//               ),
-//               decoration: BoxDecoration(
-//                 color: isDark ? AppPalette.black : AppPalette.white,
-//                 border: Border(
-//                   top: BorderSide(
-//                     color: isDark
-//                         ? AppPalette.borderFieldColorNDark
-//                         : AppPalette.borderFieldColorNLight,
-//                   ),
-//                 ),
-//               ),
-//               child: Row(
-//                 children: [
-//                   Expanded(
-//                     child: SizedBox(
-//                       height: SizeConfig.h(0.046),
-//                       child: ElevatedButton(
-//                         onPressed: () {
-//                           context.read<CreateTestCubit>().confirmDuration();
-//                           Navigator.of(context).pop();
-//                         },
-//                         style: ElevatedButton.styleFrom(
-//                           backgroundColor: appColors.primaryToPrimaryDark,
-//                           foregroundColor:
-//                               isDark ? AppPalette.black : AppPalette.white,
-//                           elevation: 0,
-//                           shape: RoundedRectangleBorder(
-//                             borderRadius: BorderRadius.circular(7),
-//                           ),
-//                         ),
-//                         child: CustomTextWidget(
-//                           'تأكيد',
-//                           fontSize: SizeConfig.text(0.030),
-//                           fontWeight: FontWeight.w900,
-//                           color: isDark ? AppPalette.black : AppPalette.white,
-//                           textAlign: TextAlign.center,
-//                         ),
-//                       ),
-//                     ),
-//                   ),
 
-//                   SizedBox(width: SizeConfig.w(0.025)),
 
-//                   Expanded(
-//                     child: SizedBox(
-//                       height: SizeConfig.h(0.046),
-//                       child: OutlinedButton(
-//                         onPressed: () {
-//                           context.read<CreateTestCubit>().clearDuration();
-//                           Navigator.of(context).pop();
-//                         },
-//                         style: OutlinedButton.styleFrom(
-//                           side: BorderSide(
-//                             color: isDark
-//                                 ? AppPalette.borderFieldColorNDark
-//                                 : AppPalette.borderFieldColorNLight,
-//                           ),
-//                           backgroundColor: isDark
-//                               ? AppPalette.fieldColorNDark
-//                               : AppPalette.white,
-//                           shape: RoundedRectangleBorder(
-//                             borderRadius: BorderRadius.circular(7),
-//                           ),
-//                         ),
-//                         child: CustomTextWidget(
-//                           'بدون مدة',
-//                           fontSize: SizeConfig.text(0.030),
-//                           fontWeight: FontWeight.w900,
-//                           color: isDark
-//                               ? AppPalette.textWhiteINDark
-//                               : AppPalette.textColorInHome,
-//                           textAlign: TextAlign.center,
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         );
-//       },
-//     );
-//   }
-// }
 
-// class _DurationWheel extends StatelessWidget {
-//   final String title;
-//   final FixedExtentScrollController controller;
-//   final int itemCount;
-//   final int selectedValue;
-//   final String Function(int value) itemLabel;
-//   final ValueChanged<int> onSelectedItemChanged;
 
-//   const _DurationWheel({
-//     required this.title,
-//     required this.controller,
-//     required this.itemCount,
-//     required this.selectedValue,
-//     required this.itemLabel,
-//     required this.onSelectedItemChanged,
-//   });
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final isDark = Theme.of(context).brightness == Brightness.dark;
-//     final appColors = context.appColors;
 
-//     return Column(
-//       children: [
-//         CustomTextWidget(
-//           title,
-//           fontSize: SizeConfig.text(0.026),
-//           fontWeight: FontWeight.w800,
-//           color: isDark ? AppPalette.grey2Dark : AppPalette.greyMedium,
-//           textAlign: TextAlign.center,
-//         ),
 
-//         SizedBox(height: SizeConfig.h(0.006)),
 
-//         SizedBox(
-//           height: SizeConfig.h(0.150),
-//           child: ListWheelScrollView.useDelegate(
-//             controller: controller,
-//             itemExtent: SizeConfig.h(0.044),
-//             physics: const FixedExtentScrollPhysics(),
-//             diameterRatio: 1.6,
-//             perspective: 0.004,
-//             onSelectedItemChanged: onSelectedItemChanged,
-//             childDelegate: ListWheelChildBuilderDelegate(
-//               childCount: itemCount,
-//               builder: (context, index) {
-//                 final selected = index == selectedValue;
 
-//                 return Center(
-//                   child: CustomTextWidget(
-//                     itemLabel(index),
-//                     fontSize: selected
-//                         ? SizeConfig.text(0.052)
-//                         : SizeConfig.text(0.040),
-//                     fontWeight: selected ? FontWeight.w900 : FontWeight.w700,
-//                     color: selected
-//                         ? (isDark
-//                             ? AppPalette.textWhiteINDark
-//                             : AppPalette.textColorInHome)
-//                         : (isDark ? AppPalette.greyLightDark : AppPalette.grey2),
-//                     textAlign: TextAlign.center,
-//                   ),
-//                 );
-//               },
-//             ),
-//           ),
-//         ),
 
-//         SizedBox(height: SizeConfig.h(0.006)),
 
-//         Container(
-//           height: SizeConfig.h(0.030),
-//           padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.030)),
-//           decoration: BoxDecoration(
-//             color: isDark ? AppPalette.fieldColorNDark : AppPalette.primarySoft,
-//             borderRadius: BorderRadius.circular(20),
-//             border: Border.all(
-//               color: isDark
-//                   ? AppPalette.borderFieldColorNDark
-//                   : appColors.primaryToPrimaryDark,
-//             ),
-//           ),
-//           child: Center(
-//             child: CustomTextWidget(
-//               itemLabel(selectedValue),
-//               fontSize: SizeConfig.text(0.025),
-//               fontWeight: FontWeight.w900,
-//               color: appColors.primaryToPrimaryDark,
-//               textAlign: TextAlign.center,
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
 class _CreateTestDurationDialogContent extends StatefulWidget {
   const _CreateTestDurationDialogContent();
 

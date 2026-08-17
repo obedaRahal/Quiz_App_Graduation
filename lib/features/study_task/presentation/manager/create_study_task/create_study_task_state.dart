@@ -9,9 +9,6 @@ enum CreateStudyTaskSubjectsStatus { initial, loading, success, failure }
 enum CreateStudyTaskSubmitStatus { initial, loading, success, failure }
 
 class CreateStudyTaskState {
-  // =========================================================
-  // CONSTANTS
-  // =========================================================
 
   static const int titleMaxLength = 100;
 
@@ -42,9 +39,6 @@ class CreateStudyTaskState {
     10080,
   };
 
-  // =========================================================
-  // FIELDS
-  // =========================================================
 
   final int planId;
 
@@ -98,9 +92,6 @@ class CreateStudyTaskState {
     this.errorMessage,
   });
 
-  // =========================================================
-  // SUBJECTS STATUS
-  // =========================================================
 
   bool get isSubjectsInitial {
     return subjectsStatus == CreateStudyTaskSubjectsStatus.initial;
@@ -118,9 +109,6 @@ class CreateStudyTaskState {
     return subjectsStatus == CreateStudyTaskSubjectsStatus.failure;
   }
 
-  // =========================================================
-  // SUBMIT STATUS
-  // =========================================================
 
   bool get isSubmitInitial {
     return submitStatus == CreateStudyTaskSubmitStatus.initial;
@@ -138,17 +126,11 @@ class CreateStudyTaskState {
     return submitStatus == CreateStudyTaskSubmitStatus.failure;
   }
 
-  // =========================================================
-  // PLAN
-  // =========================================================
 
   bool get hasValidPlanId {
     return planId > 0;
   }
 
-  // =========================================================
-  // TITLE
-  // =========================================================
 
   String get normalizedTitle {
     return title.trim();
@@ -159,9 +141,6 @@ class CreateStudyTaskState {
         normalizedTitle.length <= titleMaxLength;
   }
 
-  // =========================================================
-  // DESCRIPTION
-  // =========================================================
 
   String get normalizedDescription {
     return description.trim();
@@ -172,9 +151,6 @@ class CreateStudyTaskState {
         normalizedDescription.length <= descriptionMaxLength;
   }
 
-  // =========================================================
-  // SUBJECTS
-  // =========================================================
 
   bool get hasAvailableSubjects {
     return availableSubjects.isNotEmpty;
@@ -210,9 +186,6 @@ class CreateStudyTaskState {
     return selectedStudyPlanSubjectId == studyPlanSubjectId;
   }
 
-  // =========================================================
-  // DATES
-  // =========================================================
 
   bool get hasStartDate {
     return startDate != null;
@@ -288,9 +261,6 @@ class CreateStudyTaskState {
         isTaskRangeWithinLimit;
   }
 
-  // =========================================================
-  // START TIME
-  // =========================================================
 
   String get normalizedStartTime {
     return startTime.trim();
@@ -300,9 +270,6 @@ class CreateStudyTaskState {
     return RegExp(r'^([01]\d|2[0-3]):([0-5]\d)$').hasMatch(normalizedStartTime);
   }
 
-  // =========================================================
-  // DURATION
-  // =========================================================
 
   bool get hasValidDuration {
     final value = durationMinutes;
@@ -312,17 +279,11 @@ class CreateStudyTaskState {
         value <= maxDurationMinutes;
   }
 
-  // =========================================================
-  // PRIORITY
-  // =========================================================
 
   bool get hasValidPriority {
     return priority != null;
   }
 
-  // =========================================================
-  // SUBTASKS
-  // =========================================================
 
   int get subtaskFieldsCount {
     return subtasks.length;
@@ -335,10 +296,6 @@ class CreateStudyTaskState {
         .toList(growable: false);
   }
 
-  /*
-   * هذا العداد يمثل المهام المكتوبة فعليًا،
-   * وليس عدد حقول الإدخال الظاهرة.
-   */
   int get subtasksCount {
     return validSubtaskTitles.length;
   }
@@ -378,9 +335,6 @@ class CreateStudyTaskState {
         .toList(growable: false);
   }
 
-  // =========================================================
-  // REPEAT
-  // =========================================================
 
   bool get isRepeating {
     return repeatPattern != StudyTaskRepeatPattern.none;
@@ -388,10 +342,6 @@ class CreateStudyTaskState {
 
   bool get hasValidRepeatWeekday {
     if (!isRepeating) {
-      /*
-       * عند عدم وجود تكرار يجب ألا يبقى
-       * يوم تكرار محفوظ في الحالة.
-       */
       return repeatWeekday == null;
     }
 
@@ -400,9 +350,6 @@ class CreateStudyTaskState {
     return weekday != null && weekday >= 0 && weekday <= 6;
   }
 
-  // =========================================================
-  // REMINDER
-  // =========================================================
 
   bool get hasValidReminder {
     final value = reminderOffsetMinutes;
@@ -410,9 +357,6 @@ class CreateStudyTaskState {
     return value == null || allowedReminderOffsetMinutes.contains(value);
   }
 
-  // =========================================================
-  // FORM
-  // =========================================================
 
   bool get canSubmit {
     return hasValidPlanId &&
@@ -431,9 +375,6 @@ class CreateStudyTaskState {
         !isSubmitLoading;
   }
 
-  // =========================================================
-  // COPY WITH
-  // =========================================================
 
   CreateStudyTaskState copyWith({
     int? planId,
@@ -498,17 +439,11 @@ class CreateStudyTaskState {
     );
   }
 
-  // =========================================================
-  // HELPERS
-  // =========================================================
 
   static DateTime _normalizeDate(DateTime value) {
     return DateTime(value.year, value.month, value.day);
   }
 
-  // =========================================================
-  // TO STRING
-  // =========================================================
 
   @override
   String toString() {

@@ -66,7 +66,6 @@ class OtherProfileContentCard extends StatelessWidget {
                       showSaveButton: showSaveButton,
                     ),
 
-                    //SizedBox(height: SizeConfig.h(0.004)),
                     CustomTextWidget(
                       content.description,
                       color: AppPalette.greyMedium,
@@ -97,37 +96,9 @@ class OtherProfileContentCard extends StatelessWidget {
   }
 }
 
-// class _ContentThumbnail extends StatelessWidget {
-//   final String imageUrl;
-//   final String type;
 
-//   const _ContentThumbnail({required this.imageUrl, required this.type});
 
-//   bool get isImage => type.trim() == 'صورة';
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return CustomBackgroundWithChild(
-//       width: SizeConfig.w(0.17),
-//       height: SizeConfig.w(0.17),
-//       backgroundColor: AppPalette.greyLight,
-//       borderRadius: BorderRadius.circular(10),
-//       border: Border.all(color: AppPalette.greyBorderCart, width: 2),
-//       child: imageUrl.trim().isEmpty
-//           ? Center(
-//               child: Icon(
-//                 isImage ? Icons.image_rounded : Icons.insert_drive_file_rounded,
-//                 color: AppPalette.greyMedium,
-//                 size: SizeConfig.w(0.06),
-//               ),
-//             )
-//           : ClipRRect(
-//               borderRadius: BorderRadius.circular(10),
-//               child: CustomAppImage(path: imageUrl, fit: BoxFit.fill),
-//             ),
-//     );
-//   }
-// }
 
 class _ContentThumbnail extends StatelessWidget {
   final String imageUrl;
@@ -348,14 +319,12 @@ class _LikeIconText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // عدد الإعجابات للعرض فقط في بطاقات المحتوى.
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: SizeConfig.w(0.006),
         vertical: SizeConfig.h(0.002),
       ),
       child: Row(
-        //crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         textDirection: TextDirection.rtl,
         children: [

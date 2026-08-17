@@ -125,7 +125,6 @@ class NotificationCubit extends SafeCubit<NotificationState> {
     await fetchInitial();
   }
 
-  // List<dynamic> _unused() => const [];
 
   List<NotificationEntity> _mergeNotifications({
     required List<NotificationEntity> current,

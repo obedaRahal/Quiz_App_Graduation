@@ -95,11 +95,6 @@ class _IntroViewBodyState extends State<_IntroViewBody> {
 
         if (state.errorMessage != null) {
           debugPrint("error at intro view at errMsg");
-          // showTopSnackBar(
-          //   context,
-          //   message: state.errorMessage!,
-          //   isSuccess: false,
-          // );
         }
       },
       child: BlocBuilder<IntroCubit, IntroState>(

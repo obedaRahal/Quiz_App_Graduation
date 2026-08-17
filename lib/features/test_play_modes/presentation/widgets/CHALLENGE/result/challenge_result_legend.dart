@@ -36,7 +36,6 @@ class ChallengeResultLegend extends StatelessWidget {
         Expanded(child: DashedSectionTitle(title: 'الإجابات')),
         SizedBox(width: SizeConfig.w(0.02)),
 
-        //SizedBox(width: 18),
         _LegendItem(title: 'الخصم', color: Color(0xFFD46BFF)),
       ],
     );

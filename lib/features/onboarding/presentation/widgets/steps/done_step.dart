@@ -15,22 +15,16 @@ class OnboardingDoneStep extends StatelessWidget {
     final appColors = context.appColors;
     return Stack(
       clipBehavior: Clip.none,
-      //crossAxisAlignment: CrossAxisAlignment.end,
-      // mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        //height: SizeConfig.w(0.65),
         Positioned(
           top: 0,
           right: -12,
           child: SizedBox(
-            //width: SizeConfig.w(0.55),
-            //height: SizeConfig.h(0.16),
             child: ClipRRect(
               child: ClipRect(
                 child: Align(
                   alignment: Alignment.topLeft,
                   widthFactor: 0.75,
-                  //heightFactor: 0.62,
                   child: CustomAppImage(
                     path: AppImage.onbardingupcheck,
                     fit: BoxFit.cover,
@@ -74,14 +68,11 @@ class OnboardingDoneStep extends StatelessWidget {
           bottom: -120,
           left: -12,
           child: SizedBox(
-            //width: SizeConfig.w(0.55),
-            //height: SizeConfig.h(0.16),
             child: ClipRRect(
               child: ClipRect(
                 child: Align(
                   alignment: Alignment.bottomRight,
                   widthFactor: 0.65,
-                  //heightFactor: 1,
                   child: CustomAppImage(
                     path: AppImage.onbardingdowncheck,
                     fit: BoxFit.cover,

@@ -42,7 +42,6 @@ class OnboardingCubit extends SafeCubit<OnboardingState> {
   final GetOnboardingInterestsUseCase getOnboardingInterestsUseCase;
   final SubmitUserInterestsUseCase submitUserInterestsUseCase;
 
-  // onboarding progress preview
   final GetOnboardingProgressPreviewUseCase getOnboardingProgressPreviewUseCase;
   final int? initialLastCompletedStep;
   final String onboardingEmail;
@@ -194,8 +193,6 @@ class OnboardingCubit extends SafeCubit<OnboardingState> {
       currentIds.remove(interestId);
     } else {
       if (currentIds.length >= 5) {
-        //emit(state.copyWith(errorMessage: 'يمكن اختيار 5 اهتمامات كحد أقصى' ,));
-        //return;
         currentIds.removeAt(0);
       }
       currentIds.add(interestId);
@@ -862,19 +859,7 @@ class OnboardingCubit extends SafeCubit<OnboardingState> {
         educationLevel == EducationLevelValues.graduatedLevel;
   }
 
-  // Future<void> _submitCurrentStep() async {
-  //   // هذه دالة مؤقتة حاليًا.
-  //   // لاحقًا سنربطها مع API / UseCase حسب الخطوة الحالية.
-  //   debugPrint("im at _submitCurrentStep to call API later");
-  //   await Future<void>.delayed(Duration.zero);
-  // }
 
-  ////////////////////////
-  ////////////////////////
-  ////////////////////////
-  ////////////////////////
-  ////////////////////////
-  // on boarding preview progress
   Future<void> initializeProgressPreviewIfNeeded({
     required int lastCompletedStep,
   }) async {

@@ -18,11 +18,9 @@ class UniversityDropdownItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       
-      //textDirection: TextDirection.rtl,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         UniversityLogo(logoPath: null),
-        //SizedBox(width: SizeConfig.w(0.02)),
         Expanded(
           child: SingleChildScrollView(
             child: Column(

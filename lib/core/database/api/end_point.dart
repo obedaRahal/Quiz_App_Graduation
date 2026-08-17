@@ -2,17 +2,12 @@ import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test
 import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profile_connections_type.dart';
 
 class EndPoints {
-  // static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
-  // static const String refreshToken = 'http://192.168.1.110/api/v1/refresh';
 
   static const String baseUrl = 'https://nerdsoftwares.tech/api/v1/user-mobile';
 
   static const String refreshToken =
       'https://nerdsoftwares.tech/api/v1/refresh';
-  // authhhhhh
-  //static const String registerCitizen = 'citizen/register';
 
-  // onboarding ////////////////
   static const String onboardingDiscoverySource =
       '$baseUrl/auth/onboarding/discovery-source';
   static const String onboardingEducationLevel =
@@ -30,7 +25,6 @@ class EndPoints {
   static const String onboardingProgressPreview =
       '$baseUrl/auth/onboarding/progress-preview';
 
-  // Auth ///////////////////
   static const String register = '/auth/register';
   static const String verifyEmail = '/auth/verify-email';
   static const String login = '/auth/login';
@@ -47,7 +41,6 @@ class EndPoints {
   static const String recommendedUsers = '/home/recommended-users';
   static const String allInterests = '/home/all-interests';
 
-  // Create Test
   static const String createManualTest = '/lab/create-test';
 
   static const String aiQuestionGenerations = '/lab/ai-question-generations';
@@ -61,7 +54,6 @@ class EndPoints {
     return '/lab/ai-question-generations/$generationRequestId';
   }
 
-  // Edit My Tests
   static String getEditableTestQuestions(int testId) {
     return '$baseUrl/test/content/$testId';
   }
@@ -70,12 +62,9 @@ class EndPoints {
     return '$baseUrl/test/update/test/$testId';
   }
 
-  // Create Content
   static const String createContent = '/library/create-content';
-  // Edit Content
   static String updateContent(int contentId) =>
       '/library/update/material/$contentId';
-  // Other Content Details
   static String otherContentDetails(int id) =>
       '/library/library-materials-details/other/$id';
   static const String likeContent = '/library/like';
@@ -92,14 +81,12 @@ class EndPoints {
       '/users-profile/follow/$publisherId';
   static String unfollowPublisher(int publisherId) =>
       '/users-profile/unfollow/$publisherId';
-  // My Content Details
   static String myPublicContentDetails(int id) =>
       '/library/library-materials-details/my-public/$id';
   static String myPrivateContentDetails(int id) =>
       '/library/library-materials-details/my-private/$id';
   static String deleteMyContent(int contentId) =>
       '/library/delete/material/$contentId';
-  // details of test
   static String otherTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/other/$testId';
   static String otherTestDetailsSample(int testId) =>
@@ -160,7 +147,6 @@ class EndPoints {
   static String sharedContentLink(String slug) =>
       '$baseUrl/library/shared/${Uri.encodeComponent(slug)}';
 
-  //  get list of likes and bookmarks on TEST
   static String testInteractionUsers({
     required int testId,
     required TestInteractionUsersType type,
@@ -198,21 +184,17 @@ class EndPoints {
     return '$baseUrl/test/content/$testId';
   }
 
-  // laboratory
   static String testsByInterest(int interestId) {
     return '/home/test-by-interest/$interestId';
   }
 
   static const String searchLabTests = '/lab/search';
   static const String labRecommendedTests = '/lab/recommended-tests';
-  // Library
   static const String libraryShow = '/library/show';
   static const String librarySearch = '/library/search';
-  // Test By Interest
   static const String testByInterest = '/home/test-by-interest';
   static const String searchTestByInterest = '/home/search-test-by-interest';
 
-  //// my public test details
   static String myPublicTestDetailsOverview(int testId) =>
       '$baseUrl/test/tests-details/my-public/$testId';
   static String myPublicTestStatusHistory(int testId) =>
@@ -239,7 +221,6 @@ class EndPoints {
   static String registerTestAttemptInteraction(int testId) =>
       '$baseUrl/test/attempts/$testId';
 
-  /////////////////// other profileeeeeeeeeee //////////////////////
   static String otherProfileOverview(int userId) =>
       '$baseUrl/users-profile/overview/$userId';
 
@@ -353,7 +334,6 @@ class EndPoints {
     return '$baseUrl/users-profile/academic-certificate/$userId';
   }
 
-  /////////////////// my profile ///////////////
   static String myProfilePersonalInfo({required int userId}) {
     return '$baseUrl/my-profile/basic-info/$userId';
   }
@@ -468,7 +448,6 @@ class EndPoints {
 
   static const String filterMyProfileTests = '$baseUrl/test/tests/filter';
 
-  /////////////////// study plan /////////////////
   static const String getStudyPlanDailyOverview =
       '$baseUrl/study-plans/daily-tasks/overview';
 
@@ -501,7 +480,6 @@ class EndPoints {
     return '$baseUrl/study-plans/delete/study-plan/$planId';
   }
 
-  //////////////// task
   static String getStudyTaskDetails(int planId, int taskId) {
     return '$baseUrl/study-plans/study-plans/'
         '$planId/tasks/$taskId/details';
@@ -547,7 +525,6 @@ class EndPoints {
     return '$baseUrl/study-plans/study-plans/$planId/tasks/$taskId/subtasks/$subTaskId/un-complete';
   }
 
-  ////////// notification
   static String notifications({String? cursor}) {
     final endpoint = '$baseUrl/notification/show';
 
@@ -566,7 +543,6 @@ class EndPoints {
     return '$baseUrl/notification/notifications/unread-count';
   }
 
-  /// SEARCH
   static String searchUsers({required String query, String? cursor}) {
     final endpoint =
         '$baseUrl/home/users/search?query=${Uri.encodeQueryComponent(query)}';
@@ -586,11 +562,9 @@ class EndPoints {
     return '$baseUrl/home/users/search-history/$historyId';
   }
 
-  //////////////// alarms /////////////////
   static const String studyAlarmReminderSchedule =
       '$baseUrl/study-plans/reminder-schedule';
 
-  /////////////// SETTINGS ///////////
   static const String getSettings = '$baseUrl/settings/get-setting';
 
   static const String enableTaskReminders =

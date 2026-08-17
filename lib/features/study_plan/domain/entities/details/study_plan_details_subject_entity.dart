@@ -46,7 +46,6 @@ class StudyPlanDetailsProgressEntity {
     required this.completedPercentage,
   });
 
-  /// القيمة التي يحتاجها LinearProgressIndicator.
   double get progressValue {
     final normalized = completedPercentage / 100;
 

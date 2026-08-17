@@ -31,8 +31,6 @@ class PushNotificationService {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       debugPrint('📬 onMessageOpenedApp: ${message.messageId}');
       debugPrint('📬 notification data received: ${message.data.isNotEmpty}');
-      // Android/iOS already resumes the app. External notification taps must
-      // not force navigation to the in-app notifications screen.
     });
   }
 
@@ -115,8 +113,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   AppLogger.configure();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // FCM/APNs displays notification payloads automatically in the background.
-  // Only data-only messages need us to create a local notification.
   if (message.notification == null) {
     await LocalNotificationService.init();
     await LocalNotificationService.showBasicNotification(

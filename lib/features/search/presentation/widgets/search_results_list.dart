@@ -58,7 +58,6 @@ class SearchResultsList extends StatelessWidget {
 
     return ListView.separated(
       padding: EdgeInsets.symmetric(
-        //horizontal: SizeConfig.w(0.045),
         vertical: SizeConfig.h(0.018),
       ),
       itemCount: users.length + (hasFooter ? 1 : 0),
@@ -105,19 +104,6 @@ class SearchResultsList extends StatelessWidget {
             onFollowTap(user);
           },
         );
-        // return InkWell(
-        //   borderRadius: BorderRadius.circular(16),
-        //   onTap: () => onUserTap(user),
-        //   child: OtherProfileConnectionUserTile(
-        //     userName: user.name,
-        //     avatarUrl: user.avatarUrl,
-        //     educationLevel: user.academicLevel,
-        //     isVerified: user.isAcademicallyVerified,
-        //     isFollowing: user.viewerIsFollowing,
-        //     isFollowLoading: isThisFollowLoading,
-        //     onFollowTap: () => onFollowTap(user),
-        //   ),
-        // );
       },
     );
   }

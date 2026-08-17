@@ -44,11 +44,6 @@ class CreateTestPublishSection extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  // Icon(
-                  //   Icons.public_rounded,
-                  //   size: SizeConfig.text(0.056),
-                  //   color: AppPalette.greyMedium,
-                  // ),
                   CustomAppImage(
                     path: AppImage.earth,
                     color: AppPalette.greyMedium,

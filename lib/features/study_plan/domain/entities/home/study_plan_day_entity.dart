@@ -65,10 +65,8 @@ class StudyPlanDayEntity {
   final int totalTasks;
   final int completedTasks;
 
-  /// القيمة الخام القادمة من الباك.
   final String completionState;
 
-  /// القيمة الخام القادمة من الباك.
   final String displayState;
 
   const StudyPlanDayEntity({

@@ -20,9 +20,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     debugPrint('============ CreateStudyTaskCubit INIT ============');
   }
 
-  // =========================================================
-  // INITIALIZE
-  // =========================================================
 
   Future<void> initialize({required int planId}) async {
     debugPrint('============ CreateStudyTaskCubit.initialize ============');
@@ -60,9 +57,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     debugPrint('=========================================================');
   }
 
-  // =========================================================
-  // GET STUDY PLAN SUBJECTS
-  // =========================================================
 
   Future<void> getStudyPlanSubjects() async {
     debugPrint(
@@ -181,9 +175,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     await getStudyPlanSubjects();
   }
 
-  // =========================================================
-  // SELECT SUBJECT
-  // =========================================================
 
   void changeSelectedSubject(int studyPlanSubjectId) {
     debugPrint(
@@ -238,9 +229,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // TITLE AND DESCRIPTION
-  // =========================================================
 
   void changeTitle(String value) {
     if (value.length > CreateStudyTaskState.titleMaxLength) {
@@ -279,9 +267,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // DATES
-  // =========================================================
 
   void changeStartDate(DateTime value) {
     final normalizedDate = _normalizeDate(value);
@@ -439,9 +424,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // START TIME
-  // =========================================================
 
   void changeStartTime(String value) {
     final normalizedValue = value.trim();
@@ -488,9 +470,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // DURATION
-  // =========================================================
 
   void changeDurationMinutes(int minutes) {
     debugPrint(
@@ -535,9 +514,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // PRIORITY
-  // =========================================================
 
   void changePriority(StudyTaskPriority value) {
     debugPrint(
@@ -568,9 +544,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // REPEAT
-  // =========================================================
 
   void changeRepeatPattern(StudyTaskRepeatPattern value) {
     debugPrint(
@@ -639,9 +612,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // REMINDER
-  // =========================================================
 
   void changeReminderOffsetMinutes(int? minutes) {
     debugPrint(
@@ -687,9 +657,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // SUBTASKS
-  // =========================================================
 
   void addSubtask() {
     debugPrint(
@@ -796,9 +763,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // VALIDATION
-  // =========================================================
 
   bool validateBeforeSubmit() {
     debugPrint(
@@ -916,9 +880,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     return false;
   }
 
-  // =========================================================
-  // CREATE TASK
-  // =========================================================
 
   Future<void> createStudyTask() async {
     debugPrint(
@@ -1031,9 +992,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     }
   }
 
-  // =========================================================
-  // RESET
-  // =========================================================
 
   void resetError() {
     emit(state.copyWith(clearError: true));
@@ -1049,9 +1007,6 @@ class CreateStudyTaskCubit extends SafeCubit<CreateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // HELPERS
-  // =========================================================
 
   DateTime _normalizeDate(DateTime value) {
     return DateTime(value.year, value.month, value.day);

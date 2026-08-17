@@ -157,78 +157,9 @@ Future<void> showExitCreateTestDialog(BuildContext context) {
   );
 }
 
-// Future<void> showExitCreateTestDialog(BuildContext context) {
-//   return showGeneralDialog<void>(
-//     context: context,
-//     barrierDismissible: true,
-//     barrierLabel: 'exit_create_test_dialog',
-//     barrierColor: Colors.black.withOpacity(0.18),
-//     transitionDuration: const Duration(milliseconds: 220),
-//     pageBuilder: (dialogContext, animation, secondaryAnimation) {
-//       final isDark = Theme.of(dialogContext).brightness == Brightness.dark;
 
-//       return Stack(
-//         children: [
-//           Positioned.fill(
-//             child: BackdropFilter(
-//               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-//               child: const SizedBox.expand(),
-//             ),
-//           ),
 
-//           Center(
-//             child: Material(
-//               color: Colors.transparent,
-//               child: Directionality(
-//                 textDirection: TextDirection.rtl,
-//                 child: Container(
-//                   width: SizeConfig.w(0.90),
-//                   padding: EdgeInsets.only(
-//                     left: SizeConfig.w(0.050),
-//                     right: SizeConfig.w(0.050),
-//                     top: SizeConfig.h(0.024),
-//                     bottom: SizeConfig.h(0.020),
-//                   ),
-//                   decoration: BoxDecoration(
-//                     color: isDark ? AppPalette.black : AppPalette.white,
-//                     borderRadius: BorderRadius.circular(14),
-//                     border: Border.all(
-//                       color: isDark
-//                           ? AppPalette.borderFieldColorNDark
-//                           : AppPalette.borderFieldColorNLight,
-//                     ),
-//                     boxShadow: [
-//                       BoxShadow(
-//                         color: Colors.black.withOpacity(isDark ? 0.35 : 0.18),
-//                         blurRadius: 18,
-//                         offset: const Offset(0, 8),
-//                       ),
-//                     ],
-//                   ),
-//                   child: const _ExitCreateTestDialogContent(),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       );
-//     },
-//     transitionBuilder: (context, animation, secondaryAnimation, child) {
-//       final curvedAnimation = CurvedAnimation(
-//         parent: animation,
-//         curve: Curves.easeOutCubic,
-//       );
 
-//       return FadeTransition(
-//         opacity: curvedAnimation,
-//         child: Transform.scale(
-//           scale: 0.96 + (curvedAnimation.value * 0.04),
-//           child: child,
-//         ),
-//       );
-//     },
-//   );
-// }
 class _ExitCreateTestDialogContent extends StatelessWidget {
   final BuildContext parentContext;
 

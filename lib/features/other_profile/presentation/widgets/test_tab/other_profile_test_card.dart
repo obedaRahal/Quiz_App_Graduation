@@ -46,9 +46,6 @@ class OtherProfileTestCard extends StatelessWidget {
       return item.difficultyLevel.trim();
     }
 
-    // if (item.targetLevel.trim().isNotEmpty) {
-    //   return item.targetLevel.trim();
-    // }
 
     return 'غير محدد';
   }

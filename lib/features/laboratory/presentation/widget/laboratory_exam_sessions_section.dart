@@ -53,10 +53,6 @@ class LaboratoryExamSessionsSection extends StatelessWidget {
             ? state.searchError
             : state.error;
 
-        /*
-         * هذه الحالة تمنع ظهور empty state قبل انتهاء
-         * أول طلب لجلب الجلسات الامتحانية.
-         */
         final isInitialWaiting =
             !isFilter && !isSearch && !state.hasInitialLoaded;
 

@@ -90,9 +90,6 @@ class MyTestReviewTab extends StatelessWidget {
               myHelpfulVote: _mapVoteToBool(review.viewerFeedback?.vote),
             );
           }).toList(),
-          // onReportReview: (id) {
-          //   debugPrint('report my public test review => $id');
-          // },
           onReportReview: (reviewId) {
             debugPrint('report my public test review => $reviewId');
 

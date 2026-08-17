@@ -226,9 +226,6 @@ class LoginPage extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          // SizedBox(
-                          //   height: SizeConfig.sh(isSmall ? 0.016 : 0.026),
-                          // ),
                           CustomButtonWidget(
                             width: double.infinity,
                             backgroundColor: appColors.primaryToPrimaryDark,
@@ -279,105 +276,15 @@ class LoginPage extends StatelessWidget {
             ),
           ),
         );
-        // Scaffold(
-        //   body: Padding(
-        //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-        //     child: SingleChildScrollView(
-        //       child: Column(
-        //         children: [
-        //           TopContainerAuth(
-        //             title: 'تسجيل الدخول',
-        //             body:
-        //                 'مرحبا بك مجددا !\nسجل دخولك لمتابعة خطتك الدراسية\nوتحويل المحتوى الدراسي الى تجربة\nتفاعلية ممتعة',
-        //           ),
-        //           const SizedBox(height: 50),
 
-        //           AuthFieldLabel(
-        //             label: 'البريد الالكتروني',
-        //             controller: cubit.emailController,
-        //             hint: 'ادخل بريدك الالكتروني...',
-        //             keyboardType: TextInputType.emailAddress,
-        //             suffixIcon: Icons.email_outlined,
-        //           ),
 
-        //           const SizedBox(height: 25),
 
-        //           AuthFieldLabel(
-        //             label: 'كلمة المرور',
-        //             controller: cubit.passwordController,
-        //             hint: 'ادخل كلمة المرور الخاصة بك...',
-        //             suffixIcon: state.isPasswordObscure
-        //                 ? Icons.visibility_off
-        //                 : Icons.visibility,
-        //             obscureText: state.isPasswordObscure,
-        //             onSuffixTap: () {
-        //               context.read<LoginCubit>().togglePasswordVisibility();
-        //             },
-        //           ),
 
-        //           Padding(
-        //             padding: const EdgeInsets.all(8.0),
-        //             child: Align(
-        //               alignment: AlignmentGeometry.centerLeft,
-        //               child: InkWell(
-        //                 onTap: () {
-        //                   debugPrint("forgotPasswordEmail");
-        //                   context.pushNamed(AppRouterName.forgotPasswordEmail);
-        //                 },
-        //                 child: CustomTextWidget(
-        //                   "نسيت كلمة المرور ؟",
-        //                   fontSize: SizeConfig.text(0.045),
-        //                   color: appColors.primaryToPrimaryDark,
-        //                 ),
-        //               ),
-        //             ),
-        //           ),
 
-        //           const SizedBox(height: 40),
 
-        //           CustomButtonWidget(
-        //             width: double.infinity,
-        //             backgroundColor: appColors.primaryToPrimaryDark,
-        //             childHorizontalPad: SizeConfig.width * .07,
-        //             childVerticalPad: SizeConfig.height * .012,
-        //             borderRadius: 8,
-        //             onTap: () {
-        //               if (state.loginStatus == LoginStatus.loading) {
-        //                 return;
-        //               }
 
-        //               context.read<LoginCubit>().submitLogin();
-        //             },
-        //             child: state.loginStatus == LoginStatus.loading
-        //                 ? SizedBox(
-        //                     height: 22,
-        //                     width: 22,
-        //                     child: CircularProgressIndicator(
-        //                       strokeWidth: 2.5,
-        //                       color: colorScheme.onSecondary,
-        //                     ),
-        //                   )
-        //                 : CustomTextWidget(
-        //                     "تأكيد الإدخال",
-        //                     fontSize: SizeConfig.text(0.055),
-        //                     color: colorScheme.onSecondary,
-        //                   ),
-        //           ),
 
-        //           SizedBox(height: SizeConfig.height * .02),
 
-        //           TowTextRow(
-        //             text: " ليس لديك حساب ؟ قم بإنشاء ",
-        //             actionText: "حساب جديد ",
-        //             onTap: () {
-        //               GoRouter.of(context).replaceNamed(AppRouterName.register);
-        //             },
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // );
       },
     );
   }

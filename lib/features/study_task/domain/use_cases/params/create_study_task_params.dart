@@ -83,9 +83,6 @@ class CreateStudyTaskParams {
     this.reminderOffsetMinutes,
   });
 
-  // =========================================================
-  // NORMALIZED VALUES
-  // =========================================================
 
   String get normalizedTitle => title.trim();
 
@@ -101,9 +98,6 @@ class CreateStudyTaskParams {
     return _normalizeDate(endDate);
   }
 
-  // =========================================================
-  // REPEAT
-  // =========================================================
 
   bool get isRepeating {
     return repeatPattern != StudyTaskRepeatPattern.none;
@@ -119,9 +113,6 @@ class CreateStudyTaskParams {
     return weekday != null && weekday >= 0 && weekday <= 6;
   }
 
-  // =========================================================
-  // DATES
-  // =========================================================
 
   bool get isStartDateTodayOrFuture {
     final today = _normalizeDate(DateTime.now());
@@ -145,18 +136,12 @@ class CreateStudyTaskParams {
     return taskRangeDays >= 1 && taskRangeDays <= 7;
   }
 
-  // =========================================================
-  // DURATION
-  // =========================================================
 
   bool get hasValidDuration {
     return durationMinutes >= minDurationMinutes &&
         durationMinutes <= maxDurationMinutes;
   }
 
-  // =========================================================
-  // SUBTASKS
-  // =========================================================
 
   List<CreateStudyTaskSubtaskParams> get validSubtasks {
     return subtasks.where((subtask) => subtask.isValid).toList(growable: false);
@@ -166,20 +151,10 @@ class CreateStudyTaskParams {
     return subtasks.length <= maxSubtasksCount;
   }
 
-  /*
-   * الحقول الفارغة تعتبر حقول واجهة غير مكتملة،
-   * ولذلك لا يتم إرسالها في الطلب.
-   *
-   * أما كل مهمة فرعية يتم إرسالها، فيجب أن يكون
-   * عنوانها غير فارغ، وهذا مضمون بواسطة validSubtasks.
-   */
   bool get haveValidSubtasks {
     return hasValidSubtasksCount;
   }
 
-  // =========================================================
-  // REMINDER
-  // =========================================================
 
   bool get hasValidReminder {
     final value = reminderOffsetMinutes;
@@ -187,9 +162,6 @@ class CreateStudyTaskParams {
     return value == null || allowedReminderOffsetMinutes.contains(value);
   }
 
-  // =========================================================
-  // VALIDATION
-  // =========================================================
 
   bool get isValid {
     if (planId <= 0) {
@@ -247,9 +219,6 @@ class CreateStudyTaskParams {
     return true;
   }
 
-  // =========================================================
-  // BODY
-  // =========================================================
 
   Map<String, dynamic> toBody() {
     final body = <String, dynamic>{
@@ -284,9 +253,6 @@ class CreateStudyTaskParams {
     return body;
   }
 
-  // =========================================================
-  // HELPERS
-  // =========================================================
 
   static DateTime _normalizeDate(DateTime date) {
     return DateTime(date.year, date.month, date.day);
@@ -308,9 +274,6 @@ class CreateStudyTaskParams {
     return timePattern.hasMatch(value.trim());
   }
 
-  // =========================================================
-  // TO STRING
-  // =========================================================
 
   @override
   String toString() {

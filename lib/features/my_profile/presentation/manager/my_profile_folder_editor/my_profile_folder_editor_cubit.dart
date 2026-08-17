@@ -89,52 +89,6 @@ class MyProfileFolderEditorCubit extends SafeCubit<MyProfileFolderEditorState> {
     debugPrint("✓ init edit mode");
     debugPrint("=================================================");
   }
-  // List<MyProfileFolderSelectedTestEntity> get _demoSelectedTests => const [
-  //   MyProfileFolderSelectedTestEntity(
-  //     id: 1,
-  //     title: 'اختبار Flutter',
-  //     description: 'اختبار تدريبي لتطوير تطبيقات Flutter.',
-  //     interests: ['Flutter', 'Dart', 'Flutter', 'Dart'],
-  //     difficultyLevel: 'متوسط',
-  //     questionCount: 30,
-  //     averageRating: 4.5,
-  //     price: 0,
-  //     publishedAt: 'منذ ساعة',
-  //   ),
-  //   MyProfileFolderSelectedTestEntity(
-  //     id: 3,
-  //     title: 'اختبار قواعد البيانات',
-  //     description: 'اختبار شامل في SQL وقواعد البيانات.',
-  //     interests: ['SQL', 'Database'],
-  //     difficultyLevel: 'صعب',
-  //     questionCount: 40,
-  //     averageRating: 4.8,
-  //     price: 10000,
-  //     publishedAt: 'منذ يوم',
-  //   ),
-  //   MyProfileFolderSelectedTestEntity(
-  //     id: 4,
-  //     title: 'اختبار قواعد البيانات',
-  //     description: 'اختبار شامل في SQL وقواعد البيانات.',
-  //     interests: ['SQL', 'Database'],
-  //     difficultyLevel: 'صعب',
-  //     questionCount: 40,
-  //     averageRating: 4.8,
-  //     price: 10000,
-  //     publishedAt: 'منذ يوم',
-  //   ),
-  //   MyProfileFolderSelectedTestEntity(
-  //     id: 5,
-  //     title: 'اختبار قواعد البيانات',
-  //     description: 'اختبار شامل في SQL وقواعد البيانات.',
-  //     interests: ['SQL', 'Database'],
-  //     difficultyLevel: 'صعب',
-  //     questionCount: 40,
-  //     averageRating: 4.8,
-  //     price: 10000,
-  //     publishedAt: 'منذ يوم',
-  //   ),
-  // ];
 
   void nameChanged(String value) {
     emit(
@@ -463,7 +417,6 @@ class MyProfileFolderEditorCubit extends SafeCubit<MyProfileFolderEditorState> {
     );
   }
 
-  ///////////////// bottom sheet to get  my tests /////////////
   Future<void> openPicker({required int userId}) async {
     debugPrint(
       "============ MyProfileFolderEditorCubit.openPicker ============",

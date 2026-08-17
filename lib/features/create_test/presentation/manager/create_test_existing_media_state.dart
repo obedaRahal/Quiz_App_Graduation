@@ -2,7 +2,7 @@ class CreateTestExistingMediaState {
   final int? id;
   final String name;
   final String url;
-  final String type; // image / pdf / file
+  final String type;
 
   const CreateTestExistingMediaState({
     this.id,

@@ -83,7 +83,6 @@ class _FlashcardActionButton extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
-        // height: SizeConfig.h(0.052),
         padding: EdgeInsets.all(SizeConfig.w(0.05)),
         alignment: Alignment.center,
         decoration: BoxDecoration(

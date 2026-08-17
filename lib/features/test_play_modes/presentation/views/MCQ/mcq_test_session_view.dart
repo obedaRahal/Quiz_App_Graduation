@@ -31,7 +31,6 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
     super.initState();
 
     Future.microtask(() {
-      //context.read<TestPlayModesCubit>().loadMockTestContent();
       context.read<TestPlayModesCubit>().getTestPlayContent(
         testId: widget.testId,
       );
@@ -46,13 +45,6 @@ class _McqTestSessionViewState extends State<McqTestSessionView> {
       return;
     }
 
-    // showExitTestPlayModeDialog(
-    //   context: context,
-    //   onExitConfirmed: () {
-    //     context.read<TestPlayModesCubit>().resetSession();
-    //     Navigator.pop(context);
-    //   },
-    // );
     showCustomConfirmationDialog(
       context: context,
       title: 'هل تريد مغادرة الاختبار حقاً ؟',

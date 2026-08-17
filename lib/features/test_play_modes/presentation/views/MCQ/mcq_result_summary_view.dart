@@ -171,9 +171,8 @@ class _McqResultSummaryViewState extends State<McqResultSummaryView> {
                   onTap: () {
                     context
                         .read<TestPlayModesCubit>()
-                        .restartMcqSession(); //context.read<TestPlayModesCubit>().loadMockTestContent();
+                        .restartMcqSession();
 
-                    //Navigator.pop(context);
                   },
                 ),
               ],
@@ -214,7 +213,6 @@ class _McqResultCongratulationsCard extends StatelessWidget {
           begin: Alignment.centerRight,
           end: Alignment.centerLeft,
           colors: [
-            // Color(0xFF8E6CFF), Color(0xFFA864E8)
             AppPalette.homeContainer1,
             AppPalette.homeContainer2,
             AppPalette.homeContainer3,
@@ -536,11 +534,9 @@ class _McqResultQuestionCard extends StatelessWidget {
                   horizontal: SizeConfig.w(0.022),
                   vertical: SizeConfig.h(0.008),
                 ),
-                //decoration: BoxDecoration(
                 backgroundColor: backgroundColor,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: borderColor),
-                //),
                 child: Row(
                   textDirection: TextDirection.rtl,
                   children: [

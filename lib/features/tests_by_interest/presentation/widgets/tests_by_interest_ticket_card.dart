@@ -268,78 +268,8 @@ class _PricePanel extends StatelessWidget {
   }
 }
 
-// class _PricePanel extends StatelessWidget {
-//   final MockInterestTestItem item;
-//   final bool isDark;
 
-//   const _PricePanel({required this.item, required this.isDark});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return ClipPath(
-//       clipper: _InnerRightPanelClipper(),
-//       child: Container(
-//         height: double.infinity,
-//         padding: EdgeInsets.symmetric(
-//           horizontal: SizeConfig.w(0.025),
-//           vertical: SizeConfig.h(0.012),
-//         ),
-//         color: isDark
-//             ? Colors.white.withOpacity(0.05)
-//             : const Color(0xFFF7F7F7),
-//         child: Align(
-//           alignment: Alignment.centerLeft,
-//           child: FittedBox(
-//             fit: BoxFit.scaleDown,
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.end,
-//               children: [
-//                 CustomTextWidget(
-//                   item.price.toString(),
-//                   fontSize: SizeConfig.text(0.05),
-//                   fontWeight: FontWeight.bold,
-//                   color: isDark
-//                       ? AppPalette.textWhiteINDark
-//                       : const Color(0xFF26323D),
-//                 ),
-//                 CustomTextWidget(
-//                   'ليرة سورية',
-//                   fontSize: SizeConfig.text(0.025),
-//                   color: AppPalette.greyMedium,
-//                 ),
-//                 SizedBox(height: SizeConfig.h(0.018)),
-//                 CustomTextWidget(
-//                   'التقييم',
-//                   fontSize: SizeConfig.text(0.034),
-//                   fontWeight: FontWeight.bold,
-//                   color: isDark
-//                       ? AppPalette.textWhiteINDark
-//                       : const Color(0xFF26323D),
-//                 ),
-//                 Row(
-//                   mainAxisSize: MainAxisSize.min,
-//                   children: [
-//                     CustomTextWidget(
-//                       item.rating.toStringAsFixed(1),
-//                       fontSize: SizeConfig.text(0.032),
-//                       color: AppPalette.greyMedium,
-//                     ),
-//                     SizedBox(width: SizeConfig.w(0.01)),
-//                     const Icon(
-//                       Icons.star_rounded,
-//                       color: Colors.amber,
-//                       size: 15,
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class _DifficultyBadge extends StatelessWidget {
   final String text;
@@ -368,34 +298,8 @@ class _DifficultyBadge extends StatelessWidget {
   }
 }
 
-// class _BlueTag extends StatelessWidget {
-//   final String text;
 
-//   const _BlueTag({required this.text});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Flexible(
-//       child: Container(
-//         padding: EdgeInsets.symmetric(
-//           horizontal: SizeConfig.w(0.018),
-//           vertical: SizeConfig.h(0.003),
-//         ),
-//         decoration: BoxDecoration(
-//           color: const Color(0xFF4F7DFF),
-//           borderRadius: BorderRadius.circular(6),
-//         ),
-//         child: CustomTextWidget(
-//           text,
-//           maxLines: 1,
-//           overflow: TextOverflow.ellipsis,
-//           fontSize: SizeConfig.text(0.022).clamp(8.0, 11.0),
-//           color: Colors.white,
-//         ),
-//       ),
-//     );
-//   }
-// }
 class _BlueTag extends StatelessWidget {
   final String text;
 

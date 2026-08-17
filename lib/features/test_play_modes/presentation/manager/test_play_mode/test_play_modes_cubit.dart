@@ -21,11 +21,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
   final GetTestPlayContentUseCase getTestPlayContentUseCase;
   final ChallengeResultPdfService challengeResultPdfService;
 
-  //////////////////////////////
-  //////////////////////////////
-  //////////////////////////////
-  //////////////////////////////
-  //////////////////////////////
   Timer? _challengeBotTimer;
   Timer? _challengeQuestionTimer;
 
@@ -46,40 +41,11 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
     voiceAssistantService.onError = _handleVoiceError;
   }
 
-  // void loadMockTestContent() {
-  //   debugPrint(
-  //     "============ TestPlayModesCubit.loadMockTestContent ============",
-  //   );
 
-  //   emit(
-  //     state.copyWith(
-  //       contentStatus: TestPlayContentStatus.loading,
-  //       clearError: true,
-  //     ),
-  //   );
 
-  //   final mockContent = _buildMockContent();
 
-  //   emit(
-  //     state.copyWith(
-  //       contentStatus: TestPlayContentStatus.success,
-  //       content: mockContent,
-  //       currentQuestionIndex: 0,
-  //       clearSelectedOption: true,
-  //       mcqQuestionPhase: McqQuestionPhase.idle,
-  //       answersByQuestionId: {},
-  //       elapsedSeconds: 0,
-  //       sessionStatus: TestPlaySessionStatus.playing,
-  //       clearError: true,
-  //     ),
-  //   );
 
-  //   _startSessionTimer();
 
-  //   debugPrint("✓ mock test content loaded");
-  //   debugPrint("→ questions count: ${mockContent.data.test.questions.length}");
-  //   debugPrint("=================================================");
-  // }
 
   void selectMcqOption({required int optionId}) {
     debugPrint("============ TestPlayModesCubit.selectMcqOption ============");
@@ -217,9 +183,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
     );
 
     debugPrint("✓ session completed");
-    // debugPrint("→ correct answers: ${state.correctAnswersCount}");
-    // debugPrint("→ wrong answers: ${state.wrongAnswersCount}");
-    // debugPrint("→ score: ${state.scorePercentage}%");
     debugPrint("→ answered questions: ${state.answeredQuestionsCount}");
     debugPrint("=================================================");
   }
@@ -318,14 +281,7 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
       await voiceAssistantService.speak(text);
       debugPrint("✓ current question speaking started");
 
-      //_scheduleVoiceAutoStop(text);
 
-      // emit(
-      //   state.copyWith(
-      //     voiceStatus: TestVoiceAssistantStatus.stopped,
-      //     clearVoiceError: true,
-      //   ),
-      // );
 
       debugPrint("✓ current question spoken");
     } catch (error) {
@@ -735,16 +691,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
     debugPrint("=================================================");
   }
 
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
   void toggleChallengeRulesPanel() {
     debugPrint(
       "============ TestPlayModesCubit.toggleChallengeRulesPanel ============",
@@ -854,8 +800,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
         challengeBotAnswerStatus: ChallengeBotAnswerStatus.thinking,
         challengeUserLastResult: ChallengeAnswerResult.none,
         challengeBotLastResult: ChallengeAnswerResult.none,
-        // challengeUserHasAnsweredCurrentQuestion: false,
-        // challengeBotHasAnsweredCurrentQuestion: false,
         activeChallengeSetupPanel: ChallengeSetupPanel.none,
         clearError: true,
         challengeAnsweredBy: ChallengeAnsweredBy.none,
@@ -950,14 +894,12 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
 
     _stopChallengeBotTimer();
 
-    //final reactionSeconds = _getBotReactionSeconds();
 
     emit(
       state.copyWith(
         challengeBotAnswerStatus: ChallengeBotAnswerStatus.thinking,
         challengeBotSelectedOptionId: null,
         challengeBotLastResult: ChallengeAnswerResult.none,
-        //challengeBotHasAnsweredCurrentQuestion: false,
         challengeBotReaction: ChallengeBotReaction.thinking,
       ),
     );
@@ -1078,11 +1020,11 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
 
     switch (state.selectedChallengeDifficulty) {
       case ChallengeDifficulty.easy:
-        return 5 + random.nextInt(5); // 5 - 9
+        return 5 + random.nextInt(5);
       case ChallengeDifficulty.medium:
-        return 3 + random.nextInt(4); // 3 - 6
+        return 3 + random.nextInt(4);
       case ChallengeDifficulty.hard:
-        return 1 + random.nextInt(3); // 1 - 3
+        return 1 + random.nextInt(3);
     }
   }
 
@@ -1129,8 +1071,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
         challengeBotSelectedOptionId: null,
         challengeUserLastResult: ChallengeAnswerResult.none,
         challengeBotLastResult: ChallengeAnswerResult.none,
-        // challengeUserHasAnsweredCurrentQuestion: false,
-        // challengeBotHasAnsweredCurrentQuestion: false,
       ),
     );
 
@@ -1233,7 +1173,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
     debugPrint("=================================================");
   }
 
-  //// fixes
   void _resolveChallengeQuestion({
     required ChallengeAnsweredBy answeredBy,
     required int? selectedOptionId,
@@ -1317,12 +1256,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
         challengeUserLastResult: userResult,
         challengeBotLastResult: botResult,
         challengeBotReaction: botReaction,
-        // challengeUserHasAnsweredCurrentQuestion:
-        //     answeredBy == ChallengeAnsweredBy.user ||
-        //     answeredBy == ChallengeAnsweredBy.timeout,
-        // challengeBotHasAnsweredCurrentQuestion:
-        //     answeredBy == ChallengeAnsweredBy.bot ||
-        //     answeredBy == ChallengeAnsweredBy.timeout,
         clearError: true,
       ),
     );
@@ -1435,8 +1368,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
     );
   }
 
-  //////////////////// FLASH CARD ////////////////////////////
-  //////////////////// FLASH CARD ////////////////////////////
   void toggleFlashcard() {
     debugPrint("============ TestPlayModesCubit.toggleFlashcard ============");
 
@@ -1602,7 +1533,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
     return super.close();
   }
 
-  ///// mark as attempt /////////////////////
   bool _hasRegisteredAttemptInteractionForCurrentSession = false;
 
   void _resetAttemptInteractionRegisterGuard({required String source}) {
@@ -1645,8 +1575,6 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
         debugPrint("→ message: ${failure.message}");
         debugPrint("→ ignored by UI: true");
 
-        // نعيد السماح بالمحاولة فقط إذا فشل الطلب؟
-        // بما أنك قلت لا يؤثر على شيء، الأفضل لا نعيده كي لا تتكرر الطلبات عند rebuild.
       },
       (response) {
         debugPrint("✓ register test attempt interaction success");

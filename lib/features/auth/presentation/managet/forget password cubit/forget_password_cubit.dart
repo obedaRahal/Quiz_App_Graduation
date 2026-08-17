@@ -89,8 +89,6 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
       emit(
         state.copyWith(
           requestOtpStatus: ForgotPasswordRequestOtpStatus.success,
-          // successMessage: result.message,
-          // errorMessage: null,
           snackBarTitle: result.title,
           successMessage: result.message,
           errorMessage: null,
@@ -100,12 +98,6 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
       debugPrint("FORGOT PASSWORD REQUEST OTP ERROR => $e");
       debugPrint("FORGOT PASSWORD REQUEST OTP STACK => $s");
 
-      // emit(
-      //   state.copyWith(
-      //     requestOtpStatus: ForgotPasswordRequestOtpStatus.failure,
-      //     errorMessage: e.toString(),
-      //   ),
-      // );
       emit(
         state.copyWith(
           requestOtpStatus: ForgotPasswordRequestOtpStatus.failure,
@@ -171,15 +163,6 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
     }
 
     emit(state.copyWith(showOtpError: false));
-    // if (otpCode.length != 6) {
-    //   emit(
-    //     state.copyWith(
-    //       verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
-    //       errorMessage: 'يجب أن يتكون رمز التحقق من 6 أرقام.',
-    //     ),
-    //   );
-    //   return;
-    // }
 
     emit(
       state.copyWith(
@@ -198,8 +181,6 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
       emit(
         state.copyWith(
           verifyOtpStatus: ForgotPasswordVerifyOtpStatus.success,
-          // successMessage: result.message,
-          // errorMessage: null,
           snackBarTitle: result.title,
           successMessage: result.message,
           errorMessage: null,
@@ -209,12 +190,6 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
       debugPrint("FORGOT PASSWORD VERIFY OTP ERROR => $e");
       debugPrint("FORGOT PASSWORD VERIFY OTP STACK => $s");
 
-      // emit(
-      //   state.copyWith(
-      //     verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
-      //     errorMessage: e.toString(),
-      //   ),
-      // );
       emit(
         state.copyWith(
           verifyOtpStatus: ForgotPasswordVerifyOtpStatus.failure,
@@ -259,8 +234,6 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
       emit(
         state.copyWith(
           resendOtpStatus: ForgotPasswordResendOtpStatus.success,
-          // resendSuccessMessage: result.message,
-          // errorMessage: null,
           snackBarTitle: result.title,
           successMessage: result.message,
           errorMessage: null,
@@ -272,12 +245,6 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
       debugPrint("FORGOT PASSWORD RESEND OTP ERROR => $e");
       debugPrint("FORGOT PASSWORD RESEND OTP STACK => $s");
 
-      // emit(
-      //   state.copyWith(
-      //     resendOtpStatus: ForgotPasswordResendOtpStatus.failure,
-      //     errorMessage: e.toString(),
-      //   ),
-      // );
       emit(
         state.copyWith(
           resendOtpStatus: ForgotPasswordResendOtpStatus.failure,
@@ -369,8 +336,6 @@ class ForgetPasswordCubit extends SafeCubit<ForgetPasswordState> {
       emit(
         state.copyWith(
           resetStatus: ForgotPasswordResetStatus.success,
-          // resetSuccessMessage: result.message,
-          // errorMessage: null,
           snackBarTitle: result.title,
           successMessage: result.message,
           errorMessage: null,

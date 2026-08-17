@@ -22,9 +22,6 @@ class StudyPlanHomeMockData {
     }
   }
 
-  // ============================================================
-  // الحالة الأولى: لا توجد خطة افتراضية
-  // ============================================================
 
   static const StudyPlanOverviewEntity noPlan = StudyPlanOverviewEntity(
     success: true,
@@ -47,9 +44,6 @@ class StudyPlanHomeMockData {
     ),
   );
 
-  // ============================================================
-  // الحالة الثانية: توجد خطة ولكن لا توجد مهام
-  // ============================================================
 
   static const StudyPlanOverviewEntity planWithoutTasks =
       StudyPlanOverviewEntity(
@@ -172,9 +166,6 @@ class StudyPlanHomeMockData {
         ),
       );
 
-  // ============================================================
-  // الحالة الثالثة: توجد خطة وتوجد مهام
-  // ============================================================
 
   static const StudyPlanOverviewEntity planWithTasks = StudyPlanOverviewEntity(
     success: true,

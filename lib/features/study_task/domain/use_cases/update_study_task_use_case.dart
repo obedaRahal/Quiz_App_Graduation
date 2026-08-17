@@ -19,7 +19,6 @@ class UpdateStudyTaskUseCase {
       '============',
     );
     debugPrint('→ params: $params');
-    //debugPrint('→ hasChanges: ${params.hasChanges}');
     debugPrint('→ body: ${params.toBody()}');
 
     return repository.updateStudyTask(params: params);

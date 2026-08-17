@@ -1,107 +1,20 @@
-// import 'package:flutter/material.dart';
-// import 'package:quiz_app_grad/core/theme/assets/images.dart';
-// import 'package:quiz_app_grad/core/utils/media_query_config.dart';
-// import 'package:quiz_app_grad/features/study_plan/presentation/widgets/create/study_plan_form_section_header.dart';
-// import 'package:quiz_app_grad/features/study_task/presentation/widgets/common/subtasks/study_task_subtask_item.dart';
-// import 'package:quiz_app_grad/features/study_task/presentation/widgets/common/subtasks/study_task_subtask_row.dart';
 
-// class StudyTaskSubtasksSection extends StatelessWidget {
-//   final List<StudyTaskSubtaskItem> subtasks;
 
-//   final int maxSubtasksCount;
-//   final int maxSubtaskTitleLength;
 
-//   final VoidCallback onAddSubtask;
-//   final ValueChanged<int> onRemoveSubtask;
 
-//   final void Function(int index, String title) onSubtaskTitleChanged;
 
-//   final void Function(int index, bool isCompleted)? onSubtaskCompletedChanged;
-//   final String sectionDescription;
 
-//   final bool showCompletedCheckbox;
 
-//   const StudyTaskSubtasksSection({
-//     super.key,
-//     required this.subtasks,
-//     required this.maxSubtasksCount,
-//     required this.maxSubtaskTitleLength,
-//     required this.onAddSubtask,
-//     required this.onRemoveSubtask,
-//     required this.onSubtaskTitleChanged,
-//     required this.onSubtaskCompletedChanged,
-//     this.sectionDescription =
-//         'قسّم المهمة إلى خطوات صغيرة لتسهيل متابعتها وإنجازها.',
 
-//     this.showCompletedCheckbox = true,
-//   });
 
-//   bool get _canAdd {
-//     return subtasks.length < maxSubtasksCount;
-//   }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.stretch,
-//       children: [
-//         StudyPlanFormSectionHeader(
-//           title: 'المهام الفرعية',
-//           description: sectionDescription,
-//           image: AppImage.menu,
-//         ),
 
-//         SizedBox(height: SizeConfig.h(0.016)),
 
-//         ...List.generate(subtasks.length, (index) {
-//           final subtask = subtasks[index];
 
-//           return Padding(
-//             padding: EdgeInsets.only(
-//               bottom: index == subtasks.length - 1 ? 0 : 12,
-//             ),
-//             child: StudyTaskSubtaskRow(
-//               key: ValueKey(subtask.id ?? 'new-subtask-$index'),
-//               index: index,
-//               title: subtask.title,
-//               isCompleted: subtask.isCompleted,
-//               maxTitleLength: maxSubtaskTitleLength,
-//               canRemove: subtasks.length > 1,
-//               showCompletedCheckbox: showCompletedCheckbox,
-//               onTitleChanged: (title) {
-//                 onSubtaskTitleChanged(index, title);
-//               },
-//               onCompletedChanged: onSubtaskCompletedChanged == null
-//                   ? null
-//                   : (isCompleted) {
-//                       onSubtaskCompletedChanged!(index, isCompleted);
-//                     },
-//               onRemove: () {
-//                 onRemoveSubtask(index);
-//               },
-//             ),
-//           );
-//         }),
 
-//         SizedBox(height: SizeConfig.h(0.014)),
 
-//         OutlinedButton.icon(
-//           onPressed: _canAdd ? onAddSubtask : null,
-//           icon: const Icon(Icons.add_rounded),
-//           label: Text(_canAdd ? 'إضافة مهمة فرعية' : 'وصلت إلى الحد الأقصى'),
-//         ),
 
-//         SizedBox(height: SizeConfig.h(0.006)),
 
-//         Text(
-//           '${subtasks.length}/$maxSubtasksCount',
-//           textAlign: TextAlign.center,
-//           style: Theme.of(context).textTheme.bodySmall,
-//         ),
-//       ],
-//     );
-//   }
-// }
 
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';

@@ -3,11 +3,11 @@ import 'package:file_picker/file_picker.dart';
 class CreateContentParams {
   final String title;
   final String description;
-  final String contentKind; // صور مجمعة / ملف
+  final String contentKind;
   final List<PlatformFile> assets;
   final List<int> interestIds;
   final String targetLevel;
-  final String visibilityType; // عام / خاص
+  final String visibilityType;
 
   const CreateContentParams({
     required this.title,

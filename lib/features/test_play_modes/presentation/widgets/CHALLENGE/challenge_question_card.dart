@@ -294,9 +294,7 @@ class _ChallengeOptionItem extends StatelessWidget {
     final isBotSelected = state.challengeBotSelectedOptionId == optionId;
 
 
-    //final bothAnswered = userAnswered && botAnswered;
     final isResolved = state.isChallengeQuestionResolved;
-    // بعد انتهاء إجابة الطرفين: نظهر الصحيح والخطأ بوضوح
     if (isResolved && isCorrectOption) {
       return _ChallengeOptionStyle(
         backgroundColor: isDark
@@ -329,7 +327,6 @@ class _ChallengeOptionItem extends StatelessWidget {
       );
     }
 
-    // قبل انتهاء الجولة: اختيار المستخدم أزرق
     if (isUserSelected) {
       return _ChallengeOptionStyle(
         backgroundColor: appColors.primarySoftTogreyLightDark,
@@ -340,7 +337,6 @@ class _ChallengeOptionItem extends StatelessWidget {
       );
     }
 
-    // قبل انتهاء الجولة: اختيار البوت زهري/بنفسجي
     if (isBotSelected) {
       return _ChallengeOptionStyle(
         backgroundColor: const Color(0xFFD46BFF).withOpacity(0.12),

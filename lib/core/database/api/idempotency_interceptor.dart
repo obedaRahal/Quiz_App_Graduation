@@ -1,9 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
 
-/// Adds idempotency keys only to the mobile API routes that explicitly
-/// require them. Keys are kept in memory for ten minutes, which lets a
-/// repeated touch or a retry of the same request reuse the original key.
 class IdempotencyInterceptor extends Interceptor {
   static const _headerName = 'Idempotency-Key';
   static const _entryLifetime = Duration(minutes: 10);

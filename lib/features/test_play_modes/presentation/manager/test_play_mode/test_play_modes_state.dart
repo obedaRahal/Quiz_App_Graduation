@@ -1,8 +1,6 @@
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_answer_record_entity.dart';
 import 'package:quiz_app_grad/features/test_play_modes/domain/entities/test_play_content_entity.dart';
 
-//////////////////// MCQ ////////////////////////////
-//////////////////// MCQ ////////////////////////////
 enum TestPlayContentStatus { initial, loading, success, failure }
 
 enum McqQuestionPhase { idle, selected, checked }
@@ -13,8 +11,6 @@ enum TestVoiceAssistantStatus { initial, speaking, stopped, failure }
 
 enum McqResultPdfStatus { initial, loading, success, failure }
 
-//////////////////// CHALLENGE ////////////////////////////
-//////////////////// CHALLENGE ////////////////////////////
 enum ChallengeDifficulty { easy, medium, hard }
 
 enum ChallengeSetupPanel { none, rules, characters }
@@ -28,12 +24,8 @@ enum ChallengeBotReaction { none, thinking, correct, wrong }
 enum ChallengeAnsweredBy { none, user, bot, timeout }
 
 enum ChallengeResultPdfStatus { initial, loading, success, failure }
-//////////////////// FLASHCARDS ////////////////////////////
-//////////////////// FLASHCARDS ////////////////////////////
 
 class TestPlayModesState {
-  //////////////////// MCQ ////////////////////////////
-  //////////////////// MCQ ////////////////////////////
   final TestPlayContentStatus contentStatus;
   final TestPlayContentEntity? content;
 
@@ -54,8 +46,6 @@ class TestPlayModesState {
   final McqResultPdfStatus mcqResultPdfStatus;
   final String? generatedMcqResultPdfPath;
 
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
   final ChallengeDifficulty selectedChallengeDifficulty;
   final ChallengeSetupPanel activeChallengeSetupPanel;
   final int selectedChallengeCharacterId;
@@ -66,8 +56,6 @@ class TestPlayModesState {
   final ChallengeAnswerResult challengeUserLastResult;
   final ChallengeAnswerResult challengeBotLastResult;
   final ChallengeBotAnswerStatus challengeBotAnswerStatus;
-  // final bool challengeUserHasAnsweredCurrentQuestion;
-  // final bool challengeBotHasAnsweredCurrentQuestion;
   final int challengeQuestionTotalSeconds;
   final int challengeQuestionRemainingSeconds;
   final ChallengeBotReaction challengeBotReaction;
@@ -78,8 +66,6 @@ class TestPlayModesState {
   final ChallengeResultPdfStatus challengeResultPdfStatus;
   final String? generatedChallengeResultPdfPath;
 
-  //////////////////// FLASHCARDS ////////////////////////////
-  //////////////////// FLASHCARDS ////////////////////////////
 
   final bool isFlashcardFlipped;
   final List<int> flashcardQueueQuestionIds;
@@ -105,7 +91,6 @@ class TestPlayModesState {
     this.mcqResultPdfStatus = McqResultPdfStatus.initial,
     this.generatedMcqResultPdfPath,
 
-    /////////////////////////////////////////////////////////////
     this.selectedChallengeDifficulty = ChallengeDifficulty.medium,
     this.activeChallengeSetupPanel = ChallengeSetupPanel.none,
     this.selectedChallengeCharacterId = 1,
@@ -116,8 +101,6 @@ class TestPlayModesState {
     this.challengeBotAnswerStatus = ChallengeBotAnswerStatus.idle,
     this.challengeUserLastResult = ChallengeAnswerResult.none,
     this.challengeBotLastResult = ChallengeAnswerResult.none,
-    // this.challengeUserHasAnsweredCurrentQuestion = false,
-    // this.challengeBotHasAnsweredCurrentQuestion = false,
     this.challengeQuestionTotalSeconds = 0,
     this.challengeQuestionRemainingSeconds = 0,
     this.challengeBotReaction = ChallengeBotReaction.none,
@@ -128,7 +111,6 @@ class TestPlayModesState {
     this.challengeResultPdfStatus = ChallengeResultPdfStatus.initial,
     this.generatedChallengeResultPdfPath,
 
-    /////////////////////////////
     this.isFlashcardFlipped = false,
     this.flashcardQueueQuestionIds = const [],
     this.flashcardKnownQuestionIds = const {},
@@ -136,8 +118,6 @@ class TestPlayModesState {
     this.flashcardReviewedQuestionIds = const {},
   });
 
-  //////////////////// MCQ ////////////////////////////
-  //////////////////// MCQ ////////////////////////////
   bool get isContentLoading => contentStatus == TestPlayContentStatus.loading;
   bool get isContentSuccess => contentStatus == TestPlayContentStatus.success;
   bool get isContentFailure => contentStatus == TestPlayContentStatus.failure;
@@ -234,8 +214,6 @@ class TestPlayModesState {
     return scorePercentage >= passMark;
   }
 
-  //////////////////// CHALLENGE ////////////////////////////
-  //////////////////// CHALLENGE ////////////////////////////
   bool get isChallengeRulesPanelVisible =>
       activeChallengeSetupPanel == ChallengeSetupPanel.rules;
   bool get isChallengeCharactersPanelVisible =>
@@ -320,8 +298,6 @@ class TestPlayModesState {
   bool get isChallengeResultPdfFailure =>
       challengeResultPdfStatus == ChallengeResultPdfStatus.failure;
 
-  //////////////////// FLASHCARDS ////////////////////////////
-  //////////////////// FLASHCARDS ////////////////////////////
 
   bool get hasFlashcardCards => flashcardQueueQuestionIds.isNotEmpty;
 
@@ -351,8 +327,6 @@ class TestPlayModesState {
       flashcardKnownQuestionIds.difference(flashcardReviewedQuestionIds).length;
 
   TestPlayModesState copyWith({
-    //////////////////// MCQ ////////////////////////////
-    //////////////////// MCQ ////////////////////////////
     TestPlayContentStatus? contentStatus,
     TestPlayContentEntity? content,
     String? errorTitle,
@@ -376,8 +350,6 @@ class TestPlayModesState {
     String? generatedMcqResultPdfPath,
     bool clearGeneratedMcqResultPdfPath = false,
 
-    //////////////////// CHALLENGE ////////////////////////////
-    //////////////////// CHALLENGE ////////////////////////////
     ChallengeDifficulty? selectedChallengeDifficulty,
     ChallengeSetupPanel? activeChallengeSetupPanel,
     int? selectedChallengeCharacterId,
@@ -388,8 +360,6 @@ class TestPlayModesState {
     ChallengeBotAnswerStatus? challengeBotAnswerStatus,
     ChallengeAnswerResult? challengeUserLastResult,
     ChallengeAnswerResult? challengeBotLastResult,
-    //bool? challengeUserHasAnsweredCurrentQuestion,
-    //bool? challengeBotHasAnsweredCurrentQuestion,
     int? challengeQuestionTotalSeconds,
     int? challengeQuestionRemainingSeconds,
     ChallengeBotReaction? challengeBotReaction,
@@ -402,8 +372,6 @@ class TestPlayModesState {
     String? generatedChallengeResultPdfPath,
     bool clearGeneratedChallengeResultPdfPath = false,
 
-    //////////////////// FLASH CARD ////////////////////////////
-    //////////////////// FLASH CARD ////////////////////////////
     bool? isFlashcardFlipped,
     List<int>? flashcardQueueQuestionIds,
     Set<int>? flashcardKnownQuestionIds,
@@ -434,7 +402,6 @@ class TestPlayModesState {
           ? null
           : generatedMcqResultPdfPath ?? this.generatedMcqResultPdfPath,
 
-      ///////////////////////////////////
       selectedChallengeDifficulty:
           selectedChallengeDifficulty ?? this.selectedChallengeDifficulty,
       activeChallengeSetupPanel:
@@ -473,7 +440,6 @@ class TestPlayModesState {
           : generatedChallengeResultPdfPath ??
                 this.generatedChallengeResultPdfPath,
 
-      /////////////////////////////
       isFlashcardFlipped: isFlashcardFlipped ?? this.isFlashcardFlipped,
       flashcardQueueQuestionIds:
           flashcardQueueQuestionIds ?? this.flashcardQueueQuestionIds,

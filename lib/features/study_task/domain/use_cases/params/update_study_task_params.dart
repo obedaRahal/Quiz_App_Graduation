@@ -1,9 +1,6 @@
 import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_priority.dart';
 import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_repeat_pattern.dart';
 
-// =========================================================
-// UPDATE SUBTASK PARAMS
-// =========================================================
 
 class UpdateStudyTaskSubtaskParams {
   final int? id;
@@ -68,14 +65,8 @@ class UpdateStudyTaskSubtaskParams {
   }
 }
 
-// =========================================================
-// UPDATE STUDY TASK PARAMS
-// =========================================================
 
 class UpdateStudyTaskParams {
-  // =========================================================
-  // CONSTANTS
-  // =========================================================
 
   static const int titleMaxLength = 100;
 
@@ -106,16 +97,10 @@ class UpdateStudyTaskParams {
     10080,
   };
 
-  // =========================================================
-  // IDS
-  // =========================================================
 
   final int planId;
   final int taskId;
 
-  // =========================================================
-  // OPTIONAL CHANGED FIELDS
-  // =========================================================
 
   final String? title;
   final String? description;
@@ -130,52 +115,18 @@ class UpdateStudyTaskParams {
 
   final StudyTaskPriority? priority;
 
-  // =========================================================
-  // SUBTASKS
-  // =========================================================
 
-  /*
-   * false:
-   * لم تتغير المهام الفرعية، فلا نرسل المفتاح.
-   *
-   * true:
-   * تغيرت المهام الفرعية، ونرسل القائمة كاملة،
-   * حتى إن أصبحت قائمة فارغة.
-   */
   final bool includeSubtasks;
 
   final List<UpdateStudyTaskSubtaskParams> subtasks;
 
-  // =========================================================
-  // REPEAT
-  // =========================================================
 
-  /*
-   * false:
-   * لم يتغير التكرار، فلا نرسل حقوله.
-   *
-   * true:
-   * تغير التكرار، ونرسل repeat_pattern.
-   */
   final bool includeRepeat;
 
   final StudyTaskRepeatPattern? repeatPattern;
   final int? repeatWeekday;
 
-  // =========================================================
-  // REMINDER
-  // =========================================================
 
-  /*
-   * false:
-   * لم يتغير التذكير، فلا نرسل المفتاح.
-   *
-   * true مع قيمة:
-   * نرسل عدد الدقائق.
-   *
-   * true مع null:
-   * نرسل null لحذف التذكير.
-   */
   final bool includeReminderOffsetMinutes;
 
   final int? reminderOffsetMinutes;
@@ -208,9 +159,6 @@ class UpdateStudyTaskParams {
     this.reminderOffsetMinutes,
   });
 
-  // =========================================================
-  // NORMALIZED VALUES
-  // =========================================================
 
   String? get normalizedTitle {
     final value = title;
@@ -262,9 +210,6 @@ class UpdateStudyTaskParams {
     return _normalizeDate(value);
   }
 
-  // =========================================================
-  // CHANGE GETTERS
-  // =========================================================
 
   bool get hasTitle {
     return title != null;
@@ -312,9 +257,6 @@ class UpdateStudyTaskParams {
         includeReminderOffsetMinutes;
   }
 
-  // =========================================================
-  // TITLE VALIDATION
-  // =========================================================
 
   bool get hasValidTitle {
     if (!hasTitle) {
@@ -326,9 +268,6 @@ class UpdateStudyTaskParams {
     return value != null && value.isNotEmpty && value.length <= titleMaxLength;
   }
 
-  // =========================================================
-  // DESCRIPTION VALIDATION
-  // =========================================================
 
   bool get hasValidDescription {
     if (!hasDescription) {
@@ -342,9 +281,6 @@ class UpdateStudyTaskParams {
         value.length <= descriptionMaxLength;
   }
 
-  // =========================================================
-  // SUBJECT VALIDATION
-  // =========================================================
 
   bool get hasValidStudyPlanSubjectId {
     final value = studyPlanSubjectId;
@@ -352,9 +288,6 @@ class UpdateStudyTaskParams {
     return value == null || value > 0;
   }
 
-  // =========================================================
-  // DATES VALIDATION
-  // =========================================================
 
   bool get hasValidStartDate {
     final value = normalizedStartDate;
@@ -368,12 +301,6 @@ class UpdateStudyTaskParams {
     return !value.isBefore(today);
   }
 
-  /*
-   * عند إرسال التاريخين معًا، نتحقق من ترتيبهما.
-   *
-   * أما عند إرسال تاريخ واحد فقط، فالتحقق الكامل
-   * يكون قد تم مسبقًا داخل الـState.
-   */
   bool get haveValidDateOrder {
     final start = normalizedStartDate;
     final end = normalizedEndDate;
@@ -407,9 +334,6 @@ class UpdateStudyTaskParams {
     return taskRangeDays >= 1 && taskRangeDays <= maxTaskRangeDays;
   }
 
-  // =========================================================
-  // TIME VALIDATION
-  // =========================================================
 
   bool get hasValidStartTime {
     if (!hasStartTime) {
@@ -421,9 +345,6 @@ class UpdateStudyTaskParams {
     return value != null && _isValidTime(value);
   }
 
-  // =========================================================
-  // DURATION VALIDATION
-  // =========================================================
 
   bool get hasValidDuration {
     final value = durationMinutes;
@@ -432,9 +353,6 @@ class UpdateStudyTaskParams {
         value >= minDurationMinutes && value <= maxDurationMinutes;
   }
 
-  // =========================================================
-  // SUBTASKS VALIDATION
-  // =========================================================
 
   bool get hasValidSubtasksCount {
     if (!includeSubtasks) {
@@ -456,9 +374,6 @@ class UpdateStudyTaskParams {
     return subtasks.every((subtask) => subtask.isValid);
   }
 
-  // =========================================================
-  // REPEAT VALIDATION
-  // =========================================================
 
   bool get hasValidRepeat {
     if (!includeRepeat) {
@@ -480,30 +395,17 @@ class UpdateStudyTaskParams {
     return weekday != null && weekday >= 0 && weekday <= 6;
   }
 
-  // =========================================================
-  // REMINDER VALIDATION
-  // =========================================================
 
   bool get hasValidReminder {
     if (!includeReminderOffsetMinutes) {
-      /*
-       * عندما لا نرسل التذكير، يجب ألا نحمل
-       * قيمة غير مستخدمة داخله.
-       */
       return reminderOffsetMinutes == null;
     }
 
     final value = reminderOffsetMinutes;
 
-    /*
-     * null مسموحة هنا لأنها تعني حذف التذكير.
-     */
     return value == null || allowedReminderOffsetMinutes.contains(value);
   }
 
-  // =========================================================
-  // GENERAL VALIDATION
-  // =========================================================
 
   bool get hasValidIds {
     return planId > 0 && taskId > 0;
@@ -525,9 +427,6 @@ class UpdateStudyTaskParams {
         hasValidReminder;
   }
 
-  // =========================================================
-  // BODY
-  // =========================================================
 
   Map<String, dynamic> toBody() {
     final body = <String, dynamic>{};
@@ -576,10 +475,6 @@ class UpdateStudyTaskParams {
       body['priority'] = selectedPriority.apiValue;
     }
 
-    /*
-     * نرسل القائمة حتى إن كانت فارغة،
-     * لأن القائمة الفارغة تعني حذف جميع المهام الفرعية.
-     */
     if (includeSubtasks) {
       body['subtasks'] = subtasks
           .map((subtask) => subtask.toBody())
@@ -598,10 +493,6 @@ class UpdateStudyTaskParams {
       }
     }
 
-    /*
-     * عند includeReminderOffsetMinutes == true
-     * نرسل المفتاح دائمًا، حتى إن كانت القيمة null.
-     */
     if (includeReminderOffsetMinutes) {
       body['reminder_offset_minutes'] = reminderOffsetMinutes;
     }
@@ -609,9 +500,6 @@ class UpdateStudyTaskParams {
     return body;
   }
 
-  // =========================================================
-  // HELPERS
-  // =========================================================
 
   static DateTime _normalizeDate(DateTime value) {
     return DateTime(value.year, value.month, value.day);
@@ -631,9 +519,6 @@ class UpdateStudyTaskParams {
     return RegExp(r'^([01]\d|2[0-3]):([0-5]\d)$').hasMatch(value.trim());
   }
 
-  // =========================================================
-  // TO STRING
-  // =========================================================
 
   @override
   String toString() {

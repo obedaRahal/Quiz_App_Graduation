@@ -263,9 +263,6 @@ class AppRouter {
         GoRoute(
           path: AppRouterPath.login,
           name: AppRouterName.login,
-          // pageBuilder: (context, state) =>
-          //       _slidePage(state: state, child: const LoginPage()),
-          //  builder: (context, state) => const LoginPage(),
           builder: (context, state) {
             return BlocProvider(
               create: (_) => sl<LoginCubit>(),
@@ -462,14 +459,10 @@ class AppRouter {
             return _slidePage(
               state: state,
               child: BlocProvider(
-                //lazy: false,
                 create: (_) {
                   final cubit = sl<DetailsOfTestCubit>();
 
                   if (testId > 0) {
-                    // Future.microtask(
-                    //   () => cubit.getOtherTestDetailsOverview(testId: testId),
-                    // );
                     cubit.getOtherTestDetailsOverview(testId: testId);
                     cubit.getOtherTestDetailsSample(testId: testId);
                     cubit.getOtherTestDetailsReviews(
@@ -565,7 +558,6 @@ class AppRouter {
           },
         ),
 
-        //////////////////
         GoRoute(
           path: AppRouterPath.myTestDetails,
           name: AppRouterName.myTestDetails,
@@ -615,7 +607,6 @@ class AppRouter {
           },
         ),
 
-        ///////////////// other profile ////////////////////////////
         GoRoute(
           path: AppRouterPath.otherProfile,
           name: AppRouterName.otherProfile,
@@ -644,7 +635,6 @@ class AppRouter {
           },
         ),
 
-        /////////////////// my profile ///////////////
         GoRoute(
           path: AppRouterPath.myProfile,
           name: AppRouterName.myProfile,
@@ -705,20 +695,6 @@ class AppRouter {
           },
         ),
 
-        ////////////////////  study plan ////////////////////
-        // GoRoute(
-        //   path: AppRouterPath.studyPlan,
-        //   name: AppRouterName.studyPlan,
-        //   builder: (context, state) {
-        //     return BlocProvider(
-        //       create: (_) => StudyPlanHomeCubit()
-        //         ..loadInitialMock(
-        //           scenario: StudyPlanHomeMockScenario.planWithTasks,
-        //         ),
-        //       child: const StudyPlanHomeView(),
-        //     );
-        //   },
-        // ),
         GoRoute(
           path: AppRouterPath.createStudyPlan,
           name: AppRouterName.createStudyPlan,
@@ -911,7 +887,6 @@ class AppRouter {
           },
         ),
 
-        ///////// settings /////////////
         GoRoute(
           path: AppRouterPath.settings,
           name: AppRouterName.settings,
@@ -939,7 +914,6 @@ class AppRouter {
           },
         ),
 
-        ///////// sold tests /////////////
         GoRoute(
           path: AppRouterPath.soldTests,
           name: AppRouterName.soldTests,
@@ -970,7 +944,6 @@ class AppRouter {
           },
         ),
 
-        ///////// academic verification /////////////
         GoRoute(
           path: AppRouterPath.academicVerification,
           name: AppRouterName.academicVerification,

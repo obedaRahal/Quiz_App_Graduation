@@ -6,10 +6,7 @@ class AppImage {
   static const _baseLottie = 'assets/lottie';
   static const _baseGif = 'assets/gif';
 
-  ////////////////////// light image ////////////////////////////
-  //////////////////////////////////////////////////////////////
 
-  ///////// splash view //////////////////
   static String get logo => '$_baseIcon/logo.png';
   static String get logoLight => '$_baseIcon/logolight.svg';
 
@@ -20,16 +17,13 @@ class AppImage {
 
   static String get welcomeLight => '$_baseImageLight/newWelcomeLight.svg';
 
-  //////// introoooo ////////////////
   static String get intro1 => '$_baseImageLight/intro1light.png';
   static String get intro2 => '$_baseImageLight/intro2light.png';
   static String get intro3 => '$_baseImageLight/intro3light.png';
 
-  /////////// common images //////////////
   static String get emptyDataLight => '$_baseImageLight/emptyDataLight.svg';
   static String get emptyDataDark => '$_baseImageDark/emptyDataDark.svg';
 
-  /////////// onboardoing ////////////
   static String get number1Onboarding => '$_baseIcon/number1.svg';
   static String get number2Onboarding => '$_baseIcon/number2.svg';
   static String get number3Onboarding => '$_baseIcon/number3.svg';
@@ -38,7 +32,6 @@ class AppImage {
   static String get onbardingdowncheck =>
       '$_baseImageLight/onboardingdowncheck.png';
 
-  //////////////// details of test
   static String get layersIcon => '$_baseIcon/layers.svg';
   static String get muscleIcon => '$_baseIcon/muscle.svg';
   static String get contentFileIcon => '$_baseIcon/file-content.svg';
@@ -48,7 +41,6 @@ class AppImage {
   static String get timer => '$_baseIcon/timer.svg';
   static String get timerIcon => '$_baseIcon/timerIcon.svg';
 
-  ////////////   Mode play
   static String get cup => '$_baseIcon/cup.svg';
   static String get robot1 => '$_baseIcon/robot1.svg';
   static String get robot2 => '$_baseIcon/robot2.svg';
@@ -66,7 +58,6 @@ class AppImage {
   static String get challengeMainCardLight =>
       '$_baseImageLight/challengeMainCardLight.svg';
 
-  ///////////////////////// mt test details
   static String get approvedIcon => '$_baseIcon/approvedIcon.svg';
   static String get deleteIcon => '$_baseIcon/deleteIcon.svg';
   static String get needsModificationIcon =>
@@ -75,28 +66,21 @@ class AppImage {
   static String get reportedIcon => '$_baseIcon/reportedIcon.svg';
   static String get underReviewIcon => '$_baseIcon/underReviewIcon.svg';
 
-  /////////////////// profile ////////////////////////
   static String get educationIcon => '$_baseIcon/educationIcon.svg';
   static String get jenderIcon => '$_baseIcon/jenderIcon.svg';
   static String get locationIcon => '$_baseIcon/locationIcon.svg';
   static String get folderIcon => '$_baseIcon/folder.svg';
   static String get emptyFolder => '$_baseIcon/emptyFolder.svg';
 
-  /////////////////////////////////////////////////////////////////
-  ////////////////////// darkkkk image ////////////////////////////
-  //////////////////////////////////////////////////////////////
   static String get welcomeDark => '$_baseImageDark/newWelcomeDark.svg';
-  /////// register /////////////////
   static String get female => '$_baseImageLight/user-long-hair.svg';
   static String get male => '$_baseImageLight/user-short-hair.svg';
-  /////// Forget Password /////////////////
   static String get forgetPassword1 => '$_baseImageLight/forgetpassword1.svg';
   static String get forgetPassword2 => '$_baseImageLight/forgetpassword2.svg';
   static String get forgetPasswordPng2 => '$_baseImageLight/Group 57@2x.png';
   static String get forgetPassword3 => '$_baseImageLight/forgetpassword3.svg';
   static String get forgetPasswordPng3 => '$_baseImageLight/Group 58@2x.png';
 
-  /////////// Home /////////////
   static String get homeProfilePhotofFemale =>
       '$_baseImageLight/homeprofilephoto.svg';
   static String get homeProfilePhotofMale => '$_baseImageLight/Group 180.svg';
@@ -112,7 +96,6 @@ class AppImage {
   static String get library => '$_baseImageLight/library-svgrepo-com.svg';
   static String get bookmark =>
       '$_baseImageLight/book-bookmark-minimalistic-svgrepo-com.svg';
-  // create Test
   static String get syria => '$_baseImageLight/syria.svg';
   static String get menu => '$_baseImageLight/menu-3.svg';
   static String get selfie => '$_baseImageLight/selfie-2.svg';
@@ -130,11 +113,9 @@ class AppImage {
   static String get shapes => '$_baseImageLight/shapes-2.svg';
   static String get journals => '$_baseImageLight/journals-svgrepo-com.svg';
 
-  //// play mode
   static String get challengeMainCardDark =>
       '$_baseImageDark/challengeMainCardDark.svg';
 
-  //// study plan
   static String get studyPlanLight => '$_baseImageLight/studyplan.svg';
   static String get studyPlanDark => '$_baseImageDark/studyplan.png';
   static String get oldTask => '$_baseIcon/oldTask.svg';

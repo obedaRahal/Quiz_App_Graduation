@@ -68,7 +68,6 @@ class SampleQuestionCard extends StatelessWidget {
                       context,
                       title: "توضيح",
                       message: hint,
-                      //type: AppValidationSnackBarType.hint,
                     );
                   },
                   child: Padding(

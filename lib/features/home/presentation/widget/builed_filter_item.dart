@@ -23,13 +23,11 @@ class FilterItem extends StatelessWidget {
     final isSelected = state.filterIndex == index;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // 🔥 Responsive values
     final fontSize = SizeConfig.text(0.04).clamp(11.0, 14.0);
     final horizontalPadding = SizeConfig.w(0.04);
     final verticalPadding = SizeConfig.h(0.004);
     final borderRadius = SizeConfig.w(0.04).clamp(10.0, 16.0);
 
-    // 🎯 colors
     final selectedColor = Theme.of(context).colorScheme.primary;
     final unselectedColor = isDark
         ? AppPalette.greyMediumDark
@@ -47,7 +45,7 @@ class FilterItem extends StatelessWidget {
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeInOut,
           constraints: BoxConstraints(
-            minWidth: SizeConfig.w(0.18), // 🔥 مهم للـ responsiveness
+            minWidth: SizeConfig.w(0.18),
           ),
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,

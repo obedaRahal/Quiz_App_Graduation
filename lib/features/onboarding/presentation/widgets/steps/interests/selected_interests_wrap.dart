@@ -56,7 +56,6 @@ class SelectedInterestsWrap extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: containerColor,
-            //borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
                 color: shadowColor,

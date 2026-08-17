@@ -72,32 +72,13 @@ class EducationLevelStep extends StatelessWidget {
           options: _knowledgeOwnerOptions,
         );
 
-        //_GovernorateOption? selectedGovernorate;
 
-        // if (state.governorate != null) {
-        //   try {
-        //     selectedGovernorate = _governorates.firstWhere(
-        //       (item) => item.value == state.governorate,
-        //     );
-        //   } catch (_) {
-        //     selectedGovernorate = null;
-        //   }
-        // }
 
         return Padding(
           padding:  EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03),),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // _GovernorateDropdown(
-              //   value: state.governorate,
-              //   items: _governorates,
-              //   onChanged: (value) {
-              //     if (value == null) return;
-              //     context.read<OnboardingCubit>().governorateChanged(value);
-              //     //debugPrint(value);
-              //   },
-              // ),
               OnboardingDropdownField<String>(
                 value: state.governorate,
                 items: _governorates,
@@ -161,20 +142,12 @@ class EducationLevelStep extends StatelessWidget {
         onTap: () {
           context.read<OnboardingCubit>().educationLevelChanged(option.title);
         },
-        // backgroundColor: isSelected ? AppPalette.primarySoft : AppPalette.grey,
-        // borderColor: isSelected ? AppPalette.primary : AppPalette.greyLight,
-        // textColor: isSelected ? AppPalette.primary : AppPalette.black,
       );
     }).toList();
   }
 }
 
-// class _GovernorateOption {
-//   final String value;
-//   final String label;
 
-//   const _GovernorateOption({required this.value, required this.label});
-// }
 
 class _EducationLevelOption {
   final String title;

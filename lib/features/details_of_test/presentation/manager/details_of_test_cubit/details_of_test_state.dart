@@ -40,12 +40,10 @@ enum SharedTestLinkStatus { initial, loading, success, failure }
 enum StripeCheckoutSessionStatus { initial, loading, success, failure }
 
 class DetailsOfTestState {
-  //  for UI ////
   final DetailsOfTestTab selectedTab;
   final Map<int, int> selectedSampleAnswers;
   final int draftReviewRating;
   final String draftReviewText;
-  ///////////////
 
   final DetailsOfTestOverviewStatus overviewStatus;
   final OtherTestDetailsOverviewEntity? overviewDetails;
@@ -253,7 +251,6 @@ class DetailsOfTestState {
       stripeCheckoutStatus == StripeCheckoutSessionStatus.failure;
 
   DetailsOfTestState copyWith({
-    //  for UI ////
     DetailsOfTestTab? selectedTab,
     Map<int, int>? selectedSampleAnswers,
     int? draftReviewRating,

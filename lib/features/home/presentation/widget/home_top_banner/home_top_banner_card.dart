@@ -80,11 +80,9 @@ class HomeTopBannerCard extends StatelessWidget {
                           child: InkWell(
                             onTap: () {
                               if (index == 0) {
-                                // context.push("/route1");
                                 debugPrint("go to create new  test");
                                 context.read<BottomNavCubit>().changeTab(2);
                               } else if (index == 1) {
-                                // context.push("/route2");
                                 debugPrint("go to create new  plan");
                                 context.read<BottomNavCubit>().changeTab(3);
                               } else {

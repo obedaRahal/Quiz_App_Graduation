@@ -29,10 +29,8 @@ class MyProfileReadOnlyField extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //textDirection: TextDirection.rtl,
           children: [
             Icon(icon, color: AppPalette.greyMedium, size: SizeConfig.w(0.052)),
-            //SizedBox(width: SizeConfig.w(0.02)),
             Spacer(),
             Expanded(
               child: CustomTextWidget(

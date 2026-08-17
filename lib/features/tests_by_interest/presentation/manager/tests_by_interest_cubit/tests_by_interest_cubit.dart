@@ -53,40 +53,10 @@ class TestsByInterestCubit extends SafeCubit<TestsByInterestState> {
     }
   }
 
-  // Future<void> loadMoreTests({required int interestId}) async {
-  //   if (state.isInitialLoading || state.isLoadingMore || !state.hasMorePages) {
-  //     return;
-  //   }
 
-  //   final nextPage = state.currentPage + 1;
 
-  //   emit(state.copyWith(isLoadingMore: true, clearLoadMoreErrorMessage: true));
 
-  //   try {
-  //     final response = await getTestsByInterestUseCase(
-  //       interestId: interestId,
-  //       page: nextPage,
-  //     );
 
-  //     emit(
-  //       state.copyWith(
-  //         isLoadingMore: false,
-  //         tests: [...state.tests, ...response.tests],
-  //         currentPage: response.meta.currentPage,
-  //         lastPage: response.meta.lastPage,
-  //         hasMorePages: response.meta.hasMorePages,
-  //         clearLoadMoreErrorMessage: true,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     emit(
-  //       state.copyWith(
-  //         isLoadingMore: false,
-  //         loadMoreErrorMessage: e.toString(),
-  //       ),
-  //     );
-  //   }
-  // }
   Future<void> loadMoreTests({required int interestId}) async {
     if (state.isSearchMode) {
       await loadMoreSearchResults(interestId: interestId);

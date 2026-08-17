@@ -158,10 +158,6 @@ class _MyPrivateTestDetailsViewState extends State<MyPrivateTestDetailsView> {
 
                       showMyPrivateTestMoreMenu(
                         context: context,
-                        // onEdit: () {
-                        //   debugPrint("→ edit my private test");
-                        //   // TODO: go to edit test page
-                        // },
                         onEdit: () {
                           final overview = context
                               .read<MyTestDetailsCubit>()
@@ -357,7 +353,6 @@ class _MyPrivateTestDetailsViewState extends State<MyPrivateTestDetailsView> {
                               targetLevel: extraInfo.targetLevel,
                               language: extraInfo.language,
 
-                              // private response لا يحتوي participants_count
                               participantsCount: 0,
 
                               interests: extraInfo.interests
@@ -475,7 +470,6 @@ Future<void> showMyPrivateTestMoreMenu({
   required VoidCallback onDelete,
 }) async {
   final appColors = context.appColors;
-  //final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
 
   final selectedAction = await showMenu<MyPrivateTestAction>(
     context: context,
@@ -567,7 +561,6 @@ class _MyPrivateTestMenuItem extends StatelessWidget {
   }
 }
 
-//////////////// carmen editing
 String _mapBackendLanguageToUi(String value) {
   switch (value.trim()) {
     case 'العربية':

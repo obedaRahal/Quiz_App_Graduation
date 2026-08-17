@@ -188,10 +188,6 @@ class _MyTestDetailsViewState extends State<MyTestDetailsView> {
 
                       showMyPrivateTestMoreMenu(
                         context: context,
-                        // onEdit: () {
-                        //   debugPrint("→ edit my private test");
-                        //   // TODO: go to edit test page
-                        // },
                         onEdit: () {
                           final overview = context
                               .read<MyTestDetailsCubit>()
@@ -228,10 +224,8 @@ class _MyTestDetailsViewState extends State<MyTestDetailsView> {
                                   .map((e) => e.name)
                                   .toList(),
 
-                              // الأسئلة الكاملة رح نجيبها لاحقاً من API ثاني
                               initialQuestions: const [],
 
-                              // حالياً overview عنده previewQuestions فقط، بس لاحقاً من API الأسئلة بنثبت IDs الصح
                               initialPreviewQuestionIds: extra.previewQuestions
                                   .map((q) => q.id)
                                   .toList(),
@@ -571,7 +565,6 @@ class _MyTestDetailsBottomBar extends StatelessWidget {
   }
 }
 
-//////////////// carmen editing
 String _mapBackendLanguageToUi(String value) {
   switch (value.trim()) {
     case 'العربية':

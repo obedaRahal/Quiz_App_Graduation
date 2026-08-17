@@ -50,12 +50,6 @@ class StudyTaskGeneralDetailsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            // _TaskHeader(
-            //   title: basicInfo.title,
-            //   statusStyle: statusStyle,
-            //   isCompleted: isCompleted,
-            //   onStatusToggle: onStatusToggle,
-            // ),
             _TaskHeader(
               title: basicInfo.title,
               statusStyle: statusStyle,
@@ -127,44 +121,8 @@ class StudyTaskGeneralDetailsCard extends StatelessWidget {
   }
 }
 
-// class _TaskHeader extends StatelessWidget {
-//   final String title;
-//   final _TaskStatusStyle statusStyle;
-//   final bool isCompleted;
-//   final VoidCallback onStatusToggle;
 
-//   const _TaskHeader({
-//     required this.title,
-//     required this.statusStyle,
-//     required this.isCompleted,
-//     required this.onStatusToggle,
-//   });
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-//       textDirection: TextDirection.rtl,
-//       crossAxisAlignment: CrossAxisAlignment.center,
-//       children: [
-//         Expanded(
-//           child: CustomTextWidget(
-//             title,
-//             textAlign: TextAlign.right,
-//             maxLines: 2,
-//             overflow: TextOverflow.ellipsis,
-//             fontSize: SizeConfig.text(0.041),
-//             fontFamily: AppFont.elMessiriBold,
-//             color: context.appColors.blackToGrey2Dark,
-//           ),
-//         ),
-//         SizedBox(width: SizeConfig.w(0.018)),
-//         _TaskStatusBadge(style: statusStyle),
-//         SizedBox(width: SizeConfig.w(0.018)),
-//         _TaskStatusCheckBox(value: isCompleted, onTap: onStatusToggle),
-//       ],
-//     );
-//   }
-// }
 class _TaskHeader extends StatelessWidget {
   final String title;
   final _TaskStatusStyle statusStyle;
@@ -236,43 +194,9 @@ class _TaskStatusBadge extends StatelessWidget {
   }
 }
 
-// class _TaskStatusCheckBox extends StatelessWidget {
-//   final bool value;
-//   final VoidCallback onTap;
 
-//   const _TaskStatusCheckBox({required this.value, required this.onTap});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     const activeColor = Color(0xff2ECC71);
 
-//     return InkWell(
-//       onTap: onTap,
-//       borderRadius: BorderRadius.circular(4),
-//       child: AnimatedContainer(
-//         duration: const Duration(milliseconds: 220),
-//         width: SizeConfig.h(0.025),
-//         height: SizeConfig.h(0.025),
-//         alignment: Alignment.center,
-//         decoration: BoxDecoration(
-//           color: value ? activeColor : Colors.transparent,
-//           borderRadius: BorderRadius.circular(3),
-//           border: Border.all(
-//             color: value ? activeColor : AppPalette.greyMedium,
-//             width: 1.4,
-//           ),
-//         ),
-//         child: value
-//             ? Icon(
-//                 Icons.check_rounded,
-//                 size: SizeConfig.h(0.018),
-//                 color: Colors.white,
-//               )
-//             : null,
-//       ),
-//     );
-//   }
-// }
 
 class _TaskStatusCheckBox extends StatelessWidget {
   final StudyTaskStatus status;
@@ -400,7 +324,6 @@ class _TaskDetailsRow extends StatelessWidget {
           child: _TaskDateColumn(
             startDate: task.basicInfo.startDate,
             endDate: task.basicInfo.endDate,
-            // _resolveEndTime(task),
           ),
         ),
         _TaskInfoColumn(

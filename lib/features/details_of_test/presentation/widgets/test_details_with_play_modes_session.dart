@@ -116,7 +116,6 @@ class TestDetailsWithPlayModesSection extends StatelessWidget {
                       ),
                       SizedBox(width: SizeConfig.w(0.025)),
 
-                      //                    Icon(Icons.heart),
                       _TestInfoCounter(
                         value: likesCount.toString(),
                         icon: hasLiked

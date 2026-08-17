@@ -147,7 +147,6 @@ class _StatusCard extends StatelessWidget {
           Row(
             textDirection: TextDirection.rtl,
             crossAxisAlignment: CrossAxisAlignment.center,
-           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
                 width: SizeConfig.w(0.070),
@@ -183,7 +182,6 @@ class _StatusCard extends StatelessWidget {
                 ),
               ),
               if (item.happenedAt.trim().isNotEmpty) ...[
-                //SizedBox(width: SizeConfig.w(0.016)),
                 Spacer(),
                 Icon(
                   Icons.access_time_rounded,

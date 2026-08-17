@@ -38,13 +38,6 @@ class ChallengePlayersScoreSection extends StatelessWidget {
             height: SizeConfig.h(0.09),
             color: AppPalette.greyLight,
           ),
-          // _ChallengePlayerScoreAvatar(
-          //   name: selectedCharacter.name,
-          //   imagePath: selectedCharacter.imagePath,
-          //   score: state.challengeBotScore,
-          //   isActive: state.isChallengeBotThinking,
-          //   isUser: false,
-          // ),
           _ChallengeReactionAvatar(
             name: selectedCharacter.name,
             imagePath: selectedCharacter.imagePath,

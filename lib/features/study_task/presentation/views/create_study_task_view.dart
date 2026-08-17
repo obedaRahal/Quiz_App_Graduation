@@ -19,9 +19,6 @@ class CreateStudyTaskView extends StatelessWidget {
       body: SafeArea(
         child: MultiBlocListener(
           listeners: [
-            // =================================================
-            // SUBJECTS FAILURE
-            // =================================================
             BlocListener<CreateStudyTaskCubit, CreateStudyTaskState>(
               listenWhen: (previous, current) {
                 return previous.subjectsStatus != current.subjectsStatus;
@@ -59,9 +56,6 @@ class CreateStudyTaskView extends StatelessWidget {
               },
             ),
 
-            // =================================================
-            // SUBMIT RESULT
-            // =================================================
             BlocListener<CreateStudyTaskCubit, CreateStudyTaskState>(
               listenWhen: (previous, current) {
                 return previous.submitStatus != current.submitStatus;
@@ -128,9 +122,6 @@ class CreateStudyTaskView extends StatelessWidget {
               },
             ),
 
-            // =================================================
-            // LOCAL VALIDATION ERRORS
-            // =================================================
             BlocListener<CreateStudyTaskCubit, CreateStudyTaskState>(
               listenWhen: (previous, current) {
                 final hasNewError =

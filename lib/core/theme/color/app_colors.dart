@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 abstract class AppPalette {
-  // light
   static const primary = Color(0XFF5582FF);
   static const primarySoft = Color(0XFFEEF2FF);
   static const primaryToWhite = Color(0XFFF6F6F6);
@@ -10,7 +9,6 @@ abstract class AppPalette {
   static const borderFieldColorNLight = Color(0xffDFDFDF);
   static const smallContainerGrey = Color(0xffCBCBCB);
 
-  // Neutrals
   static const white = Colors.white;
   static const whiteSoft = Color(0xFFF2F2F2);
   static const whiteToGrey = Color(0xFFF1F1F1);
@@ -46,7 +44,6 @@ abstract class AppPalette {
   static const circleContainer2 = Color(0xFFC9C4FF);
   static const circleContainer3 = Color(0xFFDBBDFF);
 
-  // dark
   static const primaryDark = Color(0XFF7298FF);
   static const greyMediumDark = Color(0xff2f2f2f);
   static const grey2Dark = Color(0xffB0B0B0);
@@ -56,14 +53,10 @@ abstract class AppPalette {
   static const fieldColorNDark = Color(0xff2E2E2E);
   static const borderFieldColorNDark = Color(0xff484848);
 
-  //  details of test
-  //static const red = Color(0xffFF7D7D);
   static const violet = Color(0xff7a73c4);
   static const violetMedium = Color(0xffA153B5);
-  //static const green = Color(0xff15D623);
   static const greenSoft = Color(0xffE3FFE5);
 
-  // play mode
   static const blueDark = Color(0xff35519C);
   static const blueLight = Color(0xff5583FF);
 }

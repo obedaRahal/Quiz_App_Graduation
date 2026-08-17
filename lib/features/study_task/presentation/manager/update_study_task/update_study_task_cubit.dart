@@ -24,9 +24,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     debugPrint('============ UpdateStudyTaskCubit INIT ============');
   }
 
-  // =========================================================
-  // INITIALIZE
-  // =========================================================
 
   Future<void> initialize({required int planId, required int taskId}) async {
     debugPrint(
@@ -98,9 +95,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     debugPrint('===================================================');
   }
 
-  // =========================================================
-  // LOAD TASK DETAILS
-  // =========================================================
 
   Future<bool> _loadTaskDetails() async {
     final planId = state.planId;
@@ -164,9 +158,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     }
   }
 
-  // =========================================================
-  // POPULATE DETAILS
-  // =========================================================
 
   void _populateTaskDetails(StudyTaskDetailsEntity response) {
     final basicInfo = response.data.basicInfo;
@@ -186,10 +177,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
       timingInfo.repeatPattern,
     );
 
-    /*
-   * reminder موجود دائمًا في الاستجابة،
-   * لكن offsetMinutes قد يكون null.
-   */
     final reminderOffset = timingInfo.reminder.offsetMinutes;
 
     final currentSubtasks = response.data.subtasks
@@ -202,10 +189,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
         )
         .toList(growable: false);
 
-    /*
-   * ننشئ نسخة مستقلة للقيم الأصلية،
-   * حتى لا تشترك القائمتان في المراجع نفسها.
-   */
     final initialSubtasks = currentSubtasks
         .map(
           (subtask) => UpdateStudyTaskSubtaskState(
@@ -216,13 +199,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
         )
         .toList(growable: false);
 
-    /*
-   * عند عدم وجود مهام فرعية نعرض حقلًا فارغًا
-   * في الواجهة فقط.
-   *
-   * أما initialSubtasks فتبقى فارغة لأنها تمثل
-   * البيانات الحقيقية القادمة من الخادم.
-   */
     final displayedSubtasks = currentSubtasks.isEmpty
         ? const [UpdateStudyTaskSubtaskState()]
         : currentSubtasks;
@@ -233,9 +209,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
 
     emit(
       state.copyWith(
-        // =====================================================
-        // CURRENT VALUES
-        // =====================================================
         title: basicInfo.title,
 
         description: basicInfo.description,
@@ -266,9 +239,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
 
         clearReminderOffsetMinutes: reminderOffset == null,
 
-        // =====================================================
-        // INITIAL VALUES
-        // =====================================================
         initialTitle: basicInfo.title,
 
         initialDescription: basicInfo.description,
@@ -336,9 +306,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // LOAD SUBJECTS
-  // =========================================================
 
   Future<bool> _loadPlanSubjects() async {
     final planId = state.planId;
@@ -428,9 +395,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     await initialize(planId: planId, taskId: taskId);
   }
 
-  // =========================================================
-  // HELPERS
-  // =========================================================
 
   DateTime? _parseApiDate(String value) {
     final parsed = DateTime.tryParse(value.trim());
@@ -445,10 +409,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
   String _normalizeApiTime(String value) {
     final normalized = value.trim();
 
-    /*
-     * في حال أعاد الخادم 08:30:00
-     * نحوله إلى 08:30.
-     */
     if (RegExp(r'^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$').hasMatch(normalized)) {
       return normalized.substring(0, 5);
     }
@@ -456,9 +416,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     return normalized;
   }
 
-  // =========================================================
-  // FORM CHANGES
-  // =========================================================
 
   void titleChanged(String value) {
     if (value == state.title) {
@@ -658,9 +615,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // REPEAT CHANGES
-  // =========================================================
 
   void repeatPatternChanged(StudyTaskRepeatPattern pattern) {
     if (pattern == state.repeatPattern) {
@@ -671,10 +625,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
       state.copyWith(
         repeatPattern: pattern,
 
-        /*
-       * سواء اختار بدون تكرار أو نمطًا جديدًا،
-       * نعيد اليوم إلى null.
-       */
         clearRepeatWeekday: true,
 
         submitStatus: UpdateStudyTaskSubmitStatus.initial,
@@ -721,9 +671,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // REMINDER CHANGE
-  // =========================================================
 
   void reminderChanged(int? offsetMinutes) {
     if (offsetMinutes == state.reminderOffsetMinutes) {
@@ -764,9 +711,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // SUBTASKS
-  // =========================================================
 
   void addSubtask() {
     if (!state.canAddSubtask) {
@@ -813,15 +757,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
 
     updatedSubtasks.removeAt(index);
 
-    /*
-   * نترك حقلًا فارغًا في الواجهة عندما يتم حذف
-   * جميع المهام الفرعية.
-   *
-   * normalizedSubtasks ستعتبره غير موجود،
-   * وبذلك سيرسل الطلب:
-   *
-   * "subtasks": []
-   */
     if (updatedSubtasks.isEmpty) {
       updatedSubtasks.add(const UpdateStudyTaskSubtaskState());
     }
@@ -902,9 +837,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // BUILD UPDATE PARAMS
-  // =========================================================
 
   UpdateStudyTaskParams? _buildUpdateParams() {
     final planId = state.planId;
@@ -994,9 +926,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     );
   }
 
-  // =========================================================
-  // UPDATE STUDY TASK
-  // =========================================================
 
   Future<void> updateStudyTask() async {
     debugPrint(
@@ -1195,9 +1124,6 @@ class UpdateStudyTaskCubit extends SafeCubit<UpdateStudyTaskState> {
     return 'يرجى التأكد من البيانات المدخلة';
   }
 
-  // =========================================================
-  // RESET STATUS
-  // =========================================================
 
   void clearActionMessage() {
     if (state.actionMessage == null) {

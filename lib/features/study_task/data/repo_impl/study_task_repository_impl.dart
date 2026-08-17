@@ -259,22 +259,9 @@ class StudyTaskRepositoryImpl implements StudyTaskRepository {
     debugPrint('→ params: $params');
     debugPrint('→ planId: ${params.planId}');
     debugPrint('→ taskId: ${params.taskId}');
-    //debugPrint('→ hasChanges: ${params.hasChanges}');
     debugPrint('→ body: ${params.toBody()}');
 
-    // if (!params.hasChanges) {
-    //   debugPrint('✗ no study task changes detected');
-    //   debugPrint(
-    //     '===============================================================',
-    //   );
 
-    //   return const Left(
-    //     ServerFailure(
-    //       title: 'لا توجد تعديلات',
-    //       message: 'لم يتم إجراء أي تعديل على بيانات المهمة',
-    //     ),
-    //   );
-    // }
 
     if (!params.isValid) {
       debugPrint('✗ invalid update study task params');

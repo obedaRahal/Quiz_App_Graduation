@@ -32,7 +32,6 @@ class ChallengePlayerAvatar extends StatelessWidget {
         Stack(
           alignment: Alignment.bottomCenter,
           children: [
-            //ReviewerAvatar(avatarPath: imagePath),
             AnimatedSlide(
               duration: const Duration(milliseconds: 90),
               curve: Curves.easeInOut,

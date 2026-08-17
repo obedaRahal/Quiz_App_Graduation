@@ -37,7 +37,6 @@ class StudyPlanOverviewDataEntity {
   final StudyPlanRangeEntity range;
   final bool hasDefaultPlan;
 
-  /// الحقل غير موجود في حالة عدم وجود خطة.
   final bool? isSelectedDateInsidePlan;
 
   final StudyPlanSummaryEntity? plan;

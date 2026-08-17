@@ -20,7 +20,6 @@ class HeardAboutStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //SizeConfig.init(context);
     return BlocBuilder<OnboardingCubit, OnboardingState>(
       buildWhen: (previous, current) =>
           previous.heardAbout != current.heardAbout,

@@ -62,7 +62,6 @@ class TaskTimingSession extends StatelessWidget {
         Row(
           textDirection: TextDirection.rtl,
           children: [
-            //SizedBox(width: SizeConfig.w(0.04)),
             Expanded(
               child: _MetaInfoItem(
                 title: 'تذكيرات المهمة',

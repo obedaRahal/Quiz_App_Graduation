@@ -125,16 +125,8 @@ class GraduatedUniversityStep extends StatelessWidget {
     );
   }
 
-  // static Future<String?> _pickImagePath() async {
-  //   final result = await FilePicker.pickFiles(
-  //     type: FileType.image,
-  //     allowMultiple: false,
-  //   );
 
-  //   if (result == null || result.files.isEmpty) return null;
 
-  //   return result.files.single.path;
-  // }
 
   Future<void> _pickAndSubmitImage(
     BuildContext context, {

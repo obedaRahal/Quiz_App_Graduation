@@ -49,40 +49,7 @@ class LaboratoryCubit extends SafeCubit<LaboratoryState> {
     2: 'most_participated',
   };
 
-  // Future<void> getInitialExamSessions({required int interestId}) async {
-  //   emit(
-  //     state.copyWith(
-  //       isInitialLoading: true,
-  //       isLoadingMore: false,
-  //       error: null,
-  //       examSessions: [],
-  //       currentPage: 1,
-  //       hasMorePages: true,
-  //       selectedInterestId: interestId,
-  //     ),
-  //   );
 
-  //   try {
-  //     final response = await getTestsByInterestUseCase(
-  //       interestId: interestId,
-  //       page: 1,
-  //     );
-  //     debugPrint('INITIAL PAGE LOADED => ${response.meta.currentPage}');
-  //     debugPrint('INITIAL ITEMS => ${response.tests.length}');
-  //     debugPrint('HAS MORE => ${response.meta.hasMorePages}');
-  //     emit(
-  //       state.copyWith(
-  //         isInitialLoading: false,
-  //         examSessions: response.tests,
-  //         currentPage: response.meta.currentPage,
-  //         hasMorePages: response.meta.hasMorePages,
-  //         error: null,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     emit(state.copyWith(isInitialLoading: false, error: e.toString()));
-  //   }
-  // }
   Future<void> getInitialExamSessions({required int interestId}) async {
     debugPrint(
       '============ LaboratoryCubit.getInitialExamSessions ============',
@@ -263,7 +230,6 @@ class LaboratoryCubit extends SafeCubit<LaboratoryState> {
     required int page,
     required bool reset,
   }) async {
-    // if (state.selectedInterestId == null) return;
     if (state.searchQuery.trim().isEmpty) return;
 
     if (reset) {

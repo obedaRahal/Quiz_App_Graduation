@@ -90,73 +90,10 @@ class OtherProfileHeaderCard extends StatelessWidget {
   }
 }
 
-// class _OtherProfileCoverAndAvatar extends StatelessWidget {
-//   final String avatarUrl;
-//   final String coverUrl;
 
-//   const _OtherProfileCoverAndAvatar({
-//     required this.avatarUrl,
-//     required this.coverUrl,
-//   });
 
-//   @override
-//   Widget build(BuildContext context) {
-//         final appColors = context.appColors;
 
-//     return SizedBox(
-//       height: SizeConfig.h(0.16),
-//       child: Stack(
-//         clipBehavior: Clip.none,
-//         children: [
-//           Positioned.fill(
-//             child: ClipRRect(
-//               borderRadius: const BorderRadius.vertical(
-//                 top: Radius.circular(14),
-//                 bottom: Radius.circular(14),
-//               ),
-//               child:
-//                   // coverUrl.trim().isEmpty
-//                   //     ? CustomPaint(painter: _OtherProfileCoverPainter())
-//                   //     :
-//                   CustomAppImage(
-//                     width: double.infinity,
-//                     fit: BoxFit.cover,
-//                     path: coverUrl,
-//                   ),
-//             ),
-//           ),
 
-//           Positioned(
-//             right: SizeConfig.w(0.04),
-//             bottom: -SizeConfig.w(0.095),
-//             child: Container(
-//               width: SizeConfig.w(0.19),
-//               height: SizeConfig.w(0.19),
-//               decoration: BoxDecoration(
-//                 shape: BoxShape.circle,
-//                 color: AppPalette.grey,
-//                 border: Border.all(color: appColors.whiteToblack, width: 3),
-//               ),
-//               child: ClipOval(
-//                 child: avatarUrl.trim().isEmpty
-//                     ? Icon(
-//                         Icons.person,
-//                         size: SizeConfig.w(0.09),
-//                         color: AppPalette.greyMedium,
-//                       )
-//                     : CustomAppImage(
-//                         width: double.infinity,
-//                         fit: BoxFit.cover,
-//                         path: avatarUrl,
-//                       ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class _OtherProfileCoverAndAvatar extends StatelessWidget {
   final String avatarUrl;
@@ -269,7 +206,6 @@ class _OtherProfileNameRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       textDirection: TextDirection.rtl,
-      //mainAxisSize: MainAxisSize.min,
       children: [
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: SizeConfig.w(0.6)),

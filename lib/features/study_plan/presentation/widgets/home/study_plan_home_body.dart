@@ -45,7 +45,6 @@ class StudyPlanHomeBody extends StatelessWidget {
         return Stack(
           children: [
             SingleChildScrollView(
-              //physics: const BouncingScrollPhysics(),
               padding: EdgeInsets.only(
                 left: SizeConfig.w(0.03),
                 top: SizeConfig.h(0.03),
@@ -57,7 +56,6 @@ class StudyPlanHomeBody extends StatelessWidget {
                   StudyPlanHomeHeader(
                     onActionTap: () async {
                       debugPrint('Create study plan');
-                      // context.pushNamed(AppRouterName.createStudyPlan);
                       final result = await context
                           .pushNamed<StudyPlanMutationResult>(
                             AppRouterName.createStudyPlan,
@@ -194,7 +192,6 @@ class StudyPlanHomeBody extends StatelessWidget {
                     EmptyActionBox(
                       onTap: () async {
                         debugPrint('Create study plan');
-                        // context.pushNamed(AppRouterName.createStudyPlan);
                         final result = await context
                             .pushNamed<StudyPlanMutationResult>(
                               AppRouterName.createStudyPlan,

@@ -20,14 +20,6 @@ Future<void> showMyProfileImageViewer({
         child: Stack(
           children: [
             CustomAppImage(path: imageUrl),
-            // PhotoView(
-            //   imageProvider: CustomAppImage(path: imageUrl),
-            //   backgroundDecoration: const BoxDecoration(
-            //     color: Colors.transparent,
-            //   ),
-            //   minScale: PhotoViewComputedScale.contained,
-            //   maxScale: PhotoViewComputedScale.covered * 3,
-            // ),
 
             Positioned(
               top: SizeConfig.h(0.01),

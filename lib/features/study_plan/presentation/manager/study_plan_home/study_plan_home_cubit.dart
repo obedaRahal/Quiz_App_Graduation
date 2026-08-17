@@ -474,10 +474,6 @@ class StudyPlanHomeCubit extends SafeCubit<StudyPlanHomeState> {
     );
   }
 
-  /////////////////// API ///////////////////////
-  /////////////////// API ///////////////////////
-  /////////////////// API ///////////////////////
-  /////////////////// API ///////////////////////
   Future<void> initialize({
     StudyPlanHomeMockScenario mockScenario =
         StudyPlanHomeMockScenario.planWithTasks,
@@ -770,7 +766,6 @@ class StudyPlanHomeCubit extends SafeCubit<StudyPlanHomeState> {
       return;
     }
 
-    // نحافظ على نفس اليوم داخل الأسبوع.
     final newDate = currentDate.add(Duration(days: daysOffset));
 
     final weekStartsOn = AppDateTimeSettings.weekStartsOn;

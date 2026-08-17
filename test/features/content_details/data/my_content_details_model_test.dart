@@ -53,7 +53,6 @@ void main() {
     expect(model.basicInfo.isPublic, isTrue);
     expect(model.basicInfo.assets.first.position, 1);
 
-    // The API contract defines index zero as the current status.
     expect(model.statusHistory.first.id, 9);
     expect(model.statusHistory.first.toStatus, 'مبلغ عنه');
     expect(model.statusHistory[1].id, 10);

@@ -5,33 +5,26 @@ class OnboardingState {
   final List<OnboardingStepType> visibleSteps;
   final int currentStepIndex;
 
-  // at HeardAboutStep
   final String? heardAbout;
 
-  // at EducationLevelStep
   final String? educationLevel;
   final String? governorate;
 
-  // at CuurenUniversity
   final String? currentUniversity;
   final String? currentDepartmentAtUniversity;
   final int? currentStudyYearAtUniversity;
 
-  // at SchoolEdgrStep
   final String? schoolStage;
 
-  // at gratuated univisity
   final String? graduatedUniversity;
   final String? graduatedDepartment;
   final String? graduationCertificateImagePath;
   final String? personalIdentityImagePath;
 
-  // at interests step
   final List<int> selectedInterestIds;
   final List<InterestGroupOption> interestGroups;
   final bool hasAttemptedLoadingInterests;
 
-  // onboarding progress review
   final bool hasInitializedProgressPreview;
 
   final bool isLoading;
@@ -120,56 +113,6 @@ class OnboardingState {
     }
   }
 
-  // CuurenUniversity copyWith({
-  //   List<OnboardingStepType>? visibleSteps,
-  //   int? currentStepIndex,
-  //   String? heardAbout,
-  //   String? educationLevel,
-  //   String? currentUniversity,
-  //   String? schoolStage,
-  //   String? graduatedUniversity,
-  //   String? governorate,
-  //   String? currentDepartmentAtUniversity,
-  //   int? currentStudyYearAtUniversity,
-  //   List<int>? selectedInterestIds,
-  //   List<InterestGroupOption>? interestGroups,
-  //   String? graduatedDepartment,
-  //   String? graduationCertificateImagePath,
-  //   String? personalIdentityImagePath,
-  //   bool? isLoading,
-  //   bool? isSubmitting,
-  //   bool? isCompleted,
-  //   String? errorMessage,
-  //   bool clearErrorMessage = false,
-  // }) {
-  //   return CuurenUniversity(
-  //     visibleSteps: visibleSteps ?? this.visibleSteps,
-  //     currentStepIndex: currentStepIndex ?? this.currentStepIndex,
-  //     heardAbout: heardAbout ?? this.heardAbout,
-  //     educationLevel: educationLevel ?? this.educationLevel,
-  //     currentUniversity: currentUniversity ?? this.currentUniversity,
-  //     schoolStage: schoolStage ?? this.schoolStage,
-  //     governorate: governorate ?? this.governorate,
-  //     currentDepartmentAtUniversity:
-  //         currentDepartmentAtUniversity ?? this.currentDepartmentAtUniversity,
-  //     currentStudyYearAtUniversity:
-  //         currentStudyYearAtUniversity ?? this.currentStudyYearAtUniversity,
-  //     graduatedUniversity: graduatedUniversity ?? this.graduatedUniversity,
-  //     selectedInterestIds: selectedInterestIds ?? this.selectedInterestIds,
-  //     interestGroups: interestGroups ?? this.interestGroups,
-  //     graduatedDepartment: graduatedDepartment ?? this.graduatedDepartment,
-  //     graduationCertificateImagePath:
-  //         graduationCertificateImagePath ?? this.graduationCertificateImagePath,
-  //     personalIdentityImagePath:
-  //         personalIdentityImagePath ?? this.personalIdentityImagePath,
-  //     isLoading: isLoading ?? this.isLoading,
-  //     isSubmitting: isSubmitting ?? this.isSubmitting,
-  //     isCompleted: isCompleted ?? this.isCompleted,
-  //     errorMessage: clearErrorMessage
-  //         ? null
-  //         : (errorMessage ?? this.errorMessage),
-  //   );
-  // }
 
   OnboardingState copyWith({
     List<OnboardingStepType>? visibleSteps,

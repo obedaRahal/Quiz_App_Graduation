@@ -40,6 +40,5 @@ abstract class AuthRepository {
     required String passwordConfirmation,
   });
 
-  // for refresh tokennnnnnnnn
   Future<bool> refreshAccessToken();
 }

@@ -1,4 +1,3 @@
-// lib/features/other_profile/data/models/other_profile_overview_model.dart
 
 import 'package:quiz_app_grad/core/utils/compact_count_formatter.dart';
 
@@ -288,6 +287,3 @@ List<dynamic> _asList(dynamic value) {
   if (value is List) return value;
   return [];
 }
-
-// أزيل استخدام _asMapList لأن rating_distribution أصبح يُقرأ كخريطة
-// مع إبقاء دعم القائمة داخل _parseRatingDistribution للتوافق الخلفي.

@@ -24,9 +24,6 @@ class UpdateStudyTaskView extends StatelessWidget {
       body: SafeArea(
         child: MultiBlocListener(
           listeners: [
-            // =================================================
-            // INITIAL DATA FAILURE
-            // =================================================
             BlocListener<UpdateStudyTaskCubit, UpdateStudyTaskState>(
               listenWhen: (previous, current) {
                 return previous.initialDataStatus != current.initialDataStatus;
@@ -64,9 +61,6 @@ class UpdateStudyTaskView extends StatelessWidget {
               },
             ),
 
-            // =================================================
-            // SUBMIT RESULT
-            // =================================================
             BlocListener<UpdateStudyTaskCubit, UpdateStudyTaskState>(
               listenWhen: (previous, current) {
                 return previous.submitStatus != current.submitStatus;
@@ -135,9 +129,6 @@ class UpdateStudyTaskView extends StatelessWidget {
               },
             ),
 
-            // =================================================
-            // LOCAL VALIDATION ERRORS
-            // =================================================
             BlocListener<UpdateStudyTaskCubit, UpdateStudyTaskState>(
               listenWhen: (previous, current) {
                 final hasNewError =

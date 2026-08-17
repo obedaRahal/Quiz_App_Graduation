@@ -840,7 +840,6 @@ void _registerAuthFeature() {
   );
 
   sl.registerLazySingleton(() => GetAllInterestsUseCase(sl()));
-  // All Interests
   sl.registerLazySingleton<AllInterestsRemoteDataSource>(
     () => AllInterestsRemoteDataSourceImpl(api: sl()),
   );
@@ -923,7 +922,6 @@ void _registerTestsByInterestFeature() {
   }
 }
 
-// ================= Create Test  =================
 void _registerCreateTestFeature() {
   if (!sl.isRegistered<CreateTestRemoteDataSource>()) {
     sl.registerLazySingleton<CreateTestRemoteDataSource>(
@@ -1002,59 +1000,10 @@ void _registerCreateTestFeature() {
     );
   }
 }
-// void _registerCreateTestFeature() {
-//   if (!sl.isRegistered<CreateTestRemoteDataSource>()) {
-//     sl.registerLazySingleton<CreateTestRemoteDataSource>(
-//       () => CreateTestRemoteDataSourceImpl(api: sl<ApiConsumer>()),
-//     );
-//   }
 
-//   if (!sl.isRegistered<CreateTestRepository>()) {
-//     sl.registerLazySingleton<CreateTestRepository>(
-//       () => CreateTestRepositoryImpl(
-//         remoteDataSource: sl<CreateTestRemoteDataSource>(),
-//       ),
-//     );
-//   }
 
-//   if (!sl.isRegistered<GetScientificClassificationsUseCase>()) {
-//     sl.registerLazySingleton<GetScientificClassificationsUseCase>(
-//       () => GetScientificClassificationsUseCase(sl<CreateTestRepository>()),
-//     );
-//     sl.registerLazySingleton<StartAiQuestionGenerationUseCase>(
-//       () => StartAiQuestionGenerationUseCase(sl()),
-//     );
 
-//     sl.registerLazySingleton<GetAiQuestionGenerationStatusUseCase>(
-//       () => GetAiQuestionGenerationStatusUseCase(sl()),
-//     );
-//   }
-//   if (!sl.isRegistered<GetEditableTestQuestionsUseCase>()) {
-//     sl.registerLazySingleton(() => GetEditableTestQuestionsUseCase(sl()));
-//   }
-//   if (!sl.isRegistered<UpdateTestUseCase>()) {
-//     sl.registerLazySingleton(() => UpdateTestUseCase(sl()));
-//   }
-//   if (!sl.isRegistered<CreateTestCubit>()) {
-//     sl.registerFactory<CreateTestCubit>(
-//       () => CreateTestCubit(
-//         getScientificClassificationsUseCase: sl(),
-//         createManualTestUseCase: sl(),
-//         startAiQuestionGenerationUseCase: sl(),
-//         getAiQuestionGenerationStatusUseCase: sl(),
-//         getEditableTestQuestionsUseCase: sl(),
-//         updateTestUseCase: sl(),
-//       ),
-//     );
-//   }
-//   if (!sl.isRegistered<CreateManualTestUseCase>()) {
-//     sl.registerLazySingleton<CreateManualTestUseCase>(
-//       () => CreateManualTestUseCase(sl<CreateTestRepository>()),
-//     );
-//   }
-// }
 
-// ================= Library =================
 void _registerLibraryFeature() {
   if (!sl.isRegistered<LibraryRemoteDataSource>()) {
     sl.registerLazySingleton<LibraryRemoteDataSource>(
@@ -1146,7 +1095,6 @@ void _registerLibraryFeature() {
           ResolveSharedContentLinkUseCase(sl<OtherContentDetailsRepository>()),
     );
   }
-  //===================== Other Content Bookmark =====================//
 
   if (!sl.isRegistered<OtherContentBookmarkRemoteDataSource>()) {
     sl.registerLazySingleton<OtherContentBookmarkRemoteDataSource>(
@@ -1175,7 +1123,6 @@ void _registerLibraryFeature() {
       () => UnbookmarkOtherContentUseCase(sl<OtherContentBookmarkRepository>()),
     );
   }
-  //===================== Other Content Report =====================//
 
   if (!sl.isRegistered<OtherContentReportRemoteDataSource>()) {
     sl.registerLazySingleton<OtherContentReportRemoteDataSource>(
@@ -1263,7 +1210,6 @@ void _registerLibraryFeature() {
   }
 }
 
-// ================= My Public Test Details =================
 void _registerMyTestDetailsFeature() {
   if (!sl.isRegistered<MyPublicTestDetailsRemoteDataSource>()) {
     sl.registerLazySingleton<MyPublicTestDetailsRemoteDataSource>(
@@ -1357,16 +1303,13 @@ void _registerMyTestDetailsFeature() {
   }
 }
 
-// ================= Other Profile =================
 void _registerOtherProfileFeature() {
-  // 1. Remote Data Source
   if (!sl.isRegistered<OtherProfileRemoteDataSource>()) {
     sl.registerLazySingleton<OtherProfileRemoteDataSource>(
       () => OtherProfileRemoteDataSourceImpl(apiConsumer: sl<ApiConsumer>()),
     );
   }
 
-  // 2. Repository
   if (!sl.isRegistered<OtherProfileRepository>()) {
     sl.registerLazySingleton<OtherProfileRepository>(
       () => OtherProfileRepositoryImpl(
@@ -1375,7 +1318,6 @@ void _registerOtherProfileFeature() {
     );
   }
 
-  // 3. Use Case
   if (!sl.isRegistered<FetchOtherProfileOverviewUseCase>()) {
     sl.registerLazySingleton<FetchOtherProfileOverviewUseCase>(
       () => FetchOtherProfileOverviewUseCase(sl<OtherProfileRepository>()),
@@ -1505,7 +1447,6 @@ void _registerOtherProfileFeature() {
   }
 }
 
-//////////////////// my profile //////////////////
 void _registerMyProfileFeature() {
   if (!sl.isRegistered<AllInterestsCubit>()) {
     sl.registerFactory<AllInterestsCubit>(
@@ -1833,7 +1774,6 @@ void _registerStudyPlanFeature() {
 }
 
 void _registerStudyTaskFeature() {
-  // ================= Remote Data Source =================
 
   if (!sl.isRegistered<StudyTaskRemoteDataSource>()) {
     sl.registerLazySingleton<StudyTaskRemoteDataSource>(
@@ -1841,7 +1781,6 @@ void _registerStudyTaskFeature() {
     );
   }
 
-  // ================= Repository =================
 
   if (!sl.isRegistered<StudyTaskRepository>()) {
     sl.registerLazySingleton<StudyTaskRepository>(
@@ -1851,8 +1790,6 @@ void _registerStudyTaskFeature() {
     );
   }
 
-  // ================= Use Cases =================
-  // ================= Use Cases =================
 
   if (!sl.isRegistered<GetStudyTaskDetailsUseCase>()) {
     sl.registerLazySingleton<GetStudyTaskDetailsUseCase>(
@@ -1896,7 +1833,6 @@ void _registerStudyTaskFeature() {
     );
   }
 
-  // ================= Cubits =================
 
   if (!sl.isRegistered<StudyTaskDetailsCubit>()) {
     sl.registerFactory<StudyTaskDetailsCubit>(
@@ -1930,7 +1866,6 @@ void _registerStudyTaskFeature() {
 }
 
 void _registerNotificationFeature() {
-  // ================= Remote Data Source =================
 
   if (!sl.isRegistered<NotificationRemoteDataSource>()) {
     sl.registerLazySingleton<NotificationRemoteDataSource>(
@@ -1938,7 +1873,6 @@ void _registerNotificationFeature() {
     );
   }
 
-  // ================= Repository =================
 
   if (!sl.isRegistered<NotificationRepository>()) {
     sl.registerLazySingleton<NotificationRepository>(
@@ -1948,7 +1882,6 @@ void _registerNotificationFeature() {
     );
   }
 
-  // ================= Use Cases =================
 
   if (!sl.isRegistered<GetNotificationsUseCase>()) {
     sl.registerLazySingleton<GetNotificationsUseCase>(
@@ -1964,7 +1897,6 @@ void _registerNotificationFeature() {
     () => GetNotificationUnreadCountUseCase(sl()),
   );
 
-  // ================= Cubit =================
 
   if (!sl.isRegistered<NotificationCubit>()) {
     sl.registerFactory<NotificationCubit>(
@@ -2047,7 +1979,6 @@ void _registerStudyAlarmsFeature() {
 }
 
 void _registerSettingsFeature() {
-  // ==================== Settings ====================
 
   sl.registerLazySingleton<SettingsRemoteDataSource>(
     () => SettingsRemoteDataSourceImpl(apiConsumer: sl()),

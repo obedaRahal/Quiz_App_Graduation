@@ -1,19 +1,14 @@
 class FilterTestsParams {
   final String scope;
 
-  /// القيم حسب Postman: all - paid
   final String type;
 
-  /// القيم حسب Postman: all - arabic - english - mixed
   final String language;
 
-  /// القيم: 0 - 1
   final int? hasTimer;
 
-  /// القيم: 10 - 20 - 30 - 40 - 50 - 60 - 70 - 80 - 90 - 100
   final int? questionsCountLte;
 
-  /// القيم: 20 - 30 - 40 - 50 - 60 - 70 - 80
   final int? passMarkLte;
 
   final int? interestId;

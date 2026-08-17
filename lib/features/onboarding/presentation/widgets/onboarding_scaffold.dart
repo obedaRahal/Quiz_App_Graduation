@@ -58,8 +58,6 @@ class OnboardingScaffold extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(
-            //left: SizeConfig.w(0.03),
-            //right: SizeConfig.w(0.03),
             bottom: SizeConfig.w(0.03),
           ),
           child: Column(
@@ -70,11 +68,9 @@ class OnboardingScaffold extends StatelessWidget {
                   if (showBackButton) ArrowBack(onTap: onBack),
                   CustomBackgroundWithChild(
                     backgroundColor: appColors.whiteToblack,
-                    //onTap:(){},
                     child: ThemedAppImage(
                       darkPath: AppImage.logoDark,
                       lightPath: AppImage.logoLight,
-                      //scale: 5,
                       color: appColors.whiteToblack,
                     ),
                   ),
@@ -85,7 +81,6 @@ class OnboardingScaffold extends StatelessWidget {
                 currentStep: currentStep,
                 totalSteps: 5,
               ),
-              //SizedBox(height: SizeConfig.h(0.025)),
               if (hasTitle) ...[
                 SizedBox(height: SizeConfig.h(0.02)),
                 Padding(
@@ -127,7 +122,6 @@ class OnboardingScaffold extends StatelessWidget {
                       : isDark
                       ? AppPalette.greyLightDark
                       : AppPalette.greyLight,
-                  //appColors.greyToGreyMediumDark,
                   boxShadow: [
                     BoxShadow(
                       color: isNextEnabled
@@ -153,8 +147,6 @@ class OnboardingScaffold extends StatelessWidget {
                           color: isNextEnabled
                               ? appColors.whiteToblack
                               : appColors.greyMediumTogrey,
-                          //AppPalette.grey
-                          //AppPalette.greyMedium,
                         ),
                 ),
               ),

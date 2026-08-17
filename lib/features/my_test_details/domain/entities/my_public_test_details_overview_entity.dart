@@ -97,13 +97,10 @@ class MyPublicTestBasicInfoEntity {
 class MyPublicTestExtraInfoEntity {
   final int questionCount;
 
-  /// نحافظ على القيمة الخام لأنها قد تأتي رقمًا أو نصًا مثل: "غير محدد".
   final dynamic rawDurationSeconds;
 
-  /// هذه تستخدم مع الواجهات الحالية التي تتوقع int?.
   final int? durationSeconds;
 
-  /// هذه تستخدم إذا أردنا عرض النص كما جاء من الـ backend.
   final String durationText;
 
   final int? passMarkPercentage;

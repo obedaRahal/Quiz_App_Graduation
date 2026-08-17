@@ -2,17 +2,11 @@ import 'package:quiz_app_grad/features/study_task/domain/entities/study_plan_sub
 import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_priority.dart';
 import 'package:quiz_app_grad/features/study_task/domain/enums/study_task_repeat_pattern.dart';
 
-// =========================================================
-// STATUSES
-// =========================================================
 
 enum UpdateStudyTaskInitialDataStatus { initial, loading, success, failure }
 
 enum UpdateStudyTaskSubmitStatus { initial, loading, success, failure }
 
-// =========================================================
-// SUBTASK STATE
-// =========================================================
 
 class UpdateStudyTaskSubtaskState {
   final int? id;
@@ -72,14 +66,8 @@ class UpdateStudyTaskSubtaskState {
   }
 }
 
-// =========================================================
-// UPDATE STUDY TASK STATE
-// =========================================================
 
 class UpdateStudyTaskState {
-  // =========================================================
-  // CONSTANTS
-  // =========================================================
 
   static const int titleMaxLength = 100;
 
@@ -110,16 +98,10 @@ class UpdateStudyTaskState {
     10080,
   };
 
-  // =========================================================
-  // IDS
-  // =========================================================
 
   final int? planId;
   final int? taskId;
 
-  // =========================================================
-  // CURRENT FORM VALUES
-  // =========================================================
 
   final String title;
   final String description;
@@ -142,9 +124,6 @@ class UpdateStudyTaskState {
 
   final int? reminderOffsetMinutes;
 
-  // =========================================================
-  // STATUSES
-  // =========================================================
 
   final UpdateStudyTaskInitialDataStatus initialDataStatus;
   final UpdateStudyTaskSubmitStatus submitStatus;
@@ -153,9 +132,6 @@ class UpdateStudyTaskState {
   final String? errorTitle;
   final String? errorMessage;
 
-  // =========================================================
-  // INITIAL VALUES
-  // =========================================================
 
   final String initialTitle;
   final String initialDescription;
@@ -236,9 +212,6 @@ class UpdateStudyTaskState {
     this.isFormInitialized = false,
   });
 
-  // =========================================================
-  // INITIAL DATA STATUS
-  // =========================================================
 
   bool get isInitialDataInitial {
     return initialDataStatus == UpdateStudyTaskInitialDataStatus.initial;
@@ -256,9 +229,6 @@ class UpdateStudyTaskState {
     return initialDataStatus == UpdateStudyTaskInitialDataStatus.failure;
   }
 
-  // =========================================================
-  // SUBMIT STATUS
-  // =========================================================
 
   bool get isSubmitInitial {
     return submitStatus == UpdateStudyTaskSubmitStatus.initial;
@@ -276,9 +246,6 @@ class UpdateStudyTaskState {
     return submitStatus == UpdateStudyTaskSubmitStatus.failure;
   }
 
-  // =========================================================
-  // IDS
-  // =========================================================
 
   bool get hasValidPlanId {
     final value = planId;
@@ -296,9 +263,6 @@ class UpdateStudyTaskState {
     return hasValidPlanId && hasValidTaskId;
   }
 
-  // =========================================================
-  // TITLE
-  // =========================================================
 
   String get normalizedTitle {
     return title.trim();
@@ -309,9 +273,6 @@ class UpdateStudyTaskState {
         normalizedTitle.length <= titleMaxLength;
   }
 
-  // =========================================================
-  // DESCRIPTION
-  // =========================================================
 
   String get normalizedDescription {
     return description.trim();
@@ -322,9 +283,6 @@ class UpdateStudyTaskState {
         normalizedDescription.length <= descriptionMaxLength;
   }
 
-  // =========================================================
-  // SUBJECTS
-  // =========================================================
 
   bool get hasAvailableSubjects {
     return availableSubjects.isNotEmpty;
@@ -364,9 +322,6 @@ class UpdateStudyTaskState {
     return availableSubjects.any((subject) => subject.id == subjectId);
   }
 
-  // =========================================================
-  // DATES
-  // =========================================================
 
   bool get hasStartDate {
     return startDate != null;
@@ -422,13 +377,6 @@ class UpdateStudyTaskState {
     return taskRangeDays >= 1 && taskRangeDays <= maxTaskRangeDays;
   }
 
-  /*
-   * عند فتح مهمة قديمة لا نرفضها لأن تاريخ البداية
-   * أصبح في الماضي.
-   *
-   * لكن عند تغيير تاريخ البداية، يجب أن يكون التاريخ
-   * الجديد اليوم أو تاريخًا مستقبليًا.
-   */
   bool get hasValidStartDateForUpdate {
     if (!hasStartDateChanged) {
       return true;
@@ -453,9 +401,6 @@ class UpdateStudyTaskState {
         hasValidStartDateForUpdate;
   }
 
-  // =========================================================
-  // START TIME
-  // =========================================================
 
   String get normalizedStartTime {
     return startTime.trim();
@@ -465,9 +410,6 @@ class UpdateStudyTaskState {
     return isValidTime(normalizedStartTime);
   }
 
-  // =========================================================
-  // DURATION
-  // =========================================================
 
   bool get hasValidDuration {
     final value = durationMinutes;
@@ -477,17 +419,11 @@ class UpdateStudyTaskState {
         value <= maxDurationMinutes;
   }
 
-  // =========================================================
-  // PRIORITY
-  // =========================================================
 
   bool get hasValidPriority {
     return priority != null;
   }
 
-  // =========================================================
-  // SUBTASKS
-  // =========================================================
 
   int get subtaskFieldsCount {
     return subtasks.length;
@@ -531,10 +467,6 @@ class UpdateStudyTaskState {
     }
 
     return subtasks.every((subtask) {
-      /*
-       * يسمح بحقل جديد فارغ في واجهة المستخدم،
-       * ولا يعتبره مهمة فرعية حقيقية.
-       */
       if (subtask.isEmptyNewSubtask) {
         return true;
       }
@@ -544,21 +476,11 @@ class UpdateStudyTaskState {
     });
   }
 
-  // =========================================================
-  // REPEAT
-  // =========================================================
 
   bool get isRepeating {
     return repeatPattern != StudyTaskRepeatPattern.none;
   }
 
-  /*
-   * لأن الـBackend لا يعيد يوم التكرار:
-   *
-   * - إذا كانت المهمة بدون تكرار، يجب أن يكون اليوم null.
-   * - إذا كانت المهمة متكررة، يجب على المستخدم اختيار
-   *   اليوم من جديد قبل الحفظ.
-   */
   bool get hasValidRepeatWeekday {
     if (!isRepeating) {
       return repeatWeekday == null;
@@ -569,9 +491,6 @@ class UpdateStudyTaskState {
     return weekday != null && weekday >= 0 && weekday <= 6;
   }
 
-  // =========================================================
-  // REMINDER
-  // =========================================================
 
   bool get hasValidReminder {
     final value = reminderOffsetMinutes;
@@ -579,9 +498,6 @@ class UpdateStudyTaskState {
     return value == null || allowedReminderOffsetMinutes.contains(value);
   }
 
-  // =========================================================
-  // CHANGED FIELDS
-  // =========================================================
 
   bool get hasTitleChanged {
     return normalizedTitle != initialTitle.trim();
@@ -632,19 +548,10 @@ class UpdateStudyTaskState {
       return true;
     }
 
-    /*
-     * إذا كان النوع بدون تكرار في القيمتين،
-     * فلا نهتم بقيمة اليوم.
-     */
     if (!isRepeating && initialRepeatPattern == StudyTaskRepeatPattern.none) {
       return false;
     }
 
-    /*
-     * عندما تكون المهمة متكررة ويختار المستخدم يومًا،
-     * ستكون initialRepeatWeekday تساوي null،
-     * وبالتالي سيعتبر التكرار قد تغيّر.
-     */
     return hasRepeatWeekdayChanged;
   }
 
@@ -670,9 +577,6 @@ class UpdateStudyTaskState {
         hasReminderChanged;
   }
 
-  // =========================================================
-  // FORM VALIDATION
-  // =========================================================
 
   bool get isFormValid {
     return hasValidIds &&
@@ -697,9 +601,6 @@ class UpdateStudyTaskState {
         !isSubmitLoading;
   }
 
-  // =========================================================
-  // SUBTASK COMPARISON
-  // =========================================================
 
   bool areSameSubtasks(
     List<UpdateStudyTaskSubtaskState> first,
@@ -733,9 +634,6 @@ class UpdateStudyTaskState {
     return true;
   }
 
-  // =========================================================
-  // DATE AND TIME HELPERS
-  // =========================================================
 
   static DateTime normalizeDate(DateTime value) {
     return DateTime(value.year, value.month, value.day);
@@ -755,9 +653,6 @@ class UpdateStudyTaskState {
     return RegExp(r'^([01]\d|2[0-3]):([0-5]\d)$').hasMatch(value.trim());
   }
 
-  // =========================================================
-  // COPY WITH
-  // =========================================================
 
   UpdateStudyTaskState copyWith({
     int? planId,
@@ -938,9 +833,6 @@ class UpdateStudyTaskState {
     );
   }
 
-  // =========================================================
-  // TO STRING
-  // =========================================================
 
   @override
   String toString() {

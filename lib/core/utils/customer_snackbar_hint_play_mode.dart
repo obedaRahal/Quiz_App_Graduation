@@ -221,7 +221,6 @@ class _CustomerSnackBarHintPlayModeState
                                   fontSize: SizeConfig.text(0.024),
                                   fontFamily: AppFont.elMessiriMedium,
                                   maxLines: 2,
-                                  //overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),

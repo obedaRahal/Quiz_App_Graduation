@@ -405,7 +405,6 @@ class SearchCubit extends SafeCubit<SearchState> {
     emit(state.copyWith(clearFollowError: true));
   }
 
-  ///////////////////////////
   Future<void> getSearchHistory() async {
     if (state.isHistoryLoading) {
       debugPrint(

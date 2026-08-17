@@ -35,7 +35,6 @@ previous.isContentEditMode != current.isContentEditMode ||
         ? 'حفظ التعديلات'
         : 'حفظ ومشاركة';
 
-        //final canPress = state.canSubmit && !state.isCreateManualTestLoading;
 
         final containerColor = isDark ? AppPalette.black : AppPalette.white;
 
@@ -88,11 +87,6 @@ previous.isContentEditMode != current.isContentEditMode ||
             width: double.infinity,
             height: SizeConfig.h(0.052),
             child: ElevatedButton(
-              // onPressed: canPress
-              //     ? () {
-              //         context.read<CreateTestCubit>().submitCreateManualTest();
-              //       }
-              //     : null,
               onPressed: canPress
                   ? () {
                       context

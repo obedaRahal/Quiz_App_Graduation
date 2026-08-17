@@ -72,7 +72,6 @@ class LaboratoryTestCard extends StatelessWidget {
           ],
         ),
         child: Column(
-          //mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

@@ -134,7 +134,6 @@ class TestInteractionUsersBottomSheet extends StatelessWidget {
                       ),
                     ),
 
-                    //SizedBox(height: SizeConfig.h(0.014)),
                     CustomDivider(height: 20, thickness: 3, isDashed: true),
 
                     Padding(
@@ -211,8 +210,6 @@ class _InteractionUsersSearchField extends StatelessWidget {
           filled: true,
           fillColor: isDark ? Colors.white.withOpacity(0.05) : AppPalette.grey,
           contentPadding: EdgeInsets.symmetric(
-            // horizontal: SizeConfig.w(0.035),
-            // vertical: SizeConfig.h(0.012),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
@@ -386,25 +383,11 @@ class InteractionUserTile extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        //horizontal: SizeConfig.w(0.03),
         vertical: SizeConfig.h(0.012),
       ),
       decoration: BoxDecoration(
         color: isDark ? Colors.white.withOpacity(0.04) : AppPalette.white,
         borderRadius: BorderRadius.circular(16),
-        // border: Border.all(
-        //   color: isDark
-        //       ? AppPalette.borderFieldColorNDark
-        //       : AppPalette.greyBorderCart,
-        // ),
-        // boxShadow: [
-        //   if (!isDark)
-        //     BoxShadow(
-        //       color: AppPalette.greyBorderCart.withOpacity(0.35),
-        //       blurRadius: 8,
-        //       offset: const Offset(0, 3),
-        //     ),
-        // ],
       ),
       child: Row(
         textDirection: TextDirection.ltr,

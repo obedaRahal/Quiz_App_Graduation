@@ -115,8 +115,6 @@ class _StudyPlanEmojiFieldState extends State<StudyPlanEmojiField> {
       return;
     }
 
-    // نحفظ آخر رمز تمت إضافته فقط.
-    // characters تحافظ على الإيموجي المركب كوحدة واحدة.
     final lastCharacter = value.characters.last;
 
     if (_controller.text != lastCharacter) {

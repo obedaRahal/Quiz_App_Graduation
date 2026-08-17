@@ -94,7 +94,6 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       return Column(
                         children: [
                           if (shouldShowTopCards) ...[
-                            //  const LaboratoryTabsSection(),
                             LaboratoryTestsSliderSection(
                               controller: _testsSliderController,
                               isDark: isDark,

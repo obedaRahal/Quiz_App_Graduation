@@ -1,4 +1,3 @@
-// lib/features/other_profile/domain/use_cases/fetch_other_profile_overview_use_case.dart
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';

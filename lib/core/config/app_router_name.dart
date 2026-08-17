@@ -76,7 +76,6 @@ abstract class AppRouterPath {
   static const forgotPasswordOtpCode = '/forgotPasswordOtpCodePage';
   static const forgotPasswordNewPassword = '/forgotPasswordNewPasswordPage';
 
-  //static const intro = '/intro';
   static const onboarding = '/onboarding';
 
   static const home = '/homePage';

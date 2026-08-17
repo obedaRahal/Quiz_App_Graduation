@@ -40,7 +40,7 @@ class MainLayoutBody extends StatelessWidget {
               child: _buildCurrentTab(state.currentIndex),
             ),
           ),
-          bottomNavigationBar: const CustomBottomNavBar(),
+          bottomNavigationBar: SafeArea(child: const CustomBottomNavBar()),
         );
       },
     );

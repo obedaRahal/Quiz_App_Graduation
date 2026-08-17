@@ -244,7 +244,6 @@ class _OtherProfileBodyState extends State<OtherProfileBody> {
                   padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.03)),
                   child: OtherProfileSelectedTabContent(
                     selectedTab: state.selectedTab,
-                    //profile: profile,
                     overviewDataEntity: data,
                     userId: widget.userId,
                   ),

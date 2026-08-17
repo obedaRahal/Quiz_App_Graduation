@@ -181,11 +181,6 @@ class _TaskHeader extends StatelessWidget {
         if (showStatusCheckBox) ...[
           SizedBox(width: SizeConfig.w(0.018)),
 
-          // _TaskStatusCheckBox(
-          //   value: task.isCompleted,
-          //   isLoading: isUpdating,
-          //   onTap: onStatusToggle,
-          // ),
           _TaskStatusCheckBox(
             status: task.status,
             isLoading: isUpdating,
@@ -215,63 +210,15 @@ class _TaskStatusBadge extends StatelessWidget {
         style.title,
         maxLines: 1,
         fontSize: SizeConfig.text(0.025),
-        // fontFamily: AppFont.elMessiriSemiBold,
         color: context.appColors.whiteToblack,
       ),
     );
   }
 }
 
-// class _TaskStatusCheckBox extends StatelessWidget {
-//   final bool value;
-//   final bool isLoading;
-//   final VoidCallback onTap;
 
-//   const _TaskStatusCheckBox({
-//     required this.value,
-//     required this.isLoading,
-//     required this.onTap,
-//   });
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final activeColor = const Color(0xff2ECC71);
 
-//     return InkWell(
-//       onTap: isLoading ? null : onTap,
-//       borderRadius: BorderRadius.circular(4),
-//       child: AnimatedContainer(
-//         duration: const Duration(milliseconds: 220),
-//         width: SizeConfig.h(0.025),
-//         height: SizeConfig.h(0.025),
-//         alignment: Alignment.center,
-//         decoration: BoxDecoration(
-//           color: value ? activeColor : Colors.transparent,
-//           borderRadius: BorderRadius.circular(3),
-//           border: Border.all(
-//             color: value ? activeColor : AppPalette.greyMedium,
-//             width: 1.4,
-//           ),
-//         ),
-//         child: isLoading
-//             ? Padding(
-//                 padding: const EdgeInsets.all(3),
-//                 child: CircularProgressIndicator(
-//                   strokeWidth: 1.5,
-//                   color: value ? Colors.white : activeColor,
-//                 ),
-//               )
-//             : value
-//             ? Icon(
-//                 Icons.check_rounded,
-//                 size: SizeConfig.h(0.018),
-//                 color: Colors.white,
-//               )
-//             : null,
-//       ),
-//     );
-//   }
-// }
 class _TaskStatusCheckBox extends StatelessWidget {
   final String status;
   final bool isLoading;

@@ -127,32 +127,10 @@ ManualQuestionsJsonImportResult parseManualQuestionsJson(Uint8List bytes) {
     );
   }
 
-  // if (decoded is! Map<String, dynamic>) {
-  //   return const ManualQuestionsJsonImportResult.failure(
-  //     'يجب أن يبدأ الملف بكائن يحتوي على قائمة questions.',
-  //   );
-  // }
 
-  // final rawQuestions =
-  //     decoded['questions'] ?? decoded['Questions'] ?? decoded['QUESTIONS'];
 
-  // if (rawQuestions is! List) {
-  //   return const ManualQuestionsJsonImportResult.failure(
-  //     'الحقل questions مفقود أو لا يحتوي على قائمة أسئلة.',
-  //   );
-  // }
 
-  // if (rawQuestions.isEmpty) {
-  //   return const ManualQuestionsJsonImportResult.failure(
-  //     'ملف الأسئلة لا يحتوي على أي سؤال.',
-  //   );
-  // }
 
-  // if (rawQuestions.length > CreateTestQuestionConstraints.maxQuestionsCount) {
-  //   return const ManualQuestionsJsonImportResult.failure(
-  //     'لا يمكن أن يحتوي الملف على أكثر من 100 سؤال.',
-  //   );
-  // }
 
   final importedQuestions = <ImportedManualQuestion>[];
   final warnings = <String>[];

@@ -525,7 +525,6 @@ class _FilterDropDownField<T> extends StatelessWidget {
       },
       borderRadius: BorderRadius.circular(7),
       child: Container(
-        //minHeight: SizeConfig.h(0.044),
         padding: EdgeInsets.symmetric(horizontal: SizeConfig.w(0.028)),
         decoration: BoxDecoration(
           color: isDark ? AppPalette.fieldColorNDark : AppPalette.white,
@@ -622,7 +621,6 @@ Future<void> showMyProfileFilterOptionsSheet<T>({
                           Navigator.of(sheetContext).pop();
                         },
                         child: Container(
-                          //minHeight: SizeConfig.h(0.046),
                           padding: EdgeInsets.symmetric(
                             horizontal: SizeConfig.w(0.03),
                           ),

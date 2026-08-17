@@ -52,24 +52,6 @@ class ThemedAppImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // return CustomAppImage(
-    //   path: isDark ? darkPath : lightPath,
-    //   width: width,
-    //   height: height,
-    //   scale: scale,
-    //   fit: fit,
-    //   alignment: alignment,
-    //   color: color,
-    //   package: package,
-    //   borderRadius: borderRadius,
-    //   shape: shape,
-    //   clipBehavior: clipBehavior,
-    //   fallback: fallback,
-    //   fallbackIcon: fallbackIcon,
-    //   fallbackIconSize: fallbackIconSize,
-    //   fallbackIconColor: fallbackIconColor,
-    //   showLoadingForSvg: showLoadingForSvg,
-    // );
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 1200),

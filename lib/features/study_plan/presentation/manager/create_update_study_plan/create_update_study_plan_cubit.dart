@@ -27,9 +27,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     debugPrint('============ CreateUpdateStudyPlanCubit INIT ============');
   }
 
-  // =========================================================
-  // INITIALIZE CREATE
-  // =========================================================
 
   Future<void> initializeCreate() async {
     debugPrint(
@@ -54,7 +51,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     );
   }
 
-  ///////////// initialize  update
   Future<void> initializeUpdate(StudyPlanSummaryEntity plan) async {
     debugPrint(
       '============ CreateUpdateStudyPlanCubit.initializeUpdate ============',
@@ -297,9 +293,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     debugPrint('→ hasChanges: ${state.hasChanges}');
   }
 
-  // =========================================================
-  // GET AVAILABLE SUBJECTS
-  // =========================================================
 
   Future<void> getAvailableSubjects() async {
     debugPrint(
@@ -389,9 +382,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     }
   }
 
-  // =========================================================
-  // TITLE
-  // =========================================================
 
   void changeTitle(String value) {
     if (value.length > CreateUpdateStudyPlanState.titleMaxLength) {
@@ -410,9 +400,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     );
   }
 
-  // =========================================================
-  // EMOJI
-  // =========================================================
 
   void changeEmoji(String value) {
     debugPrint(
@@ -430,9 +417,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     );
   }
 
-  // =========================================================
-  // DATES
-  // =========================================================
 
   void changeStartDate(DateTime value) {
     final normalizedDate = DateTime(value.year, value.month, value.day);
@@ -514,9 +498,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     );
   }
 
-  // =========================================================
-  // SELECTED SUBJECTS
-  // =========================================================
 
   void changeSelectedSubjects(Iterable<int> subjectIds) {
     debugPrint(
@@ -636,9 +617,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     );
   }
 
-  // =========================================================
-  // DAILY STUDY TIME
-  // =========================================================
 
   void changeDailyStudyHours(int hours) {
     debugPrint(
@@ -675,9 +653,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     );
   }
 
-  // =========================================================
-  // DEFAULT PLAN
-  // =========================================================
 
   void changeDefaultStatus(bool value) {
     debugPrint(
@@ -695,9 +670,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     );
   }
 
-  // =========================================================
-  // VALIDATION
-  // =========================================================
 
   bool validateBeforeSubmit() {
     debugPrint(
@@ -823,9 +795,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     return true;
   }
 
-  // =========================================================
-  // RESET
-  // =========================================================
 
   void resetError() {
     emit(state.copyWith(clearError: true));
@@ -841,7 +810,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     );
   }
 
-  ///////////////////// create API ////////////
   Future<void> createStudyPlan() async {
     if (!state.isCreateMode) {
       debugPrint('✗ createStudyPlan ignored: state is not create mode');
@@ -947,11 +915,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     }
   }
 
-  /////////////// update ////////////////////
-  /////////////// update ////////////////////
-  /////////////// update ////////////////////
-  /////////////// update ////////////////////
-  /////////////// update ////////////////////
   Future<void> submitStudyPlan() async {
     debugPrint(
       '============ CreateUpdateStudyPlanCubit.submitStudyPlan ============',
@@ -1089,7 +1052,6 @@ class CreateUpdateStudyPlanCubit extends SafeCubit<CreateUpdateStudyPlanState> {
     );
 
     debugPrint('→ params: $params');
-    // debugPrint('→ body: ${params.toBody()}');
     final body = params.toBody();
     debugPrint('→ changed fields body: $body');
     if (body.isEmpty) {

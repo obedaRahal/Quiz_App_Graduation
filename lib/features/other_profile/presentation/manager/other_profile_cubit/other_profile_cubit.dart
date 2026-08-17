@@ -101,7 +101,6 @@ class OtherProfileCubit extends SafeCubit<OtherProfileState> {
     debugPrint("✓ selected tab changed");
     debugPrint("=================================================");
   }
-  //////////////////////////////// APIs ////////////////////////
 
   Future<void> getOtherProfileOverview({required int userId}) async {
     debugPrint(
@@ -155,24 +154,9 @@ class OtherProfileCubit extends SafeCubit<OtherProfileState> {
     );
   }
 
-  ////
-  // void changeSelectedTestsFilter(OtherProfileTestsFilter filter) {
-  //   debugPrint(
-  //     "============ OtherProfileCubit.changeSelectedTestsFilter ============",
-  //   );
-  //   debugPrint("→ selected filter: $filter");
 
-  //   if (state.selectedTestsFilter == filter) {
-  //     debugPrint("✗ filter already selected");
-  //     debugPrint("=================================================");
-  //     return;
-  //   }
 
-  //   emit(state.copyWith(selectedTestsFilter: filter));
 
-  //   debugPrint("✓ selected tests filter changed");
-  //   debugPrint("=================================================");
-  // }
 
   void changeSelectedTestsFilter(
     OtherProfileTestsFilter filter, {
@@ -384,7 +368,6 @@ class OtherProfileCubit extends SafeCubit<OtherProfileState> {
     );
   }
 
-  ///////////////////////////// folders /////////////////////
   Future<void> getOtherProfileFolders({required int userId}) async {
     final requestGeneration = ++_foldersRequestGeneration;
     _isFetchingMoreFolders = false;
@@ -546,7 +529,6 @@ class OtherProfileCubit extends SafeCubit<OtherProfileState> {
 
     debugPrint("=================================================");
   }
-  //////////////////////////////////////////
 
   void changeSelectedContentFilter(
     OtherProfileContentFilter filter, {
@@ -751,7 +733,6 @@ class OtherProfileCubit extends SafeCubit<OtherProfileState> {
     debugPrint("=================================================");
   }
 
-  /////////////////// follow and unfollow //////////////////
   Future<void> toggleOtherProfileFollow() async {
     debugPrint(
       "============ OtherProfileCubit.toggleOtherProfileFollow ============",
@@ -850,7 +831,6 @@ class OtherProfileCubit extends SafeCubit<OtherProfileState> {
     );
   }
 
-  ////////////// save folder unsave //////////
   Future<void> toggleFolderBookmark({required int folderId}) async {
     debugPrint(
       "============ OtherProfileCubit.toggleFolderBookmark ============",
@@ -1226,7 +1206,6 @@ class OtherProfileCubit extends SafeCubit<OtherProfileState> {
     );
   }
 
-  /////////////// get folder details ///////////////////////
   Future<void> getOtherProfileFolderDetails({required int folderId}) async {
     debugPrint(
       "============ OtherProfileCubit.getOtherProfileFolderDetails ============",
@@ -1286,7 +1265,6 @@ class OtherProfileCubit extends SafeCubit<OtherProfileState> {
     );
   }
 
-  ////////////// share profile  and receive ////////////////
   Future<void> getOtherProfileShareLink({required int userId}) async {
     debugPrint(
       "============ OtherProfileCubit.getOtherProfileShareLink ============",

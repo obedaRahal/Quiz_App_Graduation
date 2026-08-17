@@ -108,7 +108,6 @@ class _LibraryPageState extends State<LibraryPage> {
                             FocusScope.of(context).unfocus();
                           },
 
-                          // أبقيناه لأن LibrarySearchField قد يطلبه كوسيط required.
                           onTap: () {
                             debugPrint(
                               '============ LibraryPage.onSearchTap ============',
@@ -175,16 +174,10 @@ class _LibraryContentBody extends StatelessWidget {
             ? AppPalette.titleWhiteINDark
             : AppPalette.textColorInHome;
 
-        /*
-         * التحميل الأولي للمكتبة.
-         */
         if (state.status == LibraryStatus.loading) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        /*
-         * فشل تحميل المحتوى الأساسي.
-         */
         if (state.status == LibraryStatus.failure) {
           return _LibraryMessageState(
             message: state.errorMessage ?? 'حدث خطأ ما',
@@ -192,19 +185,10 @@ class _LibraryContentBody extends StatelessWidget {
           );
         }
 
-        /*
-         * تحميل نتائج البحث.
-         *
-         * يفترض هنا أن isSearching تعني أن طلب البحث
-         * ما زال قيد التنفيذ.
-         */
         if (state.isSearching) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        /*
-         * انتهى البحث ولم توجد نتائج.
-         */
         if (state.isSearchMode && state.searchMaterials.isEmpty) {
           return Column(
             children: [
@@ -222,9 +206,6 @@ class _LibraryContentBody extends StatelessWidget {
           );
         }
 
-        /*
-         * نجح تحميل المكتبة لكن لا يوجد محتوى.
-         */
         if (!state.isSearchMode &&
             state.featured.isEmpty &&
             state.displayedMaterials.isEmpty) {
@@ -235,28 +216,6 @@ class _LibraryContentBody extends StatelessWidget {
           );
         }
 
-        // return Column(
-        //   children: [
-        //     if (!state.isSearchMode && state.featured.isNotEmpty)
-        //       LibraryMediaCarousel(
-        //         items: state.featured.map(_mapFeatured).toList(),
-        //         onItemTap: (item) {
-        //           _openContentDetails(context, contentId: item.id);
-        //         },
-        //       ),
-        //     Expanded(
-        //       child: LibraryContentList(
-        //         items: state.displayedMaterials.map(_mapMaterial).toList(),
-        //         onItemBuild: (index) {
-        //           context.read<LibraryCubit>().loadMoreWhenNeeded(index);
-        //         },
-        //         onItemTap: (item) {
-        //           _openContentDetails(context, contentId: item.id);
-        //         },
-        //       ),
-        //     ),
-        //   ],
-        // );
 
         return LibraryContentList(
           items: state.displayedMaterials.map(_mapMaterial).toList(),
@@ -301,28 +260,17 @@ class _LibraryContentBody extends StatelessWidget {
     return LibraryMediaItem(
       id: item.id,
 
-      /*
-       * إن كان LibraryFeaturedEntity يحتوي title،
-       * استبدل النص الفارغ بالقيمة القادمة من الباك.
-       */
       title: '',
 
       scientificSpecialties: item.interests,
       imageUrl: item.urlContent,
 
-      /*
-       * صورة احتياطية تستخدم عند عدم توفر رابط الصورة
-       * أو عند فشل تحميله داخل ودجت الصورة.
-       */
       imageAsset: AppImage.defaultImageFoeError,
 
       likesCount: item.likeCount,
       savesCount: item.bookmarksCount,
       downloadsCount: item.downloadCount,
 
-      /*
-       * استبدلها بالقيمة الحقيقية إن كان الباك يعيدها.
-       */
       editsCount: 0,
 
       publishedAgo: item.publishedAt,

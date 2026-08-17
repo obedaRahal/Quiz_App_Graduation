@@ -147,7 +147,6 @@ class SoldTestsCubit extends SafeCubit<SoldTestsState> {
     }).toList();
   }
 
-  ////////////////// download sold test
   Future<void> downloadSoldTestsPdf() async {
     debugPrint('============ SoldTestsCubit.downloadSoldTestsPdf ============');
 

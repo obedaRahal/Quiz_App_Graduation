@@ -61,7 +61,6 @@ class _MyProfileFolderNameFieldState extends State<MyProfileFolderNameField> {
         child: TextField(
           controller: _controller,
           textAlign: TextAlign.right,
-          //textDirection: TextDirection.rtl,
           onChanged: context.read<MyProfileFolderEditorCubit>().nameChanged,
           decoration: InputDecoration(
             hintText: 'ادخل اسم المجلد الخاص بك...',

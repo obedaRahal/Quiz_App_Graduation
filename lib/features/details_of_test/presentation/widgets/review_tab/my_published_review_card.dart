@@ -39,13 +39,6 @@ class MyPublishedReviewCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: cardColor,
             borderRadius: BorderRadius.circular(14),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: shadowColor,
-            //     blurRadius: 10,
-            //     offset: const Offset(0, 4),
-            //   ),
-            // ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -75,7 +68,6 @@ class MyPublishedReviewCard extends StatelessWidget {
 
         Positioned(
           left: -6,
-          //right: 0,
           top: 4,
           child: _ReviewMoreButton(onEdit: onEdit, onDelete: onDelete),
         ),

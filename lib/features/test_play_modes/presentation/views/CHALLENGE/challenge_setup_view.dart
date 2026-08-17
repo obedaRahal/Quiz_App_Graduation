@@ -285,8 +285,6 @@ class _ChallengeSetupLoadedBody extends StatelessWidget {
                 child: Center(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                     // horizontal: SizeConfig.w(0.03),
-                      //vertical: SizeConfig.h(0.005),
                     ),
                     child: ChallengeMainCard(
                       selectedCharacterName: selectedCharacter.name,

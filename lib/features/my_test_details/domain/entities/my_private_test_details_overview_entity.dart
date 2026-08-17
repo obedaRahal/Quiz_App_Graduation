@@ -81,13 +81,10 @@ class MyPrivateTestBasicInfoEntity {
 class MyPrivateTestExtraInfoEntity {
   final int questionCount;
 
-  /// قد تأتي من الـ backend كرقم أو نص مثل: "غير محدد".
   final dynamic rawDurationSeconds;
 
-  /// تستخدم مع الودجت القديمة التي تتوقع int?.
   final int? durationSeconds;
 
-  /// تستخدم إذا احتجنا عرض النص كما هو.
   final String durationText;
 
   final int? passMarkPercentage;

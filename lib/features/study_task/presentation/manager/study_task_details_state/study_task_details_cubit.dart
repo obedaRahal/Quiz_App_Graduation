@@ -34,9 +34,6 @@ class StudyTaskDetailsCubit extends SafeCubit<StudyTaskDetailsState> {
     _hasDataChanges = true;
   }
 
-  // =========================================================
-  // GET TASK DETAILS
-  // =========================================================
 
   Future<void> getStudyTaskDetails({
     required int planId,
@@ -145,9 +142,6 @@ class StudyTaskDetailsCubit extends SafeCubit<StudyTaskDetailsState> {
     }
   }
 
-  // =========================================================
-  // CHANGE TASK STATUS
-  // =========================================================
 
   Future<void> changeTaskStatus({required int planId}) async {
     debugPrint(
@@ -346,13 +340,7 @@ class StudyTaskDetailsCubit extends SafeCubit<StudyTaskDetailsState> {
       );
     }
   }
-  // =========================================================
-  // TOGGLE SUBTASK STATUS
-  // =========================================================
 
-  // =========================================================
-  // TOGGLE SUBTASK STATUS
-  // =========================================================
 
   Future<void> toggleSubTaskStatus({
     required int planId,
@@ -560,9 +548,6 @@ class StudyTaskDetailsCubit extends SafeCubit<StudyTaskDetailsState> {
       );
     }
   }
-  // =========================================================
-  // DELETE TASK
-  // =========================================================
 
   Future<void> deleteTask({required int planId}) async {
     debugPrint(
@@ -694,9 +679,6 @@ class StudyTaskDetailsCubit extends SafeCubit<StudyTaskDetailsState> {
     }
   }
 
-  // =========================================================
-  // RESET ACTION STATES
-  // =========================================================
 
   void resetChangeStatusState() {
     debugPrint(

@@ -131,18 +131,8 @@ class LibraryHeader extends StatelessWidget {
                         mediaFiles: mediaFiles,
                       );
                     },
-                    // onFile: () async {
-                    //   final file =
-                    //       await LibraryFilePickerHelper.pickSingleFile();
 
-                    //   if (file == null) return;
-                    //   if (!context.mounted) return;
 
-                    //   _goToCreateContentFile(
-                    //     context: context,
-                    //     file: file,
-                    //   );
-                    // },
                     onFile: () async {
                       debugPrint('============ ON FILE TAP ============');
 

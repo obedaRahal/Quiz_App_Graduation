@@ -86,22 +86,6 @@ class FlashcardSummaryDialog extends StatelessWidget {
 
                 SizedBox(height: SizeConfig.h(0.014)),
                 PlayAgainButton(onTap: onPlayAgain),
-                // GestureDetector(
-                //   onTap: onPlayAgain,
-                //   child: CustomBackgroundWithChild(
-                //     width: double.infinity,
-                //     height: SizeConfig.h(0.05),
-                //     alignment: Alignment.center,
-                //     backgroundColor: appColors.primaryToPrimaryDark,
-                //     borderRadius: BorderRadius.circular(10),
-                //     child: CustomTextWidget(
-                //       'اللعب مرة أخرى',
-                //       color: AppPalette.white,
-                //       fontFamily: AppFont.elMessiriBold,
-                //       fontSize: SizeConfig.text(0.033),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -140,7 +124,6 @@ class _FlashcardResultCongratulationsCard extends StatelessWidget {
         begin: Alignment.centerRight,
         end: Alignment.centerLeft,
         colors: [
-          // Color(0xFF8E6CFF), Color(0xFFA864E8)
           AppPalette.homeContainer1,
           AppPalette.homeContainer2,
           AppPalette.homeContainer3,

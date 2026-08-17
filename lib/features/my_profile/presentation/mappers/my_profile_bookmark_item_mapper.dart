@@ -10,13 +10,11 @@ extension MyProfileBookmarkTestMapper on MyProfileBookmarkTestEntity {
       title: title,
       description: description,
       interests: interests,
-      //targetLevel: targetLevel,
       difficultyLevel: difficultyLevel,
       averageRating: averageRating,
       price: price,
       publishedAt: publishedAt,
       questionCount: questionCount,
-      // تحتاج تعديل هنا
        targetLevel: ""
     );
   }

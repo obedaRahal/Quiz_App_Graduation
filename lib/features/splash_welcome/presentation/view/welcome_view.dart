@@ -33,23 +33,12 @@ class WelcomeViewBody extends StatelessWidget {
       children: [
         Stack(
           children: [
-            // ThemedAppImage(
-            //   height: SizeConfig.h(0.84),
-            //   width: double.infinity,
-            //   //scale: 1.5,
-            //   //fit: BoxFit.cover,
-            //   lightPath: AppImage.welcomeLight,
-            //   darkPath: AppImage.welcomeDark,
-            //   alignment: Alignment.center,
-            // ),
             SizedBox(
               width: double.infinity,
               height: SizeConfig.h(0.57),
               child: ClipRect(
                 child: ThemedAppImage(
                     width: double.infinity,
-                  //fit: BoxFit.cover,
-                  //scale: 0.9,
                   lightPath: AppImage.welcomeLight,
                   darkPath: AppImage.welcomeDark,
                   alignment: Alignment.center,
@@ -90,51 +79,9 @@ class WelcomeViewBody extends StatelessWidget {
           color: appColors.blackTogreyMedium,
         ),
     
-        // Row(
-        //   children: [
-        //     CustomButtonWidget(
-        //       backgroundColor: appColors.blackToGreyLightDark,
-        //       childHorizontalPad: SizeConfig.w(.06),
-        //       childVerticalPad: SizeConfig.h(.01),
-        //       borderRadius: 30,
-        //       onTap: () {
-        //         debugPrint("اكمال ال onboarding");
     
-        //         context.pushNamed(
-        //           AppRouterName.onboarding,
-        //           extra: const OnboardingRouteArgs(
-        //             email: 'obdrhl@gmail.com',
-        //             lastCompletedStep: 3,
-        //           ),
-        //         );
-        //       },
-        //       child: CustomTextWidget(
-        //         "اكمال",
-        //         fontSize: SizeConfig.text(.038),
-        //         color: Colors.white,
-        //       ),
-        //     ),
     
-            // CustomButtonWidget(
-            //   backgroundColor: appColors.blackToGreyLightDark,
-            //   childHorizontalPad: SizeConfig.w(.06),
-            //   childVerticalPad: SizeConfig.h(.01),
-            //   borderRadius: 30,
-            //   onTap: () {
-            //     debugPrint(" onboardingggggg");
-            //     //context.pushNamed(AppRouterName.onboarding);
-            //     context.pushNamed(
-            //       AppRouterName.mainLayout,
                  
-            //     );
-            //     //context.pushNamed(AppRouterName.onboarding);
-            //   },
-            //   child: CustomTextWidget(
-            //     "onboarding",
-            //     fontSize: SizeConfig.text(.038),
-            //     color: Colors.white,
-            //   ),
-            // ),
           
         
         Spacer(),

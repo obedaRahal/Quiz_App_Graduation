@@ -56,7 +56,6 @@ class OtherProfileTestsTab extends StatelessWidget {
             description: 'لا توجد اختبارات متاحة ضمن هذا التصنيف حالياً',
           )
         else
-          //OtherProfileTestsTabShimmer(),
           Column(
             children: [
               ...tests.map((test) {

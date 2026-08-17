@@ -1,26 +1,6 @@
-// import 'package:file_picker/file_picker.dart';
 
-// class LibraryFilePickerHelper {
-//   static Future<PlatformFile?> pickSingleFile() async {
-//     final result = await FilePicker.platform.pickFiles(
-//       allowMultiple: false,
-//       type: FileType.custom,
-//       allowedExtensions: [
-//         'pdf',
-//         'doc',
-//         'docx',
-//         'ppt',
-//         'pptx',
-//       ],
-//     );
 
-//     if (result == null || result.files.isEmpty) {
-//       return null;
-//     }
 
-//     return result.files.first;
-//   }
-// } 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 

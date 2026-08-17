@@ -246,7 +246,6 @@ class MyProfileBody extends StatelessWidget {
                             confirmText: 'حذف',
                             cancelText: 'إلغاء',
                             onConfirm: () async {
-                              //Navigator.pop(context);
 
                               await context
                                   .read<MyProfileCubit>()
@@ -329,7 +328,7 @@ class MyProfileBody extends StatelessWidget {
 
   Future<void> _pickAndPreviewProfileImage({
     required BuildContext context,
-    required String type, // avatar / cover
+    required String type,
     required bool fromCamera,
   }) async {
     final picker = sl<FilePickerService>();

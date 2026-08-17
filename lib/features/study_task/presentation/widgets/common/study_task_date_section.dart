@@ -11,24 +11,10 @@ class StudyTaskDateSection extends StatelessWidget {
   final ValueChanged<DateTime?> onStartDateChanged;
   final ValueChanged<DateTime?> onEndDateChanged;
 
-  /// أول تاريخ يمكن اختياره كبداية.
-  ///
-  /// في الإنشاء يكون غالبًا اليوم.
-  /// وفي التعديل يكون اليوم أيضًا، مع السماح بعرض
-  /// التاريخ القديم الموجود مسبقًا.
   final DateTime firstSelectableStartDate;
 
-  /// آخر تاريخ يمكن اختياره كبداية.
   final DateTime lastSelectableStartDate;
 
-  /// أقصى عدد أيام للمهمة، شامل يوم البداية.
-  ///
-  /// مثلًا:
-  /// maxRangeDays = 7
-  ///
-  /// يعني:
-  /// البداية 1 أغسطس
-  /// النهاية القصوى 7 أغسطس
   final int maxRangeDays;
 
   final String sectionTitle;
@@ -107,13 +93,6 @@ class StudyTaskDateSection extends StatelessWidget {
 
     final normalizedLastDate = _normalizeDate(lastSelectableStartDate);
 
-    /*
-     * قد يكون تاريخ المهمة الحالي أقدم من firstDate
-     * في شاشة التعديل.
-     *
-     * لذلك لا نستخدم startDate مباشرة بوصفه
-     * initialDate إلا بعد وضعه ضمن المجال المسموح.
-     */
     final pickerInitialDate = _clampDate(
       date: _normalizeDate(startDate ?? normalizedFirstDate),
       firstDate: normalizedFirstDate,
@@ -216,20 +195,12 @@ class StudyTaskDateSection extends StatelessWidget {
     final currentEndDate = endDate;
 
     if (currentEndDate == null) {
-      /*
-       * إن لم يكن هناك تاريخ نهاية،
-       * نجعله مساويًا للبداية الجديدة.
-       */
       onEndDateChanged(newStartDate);
       return;
     }
 
     final normalizedEndDate = _normalizeDate(currentEndDate);
 
-    /*
-     * إذا أصبحت النهاية قبل البداية الجديدة،
-     * نجعلها مساوية للبداية.
-     */
     if (normalizedEndDate.isBefore(newStartDate)) {
       onEndDateChanged(newStartDate);
       return;
@@ -239,10 +210,6 @@ class StudyTaskDateSection extends StatelessWidget {
       Duration(days: maxRangeDays - 1),
     );
 
-    /*
-     * إذا تجاوزت النهاية الحد الأقصى بعد
-     * تغيير البداية، نضبطها تلقائيًا.
-     */
     if (normalizedEndDate.isAfter(lastAllowedEndDate)) {
       onEndDateChanged(lastAllowedEndDate);
     }

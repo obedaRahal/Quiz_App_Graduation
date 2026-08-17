@@ -19,7 +19,6 @@ class TestInfoDetailsSection extends StatelessWidget {
   final String targetLevel;
   final String language;
   final int participantsCount;
-  //final String reviewStatus;
   final List<String> interests;
 
   const TestInfoDetailsSection({
@@ -32,7 +31,6 @@ class TestInfoDetailsSection extends StatelessWidget {
     required this.targetLevel,
     required this.language,
     required this.participantsCount,
-    //required this.reviewStatus,
     required this.interests,
   });
 
@@ -132,10 +130,8 @@ class TestInfoDetailsSection extends StatelessWidget {
         SizedBox(height: SizeConfig.h(0.025)),
 
         Wrap(
-          //textDirection: TextDirection.rtl,
           alignment: WrapAlignment.spaceBetween,
           runSpacing: SizeConfig.h(0.015),
-          //spacing: SizeConfig.w(0.0005),
           children: [
             _MetaInfoItem(
               title: "تصنيف دراسي",

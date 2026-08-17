@@ -315,8 +315,6 @@ OtherProfileTestItemEntity _mapToOtherProfileTest(
     description: test.description,
     interests: test.interestNames,
 
-    // الـ API الحالي يعيد target_level بدل difficulty_level.
-    // لذلك نعرض المستوى في مكان الشارة.
     difficultyLevel: test.targetLevel,
 
     targetLevel: test.targetLevel,

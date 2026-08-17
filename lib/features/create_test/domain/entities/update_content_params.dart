@@ -6,7 +6,7 @@ class UpdateContentParams {
   final String description;
   final List<int> interestIds;
   final String targetLevel;
-  final String visibilityType; // عام / خاص
+  final String visibilityType;
   final List<PlatformFile> mediaFiles;
 
   const UpdateContentParams({

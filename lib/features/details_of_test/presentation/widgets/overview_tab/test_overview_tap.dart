@@ -27,7 +27,6 @@ class TestOverviewTab extends StatelessWidget {
   final VoidCallback onPublisherTap;
   final VoidCallback onFollowTap;
 
-  //final String reviewStatus;
   final List<String> interests;
 
   const TestOverviewTab({
@@ -47,7 +46,6 @@ class TestOverviewTab extends StatelessWidget {
     required this.targetLevel,
     required this.language,
     required this.participantsCount,
-    //required this.reviewStatus,
     required this.interests,
     required this.onPublisherTap,
     required this.onFollowTap,
@@ -98,7 +96,6 @@ class TestOverviewTab extends StatelessWidget {
           targetLevel: targetLevel,
           language: language,
           participantsCount: participantsCount,
-          //reviewStatus: reviewStatus,
           interests: interests,
         ),
       ],

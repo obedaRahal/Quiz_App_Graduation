@@ -23,9 +23,6 @@ class StudySubjectsCubit extends SafeCubit<StudySubjectsState> {
     debugPrint('============ StudySubjectsCubit INIT ============');
   }
 
-  // =========================================================
-  // GET SUBJECTS
-  // =========================================================
 
   Future<void> getSubjects() async {
     debugPrint('============ StudySubjectsCubit.getSubjects ============');
@@ -97,9 +94,6 @@ class StudySubjectsCubit extends SafeCubit<StudySubjectsState> {
     }
   }
 
-  // =========================================================
-  // DRAFT NAME
-  // =========================================================
 
   void changeDraftName(String value) {
     if (value.length > subjectNameMaxLength) {
@@ -118,9 +112,6 @@ class StudySubjectsCubit extends SafeCubit<StudySubjectsState> {
     );
   }
 
-  // =========================================================
-  // CREATE SUBJECT
-  // =========================================================
 
   Future<void> createSubject() async {
     debugPrint('============ StudySubjectsCubit.createSubject ============');
@@ -217,10 +208,6 @@ class StudySubjectsCubit extends SafeCubit<StudySubjectsState> {
           debugPrint('→ message: ${response.message}');
           debugPrint('→ refreshing subjects after create');
 
-          /*
-           * الـAPI لا يعيد id المادة الجديدة،
-           * لذلك يجب إعادة جلب القائمة.
-           */
           final refreshedSubjects = await _fetchSubjectsAfterCreate();
 
           if (refreshedSubjects == null) {
@@ -309,9 +296,6 @@ class StudySubjectsCubit extends SafeCubit<StudySubjectsState> {
     }
   }
 
-  // =========================================================
-  // DELETE SUBJECT
-  // =========================================================
 
   Future<void> deleteSubject({required int subjectId}) async {
     debugPrint('============ StudySubjectsCubit.deleteSubject ============');
@@ -405,9 +389,6 @@ class StudySubjectsCubit extends SafeCubit<StudySubjectsState> {
     }
   }
 
-  // =========================================================
-  // VALIDATION HELPERS
-  // =========================================================
 
   bool _subjectAlreadyExists(String name) {
     final normalizedName = _normalizeSubjectName(name);
@@ -421,9 +402,6 @@ class StudySubjectsCubit extends SafeCubit<StudySubjectsState> {
     return value.trim().replaceAll(RegExp(r'\s+'), ' ').toLowerCase();
   }
 
-  // =========================================================
-  // RESET ACTION STATES
-  // =========================================================
 
   void resetCreateState() {
     debugPrint('============ StudySubjectsCubit.resetCreateState ============');

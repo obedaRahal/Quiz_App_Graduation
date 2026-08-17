@@ -63,9 +63,6 @@ class StudyPlanDetailsCubit extends SafeCubit<StudyPlanDetailsState> {
     debugPrint('=========================================================');
   }
 
-  // =========================================================
-  // CHANGE TAB
-  // =========================================================
 
   Future<void> changeTab(StudyPlanDetailsTab tab) async {
     debugPrint('============ StudyPlanDetailsCubit.changeTab ============');
@@ -97,9 +94,6 @@ class StudyPlanDetailsCubit extends SafeCubit<StudyPlanDetailsState> {
     debugPrint('========================================================');
   }
 
-  // =========================================================
-  // GET OVERVIEW
-  // =========================================================
 
   Future<void> getOverview({bool forceRefresh = false}) async {
     debugPrint('============ StudyPlanDetailsCubit.getOverview ============');
@@ -218,9 +212,6 @@ class StudyPlanDetailsCubit extends SafeCubit<StudyPlanDetailsState> {
     }
   }
 
-  // =========================================================
-  // REFRESH
-  // =========================================================
 
   Future<void> refreshCurrentTab() async {
     debugPrint(
@@ -551,7 +542,6 @@ class StudyPlanDetailsCubit extends SafeCubit<StudyPlanDetailsState> {
     emit(state.copyWith(isCompletedExpanded: !state.isCompletedExpanded));
   }
 
-  ////////////////// delete STUDY PLAN ///////////////
 
   Future<void> deleteStudyPlan({required int planId}) async {
     debugPrint(

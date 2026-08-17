@@ -23,10 +23,8 @@ class CustomAppImage extends StatelessWidget {
   final BoxShape shape;
   final Clip clipBehavior;
 
-  /// اختياري: إذا أردت تخصيص شكل الخطأ في حالة خاصة فقط
   final Widget? fallback;
 
-  /// الشكل الافتراضي عند فشل تحميل الصورة
   final IconData fallbackIcon;
   final double? fallbackIconSize;
   final Color? fallbackIconColor;

@@ -124,27 +124,10 @@ class _SplashViewBodyState extends State<SplashViewBody>
     );
   }
 
-  // Future<void> _startSequence() async {
-  //   try {
-  //     await _controller.forward();
-  //     await Future.delayed(const Duration(milliseconds: 700));
 
-  //     if (!mounted) return;
 
-  //     final hasSeenIntro =
-  //         CacheHelper.getBool(key: CacheHelper.hasSeenIntroKey) ?? false;
 
-  //     sl<AuthSession>().markUnauthenticated();
 
-  //     if (hasSeenIntro) {
-  //       context.goNamed(AppRouterName.welcome);
-  //     } else {
-  //       context.goNamed(AppRouterName.intro);
-  //     }
-  //   } on TickerCanceled {
-  //     // تجاهل الخطأ إذا تم التخلص من الـ controller قبل اكتمال الأنيميشن
-  //   }
-  // }
 
   Future<void> _startSequence() async {
     try {
@@ -309,8 +292,6 @@ class _SplashViewBodyState extends State<SplashViewBody>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    //  AppColor.white2,
-                    // AppColor.primary,
                     AppPalette.primarySoft,
 
                     AppPalette.whiteSoft,

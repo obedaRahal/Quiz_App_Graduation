@@ -82,10 +82,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
   }) : super(const DetailsOfTestState()) {
     debugPrint("============ DetailsOfTestCubit INIT ============");
   }
-  ///////////////////// FOR UI ////////////////////////////
-  ///////////////////// FOR UI ////////////////////////////
-  ///////////////////// FOR UI ////////////////////////////
-  ///////////////////// FOR UI ////////////////////////////
   void changeSelectedTab(DetailsOfTestTab tab) {
     debugPrint(
       "============ DetailsOfTestCubit.changeSelectedTab ============",
@@ -151,16 +147,10 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
       return;
     }
 
-    // لاحقًا هنا API نشر التقييم
     debugPrint("✓ ready to submit review");
     debugPrint("=================================================");
   }
-  ////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////
 
-  /////////////////////    OVERVIEW API //////////////////////////////
   Future<void> getOtherTestDetailsOverview({required int testId}) async {
     debugPrint(
       "============ DetailsOfTestCubit.getOtherTestDetailsOverview ============",
@@ -209,7 +199,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
-  /////////////////    SAMPLE API    ////////////////////
   Future<void> getOtherTestDetailsSample({required int testId}) async {
     debugPrint(
       "============ DetailsOfTestCubit.getOtherTestDetailsSample ============",
@@ -257,65 +246,12 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
-  ////////////////////  REVIEWS API ///////////////////////
-  // Future<void> getOtherTestDetailsReviews({
-  //   required int testId,
-  //   String rating = 'all',
-  //   int page = 1,
-  // }) async {
-  //   debugPrint(
-  //     "============ DetailsOfTestCubit.getOtherTestDetailsReviews ============",
-  //   );
-  //   debugPrint("→ params: {testId: $testId, rating: $rating}");
 
-  //   emit(
-  //     state.copyWith(
-  //       reviewsStatus: DetailsOfTestReviewsStatus.loading,
-  //       selectedRatingFilter: rating,
-  //       clearError: true,
-  //     ),
-  //   );
 
-  //   final result = await getOtherTestDetailsReviewsUseCase(
-  //     GetOtherTestDetailsReviewsParams(
-  //       testId: testId,
-  //       rating: rating,
-  //       page: page,
-  //     ),
-  //   );
 
-  //   result.fold(
-  //     (failure) {
-  //       debugPrint("✗ reviews failure title: ${failure.title}");
-  //       debugPrint("✗ reviews failure message: ${failure.message}");
 
-  //       emit(
-  //         state.copyWith(
-  //           reviewsStatus: DetailsOfTestReviewsStatus.failure,
-  //           errorTitle: failure.title,
-  //           errorMessage: failure.message,
-  //         ),
-  //       );
-  //     },
-  //     (response) {
-  //       debugPrint("✓ reviews loaded successfully");
-  //       debugPrint("→ average rating: ${response.data.summary.averageRating}");
-  //       debugPrint("→ reviews count: ${response.data.reviews.length}");
-  //       debugPrint("→ selected filter: $rating");
 
-  //       emit(
-  //         state.copyWith(
-  //           reviewsStatus: DetailsOfTestReviewsStatus.success,
-  //           reviewsDetails: response,
-  //           selectedRatingFilter: rating,
-  //           clearError: true,
-  //         ),
-  //       );
-  //     },
-  //   );
 
-  //   debugPrint("=================================================");
-  // }
   Future<void> getOtherTestDetailsReviews({
     required int testId,
     String rating = 'all',
@@ -456,7 +392,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     );
   }
 
-  ////////////////////// LIKE API //////////////////////
   Future<void> toggleTestLike({required int testId}) async {
     debugPrint("============ DetailsOfTestCubit.toggleTestLike ============");
     debugPrint("→ params: {testId: $testId}");
@@ -548,7 +483,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
-  /////////////////////  BOOKMARK API ////////////////////
   Future<void> toggleTestBookmark({required int testId}) async {
     debugPrint(
       "============ DetailsOfTestCubit.toggleTestBookmark ============",
@@ -646,7 +580,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
-  /////////////////////////         FOLLOW API ////////////////////
   Future<void> toggleCreatorFollow({required int creatorId}) async {
     debugPrint(
       "============ DetailsOfTestCubit.toggleCreatorFollow ============",
@@ -760,7 +693,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     );
   }
 
-  /////////////////////////////   DOWNLOAD API //////////////////
   Future<void> downloadTestFile({required int testId}) async {
     debugPrint("============ DetailsOfTestCubit.downloadTestFile ============");
     debugPrint("→ params: {testId: $testId}");
@@ -813,7 +745,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     debugPrint("=================================================");
   }
 
-  //////////////////    ADD REVIEW API ////////////////////
   Future<void> addTestReview({
     required int testId,
     required int rating,
@@ -871,7 +802,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     emit(state.copyWith(addReviewStatus: AddTestReviewStatus.initial));
   }
 
-  ///////////////////// EDITING REVIEW API ////////////////////
   void startEditingMyReview({
     required int reviewId,
     required int rating,
@@ -1013,7 +943,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     emit(state.copyWith(updateReviewStatus: UpdateTestReviewStatus.initial));
   }
 
-  ///////////////////  delete review API /////////////////
   Future<void> deleteMyReview({required int testId}) async {
     debugPrint("============ DetailsOfTestCubit.deleteMyReview ============");
     debugPrint("→ params: {testId: $testId}");
@@ -1379,7 +1308,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     emit(state.copyWith(overviewDetails: updatedOverview));
   }
 
-  // share link api
   Future<void> getTestShareLink({required int testId}) async {
     debugPrint("============ DetailsOfTestCubit.getTestShareLink ============");
     debugPrint("→ params: {testId: $testId}");
@@ -1527,7 +1455,6 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
     );
   }
 
-  //////////////// payment API
   Future<void> createStripeCheckoutSession({required int testId}) async {
     debugPrint(
       "============ DetailsOfTestCubit.createStripeCheckoutSession ============",

@@ -136,12 +136,6 @@ class _SettingsViewState extends State<SettingsView> {
     try {
       await LocalNotificationService.showTestNotification();
       if (!mounted) return;
-      // showValidationTopSnackBar(
-      //   context,
-      //   title: 'تم إرسال الإشعار',
-      //   message: 'تحقق من مركز إشعارات جهازك لمشاهدة شكله.',
-      //   type: AppValidationSnackBarType.success,
-      // );
     } catch (error) {
       if (!mounted) return;
       showValidationTopSnackBar(
@@ -444,8 +438,6 @@ class _SettingsViewState extends State<SettingsView> {
                                   AppRouterName.academicVerification,
                                 );
                               },
-                              // =>
-                              // _showComingSoon('تأكيد المستوى العلمي'),
                               topRadius: 0,
                             ),
 
@@ -470,7 +462,6 @@ class _SettingsViewState extends State<SettingsView> {
 
                                 context.pushNamed(AppRouterName.soldTests);
                               },
-                              //_showComingSoon('الاختبارات المباعة'),
                             ),
 
                             SizedBox(height: SizeConfig.h(0.02)),

@@ -442,7 +442,6 @@ class StudyAlarmSchedulerServiceImpl implements StudyAlarmSchedulerService {
     try {
       await previousOperation;
     } catch (_) {
-      // A failed operation must not block the operations queued after it.
     }
 
     try {

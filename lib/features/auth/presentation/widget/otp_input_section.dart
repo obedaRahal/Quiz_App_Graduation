@@ -37,7 +37,6 @@ class OtpInputSection extends StatelessWidget {
     final seconds = (remainingSeconds % 60).toString().padLeft(2, '0');
 
     final appColors = context.appColors;
-    // final colorScheme = context.colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final fieldWidth = (SizeConfig.safeWidth * (compact ? 0.115 : 0.125))
@@ -135,31 +134,6 @@ class OtpInputSection extends StatelessWidget {
           onTap: onResend,
         ),
 
-        // if (showSubmitButton) ...[
-        //   SizedBox(height: SizeConfig.sh(compact ? .025 : .04)),
-        //   isSubmitting
-        //       ? SizedBox(
-        //           height: 29,
-        //           width: 26,
-        //           child: CircularProgressIndicator(
-        //             strokeWidth: 2.5,
-        //             color: colorScheme.onSecondary,
-        //           ),
-        //         )
-        //       : CustomButtonWidget(
-        //           width: double.infinity,
-        //           backgroundColor: appColors.primaryToPrimaryDark,
-        //           childHorizontalPad: SizeConfig.width * .07,
-        //           childVerticalPad: SizeConfig.height * (compact ? .009 : .012),
-        //           borderRadius: 10,
-        //           onTap: onSubmit,
-        //           child: CustomTextWidget(
-        //             buttonText,
-        //             fontSize: SizeConfig.text(compact ? 0.044 : 0.055),
-        //             color: colorScheme.onSecondary,
-        //           ),
-        //         ),
-        // ],
       ],
     );
   }

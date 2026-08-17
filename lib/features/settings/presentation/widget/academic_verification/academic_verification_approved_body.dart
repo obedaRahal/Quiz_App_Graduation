@@ -27,7 +27,6 @@ class AcademicVerificationApprovedBody extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: SizeConfig.w(0.03),
-          //vertical: SizeConfig.h(0.02),
         ),
         child: Column(
           children: [

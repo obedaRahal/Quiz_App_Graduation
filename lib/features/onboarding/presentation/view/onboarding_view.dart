@@ -34,7 +34,6 @@ class OnboardingView extends StatelessWidget {
             title: state.errorTitle ?? 'خطأ تحقق !',
             message: state.errorMessage ?? 'حدث خطا',
             type: AppValidationSnackBarType.error,
-            //assetPath: AppImage.errorSnackIcon,
           );
         }
       },
@@ -66,15 +65,6 @@ class OnboardingView extends StatelessWidget {
               }
               context.read<OnboardingCubit>().nextStep();
             },
-            // onBack: () {
-            //   final cubit = context.read<OnboardingCubit>();
-            //   if (state.isFirstStep) {
-            //     context.goNamed(AppRouterName.welcome);
-            //     sl<AuthSession>().markUnauthenticated();
-            //     return;
-            //   }
-            //   cubit.previousStep();
-            // },
             onBack: shouldHideBackButton
                 ? null
                 : () {
@@ -170,8 +160,6 @@ class OnboardingView extends StatelessWidget {
         }
         return const InterestsStep();
 
-      // case OnboardingStepType.interests:
-      //   return const InterestsStep();
 
       case OnboardingStepType.graduatedUniversity:
         return const GraduatedUniversityStep();

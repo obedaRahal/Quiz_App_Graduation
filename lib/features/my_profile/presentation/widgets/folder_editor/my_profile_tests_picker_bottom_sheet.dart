@@ -371,8 +371,6 @@ class _PickerTestsList extends StatelessWidget {
           );
         }
 
-        // كان التحميل الإضافي يُستدعى هنا أثناء build، وتم نقله إلى
-        // ScrollNotification أدناه كي لا تُحمّل جميع الصفحات تلقائيًا.
 
         final sourceTests = state.hasPickerSearchQuery
             ? state.pickerSearchResponse?.data ?? []

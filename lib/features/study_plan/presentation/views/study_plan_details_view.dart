@@ -147,16 +147,10 @@ class StudyPlanDetailsView extends StatelessWidget {
       cancelText: 'إلغاء',
       icon: Icons.delete,
       onConfirm: () {
-        // debugPrint('→ confirmed: $confirmed');
 
-        // if (confirmed != true || !context.mounted) {
-        //   debugPrint('→ delete cancelled');
-        //   return;
-        // }
 
         context.read<StudyPlanDetailsCubit>().deleteStudyPlan(planId: planId);
       },
-      //confirmTextColor: AppPalette.red,
       iconColor: AppPalette.red,
       iconBackgroundColor: AppPalette.red.withValues(alpha: 0.1),
       confirmBackgroundColor: AppPalette.red,

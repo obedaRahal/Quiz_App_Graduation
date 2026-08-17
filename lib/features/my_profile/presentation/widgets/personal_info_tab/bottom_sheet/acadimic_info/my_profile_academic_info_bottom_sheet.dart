@@ -592,7 +592,6 @@ class _LevelCard extends StatelessWidget {
                   : appColors.primaryToPrimaryDark,
               size: SizeConfig.w(0.052),
             ),
-            //SizedBox(height: SizeConfig.w(0.02)),
             CustomTextWidget(
               title,
               color: isSelected

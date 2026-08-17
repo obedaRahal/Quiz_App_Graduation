@@ -502,7 +502,6 @@ class OtherContentDetailsCubit extends SafeCubit<OtherContentDetailsState> {
     }
   }
 
-  //            My Content Details
   Future<void> getMyContentDetails(int id, {bool isPublic = true}) async {
     debugPrint('=========== MyContentDetailsCubit Method ===========');
     debugPrint('→ contentId: $id');
@@ -540,7 +539,6 @@ class OtherContentDetailsCubit extends SafeCubit<OtherContentDetailsState> {
     }
   }
 
-  // Delete Content
   Future<void> deleteMyContent() async {
     final contentId =
         state.myDetails?.basicInfo.id ?? state.details?.basicInfo.id;

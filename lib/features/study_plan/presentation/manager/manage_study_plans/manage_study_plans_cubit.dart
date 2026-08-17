@@ -13,9 +13,6 @@ class ManageStudyPlansCubit extends SafeCubit<ManageStudyPlansState> {
     debugPrint('============ ManageStudyPlansCubit INIT ============');
   }
 
-  // =========================================================
-  // INITIALIZE
-  // =========================================================
 
   Future<void> initialize() async {
     debugPrint('============ ManageStudyPlansCubit.initialize ============');
@@ -26,9 +23,6 @@ class ManageStudyPlansCubit extends SafeCubit<ManageStudyPlansState> {
     debugPrint('==========================================================');
   }
 
-  // =========================================================
-  // GET PLANS
-  // =========================================================
 
   Future<void> getPlans({bool showFullLoading = true}) async {
     debugPrint('============ ManageStudyPlansCubit.getPlans ============');
@@ -122,9 +116,6 @@ class ManageStudyPlansCubit extends SafeCubit<ManageStudyPlansState> {
     }
   }
 
-  // =========================================================
-  // CHANGE TAB
-  // =========================================================
 
   Future<void> changeTab(StudyPlansTab tab) async {
     debugPrint('============ ManageStudyPlansCubit.changeTab ============');
@@ -151,9 +142,6 @@ class ManageStudyPlansCubit extends SafeCubit<ManageStudyPlansState> {
     debugPrint('=========================================================');
   }
 
-  // =========================================================
-  // SEARCH
-  // =========================================================
 
   void changeSearchQuery(String value) {
     debugPrint(
@@ -182,9 +170,6 @@ class ManageStudyPlansCubit extends SafeCubit<ManageStudyPlansState> {
     debugPrint('✓ search cleared');
   }
 
-  // =========================================================
-  // REFRESH AND RETRY
-  // =========================================================
 
   Future<void> refreshPlans() async {
     debugPrint('============ ManageStudyPlansCubit.refreshPlans ============');
@@ -198,15 +183,11 @@ class ManageStudyPlansCubit extends SafeCubit<ManageStudyPlansState> {
     await getPlans();
   }
 
-  // =========================================================
-  // RESET ERROR
-  // =========================================================
 
   void resetError() {
     emit(state.copyWith(clearError: true));
   }
 
-  /////////////////////
   void markDataChanged() {
     if (state.hasDataChanges) {
       debugPrint('→ ManageStudyPlansCubit already marked as changed');

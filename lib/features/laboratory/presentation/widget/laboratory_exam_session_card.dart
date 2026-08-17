@@ -128,7 +128,6 @@ class _SessionInfoPanel extends StatelessWidget {
           color: isDark
               ? Colors.white.withOpacity(0.05)
               : const Color(0xFFF3F6FF),
-          // borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -253,7 +252,6 @@ class _SessionPricePanel extends StatelessWidget {
           color: isDark
               ? Colors.white.withOpacity(0.05)
               : const Color(0xFFF7F7F7),
-          //borderRadius: BorderRadius.circular(12),
         ),
         child: Align(
           alignment: Alignment.centerLeft,
@@ -453,7 +451,6 @@ class _ExamTicketClipper extends CustomClipper<Path> {
     const corner = 10.0;
     const topCutRadius = 8.0;
 
-    // كبّر/صغّر هذا الرقم
     final sideCutRadius = size.height * 0.15;
 
     final path = Path()..moveTo(corner, 0);
@@ -498,7 +495,6 @@ class _ExamTicketClipper extends CustomClipper<Path> {
       ..quadraticBezierTo(0, 0, corner, 0)
       ..close();
 
-    // القص الجانبي اليمين
     path.addOval(
       Rect.fromCircle(
         center: Offset(size.width, size.height / 2),
@@ -506,7 +502,6 @@ class _ExamTicketClipper extends CustomClipper<Path> {
       ),
     );
 
-    // القص الجانبي اليسار
     path.addOval(
       Rect.fromCircle(
         center: Offset(0, size.height / 2),

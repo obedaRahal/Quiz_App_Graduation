@@ -71,7 +71,6 @@ class ReviewsDataModel {
   static TestReviewModel? _parseMyReview(dynamic value) {
     if (value == null) return null;
 
-    // الباك أحيانًا يرجع [] بدل null، يا سلام على اتساق الكون.
     if (value is List && value.isEmpty) return null;
 
     if (value is Map<String, dynamic>) {

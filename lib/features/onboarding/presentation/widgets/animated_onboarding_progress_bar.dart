@@ -45,8 +45,6 @@ class AnimatedOnboardingProgressBar extends StatelessWidget {
                   height: height,
                   width: double.infinity,
                   color: appColors.greyToGreyMediumDark,
-                  //AppPalette.greyLight,
-                  //AppPalette.greyMediumDark,
                   child: Stack(
                     children: [
                       TweenAnimationBuilder<double>(
@@ -64,8 +62,6 @@ class AnimatedOnboardingProgressBar extends StatelessWidget {
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
                                 colors: [
-                                  // AppPalette.primary,
-                                  // AppPalette.primaryDark,
                                   Color(0xFF4A90E2),
                                   Color(0xFF6A5AE0),
                                   Color(0xFF8E6CFF),
