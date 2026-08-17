@@ -75,10 +75,14 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
     debugPrint("=================================================");
   }
 
-  void checkCurrentMcqAnswer() {
+  Future<void> checkCurrentMcqAnswer() async {
     debugPrint(
       "============ TestPlayModesCubit.checkCurrentMcqAnswer ============",
     );
+
+    if (state.isVoiceSpeaking) {
+      await stopVoiceAssistant();
+    }
 
     final question = state.currentQuestion;
     final selectedOptionId = state.selectedOptionId;
@@ -134,7 +138,7 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
     debugPrint("=================================================");
   }
 
-  void goToNextMcqQuestion() {
+  Future<void> goToNextMcqQuestion() async {
     debugPrint(
       "============ TestPlayModesCubit.goToNextMcqQuestion ============",
     );
@@ -143,6 +147,10 @@ class TestPlayModesCubit extends SafeCubit<TestPlayModesState> {
       debugPrint("✗ cannot go next before checking answer");
       debugPrint("=================================================");
       return;
+    }
+
+    if (state.isVoiceSpeaking) {
+      await stopVoiceAssistant();
     }
 
     final nextIndex = state.currentQuestionIndex + 1;
