@@ -56,7 +56,24 @@ class MyTestStatusTab extends StatelessWidget {
             status: currentStatus,
             fontColor: true,
             useTypeColor: true,
-            onEditListTap: () {},
+            onEditListTap: () {
+              final roundId = currentStatus.roundId;
+
+              if (roundId == null) {
+                showValidationTopSnackBar(
+                  context,
+                  title: 'تنبيه',
+                  message: 'لا يوجد رقم جولة مرتبط بهذه الحالة',
+                  type: AppValidationSnackBarType.hint,
+                );
+                return;
+              }
+
+              context.read<MyTestDetailsCubit>().getMyTestModifications(
+                testId: testId,
+                roundId: roundId,
+              );
+            },
           ),
 
         CustomDivider(height: 40, thickness: 3),

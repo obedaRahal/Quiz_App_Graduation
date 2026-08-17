@@ -168,295 +168,297 @@ Future<void> showAcademicLevelPicker(BuildContext context) {
 
       return BlocProvider.value(
         value: cubit,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 4.5, sigmaY: 4.5),
-                child: const SizedBox.expand(),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 4.5, sigmaY: 4.5),
+                  child: const SizedBox.expand(),
+                ),
               ),
-            ),
-
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Material(
-                color: Colors.transparent,
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Container(
-                    width: double.infinity,
-                    constraints: BoxConstraints(maxHeight: SizeConfig.h(0.88)),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? AppPalette.fieldColorNDark
-                          : AppPalette.white,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(24),
+          
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(maxHeight: SizeConfig.h(0.88)),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? AppPalette.fieldColorNDark
+                            : AppPalette.white,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(24),
+                        ),
                       ),
-                    ),
-                    child: StatefulBuilder(
-                      builder: (context, setModalState) {
-                        return Column(
-                          children: [
-                            SizedBox(height: SizeConfig.h(0.010)),
-
-                            Container(
-                              width: SizeConfig.w(0.13),
-                              height: SizeConfig.h(0.0045),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFC8C8C8),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-
-                            SizedBox(height: SizeConfig.h(0.010)),
-
-                            SizedBox(
-                              height: SizeConfig.h(0.046),
-                              width: double.infinity,
-                              child: Center(
-                                child: CustomTextWidget(
-                                  'المستوى الدراسي',
-                                  fontSize: SizeConfig.text(0.048),
-                                  fontWeight: FontWeight.w900,
-                                  color: isDark
-                                      ? AppPalette.textWhiteINDark
-                                      : AppPalette.textColorInHome,
-                                  textAlign: TextAlign.center,
+                      child: StatefulBuilder(
+                        builder: (context, setModalState) {
+                          return Column(
+                            children: [
+                              SizedBox(height: SizeConfig.h(0.010)),
+          
+                              Container(
+                                width: SizeConfig.w(0.13),
+                                height: SizeConfig.h(0.0045),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFC8C8C8),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
                               ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: const _AcademicDashedDivider(),
-                            ),
-
-                            Expanded(
-                              child: SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.w(0.035),
-                                  vertical: SizeConfig.h(0.014),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    _AcademicGroupHeader(
-                                      title: 'جامعة',
-                                      icon: AppImage.academic,
-                                    ),
-
-                                    SizedBox(height: SizeConfig.h(0.010)),
-
-                                    _AcademicOptionsGrid(
-                                      options: const [
-                                        'سنة اولى جامعة',
-                                        'سنة ثانية جامعة',
-                                        'سنة ثالثة جامعة',
-                                        'سنة رابعة جامعة',
-                                        'سنة خامسة جامعة',
-                                        'سنة سادسة جامعة',
-                                      ],
-                                      selectedLevel: tempSelectedLevel,
-                                      onSelected: (value) {
-                                        setModalState(() {
-                                          tempSelectedLevel = value;
-                                        });
-                                      },
-                                    ),
-
-                                    SizedBox(height: SizeConfig.h(0.020)),
-
-                                    _AcademicGroupHeader(
-                                      title: 'مدرسة',
-                                      icon: AppImage.school,
-                                    ),
-
-                                    SizedBox(height: SizeConfig.h(0.012)),
-
-                                    const _AcademicStageTitle(title: 'إبتدائي'),
-
-                                    SizedBox(height: SizeConfig.h(0.008)),
-
-                                    _AcademicOptionsGrid(
-                                      options: const [
-                                        'الصف الأول',
-                                        'الصف الثاني',
-                                        'الصف الثالث',
-                                        'الصف الرابع',
-                                        'الصف الخامس',
-                                        'الصف السادس',
-                                      ],
-                                      selectedLevel: tempSelectedLevel,
-                                      onSelected: (value) {
-                                        setModalState(() {
-                                          tempSelectedLevel = value;
-                                        });
-                                      },
-                                    ),
-
-                                    SizedBox(height: SizeConfig.h(0.014)),
-
-                                    const _AcademicStageTitle(title: 'إعدادي'),
-
-                                    SizedBox(height: SizeConfig.h(0.008)),
-
-                                    _AcademicOptionsGrid(
-                                      options: const [
-                                        'الصف السابع',
-                                        'الصف الثامن',
-                                        'الصف التاسع',
-                                      ],
-                                      selectedLevel: tempSelectedLevel,
-                                      onSelected: (value) {
-                                        setModalState(() {
-                                          tempSelectedLevel = value;
-                                        });
-                                      },
-                                    ),
-
-                                    SizedBox(height: SizeConfig.h(0.014)),
-
-                                    const _AcademicStageTitle(title: 'ثانوي'),
-
-                                    SizedBox(height: SizeConfig.h(0.008)),
-
-                                    _AcademicOptionsGrid(
-                                      options: const [
-                                        'الصف العاشر',
-                                        'الصف الحادي عشر',
-                                        'البكلوريا',
-                                      ],
-                                      selectedLevel: tempSelectedLevel,
-                                      onSelected: (value) {
-                                        setModalState(() {
-                                          tempSelectedLevel = value;
-                                        });
-                                      },
-                                    ),
-
-
-                                    SizedBox(height: SizeConfig.h(0.020)),
-
-                                    _AcademicGroupHeader(
-                                      title: 'معهد',
-                                      icon: AppImage.journals,
-                                    ),
-
-                                    SizedBox(height: SizeConfig.h(0.010)),
-
-                                    _AcademicOptionsGrid(
-                                      options: const [
-                                        'سنة اولى معهد',
-                                        'سنة ثانية معهد',
-                                        'سنة ثالثة معهد',
-                                      ],
-                                      selectedLevel: tempSelectedLevel,
-                                      onSelected: (value) {
-                                        setModalState(() {
-                                          tempSelectedLevel = value;
-                                        });
-                                      },
-                                    ),
-
-                                    SizedBox(height: SizeConfig.h(0.020)),
-
-                                    _AcademicGroupHeader(
-                                      title: 'أخرى',
-                                      icon: AppImage.shapes,
-                                    ),
-
-                                    SizedBox(height: SizeConfig.h(0.010)),
-
-                                    _AcademicOptionsGrid(
-                                      options: const [
-                                        'معلومات عامة',
-                                        'ماجستير',
-                                        'دكتوراه',
-                                      ],
-                                      selectedLevel: tempSelectedLevel,
-                                      onSelected: (value) {
-                                        setModalState(() {
-                                          tempSelectedLevel = value;
-                                        });
-                                      },
-                                    ),
-
-                                    SizedBox(height: SizeConfig.h(0.020)),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            Container(
-                              padding: EdgeInsets.only(
-                                left: SizeConfig.w(0.04),
-                                right: SizeConfig.w(0.04),
-                                top: SizeConfig.h(0.010),
-                                bottom: SizeConfig.h(0.014),
-                              ),
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? AppPalette.fieldColorNDark
-                                    : AppPalette.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.06),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, -4),
-                                  ),
-                                ],
-                              ),
-                              child: SizedBox(
+          
+                              SizedBox(height: SizeConfig.h(0.010)),
+          
+                              SizedBox(
+                                height: SizeConfig.h(0.046),
                                 width: double.infinity,
-                                height: SizeConfig.h(0.048),
-                                child: ElevatedButton(
-                                  onPressed: tempSelectedLevel.trim().isEmpty
-                                      ? null
-                                      : () {
-                                          cubit.changeAcademicLevel(
-                                            tempSelectedLevel,
-                                          );
-                                          Navigator.of(dialogContext).pop();
-                                        },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        appColors.primaryToPrimaryDark,
-                                    disabledBackgroundColor: isDark
-                                        ? AppPalette.borderFieldColorNDark
-                                        : AppPalette.white,
-                                    foregroundColor: isDark
-                                        ? AppPalette.borderFieldColorNDark
-                                        : AppPalette.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(7),
-                                    ),
-                                  ),
+                                child: Center(
                                   child: CustomTextWidget(
-                                    'حفظ',
-                                    fontSize: SizeConfig.text(0.040),
-                                    fontWeight: FontWeight.bold,
-                                    color: tempSelectedLevel.trim().isEmpty
-                                        ? AppPalette.greyMedium
-                                        : isDark
-                                        ? AppPalette.black
-                                        : AppPalette.white,
+                                    'المستوى الدراسي',
+                                    fontSize: SizeConfig.text(0.048),
+                                    fontWeight: FontWeight.w900,
+                                    color: isDark
+                                        ? AppPalette.textWhiteINDark
+                                        : AppPalette.textColorInHome,
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        );
-                      },
+          
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: const _AcademicDashedDivider(),
+                              ),
+          
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: SizeConfig.w(0.035),
+                                    vertical: SizeConfig.h(0.014),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      _AcademicGroupHeader(
+                                        title: 'جامعة',
+                                        icon: AppImage.academic,
+                                      ),
+          
+                                      SizedBox(height: SizeConfig.h(0.010)),
+          
+                                      _AcademicOptionsGrid(
+                                        options: const [
+                                          'سنة اولى جامعة',
+                                          'سنة ثانية جامعة',
+                                          'سنة ثالثة جامعة',
+                                          'سنة رابعة جامعة',
+                                          'سنة خامسة جامعة',
+                                          'سنة سادسة جامعة',
+                                        ],
+                                        selectedLevel: tempSelectedLevel,
+                                        onSelected: (value) {
+                                          setModalState(() {
+                                            tempSelectedLevel = value;
+                                          });
+                                        },
+                                      ),
+          
+                                      SizedBox(height: SizeConfig.h(0.020)),
+          
+                                      _AcademicGroupHeader(
+                                        title: 'مدرسة',
+                                        icon: AppImage.school,
+                                      ),
+          
+                                      SizedBox(height: SizeConfig.h(0.012)),
+          
+                                      const _AcademicStageTitle(title: 'إبتدائي'),
+          
+                                      SizedBox(height: SizeConfig.h(0.008)),
+          
+                                      _AcademicOptionsGrid(
+                                        options: const [
+                                          'الصف الأول',
+                                          'الصف الثاني',
+                                          'الصف الثالث',
+                                          'الصف الرابع',
+                                          'الصف الخامس',
+                                          'الصف السادس',
+                                        ],
+                                        selectedLevel: tempSelectedLevel,
+                                        onSelected: (value) {
+                                          setModalState(() {
+                                            tempSelectedLevel = value;
+                                          });
+                                        },
+                                      ),
+          
+                                      SizedBox(height: SizeConfig.h(0.014)),
+          
+                                      const _AcademicStageTitle(title: 'إعدادي'),
+          
+                                      SizedBox(height: SizeConfig.h(0.008)),
+          
+                                      _AcademicOptionsGrid(
+                                        options: const [
+                                          'الصف السابع',
+                                          'الصف الثامن',
+                                          'الصف التاسع',
+                                        ],
+                                        selectedLevel: tempSelectedLevel,
+                                        onSelected: (value) {
+                                          setModalState(() {
+                                            tempSelectedLevel = value;
+                                          });
+                                        },
+                                      ),
+          
+                                      SizedBox(height: SizeConfig.h(0.014)),
+          
+                                      const _AcademicStageTitle(title: 'ثانوي'),
+          
+                                      SizedBox(height: SizeConfig.h(0.008)),
+          
+                                      _AcademicOptionsGrid(
+                                        options: const [
+                                          'الصف العاشر',
+                                          'الصف الحادي عشر',
+                                          'البكلوريا',
+                                        ],
+                                        selectedLevel: tempSelectedLevel,
+                                        onSelected: (value) {
+                                          setModalState(() {
+                                            tempSelectedLevel = value;
+                                          });
+                                        },
+                                      ),
+          
+          
+                                      SizedBox(height: SizeConfig.h(0.020)),
+          
+                                      _AcademicGroupHeader(
+                                        title: 'معهد',
+                                        icon: AppImage.journals,
+                                      ),
+          
+                                      SizedBox(height: SizeConfig.h(0.010)),
+          
+                                      _AcademicOptionsGrid(
+                                        options: const [
+                                          'سنة اولى معهد',
+                                          'سنة ثانية معهد',
+                                          'سنة ثالثة معهد',
+                                        ],
+                                        selectedLevel: tempSelectedLevel,
+                                        onSelected: (value) {
+                                          setModalState(() {
+                                            tempSelectedLevel = value;
+                                          });
+                                        },
+                                      ),
+          
+                                      SizedBox(height: SizeConfig.h(0.020)),
+          
+                                      _AcademicGroupHeader(
+                                        title: 'أخرى',
+                                        icon: AppImage.shapes,
+                                      ),
+          
+                                      SizedBox(height: SizeConfig.h(0.010)),
+          
+                                      _AcademicOptionsGrid(
+                                        options: const [
+                                          'معلومات عامة',
+                                          'ماجستير',
+                                          'دكتوراه',
+                                        ],
+                                        selectedLevel: tempSelectedLevel,
+                                        onSelected: (value) {
+                                          setModalState(() {
+                                            tempSelectedLevel = value;
+                                          });
+                                        },
+                                      ),
+          
+                                      SizedBox(height: SizeConfig.h(0.020)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+          
+                              Container(
+                                padding: EdgeInsets.only(
+                                  left: SizeConfig.w(0.04),
+                                  right: SizeConfig.w(0.04),
+                                  top: SizeConfig.h(0.010),
+                                  bottom: SizeConfig.h(0.014),
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? AppPalette.fieldColorNDark
+                                      : AppPalette.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.06),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, -4),
+                                    ),
+                                  ],
+                                ),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: SizeConfig.h(0.048),
+                                  child: ElevatedButton(
+                                    onPressed: tempSelectedLevel.trim().isEmpty
+                                        ? null
+                                        : () {
+                                            cubit.changeAcademicLevel(
+                                              tempSelectedLevel,
+                                            );
+                                            Navigator.of(dialogContext).pop();
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          appColors.primaryToPrimaryDark,
+                                      disabledBackgroundColor: isDark
+                                          ? AppPalette.borderFieldColorNDark
+                                          : AppPalette.white,
+                                      foregroundColor: isDark
+                                          ? AppPalette.borderFieldColorNDark
+                                          : AppPalette.white,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                    ),
+                                    child: CustomTextWidget(
+                                      'حفظ',
+                                      fontSize: SizeConfig.text(0.040),
+                                      fontWeight: FontWeight.bold,
+                                      color: tempSelectedLevel.trim().isEmpty
+                                          ? AppPalette.greyMedium
+                                          : isDark
+                                          ? AppPalette.black
+                                          : AppPalette.white,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     },

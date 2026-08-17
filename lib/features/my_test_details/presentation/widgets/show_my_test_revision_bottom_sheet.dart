@@ -300,7 +300,7 @@ class _ProblemColumn extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
 
-        if (!userHasModified) ...[
+        if (userHasModified) ...[
           SizedBox(height: SizeConfig.h(0.007)),
           Align(
             alignment: AlignmentDirectional.centerEnd,

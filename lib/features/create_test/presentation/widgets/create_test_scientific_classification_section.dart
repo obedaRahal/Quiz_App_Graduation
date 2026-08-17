@@ -199,37 +199,39 @@ Future<void> showScientificClassificationPicker(BuildContext context) {
     pageBuilder: (dialogContext, animation, secondaryAnimation) {
       return BlocProvider.value(
         value: cubit,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 4.5, sigmaY: 4.5),
-                child: const SizedBox.expand(),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 4.5, sigmaY: 4.5),
+                  child: const SizedBox.expand(),
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Material(
-                color: Colors.transparent,
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Container(
-                    width: double.infinity,
-                    constraints: BoxConstraints(maxHeight: SizeConfig.h(0.78)),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? AppPalette.fieldColorNDark
-                          : AppPalette.white,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(24),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(maxHeight: SizeConfig.h(0.78)),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? AppPalette.fieldColorNDark
+                            : AppPalette.white,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(24),
+                        ),
                       ),
+                      child: const _ScientificClassificationPickerContent(),
                     ),
-                    child: const _ScientificClassificationPickerContent(),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     },
