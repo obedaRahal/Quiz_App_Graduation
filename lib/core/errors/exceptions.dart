@@ -102,6 +102,8 @@ Never handleDioException(DioException e) {
   debugPrint('DioException type: ${e.type}');
   debugPrint('DioException status code: ${e.response?.statusCode}');
   debugPrint('DioException response received: ${e.response?.data != null}');
+  debugPrint('DioException response status message: ${e.response?.statusMessage}');
+  debugPrint('DioException response body: ${e.response?.data}');
   debugPrint('DioException message: ${e.message}');
 
   final errorModel = _buildErrorModel(e);

@@ -33,6 +33,7 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
   final UpdateTestUseCase updateTestUseCase;
   final CreateContentUseCase createContentUseCase;
   final UpdateContentUseCase updateContentUseCase;
+  Set<int> _selectedSampleQuestionIds = <int>{};
   CreateTestCubit({
     required this.getScientificClassificationsUseCase,
     required this.createManualTestUseCase,
@@ -186,6 +187,10 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
             : const [],
       ),
     );
+
+    if (!value) {
+      _selectedSampleQuestionIds = <int>{};
+    }
   }
 
   void changePrice(String value) {
@@ -366,7 +371,7 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
         draftCorrectOptionIndex: null,
         draftExplanation: '',
         editingQuestionIndex: null,
-        selectedSampleQuestions: const [],
+        selectedSampleQuestions: _selectedSampleIndexes(updatedQuestions),
       ),
     );
   }
@@ -374,30 +379,17 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
   void removeQuestion(int index) {
     if (index < 0 || index >= state.questions.length) return;
 
+    final removedQuestionId = state.questions[index].id;
     final updatedQuestions = [...state.questions]..removeAt(index);
 
-    final updatedSampleQuestions = state.selectedSampleQuestions
-        .where((sampleIndex) => sampleIndex != index)
-        .map((sampleIndex) {
-          if (sampleIndex > index) return sampleIndex - 1;
-          return sampleIndex;
-        })
-        .where(
-          (sampleIndex) =>
-              sampleIndex >= 0 && sampleIndex < updatedQuestions.length,
-        )
-        .toList();
-
-    final allowedCount = _calculateAllowedSampleQuestionsCount(
-      updatedQuestions.length,
-    );
+    if (removedQuestionId != null) {
+      _selectedSampleQuestionIds.remove(removedQuestionId);
+    }
 
     emit(
       state.copyWith(
         questions: updatedQuestions,
-        selectedSampleQuestions: updatedSampleQuestions
-            .take(allowedCount)
-            .toList(),
+        selectedSampleQuestions: _selectedSampleIndexes(updatedQuestions),
       ),
     );
   }
@@ -622,7 +614,29 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
             .toList()
           ..sort();
 
+    _selectedSampleQuestionIds = normalizedSelected
+        .map((index) => state.questions[index].id)
+        .whereType<int>()
+        .toSet();
+
     emit(state.copyWith(selectedSampleQuestions: normalizedSelected));
+  }
+
+  List<int> _selectedSampleIndexes(
+    List<CreateTestQuestionState> questions,
+  ) {
+    final allowedCount = _calculateAllowedSampleQuestionsCount(
+      questions.length,
+    );
+
+    return List<int>.generate(questions.length, (index) => index)
+        .where((index) {
+          final questionId = questions[index].id;
+          return questionId != null &&
+              _selectedSampleQuestionIds.contains(questionId);
+        })
+        .take(allowedCount)
+        .toList();
   }
 
   int _calculateAllowedSampleQuestionsCount(int totalQuestions) {
@@ -879,6 +893,8 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
   void initializeFromArgs(CreateTestInitialArgs? args) {
     if (args == null) return;
 
+    _selectedSampleQuestionIds = args.initialPreviewQuestionIds.toSet();
+
     final generatedQuestions = args.generatedQuestions
         .map(_mapGeneratedAiQuestionToState)
         .where((question) {
@@ -981,7 +997,7 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
 
       final selectedSamples = _mapPreviewQuestionIdsToIndexes(
         questions: editableQuestions,
-        previewQuestionIds: state.initialPreviewQuestionIds,
+        previewQuestionIds: _selectedSampleQuestionIds.toList(),
       );
 
       emit(
@@ -1632,7 +1648,10 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
               : question.explanation.trim(),
           isPreview:
               state.isPublished &&
-              state.selectedSampleQuestions.contains(questionIndex),
+              ((question.id != null &&
+                      _selectedSampleQuestionIds.contains(question.id)) ||
+                  (question.id == null &&
+                      state.selectedSampleQuestions.contains(questionIndex))),
           options: List.generate(question.options.length, (optionIndex) {
             return UpdateTestOptionParams(
               id: optionIds[optionIndex],

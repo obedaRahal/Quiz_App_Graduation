@@ -4,6 +4,7 @@ import 'package:quiz_app_grad/features/other_profile/domain/entities/other_profi
 class EndPoints {
 
   static const String baseUrl = 'https://nerdsoftwares.tech/api/v1/user-mobile';
+  //static const String baseUrl = 'http://192.168.1.110/api/v1/user-mobile';
 
   static const String refreshToken =
       'https://nerdsoftwares.tech/api/v1/refresh';

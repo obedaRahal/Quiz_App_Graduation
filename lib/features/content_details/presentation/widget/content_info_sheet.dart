@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
+import 'package:quiz_app_grad/core/common_widgets/content_asset_thumbnail.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
@@ -646,7 +646,7 @@ class _RelatedContentCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _RelatedImage(imageUrl: item.imageUrl),
+              _RelatedImage(imageUrl: item.imageUrl, type: item.type),
 
               SizedBox(width: SizeConfig.w(0.025)),
 
@@ -726,8 +726,9 @@ class _RelatedContentCard extends StatelessWidget {
 
 class _RelatedImage extends StatelessWidget {
   final String imageUrl;
+  final String type;
 
-  const _RelatedImage({required this.imageUrl});
+  const _RelatedImage({required this.imageUrl, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -740,7 +741,7 @@ class _RelatedImage extends StatelessWidget {
       child: SizedBox(
         width: SizeConfig.w(0.190).clamp(66.0, 82.0).toDouble(),
         height: SizeConfig.h(0.085).clamp(66.0, 82.0).toDouble(),
-        child: CustomAppImage(path: path, fit: BoxFit.cover),
+        child: ContentAssetThumbnail(url: path, type: type),
       ),
     );
   }

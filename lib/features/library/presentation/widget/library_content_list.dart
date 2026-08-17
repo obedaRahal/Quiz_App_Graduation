@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
+import 'package:quiz_app_grad/core/common_widgets/content_asset_thumbnail.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
@@ -126,6 +126,7 @@ class _LibraryContentCard extends StatelessWidget {
                 _ContentImage(
                   imageUrl: item.imageUrl,
                   imageAsset: item.imageAsset,
+                  type: item.type,
                 ),
                 SizedBox(width: SizeConfig.w(0.025)),
                 Expanded(
@@ -192,21 +193,27 @@ class _LibraryContentCard extends StatelessWidget {
 class _ContentImage extends StatelessWidget {
   final String? imageUrl;
   final String? imageAsset;
+  final String type;
 
-  const _ContentImage({required this.imageUrl, required this.imageAsset});
+  const _ContentImage({
+    required this.imageUrl,
+    required this.imageAsset,
+    required this.type,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final path = (imageUrl != null && imageUrl!.trim().isNotEmpty)
-        ? imageUrl!
-        : (imageAsset ?? AppImage.defaultImageFoeError);
+    final hasUrl = imageUrl != null && imageUrl!.trim().isNotEmpty;
+    final path = hasUrl ? imageUrl! : (imageAsset ?? AppImage.defaultImageFoeError);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(14),
       child: SizedBox(
         width: SizeConfig.w(0.205).clamp(72.0, 88.0).toDouble(),
         height: SizeConfig.h(0.095).clamp(72.0, 88.0).toDouble(),
-        child: CustomAppImage(path: path, fit: BoxFit.cover),
+        child: hasUrl
+            ? ContentAssetThumbnail(url: path, type: type)
+            : ContentAssetThumbnail(url: path, type: 'صورة'),
       ),
     );
   }

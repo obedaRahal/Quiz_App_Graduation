@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
+import 'package:quiz_app_grad/core/common_widgets/content_asset_thumbnail.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/assets/images.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -153,7 +153,7 @@ class _LibraryMediaImage extends StatelessWidget {
         : (item.imageAsset ?? AppImage.defaultImageFoeError);
 
     return SizedBox.expand(
-      child: CustomAppImage(path: path, fit: BoxFit.cover),
+      child: ContentAssetThumbnail(url: path, type: ''),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app_grad/core/common_widgets/custom_app_image.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
+import 'package:quiz_app_grad/core/common_widgets/content_asset_thumbnail.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/assets/fonts.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
@@ -116,7 +116,7 @@ class _ContentThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageSize = SizeConfig.w(0.17);
-    final hasImage = imageUrl.trim().isNotEmpty;
+    final hasAsset = imageUrl.trim().isNotEmpty;
 
     return Container(
       width: imageSize,
@@ -127,15 +127,13 @@ class _ContentThumbnail extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: AppPalette.greyBorderCart, width: 2),
       ),
-      child: hasImage
+      child: hasAsset
           ? SizedBox.expand(
-              child: CustomAppImage(
+              child: ContentAssetThumbnail(
+                url: imageUrl,
+                type: type,
                 borderRadius: BorderRadius.circular(10),
-                path: imageUrl,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                showLoadingForNetwork: showLoading,
+                showLoading: showLoading,
               ),
             )
           : Center(
