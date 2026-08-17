@@ -20,7 +20,6 @@ import 'package:quiz_app_grad/features/details_of_test/data/models/test_share_li
 import 'package:quiz_app_grad/features/details_of_test/data/models/update_test_review_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/test_interaction_users_cubit/cubit/test_interaction_users_state.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../../core/database/api/api_consumer.dart';
 import '../../../../core/database/api/end_point.dart';
@@ -472,13 +471,10 @@ class DetailsOfTestRemoteDataSourceImpl
       ReportTargetType.test => EndPoints.reportTest(targetId),
     };
 
-    final idempotencyKey = const Uuid().v4();
-
     debugPrint("→ targetType: ${targetType.name}");
     debugPrint("→ targetId: $targetId");
     debugPrint("→ endpoint: $endpoint");
     debugPrint("→ method: POST");
-    debugPrint("→ idempotencyKey: $idempotencyKey");
     debugPrint(
       "→ body: {reason: $reason, descriptionLength: ${description.trim().length}}",
     );
@@ -486,7 +482,6 @@ class DetailsOfTestRemoteDataSourceImpl
     final response = await apiConsumer.post(
       endpoint,
       data: {'reason': reason, 'description': description.trim()},
-      headers: {'Idempotency-Key': idempotencyKey},
     );
 
     debugPrint("← response (submitReport): $response");
@@ -574,11 +569,8 @@ class DetailsOfTestRemoteDataSourceImpl
     debugPrint("→ endpoint: $endpoint");
     debugPrint("→ method: POST");
     debugPrint("→ params: {testId: $testId}");
-    final idempotencyKey = const Uuid().v4();
-
     final response = await apiConsumer.post(
       endpoint,
-      headers: {'Idempotency-Key': idempotencyKey},
     );
 
     debugPrint("← response (createStripeCheckoutSession): $response");

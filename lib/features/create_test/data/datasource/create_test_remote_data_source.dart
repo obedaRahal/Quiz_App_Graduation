@@ -16,7 +16,6 @@ import 'package:quiz_app_grad/features/create_test/domain/entities/ai_question_g
 import 'package:quiz_app_grad/features/create_test/domain/entities/create_content_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/update_content_params.dart';
 import 'package:quiz_app_grad/features/create_test/domain/entities/update_content_response_entity.dart';
-import 'package:uuid/uuid.dart';
 
 abstract class CreateTestRemoteDataSource {
   Future<ScientificClassificationsResponseModel> getScientificClassifications();
@@ -47,15 +46,6 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
   final ApiConsumer api;
 
   const CreateTestRemoteDataSourceImpl({required this.api});
-  static const _uuid = Uuid();
-  Map<String, String> _idempotencyHeaders() {
-    final idempotencyKey = _uuid.v4();
-
-    debugPrint('→ Idempotency-Key: $idempotencyKey');
-
-    return {'Idempotency-Key': idempotencyKey};
-  }
-
   @override
   Future<ScientificClassificationsResponseModel>
   getScientificClassifications() async {
@@ -71,7 +61,6 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
     final response = await api.post(
       EndPoints.createManualTest,
       data: request.toJson(),
-      headers: _idempotencyHeaders(),
     );
 
     return CreateManualTestResponseModel.fromJson(response);
@@ -176,7 +165,6 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
     final response = await api.post(
       endpoint,
       data: body,
-      headers: _idempotencyHeaders(),
     );
 
     debugPrint('← response (updateTest): $response');
@@ -245,7 +233,6 @@ Future<UpdateContentResponseModel> updateContent(
     EndPoints.updateContent(params.contentId),
     data: formData,
     isFormData: true,
-    headers: _idempotencyHeaders(),
     options: Options(
       contentType: 'multipart/form-data',
       headers: {'Accept': 'application/json'},
@@ -313,7 +300,6 @@ Future<UpdateContentResponseModel> updateContent(
       EndPoints.createContent,
       data: formData,
       isFormData: true,
-      headers: _idempotencyHeaders(),
       options: Options(
         contentType: 'multipart/form-data',
         headers: {'Accept': 'application/json'},

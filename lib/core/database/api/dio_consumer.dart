@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:quiz_app_grad/core/database/api/end_point.dart';
+import 'package:quiz_app_grad/core/database/api/idempotency_interceptor.dart';
 
 import 'api_consumer.dart';
 import '../../errors/exceptions.dart';
@@ -31,6 +32,10 @@ class DioConsumer extends ApiConsumer {
           ? EndPoints.baseUrl
           : dio.options.baseUrl,
       receiveDataWhenStatusError: true,
+    );
+
+    dio.interceptors.add(
+      IdempotencyInterceptor(),
     );
 
     dio.interceptors.add(
@@ -97,6 +102,13 @@ class DioConsumer extends ApiConsumer {
 
           final latestToken = await getAccessToken?.call();
           if (latestToken == null || latestToken.isEmpty) {
+            handler.next(error);
+            return;
+          }
+
+          // A FormData instance may contain consumed file streams after the
+          // first request. Let the caller rebuild it for a manual retry.
+          if (requestOptions.data is FormData) {
             handler.next(error);
             return;
           }
