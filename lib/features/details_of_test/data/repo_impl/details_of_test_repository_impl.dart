@@ -8,6 +8,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/entities/other_tes
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/review_feedback_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/shared_test_link_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/stripe_checkout_session_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/payment_attempt_status_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/submit_report_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_bookmark_action_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_follow_action_entity.dart';
@@ -1063,6 +1064,31 @@ class DetailsOfTestRepositoryImpl implements DetailsOfTestRepository {
 
       return Left(
         ServerFailure(title: 'حدث خطأ', message: 'تعذر إنشاء جلسة الدفع'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, PaymentAttemptStatusEntity>> getPaymentAttemptStatus({
+    required int paymentAttemptId,
+  }) async {
+    try {
+      final model = await remoteDataSource.getPaymentAttemptStatus(
+        paymentAttemptId: paymentAttemptId,
+      );
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(
+        ServerFailure(
+          title: e.errorModel.errorTitle,
+          message: e.errorModel.errorMessage,
+        ),
+      );
+    } on CacheException catch (e) {
+      return Left(CacheFailure(title: 'خطأ محلي', message: e.errorMessage));
+    } catch (_) {
+      return const Left(
+        ServerFailure(title: 'حدث خطأ', message: 'تعذر التحقق من حالة الدفع'),
       );
     }
   }

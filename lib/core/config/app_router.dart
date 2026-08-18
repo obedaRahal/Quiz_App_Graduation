@@ -475,7 +475,10 @@ class AppRouter {
 
                   return cubit;
                 },
-                child: const DetailsOfTestView(),
+                child: DetailsOfTestView(
+                  paymentAttemptId: args.paymentAttemptId,
+                  paymentWasCancelled: args.paymentWasCancelled,
+                ),
               ),
             );
           },

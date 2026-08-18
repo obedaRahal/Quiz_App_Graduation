@@ -16,6 +16,7 @@ import 'package:quiz_app_grad/features/details_of_test/data/models/test_interact
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_like_action_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_reviews_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/other_test_details_sample_model.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/payment_attempt_status_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/test_share_link_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/update_test_review_model.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
@@ -96,6 +97,10 @@ abstract class DetailsOfTestRemoteDataSource {
 
   Future<StripeCheckoutSessionModel> createStripeCheckoutSession({
     required int testId,
+  });
+
+  Future<PaymentAttemptStatusModel> getPaymentAttemptStatus({
+    required int paymentAttemptId,
   });
 }
 
@@ -577,6 +582,19 @@ class DetailsOfTestRemoteDataSourceImpl
     debugPrint("=================================================");
 
     return StripeCheckoutSessionModel.fromJson(
+      response as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<PaymentAttemptStatusModel> getPaymentAttemptStatus({
+    required int paymentAttemptId,
+  }) async {
+    final response = await apiConsumer.get(
+      EndPoints.getPaymentAttemptStatus(paymentAttemptId: paymentAttemptId),
+    );
+
+    return PaymentAttemptStatusModel.fromJson(
       response as Map<String, dynamic>,
     );
   }

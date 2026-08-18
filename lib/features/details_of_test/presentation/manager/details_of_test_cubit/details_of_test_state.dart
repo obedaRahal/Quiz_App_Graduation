@@ -91,6 +91,7 @@ class DetailsOfTestState {
   final StripeCheckoutSessionStatus stripeCheckoutStatus;
   final String? stripeCheckoutUrl;
   final int? stripePurchaseId;
+  final int? stripePaymentAttemptId;
 
   const DetailsOfTestState({
     this.selectedTab = DetailsOfTestTab.overview,
@@ -141,6 +142,7 @@ class DetailsOfTestState {
     this.stripeCheckoutStatus = StripeCheckoutSessionStatus.initial,
     this.stripeCheckoutUrl,
     this.stripePurchaseId,
+    this.stripePaymentAttemptId,
   });
 
   bool get canSubmitDraftReview =>
@@ -305,6 +307,7 @@ class DetailsOfTestState {
     StripeCheckoutSessionStatus? stripeCheckoutStatus,
     String? stripeCheckoutUrl,
     int? stripePurchaseId,
+    int? stripePaymentAttemptId,
     bool clearStripeCheckout = false,
   }) {
     return DetailsOfTestState(
@@ -371,6 +374,9 @@ class DetailsOfTestState {
       stripePurchaseId: clearStripeCheckout
           ? null
           : stripePurchaseId ?? this.stripePurchaseId,
+      stripePaymentAttemptId: clearStripeCheckout
+          ? null
+          : stripePaymentAttemptId ?? this.stripePaymentAttemptId,
     );
   }
 }

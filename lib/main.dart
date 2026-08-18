@@ -11,11 +11,13 @@ import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/database/cache/cache_helper.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
+import 'package:quiz_app_grad/core/services/payment/payment_attempt_storage.dart';
 import 'package:quiz_app_grad/core/services/notification/local_votification_service.dart';
 import 'package:quiz_app_grad/core/services/notification/notification_tap_service.dart';
 import 'package:quiz_app_grad/core/services/notification/push_notification_service.dart';
 import 'package:quiz_app_grad/core/utils/app_logger.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_ringing_service.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_state.dart';
@@ -133,6 +135,29 @@ class _QuizAppState extends State<QuizApp> {
         },
         onProfileSlugReceived: (slug) {
           AppRouter.router.go(AppRouterPath.sharedProfileRedirectPath(slug));
+        },
+        onPaymentReturnReceived: ({required result, paymentAttemptId}) {
+          final paymentStorage = sl<PaymentAttemptStorage>();
+          final storedAttemptId = paymentStorage.attemptId;
+          final attemptId = paymentAttemptId ?? storedAttemptId;
+          final testId = paymentStorage.testId;
+
+          if (attemptId == null || attemptId <= 0 || testId == null || testId <= 0) {
+            return;
+          }
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+
+            AppRouter.router.go(
+              AppRouterPath.detailsOfTest,
+              extra: DetailsOfTestRouteArgs(
+                testId: testId,
+                paymentAttemptId: attemptId,
+                paymentWasCancelled: result == 'cancel',
+              ),
+            );
+          });
         },
       );
     } catch (error, stackTrace) {

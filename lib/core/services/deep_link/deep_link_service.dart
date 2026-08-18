@@ -3,13 +3,20 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 
-enum AppDeepLinkKind { test, library, profile }
+enum AppDeepLinkKind { test, library, profile, payment }
 
 class AppDeepLinkTarget {
   final AppDeepLinkKind kind;
   final String slug;
+  final String? paymentResult;
+  final int? paymentAttemptId;
 
-  const AppDeepLinkTarget({required this.kind, required this.slug});
+  const AppDeepLinkTarget({
+    required this.kind,
+    required this.slug,
+    this.paymentResult,
+    this.paymentAttemptId,
+  });
 }
 
 class DeepLinkService {
@@ -20,6 +27,10 @@ class DeepLinkService {
     required void Function(String slug) onTestSlugReceived,
     required void Function(String slug) onLibrarySlugReceived,
     required void Function(String slug) onProfileSlugReceived,
+    required void Function({
+      required String result,
+      int? paymentAttemptId,
+    }) onPaymentReturnReceived,
   }) async {
     debugPrint("============ DeepLinkService.init ============");
 
@@ -35,6 +46,7 @@ class DeepLinkService {
         onTestSlugReceived: onTestSlugReceived,
         onLibrarySlugReceived: onLibrarySlugReceived,
         onProfileSlugReceived: onProfileSlugReceived,
+        onPaymentReturnReceived: onPaymentReturnReceived,
       );
     }
 
@@ -46,6 +58,7 @@ class DeepLinkService {
           onTestSlugReceived: onTestSlugReceived,
           onLibrarySlugReceived: onLibrarySlugReceived,
           onProfileSlugReceived: onProfileSlugReceived,
+          onPaymentReturnReceived: onPaymentReturnReceived,
         );
       },
       onError: (error) {
@@ -57,9 +70,27 @@ class DeepLinkService {
   }
 
   static AppDeepLinkTarget? parseUri(Uri uri) {
-    if (uri.scheme != 'nerd' || uri.pathSegments.isEmpty) {
+    if (uri.scheme != 'nerd') {
       return null;
     }
+
+    if (uri.host == 'payment' &&
+        uri.pathSegments.length == 2 &&
+        uri.pathSegments.first == 'return') {
+      final result = uri.pathSegments.last.toLowerCase();
+      if (result != 'success' && result != 'cancel') return null;
+
+      return AppDeepLinkTarget(
+        kind: AppDeepLinkKind.payment,
+        slug: '',
+        paymentResult: result,
+        paymentAttemptId: int.tryParse(
+          uri.queryParameters['payment_attempt_id'] ?? '',
+        ),
+      );
+    }
+
+    if (uri.pathSegments.isEmpty) return null;
 
     final slug = uri.pathSegments.first.trim();
     if (slug.isEmpty) return null;
@@ -79,6 +110,10 @@ class DeepLinkService {
     required void Function(String slug) onTestSlugReceived,
     required void Function(String slug) onLibrarySlugReceived,
     required void Function(String slug) onProfileSlugReceived,
+    required void Function({
+      required String result,
+      int? paymentAttemptId,
+    }) onPaymentReturnReceived,
   }) {
     debugPrint("============ DeepLinkService._handleUri ============");
     debugPrint("→ uri: $uri");
@@ -104,6 +139,11 @@ class DeepLinkService {
         onLibrarySlugReceived(target.slug);
       case AppDeepLinkKind.profile:
         onProfileSlugReceived(target.slug);
+      case AppDeepLinkKind.payment:
+        onPaymentReturnReceived(
+          result: target.paymentResult!,
+          paymentAttemptId: target.paymentAttemptId,
+        );
     }
   }
 

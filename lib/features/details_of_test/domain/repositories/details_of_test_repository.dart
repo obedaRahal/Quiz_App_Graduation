@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/add_test_review_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/stripe_checkout_session_entity.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/entities/payment_attempt_status_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/test_interaction_users_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/delete_test_review_entity.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/entities/download_test_file_entity.dart';
@@ -109,4 +110,8 @@ abstract class DetailsOfTestRepository {
 
   Future<Either<Failure, StripeCheckoutSessionEntity>>
   createStripeCheckoutSession({required int testId});
+
+  Future<Either<Failure, PaymentAttemptStatusEntity>> getPaymentAttemptStatus({
+    required int paymentAttemptId,
+  });
 }

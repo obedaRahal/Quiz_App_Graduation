@@ -87,6 +87,18 @@ OverlayEntry? _currentValidationSnackBar;
 
 enum AppValidationSnackBarType { success, error, hint }
 
+void _removeValidationSnackBar(OverlayEntry entry) {
+  if (_currentValidationSnackBar == entry) {
+    _currentValidationSnackBar = null;
+  }
+
+  try {
+    entry.remove();
+  } on AssertionError {
+    _currentValidationSnackBar = null;
+  }
+}
+
 void showValidationTopSnackBar(
   BuildContext context, {
   required String title,
@@ -101,10 +113,12 @@ void showValidationTopSnackBar(
   String? assetPath,
   Duration displayDuration = const Duration(seconds: 4),
 }) {
-  _currentValidationSnackBar?.remove();
-  _currentValidationSnackBar = null;
+  final currentSnackBar = _currentValidationSnackBar;
+  if (currentSnackBar != null) {
+    _removeValidationSnackBar(currentSnackBar);
+  }
 
-  final overlay = Overlay.of(context, rootOverlay: true);
+  final overlay = Overlay.maybeOf(context, rootOverlay: true);
 
   if (overlay == null) return;
 
@@ -125,11 +139,7 @@ void showValidationTopSnackBar(
         assetPath: assetPath,
         displayDuration: displayDuration,
         onDismissed: () {
-          entry.remove();
-
-          if (_currentValidationSnackBar == entry) {
-            _currentValidationSnackBar = null;
-          }
+          _removeValidationSnackBar(entry);
         },
       );
     },

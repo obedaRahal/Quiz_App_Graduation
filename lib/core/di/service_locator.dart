@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:quiz_app_grad/core/services/device/login_device_metadata_service.dart';
 import 'package:quiz_app_grad/core/services/accessibility/test_voice_assistant_service.dart';
 import 'package:quiz_app_grad/core/services/deep_link/deep_link_service.dart';
+import 'package:quiz_app_grad/core/services/payment/payment_attempt_storage.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/core/services/file_picker_service_impl.dart';
 import 'package:quiz_app_grad/core/services/file_picker/core/services/file_picker_service.dart';
 import 'package:quiz_app_grad/features/auth/data/datasource/auth_remote_data_source.dart';
@@ -73,6 +74,7 @@ import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/delete_t
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/download_test_file_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/follow_creator_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_overview_use_case.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_payment_attempt_status_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_reviews_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_other_test_details_sample_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_shared_test_link_use_case.dart';
@@ -372,6 +374,10 @@ Future<void> _registerCore() async {
     sl.registerLazySingleton<DeepLinkService>(() => DeepLinkService());
   }
 
+  if (!sl.isRegistered<PaymentAttemptStorage>()) {
+    sl.registerLazySingleton<PaymentAttemptStorage>(() => PaymentAttemptStorage());
+  }
+
   if (!sl.isRegistered<TestVoiceAssistantService>()) {
     sl.registerLazySingleton<TestVoiceAssistantService>(
       () => TestVoiceAssistantService(),
@@ -589,6 +595,11 @@ void _registerDetailsOfTestFeature() {
   if (!sl.isRegistered<CreateStripeCheckoutSessionUseCase>()) {
     sl.registerLazySingleton<CreateStripeCheckoutSessionUseCase>(
       () => CreateStripeCheckoutSessionUseCase(sl<DetailsOfTestRepository>()),
+    );
+  }
+  if (!sl.isRegistered<GetPaymentAttemptStatusUseCase>()) {
+    sl.registerLazySingleton<GetPaymentAttemptStatusUseCase>(
+      () => GetPaymentAttemptStatusUseCase(sl<DetailsOfTestRepository>()),
     );
   }
 }

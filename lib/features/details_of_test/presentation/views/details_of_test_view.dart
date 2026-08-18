@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -5,11 +7,13 @@ import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
+import 'package:quiz_app_grad/core/services/payment/payment_attempt_storage.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/core/utils/safe_back_to_home.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/params/submit_report_params.dart';
+import 'package:quiz_app_grad/features/details_of_test/domain/use_cases/get_payment_attempt_status_use_case.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/bottom_sheets/test_interaction_users_bottom_sheet.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/presentation/manager/details_of_test_cubit/details_of_test_state.dart';
@@ -29,7 +33,14 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DetailsOfTestView extends StatefulWidget {
-  const DetailsOfTestView({super.key});
+  final int? paymentAttemptId;
+  final bool paymentWasCancelled;
+
+  const DetailsOfTestView({
+    super.key,
+    this.paymentAttemptId,
+    this.paymentWasCancelled = false,
+  });
 
   @override
   State<DetailsOfTestView> createState() => _DetailsOfTestViewState();
@@ -39,13 +50,35 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
     with WidgetsBindingObserver {
   bool _waitingPaymentReturn = false;
   int? _paymentTestId;
+  int? _paymentAttemptId;
   bool _showPaymentResultAfterRefresh = false;
   bool _isValidatingPaidTestAccess = false;
+  bool _isCheckingPaymentStatus = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    final paymentAttemptId = widget.paymentAttemptId;
+    if (paymentAttemptId == null || paymentAttemptId <= 0) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      if (widget.paymentWasCancelled) {
+        unawaited(sl<PaymentAttemptStorage>().clear());
+        showValidationTopSnackBar(
+          context,
+          title: 'تم إلغاء الدفع',
+          message: 'يمكنك المحاولة مجدداً عندما تكون جاهزاً.',
+          type: AppValidationSnackBarType.hint,
+        );
+        return;
+      }
+
+      unawaited(_verifyPaymentAttempt(paymentAttemptId));
+    });
   }
 
   @override
@@ -57,26 +90,105 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) return;
-    if (!_waitingPaymentReturn || _paymentTestId == null) return;
+    if (!_waitingPaymentReturn || _paymentAttemptId == null) return;
     if (!mounted) return;
 
     debugPrint("============ Payment Return Detected ============");
     debugPrint("→ refreshing overview for testId: $_paymentTestId");
     debugPrint("=================================================");
 
-    _waitingPaymentReturn = false;
-    _showPaymentResultAfterRefresh = true;
+    unawaited(_verifyPaymentAttempt(_paymentAttemptId!));
+  }
 
-    showValidationTopSnackBar(
-      context,
-      title: "التحقق من الدفع",
-      message: "جاري التحقق من حالة عملية الدفع...",
-      type: AppValidationSnackBarType.hint,
-    );
+  Future<void> _verifyPaymentAttempt(int paymentAttemptId) async {
+    if (_isCheckingPaymentStatus) return;
 
-    context.read<DetailsOfTestCubit>().getOtherTestDetailsOverview(
-      testId: _paymentTestId!,
-    );
+    _isCheckingPaymentStatus = true;
+
+    try {
+      for (var retry = 0; retry < 15; retry++) {
+        final result = await sl<GetPaymentAttemptStatusUseCase>()(
+          paymentAttemptId,
+        );
+
+        if (!mounted) return;
+
+        var shouldStop = false;
+        await result.fold(
+          (failure) async {
+            shouldStop = true;
+            showValidationTopSnackBar(
+              context,
+              title: failure.title,
+              message: failure.message,
+              type: AppValidationSnackBarType.error,
+            );
+          },
+          (payment) async {
+            if (payment.status == 'paid' && payment.testAccessGranted) {
+              shouldStop = true;
+              _waitingPaymentReturn = false;
+              _showPaymentResultAfterRefresh = true;
+              _paymentTestId = payment.testId;
+              _paymentAttemptId = null;
+              await sl<PaymentAttemptStorage>().clear();
+
+              context.read<DetailsOfTestCubit>().getOtherTestDetailsOverview(
+                testId: payment.testId,
+              );
+              return;
+            }
+
+            if (payment.status == 'failed' || payment.status == 'expired') {
+              shouldStop = true;
+              _waitingPaymentReturn = false;
+              _paymentAttemptId = null;
+              await sl<PaymentAttemptStorage>().clear();
+              showValidationTopSnackBar(
+                context,
+                title: payment.status == 'expired'
+                    ? 'انتهت جلسة الدفع'
+                    : 'فشل الدفع',
+                message: payment.status == 'expired'
+                    ? 'أنشئ عملية دفع جديدة ثم حاول مرة أخرى.'
+                    : 'لم يتم تأكيد عملية الدفع. يمكنك المحاولة مجدداً.',
+                type: AppValidationSnackBarType.error,
+              );
+              return;
+            }
+
+            if (payment.status == 'cancelled') {
+              shouldStop = true;
+              _waitingPaymentReturn = false;
+              _paymentAttemptId = null;
+              await sl<PaymentAttemptStorage>().clear();
+              showValidationTopSnackBar(
+                context,
+                title: 'تم إلغاء الدفع',
+                message: 'يمكنك المحاولة مجدداً عندما تكون جاهزاً.',
+                type: AppValidationSnackBarType.hint,
+              );
+            }
+          },
+        );
+
+        if (shouldStop) return;
+        if (retry < 14) {
+          await Future<void>.delayed(const Duration(seconds: 2));
+        }
+      }
+
+      if (!mounted) return;
+      _waitingPaymentReturn = false;
+      showValidationTopSnackBar(
+        context,
+        title: 'جارٍ التحقق من الدفع',
+        message: 'لم يتم تأكيد الدفع بعد. أعد فتح هذه الصفحة بعد قليل.',
+        type: AppValidationSnackBarType.hint,
+      );
+    } finally {
+      _isCheckingPaymentStatus = false;
+    }
   }
 
   Future<bool> _canOpenPlayMode({
@@ -197,6 +309,27 @@ class _DetailsOfTestViewState extends State<DetailsOfTestView>
               }
 
               _paymentTestId = state.overviewDetails?.data.id;
+              _paymentAttemptId = state.stripePaymentAttemptId;
+
+              if (_paymentTestId == null ||
+                  _paymentAttemptId == null ||
+                  _paymentAttemptId! <= 0) {
+                showValidationTopSnackBar(
+                  context,
+                  title: 'خطأ',
+                  message: 'تعذر تجهيز عملية الدفع. حاول مرة أخرى.',
+                  type: AppValidationSnackBarType.error,
+                );
+                context.read<DetailsOfTestCubit>().resetStripeCheckoutState();
+                return;
+              }
+
+              unawaited(
+                sl<PaymentAttemptStorage>().save(
+                  attemptId: _paymentAttemptId!,
+                  testId: _paymentTestId!,
+                ),
+              );
 
               final uri = Uri.parse(checkoutUrl);
 

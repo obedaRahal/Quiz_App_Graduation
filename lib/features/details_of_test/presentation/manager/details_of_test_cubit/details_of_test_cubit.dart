@@ -1503,6 +1503,7 @@ class DetailsOfTestCubit extends SafeCubit<DetailsOfTestState> {
             stripeCheckoutStatus: StripeCheckoutSessionStatus.success,
             stripeCheckoutUrl: response.checkoutUrl,
             stripePurchaseId: response.purchaseId,
+            stripePaymentAttemptId: response.paymentAttemptId,
             errorTitle: response.title,
             errorMessage: response.title,
           ),

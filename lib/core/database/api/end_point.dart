@@ -181,6 +181,9 @@ class EndPoints {
   static String createStripeCheckoutSession({required int testId}) =>
       '$baseUrl/test/payments/stripe/$testId';
 
+  static String getPaymentAttemptStatus({required int paymentAttemptId}) =>
+      '$baseUrl/payments/attempts/$paymentAttemptId/status';
+
   static String getTestPlayContent(int testId) {
     return '$baseUrl/test/content/$testId';
   }
