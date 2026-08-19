@@ -39,14 +39,13 @@ class SharedTestRedirectView extends StatelessWidget {
                 return;
               }
 
-              if (isOwner) {
-                debugPrint("→ owner test, MyTestDetailsView not ready yet");
-              }
-
               context.go(
-                AppRouterPath.detailsOfTest,
+                isOwner
+                    ? AppRouterPath.myTestDetails
+                    : AppRouterPath.detailsOfTest,
                 extra: DetailsOfTestRouteArgs(testId: testId),
               );
+              return;
             }
 
             if (state.isSharedTestLinkFailure) {
