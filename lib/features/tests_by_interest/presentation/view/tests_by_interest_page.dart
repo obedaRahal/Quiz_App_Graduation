@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
@@ -165,17 +166,27 @@ class _TestsByInterestViewState extends State<_TestsByInterestView> {
                     }
 
                     if (visibleTests.isEmpty) {
-                      return Center(
-                        child: EmptyActionBox(
-                          icon: state.isSearchMode
-                              ? Icons.search_off_rounded
-                              : Icons.quiz_outlined,
-                          title: state.isSearchMode
-                              ? 'لا توجد نتائج'
-                              : 'لا توجد اختبارات',
-                          description: state.isSearchMode
-                              ? 'لم نعثر على اختبارات مطابقة لبحثك'
-                              : 'لا توجد اختبارات ضمن هذا التصنيف حالياً',
+                      return CustomBackgroundWithChild(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.w(0.03),
+                        ),
+                        width: double.infinity,
+                        backgroundColor: Colors.transparent,
+                        child: Column(
+                          children: [
+                            SizedBox(height: SizeConfig.h(0.03)),
+                            EmptyActionBox(
+                              icon: state.isSearchMode
+                                  ? Icons.search_off_rounded
+                                  : Icons.quiz_outlined,
+                              title: state.isSearchMode
+                                  ? 'لا توجد نتائج'
+                                  : 'لا توجد اختبارات',
+                              description: state.isSearchMode
+                                  ? 'لم نعثر على اختبارات مطابقة لبحثك'
+                                  : 'لا توجد اختبارات ضمن هذا التصنيف حالياً',
+                            ),
+                          ],
                         ),
                       );
                     }

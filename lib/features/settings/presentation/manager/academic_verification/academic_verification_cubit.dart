@@ -530,4 +530,60 @@ class AcademicVerificationCubit extends SafeCubit<AcademicVerificationState> {
       },
     );
   }
+
+  ////////////////////////////////////
+  void resetSubmitStatus() {
+    debugPrint(
+      '============ AcademicVerificationCubit.resetSubmitStatus ============',
+    );
+
+    emit(
+      state.copyWith(
+        submitStatus: AcademicVerificationSubmitStatus.initial,
+        clearSubmitMessage: true,
+      ),
+    );
+
+    debugPrint('✓ submit status reset');
+    debugPrint(
+      '====================================================================',
+    );
+  }
+
+  void resetCancelStatus() {
+    debugPrint(
+      '============ AcademicVerificationCubit.resetCancelStatus ============',
+    );
+
+    emit(
+      state.copyWith(
+        cancelStatus: AcademicVerificationCancelStatus.initial,
+        clearCancelMessage: true,
+      ),
+    );
+
+    debugPrint('✓ cancel status reset');
+    debugPrint(
+      '====================================================================',
+    );
+  }
+
+  void resetVisibilityStatus() {
+    debugPrint(
+      '============ AcademicVerificationCubit.resetVisibilityStatus ============',
+    );
+
+    emit(
+      state.copyWith(
+        visibilityStatus: AcademicVerificationVisibilityStatus.initial,
+        clearVisibilityMessage: true,
+      ),
+    );
+
+    debugPrint('✓ visibility status reset');
+    debugPrint(
+      '=========================================================================',
+    );
+  }
+  
 }

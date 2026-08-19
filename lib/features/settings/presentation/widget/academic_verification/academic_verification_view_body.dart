@@ -12,10 +12,85 @@ class AcademicVerificationViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AcademicVerificationCubit, AcademicVerificationState>(
+      // listenWhen: (previous, current) {
+      //   return previous.verification != current.verification ||
+      //       previous.errorMessage != current.errorMessage ||
+      //       previous.submitStatus != current.submitStatus ||
+      //       previous.cancelStatus != current.cancelStatus ||
+      //       previous.visibilityStatus != current.visibilityStatus;
+      // },
+      // listener: (context, state) {
+      //   debugPrint(
+      //     '============ AcademicVerificationViewBody.listener ============',
+      //   );
+      //   debugPrint('→ isLoading: ${state.isLoading}');
+      //   debugPrint('→ verification: ${state.verification}');
+      //   debugPrint('→ errorTitle: ${state.errorTitle}');
+      //   debugPrint('→ errorMessage: ${state.errorMessage}');
+      //   debugPrint('→ submitStatus: ${state.submitStatus}');
+      //   debugPrint('→ submitSuccessTitle: ${state.submitSuccessTitle}');
+      //   debugPrint('→ submitSuccessMessage: ${state.submitSuccessMessage}');
+      //   debugPrint('→ submitErrorTitle: ${state.submitErrorTitle}');
+      //   debugPrint('→ submitErrorMessage: ${state.submitErrorMessage}');
+      //   debugPrint(
+      //     '===============================================================',
+      //   );
+
+      //   if (state.isSubmitSuccess) {
+      //     showValidationTopSnackBar(
+      //       context,
+      //       title: state.submitSuccessTitle ?? 'تمت العملية بنجاح',
+      //       message:
+      //           state.submitSuccessMessage ??
+      //           'تم إرسال طلب التوثيق الأكاديمي بنجاح.',
+      //       type: AppValidationSnackBarType.success,
+      //     );
+      //   }
+
+      //   if (state.isSubmitFailure) {
+      //     showValidationTopSnackBar(
+      //       context,
+      //       title: state.submitErrorTitle ?? 'خطأ',
+      //       message:
+      //           state.submitErrorMessage ?? 'تعذر إرسال طلب التوثيق الأكاديمي.',
+      //       type: AppValidationSnackBarType.error,
+      //     );
+      //   }
+
+      //   if (state.isCancelSuccess) {
+      //     showValidationTopSnackBar(
+      //       context,
+      //       title: state.cancelSuccessTitle ?? 'تمت العملية بنجاح',
+      //       message:
+      //           state.cancelSuccessMessage ??
+      //           'تم إلغاء طلب التوثيق الأكاديمي بنجاح.',
+      //       type: AppValidationSnackBarType.success,
+      //     );
+      //   }
+
+      //   if (state.isCancelFailure) {
+      //     showValidationTopSnackBar(
+      //       context,
+      //       title: state.cancelErrorTitle ?? 'خطأ',
+      //       message:
+      //           state.cancelErrorMessage ?? 'تعذر إلغاء طلب التوثيق الأكاديمي.',
+      //       type: AppValidationSnackBarType.error,
+      //     );
+      //   }
+
+      //   if (state.isVisibilityFailure) {
+      //     showValidationTopSnackBar(
+      //       context,
+      //       title: state.visibilityErrorTitle ?? 'خطأ',
+      //       message:
+      //           state.visibilityErrorMessage ??
+      //           'تعذر تحديث حالة ظهور الشهادة العلمية.',
+      //       type: AppValidationSnackBarType.error,
+      //     );
+      //   }
+      // },
       listenWhen: (previous, current) {
-        return previous.verification != current.verification ||
-            previous.errorMessage != current.errorMessage ||
-            previous.submitStatus != current.submitStatus ||
+        return previous.submitStatus != current.submitStatus ||
             previous.cancelStatus != current.cancelStatus ||
             previous.visibilityStatus != current.visibilityStatus;
       },
@@ -45,6 +120,9 @@ class AcademicVerificationViewBody extends StatelessWidget {
                 'تم إرسال طلب التوثيق الأكاديمي بنجاح.',
             type: AppValidationSnackBarType.success,
           );
+
+          context.read<AcademicVerificationCubit>().resetSubmitStatus();
+          return;
         }
 
         if (state.isSubmitFailure) {
@@ -55,6 +133,9 @@ class AcademicVerificationViewBody extends StatelessWidget {
                 state.submitErrorMessage ?? 'تعذر إرسال طلب التوثيق الأكاديمي.',
             type: AppValidationSnackBarType.error,
           );
+
+          context.read<AcademicVerificationCubit>().resetSubmitStatus();
+          return;
         }
 
         if (state.isCancelSuccess) {
@@ -66,6 +147,9 @@ class AcademicVerificationViewBody extends StatelessWidget {
                 'تم إلغاء طلب التوثيق الأكاديمي بنجاح.',
             type: AppValidationSnackBarType.success,
           );
+
+          context.read<AcademicVerificationCubit>().resetCancelStatus();
+          return;
         }
 
         if (state.isCancelFailure) {
@@ -76,6 +160,9 @@ class AcademicVerificationViewBody extends StatelessWidget {
                 state.cancelErrorMessage ?? 'تعذر إلغاء طلب التوثيق الأكاديمي.',
             type: AppValidationSnackBarType.error,
           );
+
+          context.read<AcademicVerificationCubit>().resetCancelStatus();
+          return;
         }
 
         if (state.isVisibilityFailure) {
@@ -87,6 +174,9 @@ class AcademicVerificationViewBody extends StatelessWidget {
                 'تعذر تحديث حالة ظهور الشهادة العلمية.',
             type: AppValidationSnackBarType.error,
           );
+
+          context.read<AcademicVerificationCubit>().resetVisibilityStatus();
+          return;
         }
       },
       builder: (context, state) {

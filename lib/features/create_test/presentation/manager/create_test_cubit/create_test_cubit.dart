@@ -411,7 +411,8 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
     final result = parseManualQuestionsJson(bytes);
     if (!result.isSuccess) return result;
 
-    final totalQuestionsCount = state.questions.length + result.questions.length;
+    final totalQuestionsCount =
+        state.questions.length + result.questions.length;
     if (totalQuestionsCount > maxQuestionsCount) {
       return ManualQuestionsJsonImportResult.failure(
         'إضافة ${result.questions.length} سؤالًا ستتجاوز الحد الأقصى وهو $maxQuestionsCount سؤال.',
@@ -504,6 +505,7 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
           scientificClassificationGroups: response.groups,
         ),
       );
+      _syncExistingScientificCategoriesWithIds();
     } catch (e) {
       emit(
         state.copyWith(
@@ -566,12 +568,6 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
     );
   }
 
-
-
-
-
-
-
   List<String> _getScientificInterestNamesByIds(List<int> ids) {
     final names = <String>[];
 
@@ -622,9 +618,7 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
     emit(state.copyWith(selectedSampleQuestions: normalizedSelected));
   }
 
-  List<int> _selectedSampleIndexes(
-    List<CreateTestQuestionState> questions,
-  ) {
+  List<int> _selectedSampleIndexes(List<CreateTestQuestionState> questions) {
     final allowedCount = _calculateAllowedSampleQuestionsCount(
       questions.length,
     );
@@ -893,6 +887,19 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
   void initializeFromArgs(CreateTestInitialArgs? args) {
     if (args == null) return;
 
+    debugPrint('============ CreateTestCubit.initializeFromArgs ============');
+    debugPrint(
+      '→ initialScientificInterestIds: '
+      '${args.initialScientificInterestIds}',
+    );
+    debugPrint(
+      '→ initialScientificCategories: '
+      '${args.initialScientificCategories}',
+    );
+    debugPrint('→ isContentEditMode: ${args.isContentEditMode}');
+    debugPrint('→ editingContentId: ${args.editingContentId}');
+    debugPrint('=============================================================');
+
     _selectedSampleQuestionIds = args.initialPreviewQuestionIds.toSet();
 
     final generatedQuestions = args.generatedQuestions
@@ -965,9 +972,95 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
         editingContentId: args.editingContentId,
       ),
     );
+
+    debugPrint(
+      '→ state selectedScientificInterestIds: '
+      '${state.selectedScientificInterestIds}',
+    );
+
+    debugPrint(
+      '→ state selectedScientificCategories: '
+      '${state.selectedScientificCategories}',
+    );
+    if (state.isUpdateContentMode &&
+        state.selectedScientificInterestIds.isEmpty &&
+        state.selectedScientificCategories.isNotEmpty) {
+      debugPrint(
+        '→ old content has category names without ids, fetching classifications...',
+      );
+
+      fetchScientificClassifications();
+    }
+
     if (args.shouldFetchEditQuestions && args.editingTestId != null) {
       getEditableTestQuestionsForEdit(testId: args.editingTestId!);
     }
+  }
+
+  void _syncExistingScientificCategoriesWithIds() {
+    if (!state.isUpdateContentMode) return;
+
+    if (state.selectedScientificInterestIds.isNotEmpty) {
+      debugPrint('→ scientific ids already exist, sync skipped');
+      return;
+    }
+
+    if (state.selectedScientificCategories.isEmpty) {
+      debugPrint('→ no existing scientific category names, sync skipped');
+      return;
+    }
+
+    if (state.scientificClassificationGroups.isEmpty) {
+      debugPrint('→ scientific classification groups are empty, sync skipped');
+      return;
+    }
+
+    final selectedNames = state.selectedScientificCategories
+        .map((name) => name.trim())
+        .where((name) => name.isNotEmpty)
+        .toSet();
+
+    final matchedIds = <int>[];
+
+    for (final group in state.scientificClassificationGroups) {
+      for (final interest in group.interests) {
+        final normalizedInterestName = interest.name.trim();
+
+        if (selectedNames.contains(normalizedInterestName)) {
+          matchedIds.add(interest.id);
+        }
+      }
+    }
+
+    matchedIds.sort();
+
+    debugPrint(
+      '============ _syncExistingScientificCategoriesWithIds ============',
+    );
+    debugPrint('→ selectedNames: $selectedNames');
+    debugPrint('→ matchedIds: $matchedIds');
+    debugPrint(
+      '=================================================================',
+    );
+
+    if (matchedIds.isEmpty) {
+      debugPrint(
+        '→ no matching scientific ids found, old names kept unchanged',
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        selectedScientificInterestIds: matchedIds,
+        pendingScientificInterestIds: matchedIds,
+      ),
+    );
+
+    debugPrint(
+      '→ synced selectedScientificInterestIds: '
+      '${state.selectedScientificInterestIds}',
+    );
   }
 
   Future<void> getEditableTestQuestionsForEdit({required int testId}) async {
@@ -1405,6 +1498,16 @@ class CreateTestCubit extends SafeCubit<CreateTestState> {
   }
 
   UpdateContentParams _buildUpdateContentParams({required int contentId}) {
+    debugPrint(
+      '============ CreateTestCubit._buildUpdateContentParams ============',
+    );
+    debugPrint('→ contentId: $contentId');
+    debugPrint('→ interestIds: ${state.selectedScientificInterestIds}');
+    debugPrint('→ categories: ${state.selectedScientificCategories}');
+    debugPrint(
+      '==================================================================',
+    );
+
     return UpdateContentParams(
       contentId: contentId,
       title: state.title.trim(),

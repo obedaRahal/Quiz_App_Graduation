@@ -48,7 +48,7 @@ class SocialAccountsBottomSheet extends StatelessWidget {
     final appColors = context.appColors;
 
     return CustomBackgroundWithChild(
-      height: SizeConfig.h(0.3),
+      height: SizeConfig.h(0.25),
       width: double.infinity,
       backgroundColor: appColors.whiteToblack,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -60,7 +60,7 @@ class SocialAccountsBottomSheet extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: SizeConfig.w(0.035),
-              vertical: SizeConfig.h(0.02),
+               vertical: SizeConfig.h(0.02),
             ),
             child: Row(
               textDirection: TextDirection.rtl,

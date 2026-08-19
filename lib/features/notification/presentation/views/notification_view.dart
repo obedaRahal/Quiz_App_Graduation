@@ -193,7 +193,7 @@ class _NotificationBodyState extends State<_NotificationBody> {
                       child: ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: [
-                          SizedBox(height: SizeConfig.h(0.2)),
+                          SizedBox(height: SizeConfig.h(0.1)),
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16),
                             child: EmptyActionBox(

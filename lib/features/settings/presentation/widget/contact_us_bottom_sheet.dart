@@ -36,7 +36,7 @@ class ContactUsBottomSheet extends StatelessWidget {
     final appColors = context.appColors;
 
     return CustomBackgroundWithChild(
-      height: SizeConfig.h(0.4),
+      height: SizeConfig.h(0.28),
       width: double.infinity,
       backgroundColor: appColors.whiteToblack,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -48,7 +48,7 @@ class ContactUsBottomSheet extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: SizeConfig.w(0.055),
-              vertical: SizeConfig.h(0.025),
+              //vertical: SizeConfig.h(0.01),
             ),
             child: Row(
               textDirection: TextDirection.rtl,

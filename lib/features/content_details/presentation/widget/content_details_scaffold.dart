@@ -47,6 +47,7 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
   }
 
   Future<void> _toggleSheetFromImageTap() async {
+    if (!mounted) return;
     if (!_sheetController.isAttached) return;
 
     final currentSize = _sheetController.size;
@@ -64,7 +65,7 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
         curve: Curves.easeOutCubic,
       );
     }
-  }
+  } 
 
   @override
   void dispose() {
@@ -133,10 +134,19 @@ class _ContentDetailsScaffoldState extends State<ContentDetailsScaffold> {
               data: widget.data,
               currentIndex: _currentIndex,
               onPageChanged: (index) {
-                setState(() => _currentIndex = index);
+                if (!mounted) return;
+
+                setState(() {
+                  _currentIndex = index;
+                });
               },
+
               onPdfPagesCountChanged: (count) {
-                setState(() => _pdfPagesCount = count);
+                if (!mounted) return;
+
+                setState(() {
+                  _pdfPagesCount = count;
+                });
               },
               onViewerTap: _toggleSheetFromImageTap,
             ),

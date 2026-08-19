@@ -196,14 +196,18 @@ class _MyProfileBookmarksBodyState extends State<_MyProfileBookmarksBody> {
 
                         if (state.items.isEmpty) {
                           return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: EmptyActionBox(
-                                icon: Icons.bookmark_border_rounded,
-                                title: 'لا توجد عناصر محفوظة',
-                                description:
-                                    'ستظهر هنا الاختبارات والمحتويات والمجلدات التي تحفظها',
-                              ),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: EmptyActionBox(
+                                    icon: Icons.bookmark_border_rounded,
+                                    title: 'لا توجد عناصر محفوظة',
+                                    description:
+                                        'ستظهر هنا الاختبارات والمحتويات والمجلدات التي تحفظها',
+                                  ),
+                                ),
+                              ],
                             ),
                           );
                         }

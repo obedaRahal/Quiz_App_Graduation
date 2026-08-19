@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
+import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 
 class TestsByInterestSectionTitle extends StatelessWidget {
@@ -23,14 +24,14 @@ class TestsByInterestSectionTitle extends StatelessWidget {
                 vertical: SizeConfig.h(0.004),
               ),
               decoration: BoxDecoration(
-                color: const Color(0xFFEFF3FF),
+                color: context.appColors.primarySoftTogreyLightDark,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: CustomTextWidget(
                 title,
                 fontSize: SizeConfig.text(0.027),
                 fontWeight: FontWeight.bold,
-                color: AppPalette.primary,
+                color: context.appColors.primaryToPrimaryDark,
               ),
             ),
           ),
