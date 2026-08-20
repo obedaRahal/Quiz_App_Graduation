@@ -40,25 +40,29 @@ class MyProfileInterestCategoryGroup extends StatelessWidget {
           ),
         ),
 
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: category.interests.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: SizeConfig.h(0.014),
-            crossAxisSpacing: SizeConfig.w(0.035),
-            childAspectRatio: 3.2,
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: GridView.builder(
+            
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: category.interests.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: SizeConfig.h(0.014),
+              crossAxisSpacing: SizeConfig.w(0.035),
+              childAspectRatio: 3.2,
+            ),
+            itemBuilder: (context, index) {
+              final interest = category.interests[index];
+          
+              return MyProfileInterestCard(
+                interest: interest,
+                isSelected: selectedIds.contains(interest.id),
+                onTap: () => onInterestTap(interest),
+              );
+            },
           ),
-          itemBuilder: (context, index) {
-            final interest = category.interests[index];
-
-            return MyProfileInterestCard(
-              interest: interest,
-              isSelected: selectedIds.contains(interest.id),
-              onTap: () => onInterestTap(interest),
-            );
-          },
         ),
       ],
     );

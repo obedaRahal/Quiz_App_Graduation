@@ -114,17 +114,18 @@ void main() {
       expect((decision.extra as DetailsOfTestRouteArgs).testId, 20);
     });
 
-    test('opens my profile for a ban notification', () {
+    test('opens my profile without requiring a user id from backend', () {
       final decision = resolver.resolve(
         _notification(
-          type: 'user_banned',
+          type: 'academic_verification_rejected',
           screen: 'my_profile',
-          params: {'user_id': 7},
+          params: {'verification_request_id': 5, 'status': 'rejected'},
         ),
       );
 
       expect(decision.routeName, AppRouterName.myProfile);
-      expect((decision.extra as OtherProfileRouteArgs).userId, 7);
+      expect(decision.canNavigate, isTrue);
+      expect(decision.extra, isNull);
     });
 
     test('opens study task details with its plan and task identifiers', () {

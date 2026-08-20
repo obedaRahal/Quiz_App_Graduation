@@ -106,6 +106,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       options: Options(extra: {'requiresAuth': false}),
     );
 
+    debugPrint('================ otp is $response ================');
+
     return LoginResponseModel.fromJson(response);
   }
 
@@ -126,6 +128,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     debugPrint('RESEND RESPONSE => received');
     debugPrint('================ END RESEND OTP REQUEST ================');
+    debugPrint('================ otp is $response ================');
 
     return ResendOtpResponseModel.fromJson(response);
   }

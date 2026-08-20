@@ -95,15 +95,8 @@ class NotificationNavigationResolver {
         );
 
       case 'my_profile':
-        final userId = _positiveInt(metadata.params['user_id']);
-
-        if (userId == null) {
-          return _missingParameter('user_id');
-        }
-
-        return NotificationNavigationDecision.navigate(
+        return const NotificationNavigationDecision.navigate(
           routeName: AppRouterName.myProfile,
-          extra: OtherProfileRouteArgs(userId: userId),
         );
 
       case 'study_task_details':

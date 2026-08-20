@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
+import 'package:quiz_app_grad/core/database/cache/user_local_storage.dart';
 import 'package:quiz_app_grad/core/di/service_locator.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
@@ -16,6 +17,7 @@ import 'package:quiz_app_grad/features/notification/presentation/manager/notific
 import 'package:quiz_app_grad/features/notification/presentation/manager/notification/notification_state.dart';
 import 'package:quiz_app_grad/features/notification/presentation/navigation/notification_navigation_resolver.dart';
 import 'package:quiz_app_grad/features/notification/presentation/widgets/notification_card.dart';
+import 'package:quiz_app_grad/features/other_profile/data/models/other_profile_route_args.dart';
 
 class NotificationView extends StatelessWidget {
   const NotificationView({super.key});
@@ -66,7 +68,9 @@ class _NotificationBodyState extends State<_NotificationBody> {
     }
   }
 
-  void _navigateToNotificationPage(NotificationEntity notification) {
+  Future<void> _navigateToNotificationPage(
+    NotificationEntity notification,
+  ) async {
     final decision = _navigationResolver.resolve(notification);
     final metadata = notification.metadata;
 
@@ -86,6 +90,11 @@ class _NotificationBodyState extends State<_NotificationBody> {
     debugPrint('=================================================');
 
     if (decision.canNavigate) {
+      if (decision.routeName == AppRouterName.myProfile) {
+        await _openMyProfile(context);
+        return;
+      }
+
       if (decision.clearNavigationStack) {
         context.goNamed(decision.routeName!, extra: decision.extra);
       } else {
@@ -101,6 +110,31 @@ class _NotificationBodyState extends State<_NotificationBody> {
       type: decision.isBlocked
           ? AppValidationSnackBarType.hint
           : AppValidationSnackBarType.error,
+    );
+  }
+
+  Future<void> _openMyProfile(BuildContext context) async {
+    final userId = await UserLocalStorage.getUserId();
+
+    if (!context.mounted) {
+      return;
+    }
+
+    if (userId == null) {
+      showValidationTopSnackBar(
+        context,
+        title: 'تعذر فتح الملف الشخصي',
+        message: 'لم يتم العثور على معرّف المستخدم. يرجى تسجيل الدخول مجددًا.',
+        type: AppValidationSnackBarType.error,
+      );
+      return;
+    }
+
+    debugPrint('Open my profile for stored user id: $userId');
+
+    await context.pushNamed(
+      AppRouterName.myProfile,
+      extra: OtherProfileRouteArgs(userId: userId),
     );
   }
 
