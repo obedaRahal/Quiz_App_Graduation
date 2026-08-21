@@ -18,6 +18,8 @@ import 'package:quiz_app_grad/core/services/notification/push_notification_servi
 import 'package:quiz_app_grad/core/utils/app_logger.dart';
 import 'package:quiz_app_grad/core/utils/auth_session.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/ai_generation/ai_generation_cubit.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/ai_generation/ai_generation_state.dart';
 import 'package:quiz_app_grad/features/study_alarm/services/study_alarm_ringing_service.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/theme_cubit/theme_state.dart';
@@ -93,7 +95,7 @@ class QuizApp extends StatefulWidget {
   State<QuizApp> createState() => _QuizAppState();
 }
 
-class _QuizAppState extends State<QuizApp> {
+class _QuizAppState extends State<QuizApp> with WidgetsBindingObserver {
   StreamSubscription<void>? _notificationTapSubscription;
   AuthSession? _authSession;
   bool _notificationNavigationScheduled = false;
@@ -101,6 +103,8 @@ class _QuizAppState extends State<QuizApp> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
 
     _authSession = sl<AuthSession>()..addListener(_onAuthSessionChanged);
     _notificationTapSubscription = NotificationTapService.taps.listen((_) {
@@ -167,7 +171,22 @@ class _QuizAppState extends State<QuizApp> {
   }
 
   void _onAuthSessionChanged() {
+    final aiGenerationCubit = sl<AiGenerationCubit>();
+    if (_authSession?.isAuthenticated == true) {
+      unawaited(aiGenerationCubit.restorePendingGeneration());
+    } else if (_authSession?.isUnauthenticated == true) {
+      aiGenerationCubit.resetForSignedOutSession();
+    }
+
     _scheduleNotificationNavigation();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        _authSession?.isAuthenticated == true) {
+      unawaited(sl<AiGenerationCubit>().refresh());
+    }
   }
 
   void _scheduleNotificationNavigation() {
@@ -202,6 +221,7 @@ class _QuizAppState extends State<QuizApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _authSession?.removeListener(_onAuthSessionChanged);
     unawaited(_notificationTapSubscription?.cancel() ?? Future<void>.value());
 
@@ -216,8 +236,11 @@ class _QuizAppState extends State<QuizApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<ThemeCubit>()..loadTheme(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => sl<ThemeCubit>()..loadTheme()),
+        BlocProvider.value(value: sl<AiGenerationCubit>()),
+      ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
           return MaterialApp.router(
@@ -227,12 +250,57 @@ class _QuizAppState extends State<QuizApp> {
             themeMode: state.themeMode,
             routerConfig: AppRouter.router,
             builder: (context, child) {
-              return AppKeyboardDismissScope(
-                child: child ?? const SizedBox.shrink(),
+              return BlocListener<AiGenerationCubit, AiGenerationState>(
+                listenWhen: (previous, current) {
+                  return previous.phase != current.phase &&
+                      (current.isCompleted || current.isFailed);
+                },
+                listener: _onAiGenerationStateChanged,
+                child: AppKeyboardDismissScope(
+                  child: child ?? const SizedBox.shrink(),
+                ),
               );
             },
           );
         },
+      ),
+    );
+  }
+
+  void _onAiGenerationStateChanged(
+    BuildContext context,
+    AiGenerationState state,
+  ) {
+    final currentPath =
+        AppRouter.router.routeInformationProvider.value.uri.path;
+    if (currentPath == AppRouterPath.createTestAiLoadingPage) return;
+
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger == null) return;
+
+    messenger.clearSnackBars();
+    messenger.showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Text(
+            state.isCompleted
+                ? 'اكتمل توليد الأسئلة. يمكنك مراجعتها الآن.'
+                : state.errorMessage ?? 'تعذر توليد الأسئلة.',
+          ),
+        ),
+        action: state.isCompleted && state.editorArgs != null
+            ? SnackBarAction(
+                label: 'مراجعة',
+                onPressed: () {
+                  AppRouter.router.pushNamed(
+                    AppRouterName.createTestPage,
+                    extra: state.editorArgs,
+                  );
+                },
+              )
+            : null,
       ),
     );
   }

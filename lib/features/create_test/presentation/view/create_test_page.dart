@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +9,7 @@ import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_cubit.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_state.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/ai_generation/ai_generation_cubit.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/widgets/create_test_body.dart';
 
 class CreateTestView extends StatelessWidget {
@@ -175,6 +178,10 @@ class CreateTestView extends StatelessWidget {
             );
 
             context.read<CreateTestCubit>().clearCreateManualTestResult();
+
+            if (state.isAiMode) {
+              unawaited(context.read<AiGenerationCubit>().clearTask());
+            }
 
             Future.delayed(const Duration(milliseconds: 700), () {
               if (!context.mounted) return;

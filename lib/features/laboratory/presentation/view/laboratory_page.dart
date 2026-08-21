@@ -8,6 +8,7 @@ import 'package:quiz_app_grad/features/laboratory/presentation/manager/laborator
 import 'package:quiz_app_grad/features/laboratory/presentation/manager/laboratory_cubit/laboratory_state.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/shimmers/laboratory_page_shimmer.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_exam_sessions_section.dart';
+import 'package:quiz_app_grad/features/laboratory/presentation/widget/ai_generation_status_card.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_header.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_search_field.dart';
 import 'package:quiz_app_grad/features/laboratory/presentation/widget/laboratory_tabs_section.dart';
@@ -57,6 +58,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
           body: Column(
             children: [
               const LaboratoryHeader(),
+
+              const AiGenerationStatusCard(),
 
               Padding(
                 padding: EdgeInsets.only(

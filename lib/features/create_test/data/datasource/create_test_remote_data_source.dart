@@ -114,7 +114,9 @@ class CreateTestRemoteDataSourceImpl implements CreateTestRemoteDataSource {
       options: Options(
         contentType: 'multipart/form-data',
         headers: {'Accept': 'application/json'},
+        sendTimeout: const Duration(minutes: 2),
       ),
+      onSendProgress: params.onSendProgress,
     );
 
     debugPrint('AI GENERATION POST RESPONSE: $response');

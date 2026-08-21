@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/config/app_router_name.dart';
@@ -10,12 +12,9 @@ import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_initial_args.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/ai_generation/ai_generation_cubit.dart';
 
-enum _CreateTestSheetMode {
-  methods,
-  aiImages,
-  aiFile,
-}
+enum _CreateTestSheetMode { methods, aiImages, aiFile }
 
 class CreateAiGenerationSheetRequest {
   final String sourceType;
@@ -55,6 +54,8 @@ Future<void> showCreateTestBottomSheet(
     barrierColor: Colors.black.withOpacity(0.12),
     transitionDuration: const Duration(milliseconds: 260),
     pageBuilder: (context, animation, secondaryAnimation) {
+      final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
       return Stack(
         children: [
           Positioned.fill(
@@ -63,11 +64,17 @@ Future<void> showCreateTestBottomSheet(
               child: const SizedBox.expand(),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: CreateTestBottomSheet(
-              onAiGenerationRequested: onAiGenerationRequested,
-              hasReachedAiDailyLimit: hasReachedAiDailyLimit,
+
+          AnimatedPadding(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            padding: EdgeInsets.only(bottom: keyboardHeight),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: CreateTestBottomSheet(
+                onAiGenerationRequested: onAiGenerationRequested,
+                hasReachedAiDailyLimit: hasReachedAiDailyLimit,
+              ),
             ),
           ),
         ],
@@ -176,6 +183,30 @@ class _CreateTestBottomSheetState extends State<CreateTestBottomSheet> {
   void _requestAiGeneration() {
     if (!_canRequestGeneration) return;
 
+    final generationCubit = context.read<AiGenerationCubit>();
+    final generationState = generationCubit.state;
+
+    if (generationState.isCompleted && generationState.editorArgs != null) {
+      Navigator.of(context).pop();
+      context.pushNamed(
+        AppRouterName.createTestPage,
+        extra: generationState.editorArgs,
+      );
+      return;
+    }
+
+    if (generationState.isBusy) {
+      final existingArgs = generationCubit.loadingArgs;
+      Navigator.of(context).pop();
+      if (existingArgs != null) {
+        context.pushNamed(
+          AppRouterName.createTestAiLoadingPage,
+          extra: existingArgs,
+        );
+      }
+      return;
+    }
+
     final count = int.parse(_questionCountController.text.trim());
 
     final args = CreateTestInitialArgs(
@@ -189,6 +220,8 @@ class _CreateTestBottomSheetState extends State<CreateTestBottomSheet> {
       aiLevel: _selectedLevel,
       aiLanguage: _selectedLanguage,
     );
+
+    unawaited(generationCubit.startGeneration(args));
 
     Navigator.of(context).pop();
 
@@ -290,166 +323,171 @@ class _CreateTestBottomSheetState extends State<CreateTestBottomSheet> {
         ? AppPalette.grey2Dark
         : AppPalette.greyMedium;
 
-    return Material(
-      color: Colors.transparent,
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            width: double.infinity,
-            constraints: BoxConstraints(
-              minHeight: _isAiMode ? SizeConfig.h(0.68) : SizeConfig.h(0.40),
-              maxHeight: _isAiMode ? SizeConfig.h(0.88) : SizeConfig.h(0.52),
-            ),
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
+    return SafeArea(
+      child: Material(
+        color: Colors.transparent,
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              width: double.infinity,
+              constraints: BoxConstraints(
+                minHeight: _isAiMode ? SizeConfig.h(0.68) : SizeConfig.h(0.40),
+                maxHeight: _isAiMode ? SizeConfig.h(0.88) : SizeConfig.h(0.52),
               ),
-              border: Border.all(
-                color: isDark
-                    ? AppPalette.borderFieldColorNDark
-                    : Colors.transparent,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: SizeConfig.h(0.008)),
-
-                Container(
-                  width: SizeConfig.w(0.13),
-                  height: SizeConfig.h(0.0045),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? AppPalette.greyLightDark
-                        : AppPalette.smallContainerGrey,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
                 ),
+                border: Border.all(
+                  color: isDark
+                      ? AppPalette.borderFieldColorNDark
+                      : Colors.transparent,
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: SizeConfig.h(0.008)),
 
-                SizedBox(height: SizeConfig.h(0.008)),
+                    Container(
+                      width: SizeConfig.w(0.13),
+                      height: SizeConfig.h(0.0045),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? AppPalette.greyLightDark
+                            : AppPalette.smallContainerGrey,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.w(0.045),
-                  ),
-                  child: SizedBox(
-                    height: SizeConfig.h(0.045),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Center(
-                          child: CustomTextWidget(
-                            _mode == _CreateTestSheetMode.methods
-                                ? 'إنشاء اختبار'
-                                : _mode == _CreateTestSheetMode.aiImages
-                                ? 'توليد الأسئلة من الصور'
-                                : 'توليد الأسئلة من ملف',
-                            fontSize: SizeConfig.text(0.050),
-                            fontWeight: FontWeight.bold,
-                            color: primaryTextColor,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                    SizedBox(height: SizeConfig.h(0.008)),
 
-                        if (_isAiMode)
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: InkWell(
-                              onTap: _backToMethods,
-                              borderRadius: BorderRadius.circular(30),
-                              child: Container(
-                                width: SizeConfig.w(0.080),
-                                height: SizeConfig.w(0.080),
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? AppPalette.greyMediumDark
-                                      : AppPalette.whiteToGrey,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isDark
-                                        ? AppPalette.borderFieldColorNDark
-                                        : AppPalette.borderFieldColorNLight,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.arrow_back_rounded,
-                                  size: SizeConfig.text(0.040),
-                                  color: primaryTextColor,
-                                ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.w(0.045),
+                      ),
+                      child: SizedBox(
+                        height: SizeConfig.h(0.045),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Center(
+                              child: CustomTextWidget(
+                                _mode == _CreateTestSheetMode.methods
+                                    ? 'إنشاء اختبار'
+                                    : _mode == _CreateTestSheetMode.aiImages
+                                    ? 'توليد الأسئلة من الصور'
+                                    : 'توليد الأسئلة من ملف',
+                                fontSize: SizeConfig.text(0.050),
+                                fontWeight: FontWeight.bold,
+                                color: primaryTextColor,
+                                textAlign: TextAlign.center,
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
 
-                SizedBox(height: SizeConfig.h(0.010)),
-
-                const _DashedDivider(),
-
-                Flexible(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 220),
-                    switchInCurve: Curves.easeOutCubic,
-                    switchOutCurve: Curves.easeOutCubic,
-                    child: _mode == _CreateTestSheetMode.methods
-                        ? _MethodsContent(
-                            key: const ValueKey('methods'),
-                            primaryTextColor: primaryTextColor,
-                            secondaryTextColor: secondaryTextColor,
-                            hasReachedAiDailyLimit:
-                                widget.hasReachedAiDailyLimit,
-                            onManualTap: () {
-                              Navigator.of(context).pop();
-
-                              context.pushNamed(
-                                AppRouterName.createTestPage,
-                                extra: const CreateTestInitialArgs(
-                                  mode: CreateTestCreationMode.manual,
+                            if (_isAiMode)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: InkWell(
+                                  onTap: _backToMethods,
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: Container(
+                                    width: SizeConfig.w(0.080),
+                                    height: SizeConfig.w(0.080),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? AppPalette.greyMediumDark
+                                          : AppPalette.whiteToGrey,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: isDark
+                                            ? AppPalette.borderFieldColorNDark
+                                            : AppPalette.borderFieldColorNLight,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.arrow_back_rounded,
+                                      size: SizeConfig.text(0.040),
+                                      color: primaryTextColor,
+                                    ),
+                                  ),
                                 ),
-                              );
-                            },
-                            onAiImagesTap: _goToAiImages,
-                            onAiFileTap: _goToAiFile,
-                          )
-                        : _AiGenerationContent(
-                            key: ValueKey(_mode.name),
-                            mode: _mode,
-                            selectedImages: _selectedImages,
-                            selectedFile: _selectedFile,
-                            questionCountController: _questionCountController,
-                            selectedLevel: _selectedLevel,
-                            selectedLanguage: _selectedLanguage,
-                            levels: _levels,
-                            languages: _languages,
-                            onQuestionCountChanged: (_) {
-                              setState(() {});
-                            },
-                            onLevelChanged: (value) {
-                              setState(() {
-                                _selectedLevel = value;
-                              });
-                            },
-                            onLanguageChanged: (value) {
-                              setState(() {
-                                _selectedLanguage = value;
-                              });
-                            },
-                            onPickMedia: _pickMedia,
-                            onRemoveImage: _removeSelectedImage,
-                            onRemoveFile: _removeSelectedFile,
-                            canRequestGeneration: _canRequestGeneration,
-                            onRequestGeneration: _requestAiGeneration,
-                          ),
-                  ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: SizeConfig.h(0.010)),
+
+                    const _DashedDivider(),
+
+                    Flexible(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeOutCubic,
+                        child: _mode == _CreateTestSheetMode.methods
+                            ? _MethodsContent(
+                                key: const ValueKey('methods'),
+                                primaryTextColor: primaryTextColor,
+                                secondaryTextColor: secondaryTextColor,
+                                hasReachedAiDailyLimit:
+                                    widget.hasReachedAiDailyLimit,
+                                onManualTap: () {
+                                  Navigator.of(context).pop();
+
+                                  context.pushNamed(
+                                    AppRouterName.createTestPage,
+                                    extra: const CreateTestInitialArgs(
+                                      mode: CreateTestCreationMode.manual,
+                                    ),
+                                  );
+                                },
+                                onAiImagesTap: _goToAiImages,
+                                onAiFileTap: _goToAiFile,
+                              )
+                            : _AiGenerationContent(
+                                key: ValueKey(_mode.name),
+                                mode: _mode,
+                                selectedImages: _selectedImages,
+                                selectedFile: _selectedFile,
+                                questionCountController:
+                                    _questionCountController,
+                                selectedLevel: _selectedLevel,
+                                selectedLanguage: _selectedLanguage,
+                                levels: _levels,
+                                languages: _languages,
+                                onQuestionCountChanged: (_) {
+                                  setState(() {});
+                                },
+                                onLevelChanged: (value) {
+                                  setState(() {
+                                    _selectedLevel = value;
+                                  });
+                                },
+                                onLanguageChanged: (value) {
+                                  setState(() {
+                                    _selectedLanguage = value;
+                                  });
+                                },
+                                onPickMedia: _pickMedia,
+                                onRemoveImage: _removeSelectedImage,
+                                onRemoveFile: _removeSelectedFile,
+                                canRequestGeneration: _canRequestGeneration,
+                                onRequestGeneration: _requestAiGeneration,
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

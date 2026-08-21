@@ -51,6 +51,7 @@ import 'package:quiz_app_grad/features/content_details/domain/usecases/unfollow_
 import 'package:quiz_app_grad/features/content_details/domain/usecases/unlike_other_content_use_case.dart';
 import 'package:quiz_app_grad/features/content_details/presentation/manager/other_content_details_cubit/other_content_details_cubit.dart';
 import 'package:quiz_app_grad/features/create_test/data/datasource/create_test_remote_data_source.dart';
+import 'package:quiz_app_grad/features/create_test/data/local/ai_generation_task_storage.dart';
 import 'package:quiz_app_grad/features/create_test/data/repositories/create_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/create_test/domain/repositories/create_test_repository.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/create_content_use_case.dart';
@@ -62,6 +63,7 @@ import 'package:quiz_app_grad/features/create_test/domain/use_case/start_ai_ques
 import 'package:quiz_app_grad/features/create_test/domain/use_case/update_content_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/domain/use_case/update_test_use_case.dart';
 import 'package:quiz_app_grad/features/create_test/presentation/manager/create_test_cubit/create_test_cubit.dart';
+import 'package:quiz_app_grad/features/create_test/presentation/manager/ai_generation/ai_generation_cubit.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/data_sources/details_of_test_remote_data_source.dart';
 import 'package:quiz_app_grad/features/details_of_test/data/repo_impl/details_of_test_repository_impl.dart';
 import 'package:quiz_app_grad/features/details_of_test/domain/repositories/details_of_test_repository.dart';
@@ -978,6 +980,24 @@ void _registerCreateTestFeature() {
   if (!sl.isRegistered<GetAiQuestionGenerationStatusUseCase>()) {
     sl.registerLazySingleton<GetAiQuestionGenerationStatusUseCase>(
       () => GetAiQuestionGenerationStatusUseCase(sl<CreateTestRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<AiGenerationTaskStorage>()) {
+    sl.registerLazySingleton<AiGenerationTaskStorage>(
+      CacheAiGenerationTaskStorage.new,
+    );
+  }
+
+  if (!sl.isRegistered<AiGenerationCubit>()) {
+    sl.registerLazySingleton<AiGenerationCubit>(
+      () => AiGenerationCubit(
+        startAiQuestionGenerationUseCase:
+            sl<StartAiQuestionGenerationUseCase>(),
+        getAiQuestionGenerationStatusUseCase:
+            sl<GetAiQuestionGenerationStatusUseCase>(),
+        storage: sl<AiGenerationTaskStorage>(),
+      ),
     );
   }
 

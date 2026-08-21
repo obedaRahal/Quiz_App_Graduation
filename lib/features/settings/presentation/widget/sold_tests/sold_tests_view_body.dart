@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_background_with_child.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_button_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/custom_text_widget.dart';
 import 'package:quiz_app_grad/core/common_widgets/empty_action_box.dart';
+import 'package:quiz_app_grad/core/config/app_router_name.dart';
 import 'package:quiz_app_grad/core/theme/color/app_colors.dart';
 import 'package:quiz_app_grad/core/theme/theme/theme_extensions.dart';
 import 'package:quiz_app_grad/core/utils/customer_snackbar_validation.dart';
 import 'package:quiz_app_grad/core/utils/media_query_config.dart';
+import 'package:quiz_app_grad/features/details_of_test/data/models/details_of_test_route_args.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/sold_tests/sold_tests_cubit.dart';
 import 'package:quiz_app_grad/features/settings/presentation/manager/sold_tests/sold_tests_state.dart';
 import 'package:quiz_app_grad/features/settings/presentation/widget/sold_tests/sold_test_sale_card.dart';
@@ -216,7 +219,17 @@ class _SoldTestsViewBodyState extends State<SoldTestsViewBody> {
                                   itemBuilder: (context, index) {
                                     final sale = state.visibleSales[index];
 
-                                    return SoldTestSaleCard(sale: sale);
+                                    return InkWell(
+                                      onTap: () {
+                                        context.pushNamed(
+                                          AppRouterName.myTestDetails,
+                                          extra: DetailsOfTestRouteArgs(
+                                            testId: sale.test.id,
+                                          ),
+                                        );
+                                      },
+                                      child: SoldTestSaleCard(sale: sale),
+                                    );
                                   },
                                 ),
                               ),
